@@ -22,6 +22,9 @@ export default {
         border:'CCD6DC',
         text:'#7B8184'
       },
+      fontFamily: {
+        poppins: ['Poppins', 'sans-serif'],
+      },
     },
   },
   plugins: [],
