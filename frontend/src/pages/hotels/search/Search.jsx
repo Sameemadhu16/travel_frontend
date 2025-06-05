@@ -46,7 +46,7 @@ export default function Search() {
                     className='h-full w-full object-fit'
                 />
                 <div>
-                    <div className='absolute top-24 left-1/2 transform -translate-x-1/2 w-1/2'>
+                    <div className='z-10 absolute top-24 left-1/2 transform -translate-x-1/2 w-1/2'>
                         <SearchContainer/>
                     </div>
                 </div>
