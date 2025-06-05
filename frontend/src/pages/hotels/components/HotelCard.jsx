@@ -26,7 +26,7 @@ export default function HotelCard({
     };
     return (
         <div 
-            onClick={() => handleNavigate(`/hotel?id=${id}`)}
+            onClick={() => handleNavigate(`/hotel/${id}`)}
             className='border p-4 rounded-[8px] shadow-sm bg-white'>
             <div className='flex gap-4'>
                 {/* Hotel Image */}

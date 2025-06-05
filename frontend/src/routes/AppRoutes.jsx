@@ -10,7 +10,7 @@ export default function AppRoutes() {
                 <Route path='/' element={<Welcome/>}/>
                 <Route path='/home' element={<Home/>}/>
                 <Route path='/hotels-search' element={<Search/>}/>
-                <Route path='/hotel' element={<Hotel/>}/>
+                <Route path='/hotel/:id' element={<Hotel/>}/>
             </Routes>
     )
 }
