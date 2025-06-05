@@ -17,6 +17,11 @@ export default function SearchContainer() {
     const [filteredPlaces, setFilteredPlaces] = useState([]);
     const destinationRef = useRef(null);
     const [selectedDestination, setSelectedDestination] = useState('');
+    const [fromInput, setFromInput] = useState('');
+    const [showFromSuggestions, setShowFromSuggestions] = useState(false);
+    const [filteredFromPlaces, setFilteredFromPlaces] = useState([]);
+    const [selectedFrom, setSelectedFrom] = useState('Colombo');
+    const fromRef = useRef(null);
     const sriLankaTravelPlaces = travelPlaces;
 
     // Close date picker and suggestions when clicking outside
@@ -28,6 +33,9 @@ export default function SearchContainer() {
             }
             if (destinationRef.current && !destinationRef.current.contains(event.target)) {
                 setShowSuggestions(false);
+            }
+            if (fromRef.current && !fromRef.current.contains(event.target)) {
+                setShowFromSuggestions(false);
             }
         };
 
@@ -53,6 +61,20 @@ export default function SearchContainer() {
         setFilteredPlaces(filtered);
     }, [destinationInput]);
 
+    // Filter places for "From" input
+    useEffect(() => {
+        if (fromInput.trim() === '') {
+            setFilteredFromPlaces([]);
+            return;
+        }
+        const filtered = travelPlaces
+            .filter(place =>
+                place.value.toLowerCase().includes(fromInput.toLowerCase())
+            )
+            .slice(0, 5);
+        setFilteredFromPlaces(filtered);
+    }, [fromInput]);
+
     const handleDestinationChange = (e) => {
         setDestinationInput(e.target.value);
         setShowSuggestions(true);
@@ -62,6 +84,17 @@ export default function SearchContainer() {
         setSelectedDestination(place);
         setDestinationInput(place);
         setShowSuggestions(false);
+    };
+
+    const handleFromChange = (e) => {
+        setFromInput(e.target.value);
+        setShowFromSuggestions(true);
+    };
+
+    const selectFrom = (place) => {
+        setSelectedFrom(place);
+        setFromInput(place);
+        setShowFromSuggestions(false);
     };
 
     const formatDate = (date) => {
@@ -172,12 +205,52 @@ export default function SearchContainer() {
     return (
         <div className='relative h-[60px] p-4 bg-white flex flex-col md:flex-row items-center justify-between shadow-md rounded-[16px]'>
             {/* From location */}
-            <div className='flex flex-col items-center cursor-pointer'>
-                <div className='flex gap-1'>
+            <div ref={fromRef} className='relative flex flex-col items-center cursor-pointer'>
+                <div
+                    className='flex gap-1 items-center'
+                    onClick={() => {
+                        setFromInput(selectedFrom);
+                        setShowFromSuggestions(true);
+                        setTimeout(() => {
+                            document.getElementById('fromInput')?.focus();
+                        }, 0);
+                    }}
+                >
                     <h1 className='text-gray-400 text-[20px]'>From:</h1>
-                    <h1 className='text-orange-500 text-[20px]'>Colombo</h1>
+                    <h1 className='text-orange-500 text-[20px]'>{selectedFrom}</h1>
                 </div>
                 <h2 className='text-gray-400 text-[14px]'>Click here to change</h2>
+                {showFromSuggestions && (
+                    <div className='absolute top-full mt-2 z-10 w-[250px] bg-white shadow-lg rounded-lg p-2'>
+                        <input
+                            id="fromInput"
+                            type="text"
+                            value={fromInput}
+                            onChange={handleFromChange}
+                            placeholder="Search from location..."
+                            className='w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-300'
+                            autoFocus
+                        />
+                        {filteredFromPlaces.length > 0 && (
+                            <ul className='mt-2 border-t'>
+                                {filteredFromPlaces.map(place => (
+                                    <li
+                                        key={place.id}
+                                        className='p-2 hover:bg-orange-50 cursor-pointer'
+                                        onClick={() => selectFrom(place.value)}
+                                    >
+                                        {place.value}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+                        {fromInput && filteredFromPlaces.length === 0 && (
+                            <div className='p-2 text-gray-500 text-sm'>
+                                No locations found
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
 
             <div className='h-[50px] w-[2px] bg-gray-600 shrink-0'></div>
