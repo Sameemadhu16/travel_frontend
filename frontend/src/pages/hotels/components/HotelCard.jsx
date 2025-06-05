@@ -20,6 +20,10 @@ export default function HotelCard({
     reviews,
     isFavorite = true,
 }) {
+    const handleFavoriteClick = (e) => {
+        e.stopPropagation();
+        // toggle favorite logic here
+    };
     return (
         <div 
             onClick={() => handleNavigate(`/hotel?id=${id}`)}
@@ -32,7 +36,9 @@ export default function HotelCard({
                         alt={`${name} image`}
                         className='h-full w-full object-cover'
                     />
-                    <div className='absolute top-2 right-2 cursor-pointer'>
+                    <div 
+                        onClick={handleFavoriteClick}
+                        className='absolute top-2 right-2 cursor-pointer'>
                         <img src={isFavorite ? heartFill: heart } alt="icon" />
                     </div>
                 </div>
