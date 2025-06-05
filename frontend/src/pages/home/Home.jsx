@@ -75,10 +75,10 @@ export default function Home() {
                     </div>
                 </div>
             </Main>
-            <div className='w-full h-[700px] bg-orange-100 mt-10 flex items-center'>
+            <div className='w-full h-[600px] bg-orange-100 mt-20 flex'>
                 <Main>
                     <div className='flex flex-row justify-between'>
-                        <div className='w-1/2'>
+                        <div className='flex flex-col justify-center w-1/2'>
                             <Title 
                                 title='Plan Your Perfect Trip with AI'
                                 size='text-[60px]'
@@ -93,9 +93,9 @@ export default function Home() {
                                 <PrimaryButton text='Create AI Trip'/>
                             </div>
                         </div>
-                        <div className='w-1/2 flex gap-3 justify-end'>
+                        <div className='relative w-1/2 flex gap-3 justify-end'>
                             <div 
-                                className='w-[300px] h-[500px] rounded-[10px] overflow-hidden flex-shrink-0'
+                                className='absolute left-0 -top-11 w-[300px] h-[500px] rounded-[10px] overflow-hidden flex-shrink-0'
                             >
                                 <img 
                                     src={anuradhapura} 
@@ -104,10 +104,10 @@ export default function Home() {
                                 />
                             </div>
                             <div 
-                                className='w-[300px] h-[500px] rounded-[10px] overflow-hidden flex-shrink-0'
+                                className='mt-20 w-[300px] h-[500px] rounded-[10px] overflow-hidden flex-shrink-0'
                             >
                                 <img 
-                                    src={anuradhapura} 
+                                    src={downSouth} 
                                     alt="place" 
                                     className='h-full w-full object-cover'
                                 />
