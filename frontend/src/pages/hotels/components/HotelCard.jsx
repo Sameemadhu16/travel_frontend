@@ -1,6 +1,8 @@
 import Title from '../../../components/Title';
 import info from '../../../assets/icons/info-circle.svg';
 import star from '../../../assets/icons/star.svg';
+import heart from '../../../assets/icons/Heart.svg';
+import heartFill from '../../../assets/icons/Heart-fill.svg';
 import Tag from './Tag';
 import PropTypes from 'prop-types';
 
@@ -13,18 +15,22 @@ export default function HotelCard({
     amenities,
     type,
     roomLeft,
-    reviews
+    reviews,
+    isFavorite = true,
 }) {
     return (
         <div className='border p-4 rounded-[8px] shadow-sm bg-white'>
             <div className='flex gap-4'>
                 {/* Hotel Image */}
-                <div className='h-[200px] w-[200px] rounded-[8px] overflow-hidden'>
-                <img
-                    src={image}
-                    alt={`${name} image`}
-                    className='h-full w-full object-cover'
-                />
+                <div className='relative h-[200px] w-[200px] rounded-[8px] overflow-hidden'>
+                    <img
+                        src={image}
+                        alt={`${name} image`}
+                        className='h-full w-full object-cover'
+                    />
+                    <div className='absolute top-2 right-2 cursor-pointer'>
+                        <img src={isFavorite ? heartFill: heart } alt="icon" />
+                    </div>
                 </div>
 
                 {/* Hotel Details */}
@@ -82,4 +88,5 @@ HotelCard.propTypes = {
     type: PropTypes.string.isRequired,
     roomLeft: PropTypes.number.isRequired,
     reviews: PropTypes.number.isRequired,
+    isFavorite: PropTypes.bool,
 };
