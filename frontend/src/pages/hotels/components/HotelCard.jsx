@@ -12,12 +12,13 @@ export default function HotelCard({
     image,
     amenities,
     type,
+    roomLeft,
 }) {
     return (
         <div className='border p-4 rounded-[8px] shadow-sm bg-white'>
             <div className='flex gap-4'>
                 {/* Hotel Image */}
-                <div className='h-[150px] w-[150px] rounded-[8px] overflow-hidden'>
+                <div className='h-[200px] w-[200px] rounded-[8px] overflow-hidden'>
                 <img
                     src={image}
                     alt={`${name} image`}
@@ -40,7 +41,7 @@ export default function HotelCard({
                     </div>
 
                     {/* Amenities */}
-                    <div className='flex gap-2 flex-wrap mt-2 text-xs text-gray-600'>
+                    <div className='flex gap-2 items-center flex-wrap mt-2 text-xs text-gray-600'>
                         {amenities?.slice(0, 3).map((item, index) => (
                         <span
                             key={index}
@@ -50,7 +51,7 @@ export default function HotelCard({
                         </span>
                         ))}
                         {amenities?.length > 3 && (
-                        <span className='text-blue-500'>+{amenities.length - 3} more</span>
+                            <span className='cursor-pointer text-blue-500'>+{amenities.length - 3} more</span>
                         )}
                     </div>
 
@@ -62,7 +63,7 @@ export default function HotelCard({
                         </div>
                         <div className='w-1/4'>
                             <Tag
-                                title={'Only 6 left'}
+                                title={`Only ${roomLeft} left`}
                                 color='bg-brand-primary'
                                 textColor='text-white'
                                 icon={info}

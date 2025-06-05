@@ -1,5 +1,13 @@
 import shan from '../assets/hotels/shan.jpg'
 import amaya from '../assets/hotels/amaya.avif'
+import galleFort from '../assets/hotels/galle.jpeg'
+import jetwingYala from '../assets/hotels/jetwing.jpg'
+import acres98 from '../assets/hotels/9 arches.jpg'
+import araliyaGreen from '../assets/hotels/araliya.jpg'
+import trincoBlu from '../assets/hotels/trinco.jpg'
+import anantaya from '../assets/hotels/anataya.jpg'
+import cinnamonRed from '../assets/hotels/cinnomon-red.jpg'
+import mandara from '../assets/hotels/mandara.jpg'
 
 
 
@@ -56,6 +64,7 @@ export const hotelList = [
         image: shan,
         amenities: ["Free Wi-Fi", "Pool", "Spa", "Gym", "Restaurant", "Parking"],
         type: "Luxury",
+        leftRooms: 3,
     },
     {
         id: 2,
@@ -63,9 +72,10 @@ export const hotelList = [
         location: "Kandy",
         rating: 4.5,
         pricePerNight: 5490, // LKR
-        image: amaya, // changed to imported image
+        image: amaya,
         amenities: ["Free Wi-Fi", "Pool", "Mountain View", "Parking"],
         type: "Resort",
+        leftRooms: 5,
     },
     {
         id: 3,
@@ -73,9 +83,10 @@ export const hotelList = [
         location: "Galle",
         rating: 4.6,
         pricePerNight: 11000, // LKR
-        image: "https://example.com/galle-fort.jpg",
+        image: galleFort,
         amenities: ["Free Wi-Fi", "Historic Building", "Restaurant"],
         type: "Boutique",
+        leftRooms: 2,
     },
     {
         id: 4,
@@ -83,9 +94,10 @@ export const hotelList = [
         location: "Yala National Park",
         rating: 4.7,
         pricePerNight: 12400, // LKR
-        image: "https://example.com/jetwing-yala.jpg",
+        image: jetwingYala,
         amenities: ["Beach Access", "Safari Packages", "Pool", "Restaurant"],
         type: "Eco-Resort",
+        leftRooms: 4,
     },
     {
         id: 5,
@@ -93,9 +105,10 @@ export const hotelList = [
         location: "Ella",
         rating: 4.9,
         pricePerNight: 5790, // LKR
-        image: "https://example.com/98acres.jpg",
+        image: acres98,
         amenities: ["Free Wi-Fi", "Spa", "Nature View", "Restaurant"],
         type: "Resort",
+        leftRooms: 5,
     },
     {
         id: 6,
@@ -103,9 +116,10 @@ export const hotelList = [
         location: "Nuwara Eliya",
         rating: 4.3,
         pricePerNight: 7850, // LKR
-        image: "https://example.com/araliya-green.jpg",
+        image: araliyaGreen,
         amenities: ["Heated Pool", "Restaurant", "Garden", "Free Wi-Fi"],
         type: "Hotel",
+        leftRooms: 6,
     },
     {
         id: 7,
@@ -113,9 +127,10 @@ export const hotelList = [
         location: "Trincomalee",
         rating: 4.4,
         pricePerNight: 6000, // LKR
-        image: "https://example.com/trinco-blu.jpg",
+        image: trincoBlu,
         amenities: ["Beach Access", "Free Wi-Fi", "Diving", "Restaurant"],
         type: "Resort",
+        leftRooms: 5,
     },
     {
         id: 8,
@@ -123,9 +138,10 @@ export const hotelList = [
         location: "Chilaw",
         rating: 4.2,
         pricePerNight: 34000, // LKR
-        image: "https://example.com/anantaya.jpg",
+        image: anantaya,
         amenities: ["Pool", "Spa", "Free Wi-Fi", "Lake View"],
         type: "Luxury",
+        leftRooms: 3,
     },
     {
         id: 9,
@@ -133,9 +149,10 @@ export const hotelList = [
         location: "Colombo",
         rating: 4.1,
         pricePerNight: 2900, // LKR
-        image: "https://example.com/cinnamon-red.jpg",
+        image: cinnamonRed,
         amenities: ["Rooftop Pool", "Restaurant", "Free Wi-Fi", "City View"],
         type: "Hotel",
+        leftRooms: 6,
     },
     {
         id: 10,
@@ -143,9 +160,10 @@ export const hotelList = [
         location: "Mirissa",
         rating: 4.0,
         pricePerNight: 13790, // LKR
-        image: "https://example.com/mandara.jpg",
+        image: mandara,
         amenities: ["Beach Access", "Pool", "Free Wi-Fi", "Restaurant"],
         type: "Beach Resort",
+        leftRooms: 2,
     }
 ];
 

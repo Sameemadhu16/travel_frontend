@@ -20,6 +20,7 @@ export default function Search() {
                     image={hotel.image}
                     amenities={hotel.amenities}
                     type={hotel.type}
+                    roomLeft={hotel.leftRooms}
                 />
             </div>
         ))
@@ -55,7 +56,7 @@ export default function Search() {
                     <div className='flex flex-col flex-1'>
                         <div className='flex justify-between items-center'>
                             <Title 
-                                title='Kandy: 27 matches'
+                                title={`Kandy: ${hotelList.length} matches`}
                                 size='text-[16px]'
                             />
                             <CustomSelector
