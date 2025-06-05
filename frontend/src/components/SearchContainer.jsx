@@ -133,7 +133,7 @@ export default function SearchContainer() {
     };
 
     return (
-        <div className='relative h-[60px] p-4 bg-white flex flex-row items-center justify-between shadow-md rounded-[16px]'>
+        <div className='relative h-[60px] p-4 bg-white flex flex-col md:flex-row items-center justify-between shadow-md rounded-[16px]'>
             {/* From location */}
             <div className='flex flex-col items-center cursor-pointer'>
                 <div className='flex gap-1'>

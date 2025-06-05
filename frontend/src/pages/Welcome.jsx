@@ -5,6 +5,7 @@ import downSouth from './../assets/places/3.jpg';
 import hikka from './../assets/places/6.jpg';
 import { useMemo } from 'react';
 import SearchContainer from '../components/SearchContainer';
+import Title from '../components/Title';
 
 const places = [
     {name:'Anuradhapura',image:anuradhapura},
@@ -31,12 +32,30 @@ export default function Welcome() {
         
     },[places]);
 
+    const popularPlaces = useMemo(()=>{
+        return places.map((place,index)=>(
+            <div key={index} className='w-[400px] h-[300px] rounded-[10px] overflow-hidden flex-shrink-0'>
+                <img 
+                    src={place.image} 
+                    alt="place" 
+                    className='h-full w-full object-cover'
+                />
+            </div>
+        ))
+    },[places]);
+
     return (
         <Main>
             <div className='relative flex flex-row gap-2 w-full mt-4'>
                 {placesContainer}
                 <div className='absolute top-60 left-1/2 transform -translate-x-1/2 w-4/6'>
                     <SearchContainer/>
+                </div>
+            </div>
+            <div className='mt-10'>
+                <Title title={'Popular Places'}/>
+                <div className='w-full flex overflow-x-auto gap-3'>
+                    {popularPlaces}
                 </div>
             </div>
         </Main>
