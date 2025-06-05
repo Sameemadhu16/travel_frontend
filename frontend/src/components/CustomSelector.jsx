@@ -1,6 +1,10 @@
 import { useState } from 'react';
 
-export default function CustomSelector({ options = [], placeholder = 'Select an option', onChange }) {
+export default function CustomSelector({ 
+    options = [], 
+    placeholder = 'Select an option', 
+    onChange 
+}) {
     const [selected, setSelected] = useState('');
 
     const handleChange = (e) => {

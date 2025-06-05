@@ -1,3 +1,8 @@
+import shan from '../assets/hotels/shan.jpg'
+import amaya from '../assets/hotels/amaya.avif'
+
+
+
 export const travelPlaces = [
     { id: 1, value: "Colombo" },
     { id: 2, value: "Kandy" },
@@ -47,8 +52,8 @@ export const hotelList = [
         name: "Shangri-La Colombo",
         location: "Colombo",
         rating: 4.8,
-        pricePerNight: 180,
-        image: "https://example.com/shangrila-colombo.jpg",
+        pricePerNight: 12490, // LKR
+        image: shan,
         amenities: ["Free Wi-Fi", "Pool", "Spa", "Gym", "Restaurant", "Parking"],
         type: "Luxury",
     },
@@ -57,8 +62,8 @@ export const hotelList = [
         name: "Amaya Hills",
         location: "Kandy",
         rating: 4.5,
-        pricePerNight: 120,
-        image: "https://example.com/amaya-hills.jpg",
+        pricePerNight: 5490, // LKR
+        image: amaya, // changed to imported image
         amenities: ["Free Wi-Fi", "Pool", "Mountain View", "Parking"],
         type: "Resort",
     },
@@ -67,7 +72,7 @@ export const hotelList = [
         name: "Galle Fort Hotel",
         location: "Galle",
         rating: 4.6,
-        pricePerNight: 140,
+        pricePerNight: 11000, // LKR
         image: "https://example.com/galle-fort.jpg",
         amenities: ["Free Wi-Fi", "Historic Building", "Restaurant"],
         type: "Boutique",
@@ -77,7 +82,7 @@ export const hotelList = [
         name: "Jetwing Yala",
         location: "Yala National Park",
         rating: 4.7,
-        pricePerNight: 200,
+        pricePerNight: 12400, // LKR
         image: "https://example.com/jetwing-yala.jpg",
         amenities: ["Beach Access", "Safari Packages", "Pool", "Restaurant"],
         type: "Eco-Resort",
@@ -87,7 +92,7 @@ export const hotelList = [
         name: "98 Acres Resort & Spa",
         location: "Ella",
         rating: 4.9,
-        pricePerNight: 220,
+        pricePerNight: 5790, // LKR
         image: "https://example.com/98acres.jpg",
         amenities: ["Free Wi-Fi", "Spa", "Nature View", "Restaurant"],
         type: "Resort",
@@ -97,7 +102,7 @@ export const hotelList = [
         name: "Araliya Green Hills Hotel",
         location: "Nuwara Eliya",
         rating: 4.3,
-        pricePerNight: 110,
+        pricePerNight: 7850, // LKR
         image: "https://example.com/araliya-green.jpg",
         amenities: ["Heated Pool", "Restaurant", "Garden", "Free Wi-Fi"],
         type: "Hotel",
@@ -107,7 +112,7 @@ export const hotelList = [
         name: "Trinco Blu by Cinnamon",
         location: "Trincomalee",
         rating: 4.4,
-        pricePerNight: 130,
+        pricePerNight: 6000, // LKR
         image: "https://example.com/trinco-blu.jpg",
         amenities: ["Beach Access", "Free Wi-Fi", "Diving", "Restaurant"],
         type: "Resort",
@@ -117,7 +122,7 @@ export const hotelList = [
         name: "Anantaya Resort & Spa",
         location: "Chilaw",
         rating: 4.2,
-        pricePerNight: 100,
+        pricePerNight: 34000, // LKR
         image: "https://example.com/anantaya.jpg",
         amenities: ["Pool", "Spa", "Free Wi-Fi", "Lake View"],
         type: "Luxury",
@@ -127,7 +132,7 @@ export const hotelList = [
         name: "Cinnamon Red",
         location: "Colombo",
         rating: 4.1,
-        pricePerNight: 90,
+        pricePerNight: 2900, // LKR
         image: "https://example.com/cinnamon-red.jpg",
         amenities: ["Rooftop Pool", "Restaurant", "Free Wi-Fi", "City View"],
         type: "Hotel",
@@ -137,9 +142,45 @@ export const hotelList = [
         name: "Mandara Resort",
         location: "Mirissa",
         rating: 4.0,
-        pricePerNight: 95,
+        pricePerNight: 13790, // LKR
         image: "https://example.com/mandara.jpg",
         amenities: ["Beach Access", "Pool", "Free Wi-Fi", "Restaurant"],
         type: "Beach Resort",
     }
 ];
+
+export const hotelFilterOptions = [
+    { id: 1, value: "Our top picks" },
+    { id: 2, value: "Homes & apartments first" },
+    { id: 3, value: "Price (lowest first)" },
+    { id: 4, value: "Price (highest first)" },
+    { id: 5, value: "Best reviewed and lowest price" },
+    { id: 6, value: "Property rating (high to low)" },
+    { id: 7, value: "Property rating (low to high)" },
+    { id: 8, value: "Property rating and price" },
+    { id: 9, value: "Distance from city centre" },
+    { id: 10, value: "Top reviewed" },
+    { id: 11, value: "Genius discounts first" },
+    { id: 12, value: "Hotels" },
+    { id: 13, value: "Apartments" },
+    { id: 14, value: "Resorts" },
+    { id: 15, value: "Villas" },
+    { id: 16, value: "Hostels" },
+    { id: 17, value: "Guesthouses" },
+    { id: 18, value: "Free cancellation available" },
+    { id: 19, value: "Free Wi-Fi" },
+    { id: 20, value: "Swimming pool" },
+    { id: 21, value: "Free parking" },
+    { id: 22, value: "Family rooms" },
+    { id: 23, value: "Pet-friendly" },
+    { id: 24, value: "Airport shuttle" },
+    { id: 25, value: "Spa and wellness" },
+    { id: 26, value: "Breakfast included" },
+    { id: 27, value: "Pay at hotel" },
+    { id: 28, value: "⭐ 5 star" },
+    { id: 29, value: "⭐ 4 star" },
+    { id: 30, value: "⭐ 3 star" },
+    { id: 31, value: "⭐ 2 star" },
+    { id: 32, value: "⭐ 1 star" }
+];
+

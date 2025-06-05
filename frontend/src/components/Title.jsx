@@ -3,11 +3,12 @@ import PropTypes from 'prop-types'
 export default function Title({
     title,
     size = 'text-[32px]',
-    font = 'font-[500]'
+    font = 'font-[500]',
+    color = 'text-black',
 }) {
     return (
         <div>
-            <h1 className={`text-black ${size} ${font}`}>{title}</h1>
+            <h1 className={`${color} ${size} ${font}`}>{title}</h1>
         </div>
     )
 }

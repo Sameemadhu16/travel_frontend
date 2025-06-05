@@ -1,11 +1,29 @@
+import { useMemo } from 'react'
 import cover from '../../../assets/images/cover.png'
 import CustomSelector from '../../../components/CustomSelector'
 import Main from '../../../components/Main'
 import SearchContainer from '../../../components/SearchContainer'
 import Title from '../../../components/Title'
-import { travelPlaces } from '../../../core/constant'
+import { hotelFilterOptions, hotelList, travelPlaces } from '../../../core/constant'
+import HotelCard from '../components/HotelCard'
 
 export default function Search() {
+
+    const hotelsContainer = useMemo(()=>{
+        return hotelList.map((hotel,index)=>(
+            <div key={index}>
+                <HotelCard
+                    name={hotel.name}
+                    location={hotel.location}
+                    rating={hotel.rating}
+                    pricePerNight={hotel.pricePerNight}
+                    image={hotel.image}
+                    amenities={hotel.amenities}
+                    type={hotel.type}
+                />
+            </div>
+        ))
+    })
 
     const handleSelect = (value) => {
         console.log('Selected:', value);
@@ -35,16 +53,19 @@ export default function Search() {
 
                     {/* for item list */}
                     <div className='flex flex-col flex-1'>
-                        <div className='flex justify-between'>
+                        <div className='flex justify-between items-center'>
                             <Title 
                                 title='Kandy: 27 matches'
                                 size='text-[16px]'
                             />
                             <CustomSelector
-                                options={travelPlaces}
+                                options={hotelFilterOptions}
                                 placeholder="Recommended"
                                 onChange={handleSelect}
                             />
+                        </div>
+                        <div className='flex flex-col gap-2 w-full mt-5'>
+                            {hotelsContainer}
                         </div>
                     </div>
                 </div>

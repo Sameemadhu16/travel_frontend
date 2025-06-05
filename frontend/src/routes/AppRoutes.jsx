@@ -8,7 +8,7 @@ export default function AppRoutes() {
             <Routes>
                 <Route path='/' element={<Welcome/>}/>
                 <Route path='/home' element={<Home/>}/>
-                <Route path='/search' element={<Search/>}/>
+                <Route path='/hotels-search' element={<Search/>}/>
             </Routes>
     )
 }
