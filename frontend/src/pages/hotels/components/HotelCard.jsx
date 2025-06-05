@@ -1,8 +1,8 @@
 import Title from '../../../components/Title';
-import family from '../../../assets/icons/users-group.svg';
 import info from '../../../assets/icons/info-circle.svg';
 import star from '../../../assets/icons/star.svg';
 import Tag from './Tag';
+import PropTypes from 'prop-types';
 
 export default function HotelCard({
     name,
@@ -13,6 +13,7 @@ export default function HotelCard({
     amenities,
     type,
     roomLeft,
+    reviews
 }) {
     return (
         <div className='border p-4 rounded-[8px] shadow-sm bg-white'>
@@ -32,12 +33,6 @@ export default function HotelCard({
                     <div className='flex flex-col gap-1'>
                         <Title title={name} size='text-[18px]' />
                         <p className='text-sm text-gray-500'>{type} • {location}</p>
-                    </div>
-
-                    {/* Tags and rating */}
-                    <div className='flex w-1/2 items-center gap-2 mt-2'>
-                        <Tag title={'Family'} icon={family} />
-                        <Tag title={`${rating}`} icon={star} />
                     </div>
 
                     {/* Amenities */}
@@ -61,7 +56,8 @@ export default function HotelCard({
                             <p className='text-sm text-gray-400'>Starting from</p>
                             <p className='text-lg font-semibold text-brand-primary'>LKR {pricePerNight} / night</p>
                         </div>
-                        <div className='w-1/4'>
+                        <div className='flex gap-2 w-1/2'>
+                            <Tag title={`${rating} (${reviews})`} icon={star} />
                             <Tag
                                 title={`Only ${roomLeft} left`}
                                 color='bg-brand-primary'
@@ -75,3 +71,15 @@ export default function HotelCard({
         </div>
     );
 }
+
+HotelCard.propTypes = {
+    name: PropTypes.string.isRequired,
+    location: PropTypes.string.isRequired,
+    rating: PropTypes.number.isRequired,
+    pricePerNight: PropTypes.number.isRequired,
+    image: PropTypes.string.isRequired,
+    amenities: PropTypes.arrayOf(PropTypes.string),
+    type: PropTypes.string.isRequired,
+    roomLeft: PropTypes.number.isRequired,
+    reviews: PropTypes.number.isRequired,
+};

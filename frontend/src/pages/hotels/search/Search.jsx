@@ -1,13 +1,19 @@
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import cover from '../../../assets/images/cover.png'
 import CustomSelector from '../../../components/CustomSelector'
 import Main from '../../../components/Main'
 import SearchContainer from '../../../components/SearchContainer'
 import Title from '../../../components/Title'
-import { hotelFilterOptions, hotelList, travelPlaces } from '../../../core/constant'
+import { amenities, hotelFilterOptions, hotelList, mealOptions, priceRanges, propertyTypes } from '../../../core/constant'
 import HotelCard from '../components/HotelCard'
+import CheckboxGroup from '../components/CheckboxGroup'
 
 export default function Search() {
+
+    const [selectedPropertyTypes, setSelectedPropertyTypes] = useState([]);
+    const [selectedMeals, setSelectedMeals] = useState([]);
+    const [selectedFacilities, setSelectedFacilities] = useState([]);
+    const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
 
     const hotelsContainer = useMemo(()=>{
         return hotelList.map((hotel,index)=>(
@@ -21,6 +27,7 @@ export default function Search() {
                     amenities={hotel.amenities}
                     type={hotel.type}
                     roomLeft={hotel.leftRooms}
+                    reviews={hotel.reviews}
                 />
             </div>
         ))
@@ -48,8 +55,48 @@ export default function Search() {
                 <div className='flex gap-2 mt-5'>
 
                     {/* for filter */}
-                    <div className='w-1/4'>
-
+                    <div className='w-1/4 h-full overflow-y-auto sticky top-[100px] scrollbar-hide'>
+                        <div className='flex flex-col gap-2 border rounded-[8px]'>
+                            <div className='p-4 border-b'>
+                                <Title
+                                    title='Filter By:'
+                                    size='text-[20px]'
+                                    font='font-[600]'
+                                />
+                            </div>
+                            <div className='p-4 border-b'>
+                                <CheckboxGroup
+                                    title="Property Type"
+                                    options={propertyTypes}
+                                    selected={selectedPropertyTypes}
+                                    onChange={setSelectedPropertyTypes}
+                                />
+                            </div>
+                            <div className='p-4 border-b'>
+                                <CheckboxGroup
+                                    title="Meals"
+                                    options={mealOptions}
+                                    selected={selectedMeals}
+                                    onChange={setSelectedMeals}
+                                />
+                            </div>
+                            <div className='p-4 border-b'>
+                                <CheckboxGroup
+                                    title="Facilities"
+                                    options={amenities}
+                                    selected={selectedFacilities}
+                                    onChange={setSelectedFacilities}
+                                />
+                            </div>
+                            <div className='p-4 border-b'>
+                                <CheckboxGroup
+                                    title="Price range"
+                                    options={priceRanges}
+                                    selected={selectedPriceRanges}
+                                    onChange={setSelectedPriceRanges}
+                                />
+                            </div>
+                        </div>
                     </div>
 
                     {/* for item list */}

@@ -1,5 +1,5 @@
-import React from 'react'
 import Title from '../../../components/Title'
+import PropTypes from 'prop-types'
 
 export default function Tag({
     title,
@@ -20,3 +20,10 @@ export default function Tag({
         </div>
     )
 }
+
+Tag.propTypes = {
+    title: PropTypes.string.isRequired,
+    icon: PropTypes.string,
+    textColor: PropTypes.string,
+    color: PropTypes.string,
+};

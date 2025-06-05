@@ -65,6 +65,7 @@ export const hotelList = [
         amenities: ["Free Wi-Fi", "Pool", "Spa", "Gym", "Restaurant", "Parking"],
         type: "Luxury",
         leftRooms: 3,
+        reviews: 321,
     },
     {
         id: 2,
@@ -76,6 +77,7 @@ export const hotelList = [
         amenities: ["Free Wi-Fi", "Pool", "Mountain View", "Parking"],
         type: "Resort",
         leftRooms: 5,
+        reviews: 210,
     },
     {
         id: 3,
@@ -87,6 +89,7 @@ export const hotelList = [
         amenities: ["Free Wi-Fi", "Historic Building", "Restaurant"],
         type: "Boutique",
         leftRooms: 2,
+        reviews: 98,
     },
     {
         id: 4,
@@ -98,6 +101,7 @@ export const hotelList = [
         amenities: ["Beach Access", "Safari Packages", "Pool", "Restaurant"],
         type: "Eco-Resort",
         leftRooms: 4,
+        reviews: 156,
     },
     {
         id: 5,
@@ -109,6 +113,7 @@ export const hotelList = [
         amenities: ["Free Wi-Fi", "Spa", "Nature View", "Restaurant"],
         type: "Resort",
         leftRooms: 5,
+        reviews: 187,
     },
     {
         id: 6,
@@ -120,6 +125,7 @@ export const hotelList = [
         amenities: ["Heated Pool", "Restaurant", "Garden", "Free Wi-Fi"],
         type: "Hotel",
         leftRooms: 6,
+        reviews: 142,
     },
     {
         id: 7,
@@ -131,6 +137,7 @@ export const hotelList = [
         amenities: ["Beach Access", "Free Wi-Fi", "Diving", "Restaurant"],
         type: "Resort",
         leftRooms: 5,
+        reviews: 120,
     },
     {
         id: 8,
@@ -142,6 +149,7 @@ export const hotelList = [
         amenities: ["Pool", "Spa", "Free Wi-Fi", "Lake View"],
         type: "Luxury",
         leftRooms: 3,
+        reviews: 77,
     },
     {
         id: 9,
@@ -153,6 +161,7 @@ export const hotelList = [
         amenities: ["Rooftop Pool", "Restaurant", "Free Wi-Fi", "City View"],
         type: "Hotel",
         leftRooms: 6,
+        reviews: 201,
     },
     {
         id: 10,
@@ -164,6 +173,7 @@ export const hotelList = [
         amenities: ["Beach Access", "Pool", "Free Wi-Fi", "Restaurant"],
         type: "Beach Resort",
         leftRooms: 2,
+        reviews: 65,
     }
 ];
 
@@ -200,5 +210,41 @@ export const hotelFilterOptions = [
     { id: 30, value: "⭐ 3 star" },
     { id: 31, value: "⭐ 2 star" },
     { id: 32, value: "⭐ 1 star" }
+];
+
+export const propertyTypes = [
+    { id: 1, value: "Hotel" },
+    { id: 2, value: "Resort" },
+    { id: 3, value: "Apartment" },
+    { id: 4, value: "Guest House" },
+    { id: 5, value: "Villa" },
+];
+
+export const amenities = [
+    { id: 1, value: "Free Wi-Fi" },
+    { id: 2, value: "Pool" },
+    { id: 3, value: "Restaurant" },
+    { id: 4, value: "Fitness Center" },
+    { id: 5, value: "Parking" },
+    { id: 6, value: "Spa" },
+    { id: 7, value: "Pet Friendly" },
+    { id: 8, value: "Airport Shuttle" },
+    { id: 9, value: "Beach Access" },
+];
+
+export const priceRanges = [
+    { id: 1, value: "Under $50" },
+    { id: 2, value: "$50 - $100" },
+    { id: 3, value: "$100 - $200" },
+    { id: 4, value: "Over $200" },
+];
+
+export const mealOptions = [
+    { id: 1, value: "Breakfast Included" },
+    { id: 2, value: "Half Board (Breakfast + Dinner)" },
+    { id: 3, value: "Full Board (All Meals)" },
+    { id: 4, value: "All Inclusive" },
+    { id: 5, value: "No Meals" },
+    { id: 6, value: "Room with Kitchenette" }
 ];
 
