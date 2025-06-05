@@ -217,7 +217,7 @@ export default function SearchContainer() {
                     }}
                 >
                     <h1 className='text-gray-400 text-[20px]'>From:</h1>
-                    <h1 className='text-orange-500 text-[20px]'>{selectedFrom}</h1>
+                    <h1 className='text-brand-primary text-[20px]'>{selectedFrom}</h1>
                 </div>
                 <h2 className='text-gray-400 text-[14px]'>Click here to change</h2>
                 {showFromSuggestions && (
@@ -334,7 +334,7 @@ export default function SearchContainer() {
 
             {/* Search button */}
             <div className='flex flex-col items-center cursor-pointer'>
-                <div className='bg-orange-400 hover:bg-orange-500 transition-colors text-white px-6 py-2 rounded-lg font-medium'>
+                <div className='bg-brand-primary hover:bg-opacity-95 transition-colors text-white px-6 py-2 rounded-lg font-medium'>
                     Search
                 </div>
             </div>
@@ -352,7 +352,7 @@ export default function SearchContainer() {
                         </div>
                         <button 
                             onClick={clearDates}
-                            className="text-sm text-orange-500 hover:text-orange-600"
+                            className="text-sm text-brand-primary hover:text-brand-primary-dark"
                         >
                             Clear
                         </button>
@@ -363,13 +363,13 @@ export default function SearchContainer() {
                         <div className="flex justify-between items-center text-sm">
                             <div>
                                 <span className="text-gray-500">Start: </span>
-                                <span className={`${selectingDate === 'start' ? 'text-orange-500 font-medium' : 'text-gray-700'}`}>
+                                <span className={`${selectingDate === 'start' ? 'text-brand-primary font-medium' : 'text-gray-700'}`}>
                                     {formatDate(startDate)}
                                 </span>
                             </div>
                             <div>
                                 <span className="text-gray-500">End: </span>
-                                <span className={`${selectingDate === 'end' ? 'text-orange-500 font-medium' : 'text-gray-700'}`}>
+                                <span className={`${selectingDate === 'end' ? 'text-brand-primary font-medium' : 'text-gray-700'}`}>
                                     {formatDate(endDate)}
                                 </span>
                             </div>
@@ -415,8 +415,8 @@ export default function SearchContainer() {
                                         className={`
                                             w-full h-full rounded text-sm font-medium transition-colors
                                             ${isDisabled(date) ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-gray-100 cursor-pointer'}
-                                            ${isStartDate(date) ? 'bg-orange-400 text-white hover:bg-orange-500' : ''}
-                                            ${isEndDate(date) ? 'bg-orange-400 text-white hover:bg-orange-500' : ''}
+                                            ${isStartDate(date) ? 'bg-brand-primary text-white hover:bg-brand-primary-dark' : ''}
+                                            ${isEndDate(date) ? 'bg-brand-primary text-white hover:bg-brand-primary-dark' : ''}
                                             ${isInRange(date) ? 'bg-orange-100 text-orange-600' : ''}
                                             ${isToday(date) && !isStartDate(date) && !isEndDate(date) && !isInRange(date) ? 'bg-blue-100 text-blue-600' : ''}
                                         `}
@@ -439,7 +439,7 @@ export default function SearchContainer() {
                         {endDate && (
                             <button
                                 onClick={() => setShowDatePicker(false)}
-                                className="px-4 py-2 bg-orange-400 text-white rounded hover:bg-orange-500"
+                                className="px-4 py-2 bg-brand-primary text-white rounded hover:bg-brand-primary-dark"
                             >
                                 Done
                             </button>

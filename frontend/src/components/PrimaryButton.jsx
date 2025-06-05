@@ -26,7 +26,7 @@ export default function PrimaryButton({
     return (
         <button
             type={type}
-            className={`w-full text-[20px] px-4 py-2 rounded-md hover:opacity-95 bg-orange-400 ${className}`}
+            className={`w-full text-[20px] px-4 py-2 rounded-md hover:opacity-95 bg-brand-primary ${className}`}
             style={{
                 color: isDisabled ? "#a9a9a9" : textColor, 
                 cursor: isDisabled ? "not-allowed" : "pointer",
