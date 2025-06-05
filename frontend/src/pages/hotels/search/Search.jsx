@@ -19,11 +19,12 @@ export default function Search() {
         return hotelList.map((hotel,index)=>(
             <div key={index}>
                 <HotelCard
+                    id={hotel.id}
                     name={hotel.name}
                     location={hotel.location}
                     rating={hotel.rating}
                     pricePerNight={hotel.pricePerNight}
-                    image={hotel.image}
+                    images={hotel.images}
                     amenities={hotel.amenities}
                     type={hotel.type}
                     roomLeft={hotel.leftRooms}

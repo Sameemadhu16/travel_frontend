@@ -8,8 +8,11 @@ import trincoBlu from '../assets/hotels/trinco.jpg'
 import anantaya from '../assets/hotels/anataya.jpg'
 import cinnamonRed from '../assets/hotels/cinnomon-red.jpg'
 import mandara from '../assets/hotels/mandara.jpg'
+import { navigateTo } from './navigateHelper'
 
-
+export const handleNavigate = (path) => {
+    navigateTo(path);
+}
 
 export const travelPlaces = [
     { id: 1, value: "Colombo" },
@@ -54,6 +57,17 @@ export const travelPlaces = [
     { id: 40, value: "Beruwala" }
 ];
 
+export const hotelImages = [
+    shan, amaya, galleFort, jetwingYala, acres98,
+    araliyaGreen, trincoBlu, anantaya, cinnamonRed, mandara
+];
+
+// Helper to get random images for each hotel
+function getRandomImages(imagesArr, count = 3) {
+    const shuffled = [...imagesArr].sort(() => 0.5 - Math.random());
+    return shuffled.slice(0, count);
+}
+
 export const hotelList = [
     {
         id: 1,
@@ -61,7 +75,7 @@ export const hotelList = [
         location: "Colombo",
         rating: 4.8,
         pricePerNight: 12490, // LKR
-        image: shan,
+        images: getRandomImages(hotelImages),
         amenities: ["Free Wi-Fi", "Pool", "Spa", "Gym", "Restaurant", "Parking"],
         type: "Luxury",
         leftRooms: 3,
@@ -73,7 +87,7 @@ export const hotelList = [
         location: "Kandy",
         rating: 4.5,
         pricePerNight: 5490, // LKR
-        image: amaya,
+        images: getRandomImages(hotelImages),
         amenities: ["Free Wi-Fi", "Pool", "Mountain View", "Parking"],
         type: "Resort",
         leftRooms: 5,
@@ -85,7 +99,7 @@ export const hotelList = [
         location: "Galle",
         rating: 4.6,
         pricePerNight: 11000, // LKR
-        image: galleFort,
+        images: getRandomImages(hotelImages),
         amenities: ["Free Wi-Fi", "Historic Building", "Restaurant"],
         type: "Boutique",
         leftRooms: 2,
@@ -97,7 +111,7 @@ export const hotelList = [
         location: "Yala National Park",
         rating: 4.7,
         pricePerNight: 12400, // LKR
-        image: jetwingYala,
+        images: getRandomImages(hotelImages),
         amenities: ["Beach Access", "Safari Packages", "Pool", "Restaurant"],
         type: "Eco-Resort",
         leftRooms: 4,
@@ -109,7 +123,7 @@ export const hotelList = [
         location: "Ella",
         rating: 4.9,
         pricePerNight: 5790, // LKR
-        image: acres98,
+        images: getRandomImages(hotelImages),
         amenities: ["Free Wi-Fi", "Spa", "Nature View", "Restaurant"],
         type: "Resort",
         leftRooms: 5,
@@ -121,7 +135,7 @@ export const hotelList = [
         location: "Nuwara Eliya",
         rating: 4.3,
         pricePerNight: 7850, // LKR
-        image: araliyaGreen,
+        images: getRandomImages(hotelImages),
         amenities: ["Heated Pool", "Restaurant", "Garden", "Free Wi-Fi"],
         type: "Hotel",
         leftRooms: 6,
@@ -133,7 +147,7 @@ export const hotelList = [
         location: "Trincomalee",
         rating: 4.4,
         pricePerNight: 6000, // LKR
-        image: trincoBlu,
+        images: getRandomImages(hotelImages),
         amenities: ["Beach Access", "Free Wi-Fi", "Diving", "Restaurant"],
         type: "Resort",
         leftRooms: 5,
@@ -145,7 +159,7 @@ export const hotelList = [
         location: "Chilaw",
         rating: 4.2,
         pricePerNight: 34000, // LKR
-        image: anantaya,
+        images: getRandomImages(hotelImages),
         amenities: ["Pool", "Spa", "Free Wi-Fi", "Lake View"],
         type: "Luxury",
         leftRooms: 3,
@@ -157,7 +171,7 @@ export const hotelList = [
         location: "Colombo",
         rating: 4.1,
         pricePerNight: 2900, // LKR
-        image: cinnamonRed,
+        images: getRandomImages(hotelImages),
         amenities: ["Rooftop Pool", "Restaurant", "Free Wi-Fi", "City View"],
         type: "Hotel",
         leftRooms: 6,
@@ -169,7 +183,7 @@ export const hotelList = [
         location: "Mirissa",
         rating: 4.0,
         pricePerNight: 13790, // LKR
-        image: mandara,
+        images: getRandomImages(hotelImages),
         amenities: ["Beach Access", "Pool", "Free Wi-Fi", "Restaurant"],
         type: "Beach Resort",
         leftRooms: 2,

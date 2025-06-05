@@ -5,13 +5,15 @@ import heart from '../../../assets/icons/Heart.svg';
 import heartFill from '../../../assets/icons/Heart-fill.svg';
 import Tag from './Tag';
 import PropTypes from 'prop-types';
+import { handleNavigate } from '../../../core/constant';
 
 export default function HotelCard({
+    id,
     name,
     location,
     rating,
     pricePerNight,
-    image,
+    images,
     amenities,
     type,
     roomLeft,
@@ -19,12 +21,14 @@ export default function HotelCard({
     isFavorite = true,
 }) {
     return (
-        <div className='border p-4 rounded-[8px] shadow-sm bg-white'>
+        <div 
+            onClick={() => handleNavigate(`/hotel?id=${id}`)}
+            className='border p-4 rounded-[8px] shadow-sm bg-white'>
             <div className='flex gap-4'>
                 {/* Hotel Image */}
-                <div className='relative h-[200px] w-[200px] rounded-[8px] overflow-hidden'>
+                <div className='relative cursor-pointer h-[200px] w-[200px] rounded-[8px] overflow-hidden'>
                     <img
-                        src={image}
+                        src={images && images.length > 0 ? images[0] : ''}
                         alt={`${name} image`}
                         className='h-full w-full object-cover'
                     />
@@ -83,7 +87,7 @@ HotelCard.propTypes = {
     location: PropTypes.string.isRequired,
     rating: PropTypes.number.isRequired,
     pricePerNight: PropTypes.number.isRequired,
-    image: PropTypes.string.isRequired,
+    images: PropTypes.arrayOf(PropTypes.string).isRequired,
     amenities: PropTypes.arrayOf(PropTypes.string),
     type: PropTypes.string.isRequired,
     roomLeft: PropTypes.number.isRequired,
