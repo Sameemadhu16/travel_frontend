@@ -1,23 +1,33 @@
-import React, { useState, useRef, useEffect } from 'react';
+import { useState, useRef, useEffect } from 'react';
+import { travelPlaces } from '../core/constant';
 
 export default function SearchContainer() {
     const [startDate, setStartDate] = useState(new Date());
-    const [endDate, setEndDate] = useState(null);
+    const [endDate, setEndDate] = useState(() => {
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        return tomorrow;
+    });
     const [showDatePicker, setShowDatePicker] = useState(false);
     const [currentMonth, setCurrentMonth] = useState(new Date());
     const [selectingDate, setSelectingDate] = useState('start'); // 'start' or 'end'
     const datePickerRef = useRef(null);
+    const [destinationInput, setDestinationInput] = useState('');
+    const [showSuggestions, setShowSuggestions] = useState(false);
+    const [filteredPlaces, setFilteredPlaces] = useState([]);
+    const destinationRef = useRef(null);
+    const [selectedDestination, setSelectedDestination] = useState('');
+    const sriLankaTravelPlaces = travelPlaces;
 
-    const handleCalenderPicker = () => {
-        setShowDatePicker(!showDatePicker);
-        setSelectingDate('start'); // Always start with start date
-    };
-
-    // Close date picker when clicking outside
+    // Close date picker and suggestions when clicking outside
     useEffect(() => {
         const handleClickOutside = (event) => {
-            if (datePickerRef.current && !datePickerRef.current.contains(event.target)) {
+            if (datePickerRef.current && !datePickerRef.current.contains(event.target) &&
+                !event.target.closest('.dates-trigger')) {
                 setShowDatePicker(false);
+            }
+            if (destinationRef.current && !destinationRef.current.contains(event.target)) {
+                setShowSuggestions(false);
             }
         };
 
@@ -26,6 +36,33 @@ export default function SearchContainer() {
             document.removeEventListener('mousedown', handleClickOutside);
         };
     }, []);
+
+    // Filter places based on input
+    useEffect(() => {
+        if (destinationInput.trim() === '') {
+            setFilteredPlaces([]);
+            return;
+        }
+
+        const filtered = sriLankaTravelPlaces
+            .filter(place => 
+                place.value.toLowerCase().includes(destinationInput.toLowerCase())
+            )
+            .slice(0, 5); // Show only top 5 matches
+
+        setFilteredPlaces(filtered);
+    }, [destinationInput]);
+
+    const handleDestinationChange = (e) => {
+        setDestinationInput(e.target.value);
+        setShowSuggestions(true);
+    };
+
+    const selectDestination = (place) => {
+        setSelectedDestination(place);
+        setDestinationInput(place);
+        setShowSuggestions(false);
+    };
 
     const formatDate = (date) => {
         if (!date) return 'Select date';
@@ -146,15 +183,71 @@ export default function SearchContainer() {
             <div className='h-[50px] w-[2px] bg-gray-600 shrink-0'></div>
 
             {/* Destination */}
-            <div className='flex flex-col items-center cursor-pointer'>
-                <h1 className='text-black text-[20px]'>Destination</h1>
-                <h2 className='text-gray-400 text-[14px]'>Search where you want to go</h2>
+            <div ref={destinationRef} className='relative flex flex-col items-center cursor-pointer'>
+                {/* Show selected destination or placeholder */}
+                <div
+                    className='flex flex-col items-center'
+                    onClick={() => {
+                        setDestinationInput(selectedDestination); // Pre-fill input with selected destination
+                        setShowSuggestions(true);
+                        setTimeout(() => {
+                            document.getElementById('destinationInput')?.focus();
+                        }, 0);
+                    }}
+                >
+                    <h1 className='text-black text-[20px]'>
+                        {'Destination'}
+                    </h1>
+                    <h2 className='text-gray-400 text-[14px]'>
+                        {selectedDestination ? selectedDestination : 'Search where you want to go'}
+                    </h2>
+                </div>
+
+                {/* Input field that appears only when searching */}
+                {showSuggestions && (
+                    <div className='absolute top-full mt-2 z-10 w-[250px] bg-white shadow-lg rounded-lg p-2'>
+                        <input
+                            id="destinationInput"
+                            type="text"
+                            value={destinationInput}
+                            onChange={handleDestinationChange}
+                            placeholder="Search destinations..."
+                            className='w-full p-2 border rounded focus:outline-none focus:ring-2 focus:ring-orange-300'
+                            autoFocus
+                        />
+
+                        {/* Suggestions dropdown */}
+                        {filteredPlaces.length > 0 && (
+                            <ul className='mt-2 border-t'>
+                                {filteredPlaces.map(place => (
+                                    <li
+                                        key={place.id}
+                                        className='p-2 hover:bg-orange-50 cursor-pointer'
+                                        onClick={() => selectDestination(place.value)}
+                                    >
+                                        {place.value}
+                                    </li>
+                                ))}
+                            </ul>
+                        )}
+
+                        {/* No results message */}
+                        {destinationInput && filteredPlaces.length === 0 && (
+                            <div className='p-2 text-gray-500 text-sm'>
+                                No destinations found
+                            </div>
+                        )}
+                    </div>
+                )}
             </div>
 
             <div className='h-[50px] w-[2px] bg-gray-600 shrink-0'></div>
 
             {/* Date picker */}
-            <div onClick={handleCalenderPicker} className='flex flex-col items-center cursor-pointer relative'>
+            <div
+                onClick={() => setShowDatePicker((prev) => !prev)}
+                className='flex flex-col items-center cursor-pointer relative dates-trigger'
+            >
                 <div className='flex items-center gap-1'>
                     <span className='text-black text-[20px]'>📅</span>
                     <h1 className='text-black text-[20px]'>Dates</h1>
@@ -175,7 +268,7 @@ export default function SearchContainer() {
 
             {/* Custom Date Picker */}
             {showDatePicker && (
-                <div 
+                <div
                     ref={datePickerRef}
                     className="absolute top-[70px] right-1 z-20 bg-white shadow-lg border rounded-lg p-4 min-w-[320px]"
                 >
