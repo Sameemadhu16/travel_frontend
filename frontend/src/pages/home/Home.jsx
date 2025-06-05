@@ -3,9 +3,10 @@ import adamasPeak from '../../assets/places/2.jpg';
 import downSouth from '../../assets/places/3.jpg';
 import hikka from '../../assets/places/6.jpg';
 import Main from '../../components/Main';
-import { useMemo } from 'react';
+import { useMemo, useRef } from 'react';
 import SearchContainer from '../../components/SearchContainer';
 import Title from '../../components/Title';
+import PrimaryButton from '../../components/PrimaryButton';
 
 const places = [
     {name:'Anuradhapura',image:anuradhapura},
@@ -15,6 +16,8 @@ const places = [
 ];
 
 export default function Home() {
+
+    const containerRef = useRef();
 
     const placesContainer = useMemo(()=>{
         return places.map((place,index)=>(
@@ -31,10 +34,20 @@ export default function Home() {
             ))
         
     },[places]);
+
+    const handleImageClick = (index) => {
+        const container = containerRef.current;
+        const scrollAmount = container.offsetWidth * index;
+        container.scrollTo({ left: scrollAmount, behavior: 'smooth' });
+    };
     
     const popularPlaces = useMemo(()=>{
         return places.map((place,index)=>(
-            <div key={index} className='w-[400px] h-[300px] rounded-[10px] overflow-hidden flex-shrink-0'>
+            <div 
+                key={index} 
+                className='w-[400px] h-[300px] rounded-[10px] overflow-hidden flex-shrink-0 cursor-pointer'
+                onClick={() => handleImageClick}
+            >
                 <img 
                     src={place.image} 
                     alt="place" 
@@ -45,19 +58,65 @@ export default function Home() {
     },[places]);
 
     return (
-        <Main>
-            <div className='relative flex flex-row gap-2 w-full mt-4'>
-                {placesContainer}
-                <div className='absolute top-60 left-1/2 transform -translate-x-1/2 w-4/6'>
-                    <SearchContainer/>
+        <>
+            <Main>
+                <div className='relative flex flex-row gap-2 w-full mt-4'>
+                    {placesContainer}
+                    <div className='absolute top-60 left-1/2 transform -translate-x-1/2 w-4/6'>
+                        <SearchContainer/>
+                    </div>
                 </div>
-            </div>
-            <div className='mt-10'>
-                <Title title={'Popular Places'}/>
-                <div className='w-full flex overflow-x-auto gap-3'>
-                    {popularPlaces}
+                <div className='mt-10'>
+                    <Title title={'Popular Places'}/>
+                    <div 
+                        ref={containerRef}
+                        className='flex overflow-x-scroll scrollbar-hide space-x-4 w-full'>
+                        {popularPlaces}
+                    </div>
                 </div>
+            </Main>
+            <div className='w-full h-[700px] bg-orange-100 mt-10 flex items-center'>
+                <Main>
+                    <div className='flex flex-row justify-between'>
+                        <div className='w-1/2'>
+                            <Title 
+                                title='Plan Your Perfect Trip with AI'
+                                size='text-[60px]'
+                                font='font-[600]'
+                            />
+                            <Title 
+                                title='Discover personalized itineraries, real-time recommendations, and hassle-free travel planning powered by artificial intelligence'
+                                size='text-[24px]'
+                                font='font-[400]'
+                            />
+                            <div className='w-1/2 mt-6'>
+                                <PrimaryButton text='Create AI Trip'/>
+                            </div>
+                        </div>
+                        <div className='w-1/2 flex gap-3 justify-end'>
+                            <div 
+                                className='w-[300px] h-[500px] rounded-[10px] overflow-hidden flex-shrink-0'
+                            >
+                                <img 
+                                    src={anuradhapura} 
+                                    alt="place" 
+                                    className='h-full w-full object-cover'
+                                />
+                            </div>
+                            <div 
+                                className='w-[300px] h-[500px] rounded-[10px] overflow-hidden flex-shrink-0'
+                            >
+                                <img 
+                                    src={anuradhapura} 
+                                    alt="place" 
+                                    className='h-full w-full object-cover'
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </Main>
             </div>
-        </Main>
+        </>
+        
     )
 }
