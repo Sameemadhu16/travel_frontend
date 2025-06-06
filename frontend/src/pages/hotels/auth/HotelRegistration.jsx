@@ -1,10 +1,14 @@
+import { useState } from "react";
 import CustomSelector from "../../../components/CustomSelector";
+import ImageUploader from "../../../components/ImageUploader";
 import InputField from "../../../components/InputField";
 import Main from "../../../components/Main";
 import Title from "../../../components/Title";
 import { provinces , districts, cities } from "../../../core/location";
 
 export default function HotelRegistration() {
+
+    const [images,setImages] = useState([]);
 
     const  handleChange = () => {
 
@@ -78,13 +82,11 @@ export default function HotelRegistration() {
                 </div>
 
                 {/* Set Address */}
-                <div className="flex items-center flex-col gap-2 w-full mt-10">
-                    <div className="w-full flex items-start">
-                        <Title
-                            title="Set Address:"
-                            size="text-[24px]"
-                        />
-                    </div>
+                <div className="flex flex-col gap-2 w-full mt-10">
+                    <Title
+                        title="Set Address:"
+                        size="text-[24px]"
+                    />
                     <div className="flex w-full gap-2">
                         <div className="w-1/2">
                             <InputField
@@ -136,11 +138,26 @@ export default function HotelRegistration() {
                 </div>
 
                 {/* Business Info */}
-                <div className="flex items-center flex-col gap-2 w-full mt-10">
-                    <div className="w-full flex items-start">
-                        <Title
-                            title="Business Info:"
-                            size="text-[24px]"
+                <div className="flex flex-col gap-2 w-full mt-10">
+                    <Title
+                        title="Business Info:"
+                        size="text-[24px]"
+                    />
+                    <div className="w-1/2">
+                        <InputField
+                            label='Business Registration No'
+                            type = 'text'
+                            value = ''
+                            onChange={handleChange}
+                            placeholder = ''
+                            error = ''
+                        />
+                    </div>
+                    <div className="w-1/2 mt-2">
+                        <ImageUploader
+                            label={'Business Registration License Photo'}
+                            images={images}
+                            setImages={setImages}
                         />
                     </div>
                 </div>
