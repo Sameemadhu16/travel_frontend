@@ -5,6 +5,9 @@ import InputField from "../../../components/InputField";
 import Main from "../../../components/Main";
 import Title from "../../../components/Title";
 import { provinces , districts, cities } from "../../../core/location";
+import { amenities, propertyTypes } from "../../../core/constant";
+import InputArea from "../../../components/InputArea";
+import PrimaryButton from "../../../components/PrimaryButton";
 
 export default function HotelRegistration() {
 
@@ -14,13 +17,18 @@ export default function HotelRegistration() {
 
     }
 
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        console.log('check');
+    }
+
     const handleSelect = (value) => {
         console.log('Selected:', value);
     };
 
     return (
         <Main>
-            <div className="flex w-full flex-col items-center">
+            <form onSubmit={handleSubmit} className="flex w-full flex-col items-center">
                 <Title
                     title="Hotel Registration"
                     size="text-[48px]"
@@ -90,7 +98,7 @@ export default function HotelRegistration() {
                     <div className="flex w-full gap-2">
                         <div className="w-1/2">
                             <InputField
-                                label='Address 1st line'
+                                label='House No. & Street'
                                 type = 'text'
                                 value = ''
                                 onChange={handleChange}
@@ -99,22 +107,20 @@ export default function HotelRegistration() {
                             />
                         </div>
                         <div className="w-1/2">
-                            <InputField
-                                label='Address 2nd line'
-                                type = 'text'
-                                value = ''
-                                onChange={handleChange}
-                                placeholder = ''
-                                error = ''
+                            <CustomSelector
+                                label="City"
+                                options={cities}
+                                placeholder="Colombo 01"
+                                onChange={handleSelect}
                             />
                         </div>
                     </div>
                     <div className="flex w-full gap-2">
                         <div className="w-1/2">
                             <CustomSelector
-                                label="City"
-                                options={cities}
-                                placeholder="Colombo 01"
+                                label="District"
+                                options={districts}
+                                placeholder="Colombo"
                                 onChange={handleSelect}
                             />
                         </div>
@@ -126,14 +132,6 @@ export default function HotelRegistration() {
                                 onChange={handleSelect}
                             />
                         </div>
-                    </div>
-                    <div className="w-1/2">
-                        <CustomSelector
-                            label="District"
-                            options={districts}
-                            placeholder="Colombo"
-                            onChange={handleSelect}
-                        />
                     </div>
                 </div>
 
@@ -161,7 +159,50 @@ export default function HotelRegistration() {
                         />
                     </div>
                 </div>
-            </div>
+
+                {/* Hotel Info */}
+                <div className="flex flex-col gap-2 w-full mt-10">
+                    <Title
+                        title="Hotel Info:"
+                        size="text-[24px]"
+                    />
+                    <div className="w-1/2">
+                        <CustomSelector
+                            label="Hotel Type"
+                            options={propertyTypes}
+                            placeholder="Hotel"
+                            onChange={handleSelect}
+                        />
+                    </div>
+                    <div className="w-1/2">
+                        <InputArea
+                            label='Description'
+                            type = 'text'
+                            value = ''
+                            onChange={handleChange}
+                            placeholder = ''
+                            error = ''
+                            warningHeading={'Important Note: Customize the **Heading** Text Here'}
+                        />
+                    </div>
+                    <div className="w-1/2 mt-2">
+                        <ImageUploader
+                            label={'Hotel Images'}
+                            images={images}
+                            setImages={setImages}
+                            multiple={true}
+                        />
+                    </div>
+                </div>
+                <div className="w-full flex">
+                    <div className="w-1/4 mt-5">
+                        <PrimaryButton
+                            text="Register"
+                            type={'submit'}
+                        />
+                    </div>
+                </div>
+            </form>
         </Main>
     )
 }

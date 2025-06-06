@@ -30,7 +30,7 @@ const InputField = ({
     }
 
     return (
-        <div className="text-start mt-2">
+        <div className="text-start ">
             <label className="font-medium text-[16px]">
                 {label}
             </label>

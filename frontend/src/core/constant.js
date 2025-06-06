@@ -242,6 +242,7 @@ export const propertyTypes = [
     { id: 3, value: "Apartment" },
     { id: 4, value: "Guest House" },
     { id: 5, value: "Villa" },
+    { id: 6, value: "Airbnb" },
 ];
 
 export const amenities = [
