@@ -22,7 +22,7 @@ const ImageUploader = ({
     const [imageError, setImageError] = useState('');
 
     const handleFiles = async (files) => {
-        const validationError = validateImageUpload(files, 1, 5); // Limit: 1 file, max 5 MB
+        const validationError = validateImageUpload(files, 5, 5); // Limit: 1 file, max 5 MB
         if (validationError) {
             setImageError(validationError);
             return;
