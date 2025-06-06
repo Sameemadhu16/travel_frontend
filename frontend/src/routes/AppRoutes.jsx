@@ -3,6 +3,7 @@ import Welcome from '../pages/Welcome'
 import Search from '../pages/hotels/search/Search'
 import Home from '../pages/home/Home'
 import Hotel from '../pages/hotels/Hotel'
+import HotelRegistration from '../pages/hotels/auth/HotelRegistration'
 
 export default function AppRoutes() {
     return (
@@ -11,6 +12,9 @@ export default function AppRoutes() {
                 <Route path='/home' element={<Home/>}/>
                 <Route path='/hotels-search' element={<Search/>}/>
                 <Route path='/hotel/:id' element={<Hotel/>}/>
+
+                {/* hotels*/}
+                <Route path='/hotel-registration' element={<HotelRegistration/>}/>
             </Routes>
     )
 }

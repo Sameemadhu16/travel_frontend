@@ -1,7 +1,11 @@
 import { useState } from 'react';
+import PropTypes from 'prop-types';
+
+// PropTypes style reference: see InputField.jsx for detailed prop documentation
 
 export default function CustomSelector({ 
     options = [], 
+    label = '',
     placeholder = 'Select an option', 
     onChange 
 }) {
@@ -15,11 +19,18 @@ export default function CustomSelector({
     };
 
     return (
-        <div className="w-full max-w-sm">
+        <div className="w-full">
+            {
+                label.length > 0 && (
+                        <label className="font-medium text-[16px]">
+                            {label}
+                        </label>
+                )
+            }
             <select
                 value={selected}
                 onChange={handleChange}
-                className="w-full p-2 cursor-pointer border border-gray-300 rounded-md text-gray-700 bg-white focus:outline-none focus:ring-2 focus:ring-orange-400"
+                className="border-2 w-full p-2 cursor-pointer rounded-md text-gray-700 bg-white focus:border-brand-primary focus:outline-none"
             >
                 <option className='cursor-pointer' value="" disabled>
                 {placeholder}
@@ -33,3 +44,16 @@ export default function CustomSelector({
         </div>
     );
 }
+
+// PropTypes reference: see InputField for style
+CustomSelector.propTypes = {
+    options: PropTypes.arrayOf(
+        PropTypes.shape({
+            id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+            value: PropTypes.string.isRequired,
+        })
+    ),
+    label: PropTypes.string,
+    placeholder: PropTypes.string,
+    onChange: PropTypes.func,
+};
