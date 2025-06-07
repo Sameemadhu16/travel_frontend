@@ -9,6 +9,7 @@ import anantaya from '../assets/hotels/anataya.jpg'
 import cinnamonRed from '../assets/hotels/cinnomon-red.jpg'
 import mandara from '../assets/hotels/mandara.jpg'
 import { navigateTo } from './navigateHelper'
+import { FaWifi, FaSwimmingPool, FaUtensils, FaDumbbell, FaParking, FaSpa, FaDog, FaShuttleVan, FaUmbrellaBeach } from "react-icons/fa";
 
 export const handleNavigate = (path) => {
     navigateTo(path);
@@ -246,15 +247,15 @@ export const propertyTypes = [
 ];
 
 export const amenities = [
-    { id: 1, value: "Free Wi-Fi" },
-    { id: 2, value: "Pool" },
-    { id: 3, value: "Restaurant" },
-    { id: 4, value: "Fitness Center" },
-    { id: 5, value: "Parking" },
-    { id: 6, value: "Spa" },
-    { id: 7, value: "Pet Friendly" },
-    { id: 8, value: "Airport Shuttle" },
-    { id: 9, value: "Beach Access" },
+    { id: 1, value: "Free Wi-Fi", icon: FaWifi },
+    { id: 2, value: "Pool", icon: FaSwimmingPool },
+    { id: 3, value: "Restaurant", icon: FaUtensils },
+    { id: 4, value: "Fitness Center", icon: FaDumbbell },
+    { id: 5, value: "Parking", icon: FaParking },
+    { id: 6, value: "Spa", icon: FaSpa },
+    { id: 7, value: "Pet Friendly", icon: FaDog },
+    { id: 8, value: "Airport Shuttle", icon: FaShuttleVan },
+    { id: 9, value: "Beach Access", icon: FaUmbrellaBeach },
 ];
 
 export const priceRanges = [

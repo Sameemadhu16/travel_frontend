@@ -36,13 +36,14 @@ const InputField = ({
             </label>
             <div className="relative w-full">
                 <input
-                type={visibility ? "text" : type} // Toggle between password and text
-                className={`border-2 w-full py-2 px-4 rounded-md ${
-                    error ? 'border-danger' : 'border-b-2'
-                } focus:border-brand-primary focus:outline-none`}
-                placeholder={placeholder}
-                value={value}
-                onChange={onChange}
+                    type={visibility ? "text" : type}
+                    className={`border-2 w-full py-2 px-4 rounded-md ${
+                        error ? 'border-danger' : 'border-b-2'
+                    } focus:border-brand-primary focus:outline-none`}
+                    placeholder={placeholder}
+                    value={value}
+                    onChange={onChange}
+                    min={0}
                 />
                 {icon && type === 'password' && (
                 <div className="absolute inset-y-0 right-3 flex items-center cursor-pointer" onClick={toggleVisibility}>

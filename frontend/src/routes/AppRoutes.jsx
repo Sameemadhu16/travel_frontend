@@ -2,8 +2,9 @@ import { Route, Routes } from 'react-router-dom'
 import Welcome from '../pages/Welcome'
 import Search from '../pages/hotels/search/Search'
 import Home from '../pages/home/Home'
-import Hotel from '../pages/hotels/Hotel'
+import Hotel from '../pages/hotels/Details/Hotel'
 import HotelRegistration from '../pages/hotels/auth/HotelRegistration'
+import RoomsAdd from '../pages/hotels/Rooms/RoomsAdd'
 
 export default function AppRoutes() {
     return (
@@ -15,6 +16,9 @@ export default function AppRoutes() {
 
                 {/* hotels*/}
                 <Route path='/hotel-registration' element={<HotelRegistration/>}/>
+
+                {/* rooms */}
+                <Route path='/rooms-add' element={<RoomsAdd/>}/>
             </Routes>
     )
 }
