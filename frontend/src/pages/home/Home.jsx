@@ -95,7 +95,7 @@ export default function Home() {
                         </div>
                         <div className='relative w-1/2 flex gap-3 justify-end'>
                             <div 
-                                className='absolute left-0 -top-11 w-[300px] h-[500px] rounded-[10px] overflow-hidden flex-shrink-0'
+                                className='-mt-11 w-[300px] h-[500px] rounded-[10px] overflow-hidden flex-shrink-0 z-10'
                             >
                                 <img 
                                     src={anuradhapura} 
