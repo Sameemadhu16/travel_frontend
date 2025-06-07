@@ -4,14 +4,18 @@ import { useEffect, useState } from 'react';
 import Main from '../../../components/Main';
 import Title from '../../../components/Title';
 import Breadcrumb from '../../../components/Breadcrumb';
+import { roomList } from '../../../core/rooms';
 
 export default function Hotel() {
     const [hotel,setHotel] = useState({});
+    const [rooms,setRooms]= useState([]);
     const {id} = useParams();
     
     useEffect(()=>{
         const matchHotel = hotelList.find((hotel) => hotel.id.toString() === id);
+        const matchRooms = roomList.find((room)=>room.hotelId.toString() === id);
         setHotel(matchHotel);
+        setRooms(matchRooms);
     },[id]);
 
     const breadcrumbItems = [
@@ -19,7 +23,6 @@ export default function Hotel() {
         { label: "Hotels", path: "/hotels-search" },
         { label: hotel.name || "Hotel", path: `/hotel/${id}` },
     ];
-
 
     const formatAboutText = (text) => {
         if (!text) return null;
@@ -93,20 +96,21 @@ export default function Hotel() {
                     color='text-brand-primary'
                 />
             </div>
-            <div className='flex flex-wrap'>
-                {formatAboutText(hotel.about)}
-            </div>
             <div className='flex gap-2'>
                 {
                     hotel.amenities && hotel.amenities.map((amenity,index)=>(
                         <Title
                             key={index}
                             title={amenity || ''}
-                            size='text-[20px]'
-                            color='text-brand-primary'
+                            size='text-[18px]'
+                            color='text-content-tertiary'
+                            font='font-[400]'
                         />
                     ))
                 }
+            </div>
+            <div className='flex flex-wrap'>
+                {formatAboutText(hotel.about)}
             </div>
         </Main>
     )

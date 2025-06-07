@@ -9,7 +9,18 @@ import anantaya from '../assets/hotels/anataya.jpg'
 import cinnamonRed from '../assets/hotels/cinnomon-red.jpg'
 import mandara from '../assets/hotels/mandara.jpg'
 import { navigateTo } from './navigateHelper'
-import { FaWifi, FaSwimmingPool, FaUtensils, FaDumbbell, FaParking, FaSpa, FaDog, FaShuttleVan, FaUmbrellaBeach, FaSmoking } from "react-icons/fa";
+import { 
+    FaWifi, 
+    FaSwimmingPool, 
+    FaUtensils, 
+    FaDumbbell, 
+    FaParking, 
+    FaSpa, 
+    FaDog, 
+    FaShuttleVan, 
+    FaUmbrellaBeach, 
+    FaSmoking,} from "react-icons/fa";
+import { TbAirConditioning } from "react-icons/tb";
 
 export const handleNavigate = (path) => {
     navigateTo(path);
@@ -200,7 +211,15 @@ export const hotelList = [
         reviews: 65,
         about: "**Tropical Beach Haven:** Mandara Resort features beachfront accommodations with direct access to Mirissa's golden sand beach, offering rooms and suites with ocean views, tropical gardens, and traditional Sri Lankan architecture. Each room includes modern amenities and private terraces. **Coastal Activities:** Guests enjoy swimming pool, beachfront restaurant, and easy access to whale watching tours, surfing, and snorkeling. The property offers bicycle rentals and cultural excursions to nearby temples. **Beach Location:** Situated on Mirissa Beach, one of Sri Lanka's most beautiful coastal destinations, famous for whale watching and stunning sunsets. Close to coconut tree hill, parrot rock, and local fishing villages. **Guest Satisfaction:** Appreciated for its beachfront location, relaxed atmosphere, and proximity to marine activities, providing an authentic tropical beach experience with opportunities for wildlife encounters and coastal adventures."
     }
-];
+].map(room => ({
+    ...room,
+    amenities: room.amenities
+        ? room.amenities.map(id => {
+            const amenity = amenitiesList.find(a => a.id === id);
+            return amenity ? { value: amenity.value, icon: amenity.icon } : null;
+        }).filter(Boolean)
+        : []
+}));;
 
 export const hotelFilterOptions = [
     { id: 1, value: "Our top picks" },
@@ -247,6 +266,7 @@ export const propertyTypes = [
 ];
 
 export const amenities = [
+    { id: 11, value: "A/C", icon: TbAirConditioning },
     { id: 1, value: "Free Wi-Fi", icon: FaWifi },
     { id: 2, value: "Pool", icon: FaSwimmingPool },
     { id: 3, value: "Restaurant", icon: FaUtensils },

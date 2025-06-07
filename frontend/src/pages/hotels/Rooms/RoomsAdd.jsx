@@ -130,7 +130,7 @@ export default function RoomsAdd() {
                 </div>
                 <div className="w-full flex">
                     <div className="w-1/4 mt-5">
-                        <PrimaryButton text="Add" type={'submit'} />
+                        <PrimaryButton text="Add Room" type={'submit'} />
                     </div>
                 </div>
             </form>
