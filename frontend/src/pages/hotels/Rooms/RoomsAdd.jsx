@@ -9,12 +9,14 @@ import { amenities } from "../../../core/constant";
 import Checkbox from "../../../components/CheckBox";
 import ImageUploader from "../../../components/ImageUploader";
 import PrimaryButton from "../../../components/PrimaryButton";
+import InputArea from "../../../components/InputArea";
 
 
 export default function RoomsAdd() {
     const [roomImages,setRoomImages] = useState([]);
     const [formData,setFormData] = useState({
-        roomType: "",        
+        roomType: "",       
+        description: "",
         maxGuests: 0,       
         bedType: "",            
         pricePerNight: 0,    
@@ -92,6 +94,16 @@ export default function RoomsAdd() {
                                 error=''
                             />
                         </div>
+                    </div>
+                    <div className="w-1/2">
+                        <InputArea
+                            label='Description'
+                            value={formData.description}
+                            onChange={e => handleSelect(setFormData, 'description', e.target.value)}
+                            placeholder=''
+                            error=''
+                            warningHeading={'Important Note: Customize the **Heading** Text Here'}
+                        />
                     </div>
                     <div className="mt-4">
                         <Title title="Add Facilities" size="text-[24px]" />

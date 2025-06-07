@@ -5,6 +5,9 @@ import Main from '../../../components/Main';
 import Title from '../../../components/Title';
 import Breadcrumb from '../../../components/Breadcrumb';
 import { roomList } from '../../../core/rooms';
+import RoomCard from './components/RoomCard';
+import FormatText from '../../../components/FormatText';
+
 
 export default function Hotel() {
     const [hotel,setHotel] = useState({});
@@ -13,7 +16,7 @@ export default function Hotel() {
     
     useEffect(()=>{
         const matchHotel = hotelList.find((hotel) => hotel.id.toString() === id);
-        const matchRooms = roomList.find((room)=>room.hotelId.toString() === id);
+        const matchRooms = roomList.filter((room)=>room.hotelId.toString() === id);
         setHotel(matchHotel);
         setRooms(matchRooms);
     },[id]);
@@ -23,34 +26,7 @@ export default function Hotel() {
         { label: "Hotels", path: "/hotels-search" },
         { label: hotel.name || "Hotel", path: `/hotel/${id}` },
     ];
-
-    const formatAboutText = (text) => {
-        if (!text) return null;
-
-        // Split by **heading** pattern
-        const parts = text.split(/\*\*(.*?)\*\*/g);
-
-        return parts.map((part, index) => {
-            // Odd indexes are headings (due to split behavior)
-            if (index % 2 === 1) {
-            return (
-                <strong key={index} className="block font-bold my-2">
-                    {part}
-                </strong>
-            );
-            }
-            // Even indexes are normal text (skip empty strings)
-            else if (part.trim()) {
-            return (
-                <p key={index} className="mb-3">
-                    {part}
-                </p>
-            );
-            }
-            return null;
-        });
-    };
-
+console.log(rooms)
     return (
         <Main>
             <div>
@@ -110,7 +86,28 @@ export default function Hotel() {
                 }
             </div>
             <div className='flex flex-wrap'>
-                {formatAboutText(hotel.about)}
+                <FormatText text={hotel.about}/>
+            </div>
+            <div className='h-[0.5px] w-full bg-content-tertiary'></div>
+            <div className='w-full mt-5'>
+                <Title
+                    title={'Rooms'}
+                    size='text-[24px]'
+                />
+                <div className='flex gap-2 mt-5'>
+                    {
+                        rooms.map((room)=>(
+                            <div 
+                                key={room.id}
+                                className='w-1/2'
+                            >
+                                <RoomCard
+                                    room={room}
+                                />
+                            </div>
+                        ))
+                    }
+                </div>
             </div>
         </Main>
     )
