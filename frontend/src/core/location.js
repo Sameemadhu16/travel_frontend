@@ -57,7 +57,21 @@ export const districts = [
 
 export const cities = [
     // Colombo District (1)
-    { id: 1, value: "Colombo", districtId: 1 },
+    { id: 101, value: "Colombo 01", districtId: 1 },
+    { id: 102, value: "Colombo 02", districtId: 1 },
+    { id: 103, value: "Colombo 03", districtId: 1 },
+    { id: 104, value: "Colombo 04", districtId: 1 },
+    { id: 105, value: "Colombo 05", districtId: 1 },
+    { id: 106, value: "Colombo 06", districtId: 1 },
+    { id: 107, value: "Colombo 07", districtId: 1 },
+    { id: 108, value: "Colombo 08", districtId: 1 },
+    { id: 109, value: "Colombo 09", districtId: 1 },
+    { id: 110, value: "Colombo 10", districtId: 1 },
+    { id: 111, value: "Colombo 11", districtId: 1 },
+    { id: 112, value: "Colombo 12", districtId: 1 },
+    { id: 113, value: "Colombo 13", districtId: 1 },
+    { id: 114, value: "Colombo 14", districtId: 1 },
+    { id: 115, value: "Colombo 15", districtId: 1 },
     { id: 2, value: "Dehiwala", districtId: 1 },
     { id: 3, value: "Moratuwa", districtId: 1 },
     { id: 4, value: "Sri Jayawardenepura Kotte", districtId: 1 },

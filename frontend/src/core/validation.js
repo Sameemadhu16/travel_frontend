@@ -1,4 +1,4 @@
-export const validateImageUpload  = (files , limit , maxTotalSizeMB)  => {
+export const validateImageUpload  = (files , limit , maxTotalSizeMB, multiple)  => {
 
     let error = '';
     const validExtensions = ['image/jpeg', 'image/png', 'image/svg+xml'];
@@ -7,6 +7,9 @@ export const validateImageUpload  = (files , limit , maxTotalSizeMB)  => {
 
     if (!files || files.length === 0) {
         error = '*You must upload at least one image';
+    }
+    if (files.length !== 5 && multiple) {
+        error = '*You should add 5 images to verify';
     }
     if (files.length > limit) {
         error = `*You can upload a maximum of ${limit} ${limit === 1 ? 'image':'images'}`;

@@ -8,6 +8,7 @@ import { provinces, districts, cities } from "../../../core/location";
 import { propertyTypes } from "../../../core/constant";
 import InputArea from "../../../components/InputArea";
 import PrimaryButton from "../../../components/PrimaryButton";
+import { handleSelect } from "../../../core/service";
 
 export default function HotelRegistration() {
     const [licenseImage, setLicenseImage] = useState([]);
@@ -29,20 +30,17 @@ export default function HotelRegistration() {
         description: ''
     });
 
-    const handleChange = (e) => {
-        const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+    const filterDistricts = districts.filter(district => {
+        const selectedCity = cities.find(city => city.value === formData.city);
 
-    const handleSelect = (name, value) => {
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
+        return selectedCity ? district.id === selectedCity.districtId : districts;
+    });
+
+    const filterProvince = provinces.filter(province => {
+        const selectedDistrict = districts.find(district => district.value === formData.district);
+
+        return selectedDistrict ? province.id === selectedDistrict.provinceId : provinces;
+    });
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -69,7 +67,7 @@ export default function HotelRegistration() {
                                 type='text'
                                 name='hotelName'
                                 value={formData.hotelName}
-                                onChange={e => handleSelect('hotelName', e.target.value)}
+                                onChange={e => handleSelect(setFormData, 'hotelName', e.target.value)}
                                 placeholder=''
                                 error=''
                             />
@@ -80,7 +78,7 @@ export default function HotelRegistration() {
                                 type='text'
                                 name='email'
                                 value={formData.email}
-                                onChange={e => handleSelect('email', e.target.value)}
+                                onChange={e => handleSelect(setFormData, 'email', e.target.value)}
                                 placeholder=''
                                 error=''
                             />
@@ -93,7 +91,7 @@ export default function HotelRegistration() {
                                 type='password'
                                 name='password'
                                 value={formData.password}
-                                onChange={e => handleSelect('password', e.target.value)}
+                                onChange={e => handleSelect(setFormData, 'password', e.target.value)}
                                 placeholder=''
                                 error=''
                                 icon={true}
@@ -105,7 +103,7 @@ export default function HotelRegistration() {
                                 type='password'
                                 name='confirmPassword'
                                 value={formData.confirmPassword}
-                                onChange={e => handleSelect('confirmPassword', e.target.value)}
+                                onChange={e => handleSelect(setFormData, 'confirmPassword', e.target.value)}
                                 placeholder=''
                                 error=''
                                 icon={true}
@@ -124,7 +122,7 @@ export default function HotelRegistration() {
                                 type='text'
                                 name='street'
                                 value={formData.street}
-                                onChange={e => handleSelect('street', e.target.value)}
+                                onChange={e => handleSelect(setFormData, 'street', e.target.value)}
                                 placeholder=''
                                 error=''
                             />
@@ -133,8 +131,8 @@ export default function HotelRegistration() {
                             <CustomSelector
                                 label="City"
                                 options={cities}
-                                placeholder="Colombo 01"
-                                onChange={value => handleSelect('city', value)}
+                                placeholder="Select City"
+                                onChange={value => handleSelect(setFormData, 'city', value)}
                             />
                         </div>
                     </div>
@@ -142,17 +140,17 @@ export default function HotelRegistration() {
                         <div className="w-1/2">
                             <CustomSelector
                                 label="District"
-                                options={districts}
-                                placeholder="Colombo"
-                                onChange={value => handleSelect('district', value)}
+                                options={filterDistricts}
+                                placeholder="Select District"
+                                onChange={value => handleSelect(setFormData, 'district', value)}
                             />
                         </div>
                         <div className="w-1/2">
                             <CustomSelector
                                 label="Province"
-                                options={provinces}
-                                placeholder="Western Province"
-                                onChange={value => handleSelect('province', value)}
+                                options={filterProvince}
+                                placeholder="Select Province"
+                                onChange={value => handleSelect(setFormData, 'province', value)}
                             />
                         </div>
                     </div>
@@ -167,7 +165,7 @@ export default function HotelRegistration() {
                             type='text'
                             name='registrationNo'
                             value={formData.registrationNo}
-                            onChange={e => handleSelect('registrationNo', e.target.value)}
+                            onChange={e => handleSelect(setFormData, 'registrationNo', e.target.value)}
                             placeholder=''
                             error=''
                         />
@@ -189,14 +187,14 @@ export default function HotelRegistration() {
                             label="Hotel Type"
                             options={propertyTypes}
                             placeholder="Hotel"
-                            onChange={value => handleSelect('type', value)}
+                            onChange={value => handleSelect(setFormData, 'type', value)}
                         />
                     </div>
                     <div className="w-1/2">
                         <InputArea
                             label='Description'
                             value={formData.description}
-                            onChange={e => handleSelect('description', e.target.value)}
+                            onChange={e => handleSelect(setFormData, 'description', e.target.value)}
                             placeholder=''
                             error=''
                             warningHeading={'Important Note: Customize the **Heading** Text Here'}
