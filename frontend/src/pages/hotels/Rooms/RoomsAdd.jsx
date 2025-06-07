@@ -6,13 +6,45 @@ import { bedTypes, roomTypes } from "../../../core/rooms";
 import { handleSelect } from "../../../core/service";
 import InputField from "../../../components/InputField";
 import { amenities } from "../../../core/constant";
+import Checkbox from "../../../components/CheckBox";
+import ImageUploader from "../../../components/ImageUploader";
+import PrimaryButton from "../../../components/PrimaryButton";
 
 
 export default function RoomsAdd() {
-    const [formData,setFormData] = useState({});
+    const [roomImages,setRoomImages] = useState([]);
+    const [formData,setFormData] = useState({
+        roomType: "",        
+        maxGuests: 0,       
+        bedType: "",            
+        pricePerNight: 0,    
+        amenities: [],       
+        images: []     
+    });
+
+    const handleAmenityChange = (amenityValue) => {
+        setFormData((prev) => {
+            const alreadySelected = prev.amenities.includes(amenityValue);
+            const updatedAmenities = alreadySelected
+                ? prev.amenities.filter((item) => item !== amenityValue)
+                : [...prev.amenities, amenityValue];
+
+            return { ...prev, amenities: updatedAmenities };
+        });
+    };
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        const submissionData = {
+            ...formData,
+            images: roomImages
+        };
+        console.log(submissionData);
+    };
+
     return (
         <Main>
-            <form className="flex w-full flex-col items-center">
+            <form onSubmit={handleSubmit} className="flex w-full flex-col items-center">
                 <Title 
                     title="Add Rooms" 
                     size="text-[48px]" 
@@ -31,10 +63,10 @@ export default function RoomsAdd() {
                         <div className="w-1/2">
                             <InputField
                                 label='Max Guests'
-                                type='number'
-                                name='roomType'
-                                value={formData.street}
-                                onChange={e => handleSelect(setFormData, 'roomType', e.target.value)}
+                                type='text'
+                                name='maxGuests'
+                                value={formData.maxGuests}
+                                onChange={e => handleSelect(setFormData, 'maxGuests', e.target.value)}
                                 placeholder=''
                                 error=''
                             />
@@ -54,7 +86,7 @@ export default function RoomsAdd() {
                                 label='Price per Night'
                                 type='text'
                                 name='pricePerNight'
-                                value={formData.street}
+                                value={formData.pricePerNight}
                                 onChange={e => handleSelect(setFormData, 'pricePerNight', e.target.value)}
                                 placeholder=''
                                 error=''
@@ -63,15 +95,42 @@ export default function RoomsAdd() {
                     </div>
                     <div className="mt-4">
                         <Title title="Add Facilities" size="text-[24px]" />
-                        <div className="flex flex-wrap">
+                        <div className="flex flex-wrap mt-3">
                             {
-                                amenities.map((amenity)=>(
-                                    <div>
-                                        {amenity.value}
+                                amenities.map((amenity) => {
+                                    const Icon = amenity.icon;
+                                    const isChecked = formData.amenities.includes(amenity.value);
+                                    return (
+                                    <div key={amenity.id} className="py-2">
+                                        <label className="flex items-center gap-3 px-3">
+                                            <Checkbox
+                                                value={amenity.value}
+                                                checked={isChecked}
+                                                onChange={() => handleAmenityChange(amenity.value)}
+                                            />
+                                            <div className="flex items-center gap-2 flex-1">
+                                                <Icon className="h-5 w-5 text-gray-600 flex-shrink-0" />
+                                                <span className="text-gray-800">{amenity.value}</span>
+                                            </div>
+                                        </label>
                                     </div>
-                                ))
+                                    );
+                                })
                             }
                         </div>
+                    </div>
+                    <div className="w-1/2 mt-2">
+                        <ImageUploader
+                            label={'Room Images'}
+                            images={roomImages}
+                            setImages={setRoomImages}
+                            multiple={true}
+                        />
+                    </div>
+                </div>
+                <div className="w-full flex">
+                    <div className="w-1/4 mt-5">
+                        <PrimaryButton text="Add" type={'submit'} />
                     </div>
                 </div>
             </form>

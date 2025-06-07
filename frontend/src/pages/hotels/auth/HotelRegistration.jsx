@@ -5,10 +5,11 @@ import InputField from "../../../components/InputField";
 import Main from "../../../components/Main";
 import Title from "../../../components/Title";
 import { provinces, districts, cities } from "../../../core/location";
-import { propertyTypes } from "../../../core/constant";
+import { amenities, propertyTypes } from "../../../core/constant";
 import InputArea from "../../../components/InputArea";
 import PrimaryButton from "../../../components/PrimaryButton";
 import { handleSelect } from "../../../core/service";
+import Checkbox from "../../../components/CheckBox";
 
 export default function HotelRegistration() {
     const [licenseImage, setLicenseImage] = useState([]);
@@ -27,7 +28,8 @@ export default function HotelRegistration() {
         licensePhoto: [],
         images: [],
         type: '',
-        description: ''
+        description: '',
+        amenities: [],
     });
 
     const filterDistricts = districts.filter(district => {
@@ -41,6 +43,17 @@ export default function HotelRegistration() {
 
         return selectedDistrict ? province.id === selectedDistrict.provinceId : provinces;
     });
+
+    const handleAmenityChange = (amenityValue) => {
+        setFormData((prev) => {
+            const alreadySelected = prev.amenities.includes(amenityValue);
+            const updatedAmenities = alreadySelected
+                ? prev.amenities.filter((item) => item !== amenityValue)
+                : [...prev.amenities, amenityValue];
+
+            return { ...prev, amenities: updatedAmenities };
+        });
+    };
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -199,6 +212,32 @@ export default function HotelRegistration() {
                             error=''
                             warningHeading={'Important Note: Customize the **Heading** Text Here'}
                         />
+                    </div>
+                    <div className="mt-4">
+                        <Title title="Amenities:" size="text-[16px]" />
+                    </div>
+                    <div className="w-full flex flex-wrap">
+                        {
+                            amenities.map((amenity) => {
+                                const Icon = amenity.icon;
+                                const isChecked = formData.amenities.includes(amenity.value);
+                                return (
+                                <div key={amenity.id} className="py-2">
+                                    <label className="flex items-center gap-3 px-3">
+                                        <Checkbox
+                                            value={amenity.value}
+                                            checked={isChecked}
+                                            onChange={() => handleAmenityChange(amenity.value)}
+                                        />
+                                        <div className="flex items-center gap-2 flex-1">
+                                            <Icon className="h-5 w-5 text-gray-600 flex-shrink-0" />
+                                            <span className="text-gray-800">{amenity.value}</span>
+                                        </div>
+                                    </label>
+                                </div>
+                                );
+                            })
+                        }
                     </div>
                     <div className="w-1/2 mt-2">
                         <ImageUploader

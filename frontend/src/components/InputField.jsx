@@ -16,7 +16,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 const InputField = ({
     label,
     type = 'text',
-    value = '',
+    value = '' || 0,
     onChange = () => {},
     placeholder = '',
     error = '',
@@ -60,7 +60,7 @@ const InputField = ({
 InputField.propTypes = {
     label: PropTypes.string.isRequired,
     type: PropTypes.string,
-    value: PropTypes.string.isRequired,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     onChange: PropTypes.func.isRequired,
     placeholder: PropTypes.string,
     error: PropTypes.string,

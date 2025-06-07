@@ -9,7 +9,7 @@ import anantaya from '../assets/hotels/anataya.jpg'
 import cinnamonRed from '../assets/hotels/cinnomon-red.jpg'
 import mandara from '../assets/hotels/mandara.jpg'
 import { navigateTo } from './navigateHelper'
-import { FaWifi, FaSwimmingPool, FaUtensils, FaDumbbell, FaParking, FaSpa, FaDog, FaShuttleVan, FaUmbrellaBeach } from "react-icons/fa";
+import { FaWifi, FaSwimmingPool, FaUtensils, FaDumbbell, FaParking, FaSpa, FaDog, FaShuttleVan, FaUmbrellaBeach, FaSmoking } from "react-icons/fa";
 
 export const handleNavigate = (path) => {
     navigateTo(path);
@@ -256,6 +256,7 @@ export const amenities = [
     { id: 7, value: "Pet Friendly", icon: FaDog },
     { id: 8, value: "Airport Shuttle", icon: FaShuttleVan },
     { id: 9, value: "Beach Access", icon: FaUmbrellaBeach },
+    {id: 10, value: "Smoking Area", icon: FaSmoking }
 ];
 
 export const priceRanges = [
