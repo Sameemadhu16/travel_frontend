@@ -3,7 +3,7 @@ import { hotelList } from '../../core/constant';
 import { useEffect, useState } from 'react';
 import Main from '../../components/Main';
 import Title from '../../components/Title';
-
+import Breadcrumb from '../../components/Breadcrumb';
 
 export default function Hotel() {
     const [hotel,setHotel] = useState({});
@@ -13,6 +13,13 @@ export default function Hotel() {
         const matchHotel = hotelList.find((hotel) => hotel.id.toString() === id);
         setHotel(matchHotel);
     },[id]);
+
+    const breadcrumbItems = [
+        { label: "Home", path: "/home" },
+        { label: "Hotels", path: "/hotels-search" },
+        { label: hotel.name || "Hotel", path: `/hotel/${id}` },
+    ];
+
 
     const formatAboutText = (text) => {
         if (!text) return null;
@@ -43,7 +50,12 @@ export default function Hotel() {
 
     return (
         <Main>
-            <div className='w-full flex h-[400px] gap-2'>
+            <div>
+                <Breadcrumb 
+                    items={breadcrumbItems} 
+                />
+            </div>
+            <div className='w-full flex h-[400px] gap-2 mt-5'>
                 <div className='w-1/2 h-full rounded-[8px] overflow-hidden'>
                     {hotel?.images?.[0] && (
                         <img src={hotel.images[0]} alt={hotel?.name || "Hotel"} className="h-full w-full object-cover" />

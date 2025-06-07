@@ -7,6 +7,12 @@ import Title from '../../../components/Title'
 import { amenities, hotelFilterOptions, hotelList, mealOptions, priceRanges, propertyTypes } from '../../../core/constant'
 import HotelCard from '../components/HotelCard'
 import CheckboxGroup from '../components/CheckboxGroup'
+import Breadcrumb from '../../../components/Breadcrumb'
+
+const breadcrumbItems = [
+    { label: "Home", path: "/home" },
+    { label: "Hotels", path: "/hotels-search" },
+];
 
 export default function Search() {
 
@@ -52,6 +58,30 @@ export default function Search() {
                     </div>
                 </div>
             </div>
+            <Main>
+                <div className='flex items-center w-full mt-5'>
+                    <div className='w-1/4'>
+                        <Breadcrumb
+                            items={breadcrumbItems}
+                        />
+                    </div>
+                    <div className='flex flex-1'>
+                        <div className='w-full flex justify-between items-center'>
+                            <Title 
+                                title={`Kandy: ${hotelList.length} matches`}
+                                size='text-[16px]'
+                            />
+                            <div className='w-1/2'>
+                                <CustomSelector
+                                    options={hotelFilterOptions}
+                                    placeholder="Recommended"
+                                    onChange={handleSelect}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </Main>
             <Main>
                 <div className='flex gap-2 mt-5'>
 
@@ -102,18 +132,7 @@ export default function Search() {
 
                     {/* for item list */}
                     <div className='flex flex-col flex-1'>
-                        <div className='flex justify-between items-center'>
-                            <Title 
-                                title={`Kandy: ${hotelList.length} matches`}
-                                size='text-[16px]'
-                            />
-                            <CustomSelector
-                                options={hotelFilterOptions}
-                                placeholder="Recommended"
-                                onChange={handleSelect}
-                            />
-                        </div>
-                        <div className='flex flex-col gap-2 w-full mt-5'>
+                        <div className='flex flex-col gap-2 w-full'>
                             {hotelsContainer}
                         </div>
                     </div>
