@@ -12,6 +12,7 @@ export default function Breadcrumb({ items }) {
                 {item.path ? (
                     <Navigate
                         path={item.path}
+                        className="hover:underline"
                     >
                         {item.label}
                     </Navigate>

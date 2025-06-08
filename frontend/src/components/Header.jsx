@@ -1,6 +1,7 @@
 import Main from './Main'
 import Title from '../components/Title'
 import room from '../assets/rooms/room1.png'
+import ReserveOptions from './ReserveOptions'
 
 export default function Header() {
     return (
@@ -39,6 +40,9 @@ export default function Header() {
                         </div>
                     </div>
                 </div>
+            </div>
+            <div>
+                <ReserveOptions/>
             </div>
         </Main>
     )

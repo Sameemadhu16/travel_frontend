@@ -3,10 +3,10 @@ import PropTypes from "prop-types";
 
 // PropTypes style reference: see InputField.jsx for detailed prop documentation
 
-export default function Navigate({path,children}) {
+export default function Navigate({path,children,className=''}) {
 
     return (
-        <Link to={path} className="hover:underline">
+        <Link to={path} className={className}>
             {children}
         </Link>
     )
