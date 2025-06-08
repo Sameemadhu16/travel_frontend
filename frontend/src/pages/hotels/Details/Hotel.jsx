@@ -94,12 +94,12 @@ console.log(rooms)
                     title={'Rooms'}
                     size='text-[24px]'
                 />
-                <div className='flex gap-2 mt-5'>
+                <div className='flex flex-col md:flex-row items-center gap-2 mt-5'>
                     {
                         rooms.map((room)=>(
                             <div 
                                 key={room.id}
-                                className='w-1/2'
+                                className='w-full md:w-1/2'
                             >
                                 <RoomCard
                                     room={room}
