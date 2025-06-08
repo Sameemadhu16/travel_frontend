@@ -88,7 +88,7 @@ console.log(rooms)
             <div className='flex flex-wrap'>
                 <FormatText text={hotel.about}/>
             </div>
-            <div className='h-[0.5px] w-full bg-content-tertiary'></div>
+            <div className='h-[0.5px] w-full bg-border-light mt-5'></div>
             <div className='w-full mt-5'>
                 <Title
                     title={'Rooms'}

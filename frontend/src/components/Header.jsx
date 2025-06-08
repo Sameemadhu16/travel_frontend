@@ -2,6 +2,7 @@ import Main from './Main'
 import Title from '../components/Title'
 import room from '../assets/rooms/room1.png'
 import ReserveOptions from './ReserveOptions'
+import Navigate from './Navigate'
 
 export default function Header() {
     return (
@@ -15,13 +16,13 @@ export default function Header() {
                     />
                 </div>
                 <div className='flex gap-1 items-center'>
-                    <div className='p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
+                    <Navigate path={'/partner-details'} className='p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
                         <Title
                             title='List your property'
                             size='text-[16px]'
                             font='font-[500]'
                         />
-                    </div>
+                    </Navigate>
                     <div className='flex items-center gap-2 p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
                         <div className='h-[40px] w-[40px] border-2 border-brand-primary rounded-full overflow-hidden'>
                             <img src={room} alt="room" className='h-full w-full object-cover'/>
