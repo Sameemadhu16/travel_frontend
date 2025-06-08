@@ -1,12 +1,20 @@
-import React from 'react'
 import Main from './Main'
+import Title from '../components/Title'
 
 export default function Header() {
     return (
         <Main>
             <div className='flex justify-between'>
-                <h1>travel.lk</h1>
-                <h1>Login</h1>
+                <div>
+                    <Title
+                        title='travel.lk'
+                        size='text-[28px]'
+                        font='font-[600]'
+                    />
+                </div>
+                <div>
+
+                </div>
             </div>
         </Main>
     )

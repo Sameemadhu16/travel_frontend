@@ -16,7 +16,7 @@ export default function Breadcrumb({ items }) {
                         {item.label}
                     </Navigate>
                 ) : (
-                    <span className="text-gray-700">{item.label}</span>
+                    <span className="text-gray-700 hover:underline">{item.label}</span>
                 )}
                 </div>
             ))}

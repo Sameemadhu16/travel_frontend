@@ -1,7 +1,8 @@
 import Title from '../../../../components/Title'
 import FormatText from '../../../../components/FormatText'
-import { FaUser } from 'react-icons/fa'
+import { FaBed, FaUser } from 'react-icons/fa'
 import { amenities } from '../../../../core/constant'
+import PrimaryButton from '../../../../components/PrimaryButton'
 
 export default function RoomCard({room}) {
     return (
@@ -60,16 +61,31 @@ export default function RoomCard({room}) {
                 <div className='flex flex-wrap'>
                     <FormatText text={room.description}/>
                 </div>
-                <div className='w-full flex items-center justify-between'>
-                    <Title
-                        title={`LKR ${room.pricePerNight}`}
-                        size='text-[20px]'
-                    />
+                <div className='w-full flex items-center justify-between mt-4'>
+                    <div className='flex gap-2 items-center'>
+                        <Title
+                            title={`LKR ${room.pricePerNight}`}
+                            size='text-[20px]'
+                        />
+                        <div className='flex items-center gap-1'>
+                        <FaBed size={16}/>
+                            <Title
+                                title={room.bedType}
+                                size='text-[16px]'
+                            />
+                        </div>
+                    </div>
                     <div className='w-1/4 flex justify-end flex-wrap'>
                         {[...Array(room.maxGuests)].map((_, i) => (
                             <FaUser key={i} />
                         ))}
                     </div>
+                </div>
+                <div className='w-1/2 mt-2'>
+                    <PrimaryButton
+                        text='Reserve'
+                        type={'button'}
+                    />
                 </div>
             </div>
         </div>

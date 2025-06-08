@@ -17,7 +17,7 @@ export default function FormatText({ text }) {
                 }
                 else if (part.trim()) {
                 return (
-                    <p key={index} className="mb-3">
+                    <p key={index} className="">
                     {part}
                     </p>
                 );

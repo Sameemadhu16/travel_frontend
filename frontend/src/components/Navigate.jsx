@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 export default function Navigate({path,children}) {
 
     return (
-        <Link to={path}>
+        <Link to={path} className="hover:underline">
             {children}
         </Link>
     )
