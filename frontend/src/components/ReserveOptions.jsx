@@ -2,6 +2,7 @@ import { FaUser, FaCar } from "react-icons/fa";
 import { IoIosBed } from "react-icons/io";
 import Title from "./Title";
 import Navigate from './Navigate'
+import { useLocation } from "react-router-dom";
 
 const options = [
     {
@@ -24,14 +25,21 @@ const options = [
     },
 ]
 export default function ReserveOptions() {
+    const location = useLocation();
     return (
         <div className="flex gap-8 items-center">
             {
                 options.map((option)=>{
-                    const Icon = option.icon
+                    const Icon = option.icon;
+                    const isActive = location.pathname === option.path;
                     return (
-                        <Navigate key={option.id} path={option.path} 
-                            className="p-2 hover:bg-surface-tertiary flex gap-1 items-center rounded-[8px]">
+                        <Navigate
+                            key={option.id}
+                            path={option.path}
+                            className={`p-3 hover:bg-surface-tertiary flex gap-1 items-center rounded-[32px] ${
+                                isActive ? "bg-surface-tertiary border" : ""
+                            }`}
+                        >
                             <Icon size={18}/>
                             <Title
                                 title={option.name}
