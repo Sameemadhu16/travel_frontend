@@ -1,12 +1,13 @@
 import { useParams } from 'react-router-dom';
 import { hotelList } from '../../../core/Lists/hotels';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Main from '../../../components/Main';
 import Title from '../../../components/Title';
 import Breadcrumb from '../../../components/Breadcrumb';
 import { roomList } from '../../../core/Lists/rooms';
 import RoomCard from './components/RoomCard';
 import FormatText from '../../../components/FormatText';
+import { amenities } from '../../../core/constant';
 
 
 export default function Hotel() {
@@ -26,6 +27,31 @@ export default function Hotel() {
         { label: "Hotels", path: "/hotels-search" },
         { label: hotel.name || "Hotel", path: `/hotel/${id}` },
     ];
+
+    const roomsList = useMemo(()=>{
+        return rooms.map((room)=>(
+            <div 
+                key={room.id}
+                className='w-full md:w-1/2'
+            >
+                <RoomCard
+                    room={room}
+                />
+            </div>
+        ))
+    },[rooms]);
+
+    const amenityList = useMemo(()=>{
+        return hotel.amenities && hotel.amenities.map((amenity,index)=>(
+            <Title
+                key={index}
+                title={amenity || ''}
+                size='text-[18px]'
+                color='text-content-tertiary'
+                font='font-[400]'
+            />
+        ))
+    },[hotel.amenities])
 
     return (
         <Main>
@@ -73,17 +99,7 @@ export default function Hotel() {
                 />
             </div>
             <div className='flex gap-2'>
-                {
-                    hotel.amenities && hotel.amenities.map((amenity,index)=>(
-                        <Title
-                            key={index}
-                            title={amenity || ''}
-                            size='text-[18px]'
-                            color='text-content-tertiary'
-                            font='font-[400]'
-                        />
-                    ))
-                }
+                { amenityList }
             </div>
             <div className='flex flex-wrap'>
                 <FormatText text={hotel.about}/>
@@ -95,18 +111,7 @@ export default function Hotel() {
                     size='text-[24px]'
                 />
                 <div className='flex flex-col md:flex-row items-center gap-2 mt-5'>
-                    {
-                        rooms.map((room)=>(
-                            <div 
-                                key={room.id}
-                                className='w-full md:w-1/2'
-                            >
-                                <RoomCard
-                                    room={room}
-                                />
-                            </div>
-                        ))
-                    }
+                    { roomsList }
                 </div>
             </div>
         </Main>

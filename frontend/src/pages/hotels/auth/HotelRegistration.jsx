@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import CustomSelector from "../../../components/CustomSelector";
 import ImageUploader from "../../../components/ImageUploader";
 import InputField from "../../../components/InputField";
@@ -64,6 +64,28 @@ export default function HotelRegistration() {
         };
         console.log(submissionData);
     };
+
+    const amenityList = useMemo(()=>{
+        return amenities.map((amenity) => {
+            const Icon = amenity.icon;
+            const isChecked = formData.amenities.includes(amenity.value);
+            return (
+            <div key={amenity.id} className="py-2">
+                <label className="flex items-center gap-3 px-3">
+                    <Checkbox
+                        value={amenity.value}
+                        checked={isChecked}
+                        onChange={() => handleAmenityChange(amenity.value)}
+                    />
+                    <div className="flex items-center gap-2 flex-1">
+                        <Icon className="h-5 w-5 text-gray-600 flex-shrink-0" />
+                        <span className="text-gray-800">{amenity.value}</span>
+                    </div>
+                </label>
+            </div>
+            );
+        })
+    },[amenities]);
 
     return (
         <Main>
@@ -217,27 +239,7 @@ export default function HotelRegistration() {
                         <Title title="Amenities:" size="text-[16px]" />
                     </div>
                     <div className="w-full flex flex-wrap">
-                        {
-                            amenities.map((amenity) => {
-                                const Icon = amenity.icon;
-                                const isChecked = formData.amenities.includes(amenity.value);
-                                return (
-                                <div key={amenity.id} className="py-2">
-                                    <label className="flex items-center gap-3 px-3">
-                                        <Checkbox
-                                            value={amenity.value}
-                                            checked={isChecked}
-                                            onChange={() => handleAmenityChange(amenity.value)}
-                                        />
-                                        <div className="flex items-center gap-2 flex-1">
-                                            <Icon className="h-5 w-5 text-gray-600 flex-shrink-0" />
-                                            <span className="text-gray-800">{amenity.value}</span>
-                                        </div>
-                                    </label>
-                                </div>
-                                );
-                            })
-                        }
+                        {amenityList}
                     </div>
                     <div className="w-1/2 mt-2">
                         <ImageUploader
