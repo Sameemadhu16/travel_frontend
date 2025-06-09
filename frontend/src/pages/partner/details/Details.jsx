@@ -42,7 +42,7 @@ export default function Details() {
 
     const reviews = useMemo(()=>{
         return testimonials.map((review)=>(
-            <div className=''>
+            <div key={review.id}>
                 <ReviewCard
                     review={review}
                 />
