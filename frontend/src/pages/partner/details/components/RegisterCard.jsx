@@ -11,7 +11,7 @@ const textList = [
 
 export default function RegisterCard() {
     return (
-        <div className='w-full border-4 rounded-[16px] bg-brand-accen border-brand-primary'>
+        <div className='w-full border-4 rounded-[16px] bg-background-base border-brand-primary'>
             <div className='p-4'>
                 <Title
                     title='Register for free'

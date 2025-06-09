@@ -7,6 +7,9 @@ import { IoMdCheckmarkCircleOutline } from "react-icons/io";
 import BlurPage from '../../../components/BlurPage';
 import { LuMouse } from "react-icons/lu";
 import { FaAnglesDown } from "react-icons/fa6";
+import review from '../../../assets/images/Review.png'
+import puzzle from '../../../assets/images/Puzzle.png'
+import search from '../../../assets/images/Search.png'
 
 const features = [
     {
@@ -139,34 +142,152 @@ export default function Details() {
                 </div>
             </div>
 
-            {/* guide features */}
-
+            {/*features */}
             <div className='w-full mt-36'>
                 <Title
-                    title='Why Join Us as a Partner?'
+                    title='Host worry-free. We’ve got your back'
                     size='text-[48px]'
                     font='font-[600]'
                 />
-                <div className='w-full mt-5'>
-                    {
-                        features.map((feature)=>(
-                            <div className='flex flex-col flex-wrap  mt-10'>
-                                <div className='flex gap-2 items-center'>
-                                    <IoMdCheckmarkCircleOutline size={30} className='text-success'/>
-                                    <Title
-                                        title={feature.title}
-                                        size='text-[24px]'
-                                        font='font-[500]'
-                                    />
-                                </div>
-                                <Title
-                                    title={feature.description}
-                                    size='text-[20px]'
-                                    font='font-[400]'
-                                />
-                            </div>
-                        ))
-                    }
+                <div className='w-full grid grid-cols-3 gap-5 items-start mt-10'>
+                    <div className='flex flex-col gap-3'>
+                        <Title
+                            title='Your rental, your rules'
+                            size='text-[24px]'
+                            font='font-[600]'
+                        />
+                        <div className='flex gap-2 items-start'>
+                            <IoMdCheckmarkCircleOutline size={24} className='text-success shrink-0 mt-1'/>
+                            <Title
+                                title='Accept or decline bookings with Request to Book'
+                                size='text-[16px]'
+                                font='font-[400]'
+                            />
+                        </div>
+                        <div className='flex gap-2 items-start'>
+                            <IoMdCheckmarkCircleOutline size={24} className='text-success shrink-0 mt-1'/>
+                            <Title
+                                title="Manage your guests' expectations by setting up clear house rules."
+                                size='text-[16px]'
+                                font='font-[400]'
+                            />
+                        </div>
+                    </div>
+                    <div className='flex flex-col gap-3'>
+                        <Title
+                            title='Get to know your guests'
+                            size='text-[24px]'
+                            font='font-[600]'
+                        />
+                        <div className='flex gap-2 items-start'>
+                            <IoMdCheckmarkCircleOutline size={24} className='text-success shrink-0 mt-1'/>
+                            <Title
+                                title='Chat with your guests before accepting their stay with pre-booking messaging.*'
+                                size='text-[16px]'
+                                font='font-[400]'
+                            />
+                        </div>
+                        <div className='flex gap-2 items-start'>
+                            <IoMdCheckmarkCircleOutline size={24} className='text-success shrink-0 mt-1'/>
+                            <Title
+                                title="Access guest travel history insights."
+                                size='text-[16px]'
+                                font='font-[400]'
+                            />
+                        </div>
+                    </div>
+                    <div className='flex flex-col gap-3'>
+                        <Title
+                            title='What makes you unique'
+                            size='text-[24px]'
+                            font='font-[600]'
+                        />
+                        <div className='flex gap-2 items-start'>
+                            <IoMdCheckmarkCircleOutline size={24} className='text-success shrink-0 mt-1'/>
+                            <Title
+                                title='Highlight your strengths, special offers, and services to attract the right customers.'
+                                size='text-[16px]'
+                                font='font-[400]'
+                            />
+                        </div>
+                        <div className='flex gap-2 items-start'>
+                            <IoMdCheckmarkCircleOutline size={24} className='text-success shrink-0 mt-1'/>
+                            <Title
+                                title="Create and manage ads or offers to reach more travelers and grow your bookings."
+                                size='text-[16px]'
+                                font='font-[400]'
+                            />
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div className='w-full mt-36'>
+                <Title
+                    title='Simple to begin and stay ahead'
+                    size='text-[48px]'
+                    font='font-[600]'
+                />
+                <div className='w-full grid grid-cols-3 gap-5 items-start mt-10'>
+                    <div className='flex flex-col gap-3 justify-center items-center'>
+                        <div className='w-40 h-40'>
+                            <img 
+                                className='w-full h-full object-cover'
+                                src={review} 
+                                alt="review" />
+                        </div>
+                        <div className='flex flex-col items-center justify-center text-center'>
+                            <Title
+                                title='Import your property details'
+                                size='text-[24px]'
+                                font='font-[600]'
+                            />
+                            <Title
+                                title='Seamlessly import your property information from other travel websites and avoid overbooking with calendar sync.'
+                                size='text-[16px]'
+                                font='font-[400]'
+                            />
+                        </div>
+                    </div>
+                    <div className='flex flex-col gap-3 justify-center items-center'>
+                        <div className='w-40 h-40'>
+                            <img 
+                                className='w-full h-full object-cover'
+                                src={puzzle} 
+                                alt="review" />
+                        </div>
+                        <div className='flex flex-col items-center justify-center text-center'>
+                            <Title
+                                title='Start fast with review scores'
+                                size='text-[24px]'
+                                font='font-[600]'
+                            />
+                            <Title
+                                title='Your review scores on other travel websites are converted and displayed on your property page before your first Booking.com guests leave their reviews.'
+                                size='text-[16px]'
+                                font='font-[400]'
+                            />
+                        </div>
+                    </div>
+                    <div className='flex flex-col gap-3 justify-center items-center'>
+                        <div className='w-30 h-40'>
+                            <img 
+                                className='w-full h-full object-cover'
+                                src={search} 
+                                alt="review" />
+                        </div>
+                        <div className='flex flex-col items-center justify-center text-center'>
+                            <Title
+                                title='Stand out in the market'
+                                size='text-[24px]'
+                                font='font-[600]'
+                            />
+                            <Title
+                                title='The "New to travel.lk" label helps you stand out in our search results.'
+                                size='text-[16px]'
+                                font='font-[400]'
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
         </Main>
