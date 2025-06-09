@@ -2,7 +2,7 @@ import { useState } from "react";
 import CustomSelector from "../../../components/CustomSelector";
 import Main from "../../../components/Main";
 import Title from "../../../components/Title";
-import { bedTypes, roomTypes } from "../../../core/rooms";
+import { bedTypes, roomTypes } from "../../../core/Lists/rooms";
 import { handleSelect } from "../../../core/service";
 import InputField from "../../../components/InputField";
 import { amenities } from "../../../core/constant";

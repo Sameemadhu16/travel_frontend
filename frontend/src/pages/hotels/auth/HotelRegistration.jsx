@@ -4,7 +4,7 @@ import ImageUploader from "../../../components/ImageUploader";
 import InputField from "../../../components/InputField";
 import Main from "../../../components/Main";
 import Title from "../../../components/Title";
-import { provinces, districts, cities } from "../../../core/location";
+import { provinces, districts, cities } from "../../../core/Lists/location";
 import { amenities, propertyTypes } from "../../../core/constant";
 import InputArea from "../../../components/InputArea";
 import PrimaryButton from "../../../components/PrimaryButton";

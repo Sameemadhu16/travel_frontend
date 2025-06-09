@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react';
-import { travelPlaces } from '../core/constant';
+import { travelPlaces } from '../core/Lists/travelPlaces';
 
 export default function SearchContainer() {
     const [startDate, setStartDate] = useState(new Date());

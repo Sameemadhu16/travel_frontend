@@ -1,12 +1,12 @@
-import { amenities as amenitiesList } from './constant';
-import room1 from '../assets/rooms/room1.png';
-import room2 from '../assets/rooms/room2.jpg';
-import room3 from '../assets/rooms/room3.jpg';
-import room4 from '../assets/rooms/room4.jpg';
-import room5 from '../assets/rooms/room5.jpg';
-import room6 from '../assets/rooms/room6.jpg';
-import room7 from '../assets/rooms/room7.jpg';
-import room8 from '../assets/rooms/room8.webp';
+import { amenities as amenitiesList } from '../constant';
+import room1 from '../../assets/rooms/room1.png';
+import room2 from '../../assets/rooms/room2.jpg';
+import room3 from '../../assets/rooms/room3.jpg';
+import room4 from '../../assets/rooms/room4.jpg';
+import room5 from '../../assets/rooms/room5.jpg';
+import room6 from '../../assets/rooms/room6.jpg';
+import room7 from '../../assets/rooms/room7.jpg';
+import room8 from '../../assets/rooms/room8.webp';
 
 // Helper to get 5 random images from the room images array
 const allRoomImages = [room1, room2, room3, room4, room5, room6, room7, room8,];

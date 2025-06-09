@@ -1,10 +1,10 @@
 import { useParams } from 'react-router-dom';
-import { hotelList } from '../../../core/constant';
+import { hotelList } from '../../../core/Lists/hotels';
 import { useEffect, useState } from 'react';
 import Main from '../../../components/Main';
 import Title from '../../../components/Title';
 import Breadcrumb from '../../../components/Breadcrumb';
-import { roomList } from '../../../core/rooms';
+import { roomList } from '../../../core/Lists/rooms';
 import RoomCard from './components/RoomCard';
 import FormatText from '../../../components/FormatText';
 
@@ -26,7 +26,7 @@ export default function Hotel() {
         { label: "Hotels", path: "/hotels-search" },
         { label: hotel.name || "Hotel", path: `/hotel/${id}` },
     ];
-console.log(rooms)
+
     return (
         <Main>
             <div>
