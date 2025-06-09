@@ -7,7 +7,8 @@ export default function CustomSelector({
     options = [], 
     label = '',
     placeholder = 'Select an option', 
-    onChange 
+    onChange ,
+    error = ''
 }) {
     const [selected, setSelected] = useState('');
 
@@ -30,7 +31,9 @@ export default function CustomSelector({
             <select
                 value={selected}
                 onChange={handleChange}
-                className="border-2 w-full p-2 cursor-pointer rounded-md text-gray-700 bg-white focus:border-brand-primary focus:outline-none"
+                className={`border-2 w-full p-2 cursor-pointer rounded-md text-gray-700 bg-white ${
+                        error ? 'border-danger' : 'border-b-2'
+                    } focus:border-brand-primary focus:outline-none`}
             >
                 <option className='cursor-pointer' value="" disabled>
                 {placeholder}
@@ -41,6 +44,7 @@ export default function CustomSelector({
                 </option>
                 ))}
             </select>
+            {error && <p className="text-danger text-[16px] font-medium">{error}</p>}
         </div>
     );
 }
@@ -56,4 +60,5 @@ CustomSelector.propTypes = {
     label: PropTypes.string,
     placeholder: PropTypes.string,
     onChange: PropTypes.func,
+    error: PropTypes.string,
 };

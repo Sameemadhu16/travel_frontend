@@ -45,8 +45,6 @@ export default function Search() {
         console.log('Selected:', value);
     };
 
-    console.log(selectedFacilities,selectedMeals,selectedPriceRanges,selectedPropertyTypes)
-
     return (
         <>
             <div className='w-full relative'>

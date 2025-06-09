@@ -23,3 +23,24 @@ export const validateImageUpload  = (files , limit , maxTotalSizeMB, multiple)  
 
     return error;
 }
+
+export const formValidator = (formData = {}) => {
+    const emptyFields = {};
+
+    if(formData){
+        Object.entries(formData).forEach(([key, value]) => {
+            if (!value || value.toString().trim() === '') {
+            emptyFields[key] = '*This field is required';
+            }
+        });
+
+        if (Object.keys(emptyFields).length > 0) {
+            return {
+            message: '*All fields are required',
+            errors: emptyFields,
+            };
+        }
+    }
+
+    return null;
+};

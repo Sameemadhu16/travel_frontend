@@ -10,11 +10,13 @@ import InputArea from "../../../components/InputArea";
 import PrimaryButton from "../../../components/PrimaryButton";
 import { handleSelect } from "../../../core/service";
 import Checkbox from "../../../components/CheckBox";
+import { formValidator } from "../../../core/validation";
 
 export default function HotelRegistration() {
     const [licenseImage, setLicenseImage] = useState([]);
     const [hotelImages, setHotelImages] = useState([]);
-
+    const [licenseError,setLicenseError] = useState('');
+    const [hotelImagesError,setHotelImagesError] = useState('');
     const [formData, setFormData] = useState({
         hotelName: '',
         email: '',
@@ -31,6 +33,7 @@ export default function HotelRegistration() {
         description: '',
         amenities: [],
     });
+    const [error,setError] = useState({});
 
     const filterDistricts = districts.filter(district => {
         const selectedCity = cities.find(city => city.value === formData.city);
@@ -62,7 +65,11 @@ export default function HotelRegistration() {
             licensePhoto: licenseImage,
             images: hotelImages
         };
-        console.log(submissionData);
+
+        const validator = formValidator(formData);
+        setError(validator);
+        console.log(validator);
+        console.log(submissionData)
     };
 
     const amenityList = useMemo(()=>{
@@ -85,7 +92,7 @@ export default function HotelRegistration() {
             </div>
             );
         })
-    },[amenities]);
+    },[amenities, formData.amenities, handleAmenityChange]);
 
     return (
         <Main>
@@ -104,7 +111,7 @@ export default function HotelRegistration() {
                                 value={formData.hotelName}
                                 onChange={e => handleSelect(setFormData, 'hotelName', e.target.value)}
                                 placeholder=''
-                                error=''
+                                error={error?.errors?.hotelName}
                             />
                         </div>
                         <div className="w-1/2">
@@ -115,7 +122,7 @@ export default function HotelRegistration() {
                                 value={formData.email}
                                 onChange={e => handleSelect(setFormData, 'email', e.target.value)}
                                 placeholder=''
-                                error=''
+                                error={error?.errors?.email}
                             />
                         </div>
                     </div>
@@ -128,7 +135,7 @@ export default function HotelRegistration() {
                                 value={formData.password}
                                 onChange={e => handleSelect(setFormData, 'password', e.target.value)}
                                 placeholder=''
-                                error=''
+                                error={error?.errors?.password}
                                 icon={true}
                             />
                         </div>
@@ -140,7 +147,7 @@ export default function HotelRegistration() {
                                 value={formData.confirmPassword}
                                 onChange={e => handleSelect(setFormData, 'confirmPassword', e.target.value)}
                                 placeholder=''
-                                error=''
+                                error={error?.errors?.confirmPassword}
                                 icon={true}
                             />
                         </div>
@@ -159,7 +166,7 @@ export default function HotelRegistration() {
                                 value={formData.street}
                                 onChange={e => handleSelect(setFormData, 'street', e.target.value)}
                                 placeholder=''
-                                error=''
+                                error={error?.errors?.street}
                             />
                         </div>
                         <div className="w-1/2">
@@ -168,6 +175,7 @@ export default function HotelRegistration() {
                                 options={cities}
                                 placeholder="Select City"
                                 onChange={value => handleSelect(setFormData, 'city', value)}
+                                error={error?.errors?.city}
                             />
                         </div>
                     </div>
@@ -178,6 +186,7 @@ export default function HotelRegistration() {
                                 options={filterDistricts}
                                 placeholder="Select District"
                                 onChange={value => handleSelect(setFormData, 'district', value)}
+                                error={error?.errors?.district}
                             />
                         </div>
                         <div className="w-1/2">
@@ -186,6 +195,7 @@ export default function HotelRegistration() {
                                 options={filterProvince}
                                 placeholder="Select Province"
                                 onChange={value => handleSelect(setFormData, 'province', value)}
+                                error={error?.errors?.province}
                             />
                         </div>
                     </div>
@@ -202,7 +212,7 @@ export default function HotelRegistration() {
                             value={formData.registrationNo}
                             onChange={e => handleSelect(setFormData, 'registrationNo', e.target.value)}
                             placeholder=''
-                            error=''
+                            error={error?.errors?.registrationNo}
                         />
                     </div>
                     <div className="w-1/2 mt-2">
@@ -210,6 +220,7 @@ export default function HotelRegistration() {
                             label={'Business Registration License Photo'}
                             images={licenseImage}
                             setImages={setLicenseImage}
+                            error={licenseError}
                         />
                     </div>
                 </div>
@@ -221,8 +232,9 @@ export default function HotelRegistration() {
                         <CustomSelector
                             label="Hotel Type"
                             options={propertyTypes}
-                            placeholder="Hotel"
+                            placeholder="Hotel Type"
                             onChange={value => handleSelect(setFormData, 'type', value)}
+                            error={error?.errors?.type}
                         />
                     </div>
                     <div className="w-1/2">
@@ -231,7 +243,7 @@ export default function HotelRegistration() {
                             value={formData.description}
                             onChange={e => handleSelect(setFormData, 'description', e.target.value)}
                             placeholder=''
-                            error=''
+                            error={error?.errors?.description}
                             warningHeading={'Important Note: Customize the **Heading** Text Here'}
                         />
                     </div>
@@ -241,12 +253,18 @@ export default function HotelRegistration() {
                     <div className="w-full flex flex-wrap">
                         {amenityList}
                     </div>
+                    {
+                        error?.errors?.amenities && (
+                            <p className="text-danger text-[16px] font-medium">{error?.errors?.description}</p>
+                        )
+                    }
                     <div className="w-1/2 mt-2">
                         <ImageUploader
                             label={'Hotel Images'}
                             images={hotelImages}
                             setImages={setHotelImages}
                             multiple={true}
+                            error={hotelImagesError}
                         />
                     </div>
                 </div>
