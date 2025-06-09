@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import Main from '../../../components/Main';
 import Title from '../../../components/Title';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -11,6 +11,8 @@ import review from '../../../assets/images/Review.png'
 import puzzle from '../../../assets/images/Puzzle.png'
 import search from '../../../assets/images/Search.png'
 import { testimonials } from '../../../core/Lists/reviews';
+import ReviewCard from './components/ReviewCard';
+import PrimaryButton from '../../../components/PrimaryButton';
 
 export default function Details() {
     const [currentTitle, setCurrentTitle] = useState('anything');
@@ -37,6 +39,16 @@ export default function Details() {
         window.addEventListener('scroll', handleScroll);
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
+
+    const reviews = useMemo(()=>{
+        return testimonials.map((review)=>(
+            <div className=''>
+                <ReviewCard
+                    review={review}
+                />
+            </div>
+        ))
+    },[testimonials]);
 
     return (
         <>
@@ -184,6 +196,9 @@ export default function Details() {
                             </div>
                         </div>
                     </div>
+                    <div className="w-1/4 mt-10">
+                        <PrimaryButton text="Host with us today"/>
+                    </div>
                 </Main>
             </div>
             <Main>
@@ -256,13 +271,24 @@ export default function Details() {
                         </div>
                     </div>
                 </div>
+                <div className="w-1/4 mt-10">
+                    <PrimaryButton text="Get started today"/>
+                </div>
             </Main>
             <div className='mt-24 w-full h-full py-10 bg-background-muted'>
-                {
-                    testimonials.map((review)=>(
-                        <></>
-                    ))
-                }
+                <Main>
+                    <Title
+                        title='What hosts like you say'
+                        size='text-[48px]'
+                        font='font-[600]'
+                    />
+                    <div className='grid grid-cols-3 gap-2 mt-4'>
+                        {reviews}
+                    </div>
+                    <div className="w-1/4 mt-10">
+                        <PrimaryButton text="Join hosts like you"/>
+                    </div>
+                </Main>
             </div>
         </>
         

@@ -1,8 +1,8 @@
 import Title from '../../../../components/Title'
 import FormatText from '../../../../components/FormatText'
 import { FaBed, FaUser } from 'react-icons/fa'
-import { amenities } from '../../../../core/constant'
 import PrimaryButton from '../../../../components/PrimaryButton'
+import PropTypes from 'prop-types'
 
 export default function RoomCard({room}) {
     return (
@@ -91,3 +91,24 @@ export default function RoomCard({room}) {
         </div>
     )
 }
+
+// Add PropTypes for RoomCard
+RoomCard.propTypes = {
+    room: PropTypes.shape({
+        id: PropTypes.number,
+        hotelId: PropTypes.number,
+        roomType: PropTypes.string,
+        maxGuests: PropTypes.number,
+        bedType: PropTypes.string,
+        pricePerNight: PropTypes.number,
+        amenities: PropTypes.arrayOf(
+            PropTypes.shape({
+                value: PropTypes.string,
+                icon: PropTypes.elementType
+            })
+        ),
+        images: PropTypes.arrayOf(PropTypes.string),
+        description: PropTypes.string,
+        name: PropTypes.string
+    }).isRequired
+};
