@@ -1,5 +1,4 @@
 export const validateImageUpload  = (files , limit , maxTotalSizeMB, multiple)  => {
-console.log(files);
     let error = '';
     const validExtensions = ['image/jpg', 'image/jpeg', 'image/png', 'image/svg+xml'];
     const invalidFiles = files.filter(file => !validExtensions.includes(file.type));
