@@ -67,8 +67,19 @@ export default function HotelRegistration() {
                 licensePhoto: licenseImage,
                 images: hotelImages
             };
-            const validator = formValidator(submissionData);
+            const customValidations = {
+                licensePhoto: {
+                    exactLength: 1,
+                    message: '*Please add Business license phot'
+                },
+                images: {
+                    exactLength: 5,
+                    message: '*Exactly 5 images required'
+                }
+            };
+            const validator = formValidator(submissionData,[],customValidations);
             setError(validator);
+            console.log(error)
             if( validator === null && hotelImagesError.length === 0  && licenseError.length === 0 ){
                 console.log(submissionData);
             }
