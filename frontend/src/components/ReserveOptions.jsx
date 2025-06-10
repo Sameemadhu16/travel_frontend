@@ -20,9 +20,9 @@ const options = [
     },
     {
         id: 3,
-        name: 'Car rentals',
+        name: 'Vehicle rentals',
         icon: FaCar,
-        path: '/'
+        path: '/vehicle-search'
     },
 ]
 export default function ReserveOptions() {

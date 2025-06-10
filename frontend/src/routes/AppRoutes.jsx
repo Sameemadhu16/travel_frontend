@@ -6,6 +6,7 @@ import HotelRegistration from '../pages/hotels/auth/HotelRegistration'
 import RoomsAdd from '../pages/hotels/Rooms/RoomsAdd'
 import Home from '../pages/home/Home'
 import Details from '../pages/partner/details/Details'
+import SearchVehicles from '../pages/vehicles/search/SearchVehicles'
 
 export default function AppRoutes() {
     return (
@@ -13,6 +14,7 @@ export default function AppRoutes() {
                 <Route path='/' element={<Welcome/>}/>
                 <Route path='/home' element={<Home/>}/>
                 <Route path='/hotels-search' element={<Search/>}/>
+                <Route path='/vehicle-search' element={<SearchVehicles/>}/>
                 <Route path='/hotel/:id' element={<Hotel/>}/>
 
                 {/* hotels*/}
