@@ -14,9 +14,10 @@ import { testimonials } from '../../../core/Lists/reviews';
 import ReviewCard from './components/ReviewCard';
 import PrimaryButton from '../../../components/PrimaryButton';
 
+const titles = [ 'anything', 'guides', 'hotels', 'vehicles' ];
+
 export default function Details() {
     const [currentTitle, setCurrentTitle] = useState('anything');
-    const titles = [ 'anything', 'guides', 'hotels', 'vehicles' ];
     const [blur,setBlur] = useState(true);
 
     useEffect(() => {
@@ -48,7 +49,7 @@ export default function Details() {
                 />
             </div>
         ))
-    },[testimonials]);
+    },[]);
 
     return (
         <>
@@ -157,7 +158,8 @@ export default function Details() {
                                 <div className='flex gap-2 items-start'>
                                     <IoMdCheckmarkCircleOutline size={24} className='text-success shrink-0 mt-1'/>
                                     <Title
-                                        title='Chat with your guests before accepting their stay with pre-booking messaging.*'
+                                        title='Chat with your guests before accepting their 
+                                            stay with pre-booking messaging.*'
                                         size='text-[16px]'
                                         font='font-[400]'
                                     />
@@ -180,7 +182,8 @@ export default function Details() {
                                 <div className='flex gap-2 items-start'>
                                     <IoMdCheckmarkCircleOutline size={24} className='text-success shrink-0 mt-1'/>
                                     <Title
-                                        title='Highlight your strengths, special offers, and services to attract the right customers.'
+                                        title='Highlight your strengths, special offers, and services to
+                                            attract the right customers.'
                                         size='text-[16px]'
                                         font='font-[400]'
                                     />
@@ -188,7 +191,8 @@ export default function Details() {
                                 <div className='flex gap-2 items-start'>
                                     <IoMdCheckmarkCircleOutline size={24} className='text-success shrink-0 mt-1'/>
                                     <Title
-                                        title="Create and manage ads or offers to reach more travelers and grow your bookings."
+                                        title="Create and manage ads or offers to reach more 
+                                            travelers and grow your bookings."
                                         size='text-[16px]'
                                         font='font-[400]'
                                     />
@@ -223,7 +227,8 @@ export default function Details() {
                                     font='font-[600]'
                                 />
                                 <Title
-                                    title='Seamlessly import your property information from other travel websites and avoid overbooking with calendar sync.'
+                                    title='Seamlessly import your property information from 
+                                        other travel websites and avoid overbooking with calendar sync.'
                                     size='text-[16px]'
                                     font='font-[400]'
                                 />
@@ -243,7 +248,9 @@ export default function Details() {
                                     font='font-[600]'
                                 />
                                 <Title
-                                    title='Your review scores on other travel websites are converted and displayed on your property page before your first Booking.com guests leave their reviews.'
+                                    title='Your review scores on other travel websites are converted 
+                                        and displayed on your property page before your first Booking.com 
+                                        guests leave their reviews.'
                                     size='text-[16px]'
                                     font='font-[400]'
                                 />

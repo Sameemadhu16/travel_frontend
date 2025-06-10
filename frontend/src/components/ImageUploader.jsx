@@ -126,7 +126,8 @@ const ImageUploader = ({
                             <img src={img} alt="Uploaded" className="h-full w-full object-fit" />
                             <button
                                 type="button"
-                                className="absolute top-1 right-1 bg-gray-100 text-gray-500 rounded-full h-5 w-5 p-1 text-xs"
+                                className="absolute top-1 right-1 bg-gray-100 
+                                    text-gray-500 rounded-full h-5 w-5 p-1 text-xs"
                                 onClick={() => removeImage(index)}
                             >
                                 ✕
@@ -135,6 +136,11 @@ const ImageUploader = ({
                     ))}
                 </div>
             )}
+            {
+                uploading && (
+                    <></>
+                )
+            }
         </div>
     );
 };

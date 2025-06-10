@@ -33,7 +33,7 @@ export default function Home() {
                 </div>
             ))
         
-    },[places]);
+    },[]);
 
     const handleImageClick = (index) => {
         const container = containerRef.current;
@@ -55,7 +55,7 @@ export default function Home() {
                 />
             </div>
         ))
-    },[places]);
+    },[]);
 
     return (
         <>
@@ -85,7 +85,9 @@ export default function Home() {
                                 font='font-[600]'
                             />
                             <Title 
-                                title='Discover personalized itineraries, real-time recommendations, and hassle-free travel planning powered by artificial intelligence'
+                                title='Discover personalized itineraries, real-time 
+                                    recommendations, and hassle-free travel planning powered by 
+                                    artificial intelligence'
                                 size='text-[24px]'
                                 font='font-[400]'
                             />

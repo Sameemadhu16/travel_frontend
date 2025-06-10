@@ -16,22 +16,38 @@ export default function RoomCard({room}) {
                 <div className='w-1/2 h-full grid grid-cols-2 gap-2'>
                     <div className='rounded-[8px] overflow-hidden'>
                         {room?.images?.[1] && (
-                            <img src={room.images[1]} alt={room?.name || "Hotel"} className="h-full w-full object-cover" />
+                            <img 
+                                src={room.images[1]} 
+                                alt={room?.name || "Hotel"} 
+                                className="h-full w-full object-cover" 
+                            />
                         )}
                     </div>
                     <div className='rounded-[8px] overflow-hidden'>
                         {room?.images?.[2] && (
-                            <img src={room.images[2]} alt={room?.name || "Hotel"} className="h-full w-full object-cover" />
+                            <img 
+                                src={room.images[2]} 
+                                alt={room?.name || "Hotel"} 
+                                className="h-full w-full object-cover" 
+                            />
                         )}
                     </div>
                     <div className='rounded-[8px] overflow-hidden'>
                         {room?.images?.[3] && (
-                            <img src={room.images[3]} alt={room?.name || "Hotel"} className="h-full w-full object-cover" />
+                            <img 
+                                src={room.images[3]} 
+                                alt={room?.name || "Hotel"} 
+                                className="h-full w-full object-cover" 
+                            />
                         )}
                     </div>
                     <div className='rounded-[8px] overflow-hidden'>
                         {room?.images?.[4] && (
-                            <img src={room.images[4]} alt={room?.name || "Hotel"} className="h-full w-full object-cover" />
+                            <img 
+                                src={room.images[4]} 
+                                alt={room?.name || "Hotel"} 
+                                className="h-full w-full object-cover" 
+                            />
                         )}
                     </div>
                 </div>

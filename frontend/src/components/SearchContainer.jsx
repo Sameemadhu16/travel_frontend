@@ -59,7 +59,7 @@ export default function SearchContainer() {
             .slice(0, 5); // Show only top 5 matches
 
         setFilteredPlaces(filtered);
-    }, [destinationInput]);
+    }, [destinationInput, sriLankaTravelPlaces]);
 
     // Filter places for "From" input
     useEffect(() => {
@@ -203,7 +203,8 @@ export default function SearchContainer() {
     };
 
     return (
-        <div className='relative h-[60px] p-4 bg-white flex flex-col md:flex-row items-center justify-between shadow-md rounded-[16px]'>
+        <div className='relative h-[60px] p-4 bg-white flex flex-col 
+            md:flex-row items-center justify-between shadow-md rounded-[16px]'>
             {/* From location */}
             <div ref={fromRef} className='relative flex flex-col items-center cursor-pointer'>
                 <div
@@ -221,7 +222,8 @@ export default function SearchContainer() {
                 </div>
                 <h2 className='text-gray-400 text-[14px]'>Click here to change</h2>
                 {showFromSuggestions && (
-                    <div className='absolute top-full mt-2 z-10 w-[250px] bg-white shadow-lg rounded-lg p-2'>
+                    <div className='absolute top-full mt-2 z-10 w-[250px] 
+                        bg-white shadow-lg rounded-lg p-2'>
                         <input
                             id="fromInput"
                             type="text"
@@ -334,7 +336,8 @@ export default function SearchContainer() {
 
             {/* Search button */}
             <div className='flex flex-col items-center cursor-pointer'>
-                <div className='bg-brand-primary hover:bg-opacity-95 transition-colors text-white px-6 py-2 rounded-lg font-medium'>
+                <div className='bg-brand-primary hover:bg-opacity-95 
+                    transition-colors text-white px-6 py-2 rounded-lg font-medium'>
                     Search
                 </div>
             </div>
@@ -343,7 +346,8 @@ export default function SearchContainer() {
             {showDatePicker && (
                 <div
                     ref={datePickerRef}
-                    className="absolute top-[70px] right-1 z-20 bg-white shadow-lg border rounded-lg p-4 min-w-[320px]"
+                    className="absolute top-[70px] right-1 z-20 
+                        bg-white shadow-lg border rounded-lg p-4 min-w-[320px]"
                 >
                     {/* Date picker header */}
                     <div className="flex items-center justify-between mb-4">
@@ -363,13 +367,15 @@ export default function SearchContainer() {
                         <div className="flex justify-between items-center text-sm">
                             <div>
                                 <span className="text-gray-500">Start: </span>
-                                <span className={`${selectingDate === 'start' ? 'text-brand-primary font-medium' : 'text-gray-700'}`}>
+                                <span className={`${selectingDate === 'start' ? 
+                                        'text-brand-primary font-medium' : 'text-gray-700'}`}>
                                     {formatDate(startDate)}
                                 </span>
                             </div>
                             <div>
                                 <span className="text-gray-500">End: </span>
-                                <span className={`${selectingDate === 'end' ? 'text-brand-primary font-medium' : 'text-gray-700'}`}>
+                                <span className={`${selectingDate === 'end' ? 
+                                        'text-brand-primary font-medium' : 'text-gray-700'}`}>
                                     {formatDate(endDate)}
                                 </span>
                             </div>
@@ -414,11 +420,18 @@ export default function SearchContainer() {
                                         disabled={isDisabled(date)}
                                         className={`
                                             w-full h-full rounded text-sm font-medium transition-colors
-                                            ${isDisabled(date) ? 'text-gray-300 cursor-not-allowed' : 'hover:bg-gray-100 cursor-pointer'}
-                                            ${isStartDate(date) ? 'bg-brand-primary text-white hover:bg-brand-primary-dark' : ''}
-                                            ${isEndDate(date) ? 'bg-brand-primary text-white hover:bg-brand-primary-dark' : ''}
-                                            ${isInRange(date) ? 'bg-orange-100 text-orange-600' : ''}
-                                            ${isToday(date) && !isStartDate(date) && !isEndDate(date) && !isInRange(date) ? 'bg-blue-100 text-blue-600' : ''}
+                                            ${isDisabled(date) ? 
+                                                'text-gray-300 cursor-not-allowed' : 
+                                                'hover:bg-gray-100 cursor-pointer'}
+                                            ${isStartDate(date) ? 
+                                                'bg-brand-primary text-white hover:bg-brand-primary-dark' : ''}
+                                            ${isEndDate(date) ? 
+                                                'bg-brand-primary text-white hover:bg-brand-primary-dark' : ''}
+                                            ${isInRange(date) ? 
+                                                'bg-orange-100 text-orange-600' : ''}
+                                            ${isToday(date) && !isStartDate(date) && 
+                                                !isEndDate(date) && !isInRange(date) ? 
+                                                    'bg-blue-100 text-blue-600' : ''}
                                         `}
                                     >
                                         {date.getDate()}
@@ -439,7 +452,8 @@ export default function SearchContainer() {
                         {endDate && (
                             <button
                                 onClick={() => setShowDatePicker(false)}
-                                className="px-4 py-2 bg-brand-primary text-white rounded hover:bg-brand-primary-dark"
+                                className="px-4 py-2 bg-brand-primary 
+                                    text-white rounded hover:bg-brand-primary-dark"
                             >
                                 Done
                             </button>

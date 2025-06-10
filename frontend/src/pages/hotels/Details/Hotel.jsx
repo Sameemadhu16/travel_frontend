@@ -7,8 +7,6 @@ import Breadcrumb from '../../../components/Breadcrumb';
 import { roomList } from '../../../core/Lists/rooms';
 import RoomCard from './components/RoomCard';
 import FormatText from '../../../components/FormatText';
-import { amenities } from '../../../core/constant';
-
 
 export default function Hotel() {
     const [hotel,setHotel] = useState({});
@@ -63,28 +61,48 @@ export default function Hotel() {
             <div className='w-full flex h-[400px] gap-2 mt-5'>
                 <div className='w-1/2 h-full rounded-[8px] overflow-hidden'>
                     {hotel?.images?.[0] && (
-                        <img src={hotel.images[0]} alt={hotel?.name || "Hotel"} className="h-full w-full object-cover" />
+                        <img 
+                            src={hotel.images[0]} 
+                            alt={hotel?.name || "Hotel"} 
+                            className="h-full w-full object-cover" 
+                        />
                     )}
                 </div>
                 <div className='w-1/2 h-full grid grid-cols-2 gap-2'>
                     <div className='rounded-[8px] overflow-hidden'>
                         {hotel?.images?.[1] && (
-                            <img src={hotel.images[1]} alt={hotel?.name || "Hotel"} className="h-full w-full object-cover" />
+                            <img 
+                                src={hotel.images[1]} 
+                                alt={hotel?.name || "Hotel"} 
+                                className="h-full w-full object-cover" 
+                            />
                         )}
                     </div>
                     <div className='rounded-[8px] overflow-hidden'>
                         {hotel?.images?.[2] && (
-                            <img src={hotel.images[2]} alt={hotel?.name || "Hotel"} className="h-full w-full object-cover" />
+                            <img 
+                                src={hotel.images[2]} 
+                                alt={hotel?.name || "Hotel"} 
+                                className="h-full w-full object-cover" 
+                            />
                         )}
                     </div>
                     <div className='rounded-[8px] overflow-hidden'>
                         {hotel?.images?.[3] && (
-                            <img src={hotel.images[3]} alt={hotel?.name || "Hotel"} className="h-full w-full object-cover" />
+                            <img 
+                                src={hotel.images[3]} 
+                                alt={hotel?.name || "Hotel"} 
+                                className="h-full w-full object-cover" 
+                            />
                         )}
                     </div>
                     <div className='rounded-[8px] overflow-hidden'>
                         {hotel?.images?.[4] && (
-                            <img src={hotel.images[4]} alt={hotel?.name || "Hotel"} className="h-full w-full object-cover" />
+                            <img 
+                                src={hotel.images[4]} 
+                                alt={hotel?.name || "Hotel"} 
+                                className="h-full w-full object-cover" 
+                            />
                         )}
                     </div>
                 </div>

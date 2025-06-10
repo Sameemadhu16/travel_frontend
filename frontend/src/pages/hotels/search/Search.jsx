@@ -39,7 +39,7 @@ export default function Search() {
                 />
             </div>
         ))
-    })
+    },[])
 
     const handleSelect = (value) => {
         console.log('Selected:', value);

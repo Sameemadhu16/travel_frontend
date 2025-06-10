@@ -16,5 +16,6 @@ export default function Title({
 Title.propTypes = {
     title: PropTypes.string.isRequired,
     size: PropTypes.string,
-    font: PropTypes.string
+    font: PropTypes.string,
+    color: PropTypes.string
 }

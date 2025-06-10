@@ -1,4 +1,4 @@
-import React from 'react'
+import PropTypes from 'prop-types';
 
 export default function BlurPage({children}) {
     return (
@@ -8,3 +8,7 @@ export default function BlurPage({children}) {
         </div>
     )
 }
+
+BlurPage.propTypes = {
+    children: PropTypes.node.isRequired,
+};

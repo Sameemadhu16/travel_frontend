@@ -1,16 +1,16 @@
-import { useMemo } from "react";
+import { useCallback, useMemo } from "react";
 import Title from "../../../components/Title";
 import PropTypes from 'prop-types';
 
 export default function CheckboxGroup({ title, options = [], selected = [], onChange }) {
     
-    const handleChange = (value) => {
+    const handleChange = useCallback((value) => {
         if (selected.includes(value)) {
-        onChange(selected.filter(item => item !== value));
+            onChange(selected.filter(item => item !== value));
         } else {
-        onChange([...selected, value]);
+            onChange([...selected, value]);
         }
-    };
+    },[selected, onChange]);
 
     const optionsMap = useMemo(()=>{
         return options.map((option) => (
@@ -25,7 +25,7 @@ export default function CheckboxGroup({ title, options = [], selected = [], onCh
             <span className="text-sm">{option.value}</span>
         </label>
         ))
-    },[options, selected]);
+    },[options, selected, handleChange]);
 
     return (
         <div className="">
