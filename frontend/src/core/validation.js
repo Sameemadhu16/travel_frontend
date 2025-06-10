@@ -1,3 +1,11 @@
+/**
+ * Validates image, checking types size and other things
+ * @param {Object} files - The image file to validate
+ * @param {Array} limit - Number of image to upload
+ * @param {Array} maxTotalSizeMB - Image size to upload
+ * @param {Array} multiple - Check if uploaded multiple images or not
+ * @returns {Object|null} Validation errors or null if valid
+ */
 export const validateImageUpload  = (files , limit , maxTotalSizeMB, multiple)  => {
     let error = '';
     const validExtensions = ['image/jpg', 'image/jpeg', 'image/png', 'image/svg+xml'];

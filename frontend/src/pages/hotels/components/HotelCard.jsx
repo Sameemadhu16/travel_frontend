@@ -89,7 +89,7 @@ export default function HotelCard({
 }
 
 HotelCard.propTypes = {
-    id: PropTypes.string.isRequired,
+    id: PropTypes.number.isRequired,
     name: PropTypes.string.isRequired,
     location: PropTypes.string.isRequired,
     rating: PropTypes.number.isRequired,
