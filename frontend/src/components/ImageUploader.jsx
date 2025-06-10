@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { validateImageUpload } from "../core/validation";
 
 /**
@@ -21,50 +21,35 @@ const ImageUploader = ({
 }) => {
     const [uploading, setUploading] = useState(false);
 
-    const handleFiles = async (files) => {
-        const validationError = validateImageUpload(files, 5,);
+    const handleFiles = useCallback(async (files) => {
+        setUploading(true);
+        const validationError = validateImageUpload(files, 5);
         if (validationError) {
             setError(validationError);
+            setUploading(false);
             return;
         }
-console.log(files)
-        //check wether image length
-        let uploadFiles = files;
-        let errorMsg = '';
 
         if (multiple) {
             if (files.length < 5) {
-                errorMsg = ('*You should add 5 images to verify');
+                setError('*You should add 5 images to verify');
+                setUploading(false);
+                return;
             } else if (files.length > 5) {
-                errorMsg = ('*You can upload a maximum of 5');
-                // Only upload the first 5 images
-                uploadFiles = files.slice(0, 5);
+                setError('*You can upload a maximum of 5');
+                setUploading(false);
+                return;
             } else {
-                // Exactly 5 images, no error
                 setError('');
             }
         }
 
-        setError(errorMsg);
-        setUploading(true);
-        //const urls = [];
-        // for (const file of files) {
-        //     const uploadedUrl = await uploadToServer(file);
-        //     if (uploadedUrl) {
-        //         urls.push(uploadedUrl);
-        //     }
-        // }
-        // Convert File objects to object URLs for preview
         const urls = files.map(file =>
             typeof file === "string" ? file : URL.createObjectURL(file)
         );
         setImages((prev) => [...prev, ...urls]);
         setUploading(false);
-    };
-
-    useEffect(() => {
-    console.log("Current error:", error);
-}, [error]);
+    }, [multiple, images.length]);
 
     const handleImageChange = (event) => {
         const files = Array.from(event.target.files);

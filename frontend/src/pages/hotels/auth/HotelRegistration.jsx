@@ -69,7 +69,6 @@ export default function HotelRegistration() {
             };
             const validator = formValidator(submissionData);
             setError(validator);
-            console.log(validator,licenseError,hotelImagesError)
             if( validator === null && hotelImagesError.length === 0  && licenseError.length === 0 ){
                 console.log(submissionData);
             }
@@ -267,7 +266,7 @@ export default function HotelRegistration() {
                     }
                     <div className="w-1/2 mt-2">
                         <ImageUploader
-                            label={'Hotel Images'}
+                            label={'Hotel Images (*need to add 5 images)'}
                             images={hotelImages}
                             setImages={setHotelImages}
                             multiple={true}
