@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import CustomSelector from "../../../components/CustomSelector";
 import ImageUploader from "../../../components/ImageUploader";
 import InputField from "../../../components/InputField";
@@ -47,7 +47,7 @@ export default function HotelRegistration() {
         return selectedDistrict ? province.id === selectedDistrict.provinceId : provinces;
     });
 
-    const handleAmenityChange = (amenityValue) => {
+    const handleAmenityChange = useCallback((amenityValue) => {
         setFormData((prev) => {
             const alreadySelected = prev.amenities.includes(amenityValue);
             const updatedAmenities = alreadySelected
@@ -56,10 +56,13 @@ export default function HotelRegistration() {
 
             return { ...prev, amenities: updatedAmenities };
         });
-    };
+    }, []);
+
 
     const handleSubmit = (e) => {
         e.preventDefault();
+        setLicenseError('')
+        setHotelImagesError('')
         const submissionData = {
             ...formData,
             licensePhoto: licenseImage,
@@ -92,7 +95,7 @@ export default function HotelRegistration() {
             </div>
             );
         })
-    },[amenities, formData.amenities, handleAmenityChange]);
+    },[formData.amenities, handleAmenityChange]);
 
     return (
         <Main>

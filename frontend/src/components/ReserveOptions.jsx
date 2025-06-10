@@ -49,7 +49,7 @@ export default function ReserveOptions() {
                 </Navigate>
             )
         })
-    },[options]);
+    },[location.pathname]);
 
     return (
         <div className="flex gap-8 items-center">

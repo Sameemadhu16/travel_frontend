@@ -1,3 +1,5 @@
+import PropTypes from 'prop-types';
+
 export default function Main({ children }) {
     return (
         <div className='w-full font-poppins mb-5'>
@@ -7,3 +9,7 @@ export default function Main({ children }) {
         </div>
     )
 }
+
+Main.propTypes = {
+    children: PropTypes.node.isRequired,
+};

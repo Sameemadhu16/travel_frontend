@@ -1,4 +1,4 @@
-import React from 'react';
+import PropTypes from 'prop-types';
 
 export default function FormatText({ text }) {
     if (!text) return null;
@@ -27,3 +27,7 @@ export default function FormatText({ text }) {
         </>
     );
 }
+
+FormatText.propTypes = {
+    text: PropTypes.string
+};

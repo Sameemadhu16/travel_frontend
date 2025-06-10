@@ -2,6 +2,7 @@ import { MdDone } from "react-icons/md";
 import Title from '../../../../components/Title'
 import PrimaryButton from "../../../../components/PrimaryButton";
 import Navigate from "../../../../components/Navigate";
+import { useMemo } from "react";
 
 const textList = [
     { icon: MdDone, text: '45% of hosts get their first booking within a week' },
@@ -10,6 +11,23 @@ const textList = [
 ]
 
 export default function RegisterCard() {
+
+    const texts = useMemo(()=>{
+        return textList.map((text, index)=>{
+            const Icon = text.icon
+            return (
+                <div key={index} className='flex gap-10 items-start'>
+                    <Icon size={24} className="text-success"/>
+                    <Title
+                        title={text.text}
+                        size='text-[16px]'
+                        font='font-[400]'
+                    />
+                </div>
+            )
+        })
+    },[]);
+
     return (
         <div className='w-full border-4 rounded-[16px] bg-background-base border-brand-primary'>
             <div className='p-4'>
@@ -19,21 +37,7 @@ export default function RegisterCard() {
                     font='font-[600]'
                 />
                 <div className="flex flex-col gap-2 mt-5">
-                    {
-                        textList.map((text)=>{
-                            const Icon = text.icon
-                            return (
-                                <div div className='flex gap-10 items-start'>
-                                    <Icon size={24} className="text-success"/>
-                                    <Title
-                                        title={text.text}
-                                        size='text-[16px]'
-                                        font='font-[400]'
-                                    />
-                                </div>
-                            )
-                        })
-                    }
+                    {texts}
                 </div>
             </div>
             <div className="w-full h-[0.5px] bg-border-light"></div>

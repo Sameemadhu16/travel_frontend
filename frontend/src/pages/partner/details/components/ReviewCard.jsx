@@ -1,4 +1,5 @@
 import Title from '../../../../components/Title'
+import PropTypes from 'prop-types'
 
 export default function ReviewCard({review}) {
     return (
@@ -33,3 +34,13 @@ export default function ReviewCard({review}) {
         </div>
     )
 }
+
+// Add PropTypes for ReviewCard
+ReviewCard.propTypes = {
+    review: PropTypes.shape({
+        quote: PropTypes.string.isRequired,
+        img: PropTypes.string.isRequired,
+        author: PropTypes.string.isRequired,
+        affiliation: PropTypes.string
+    }).isRequired
+};

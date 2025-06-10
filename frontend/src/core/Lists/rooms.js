@@ -37,7 +37,13 @@ export const roomTypes = [
 ];
 
 export const bedTypes = [
-    { id: 1, value: "Single Bed", width: 90, length: 190, capacity: 1 }, // cm (approx 35" x 75")
+    { 
+        id: 1, 
+        value: "Single Bed", 
+        width: 90, 
+        length: 190, 
+        capacity: 1 
+    }, // cm (approx 35" x 75")
     { id: 2, value: "Twin Bed", width: 99, length: 190, capacity: 1 },  // cm (approx 39" x 75")
     { id: 3, value: "Double Bed", width: 137, length: 190, capacity: 2 }, // cm (approx 54" x 75")
     { id: 4, value: "Queen Bed", width: 152, length: 203, capacity: 2 },  // cm (approx 60" x 80")
@@ -63,7 +69,9 @@ export const roomList = [
         bedType: "Queen Bed",
         pricePerNight: 120,
         amenities: [1, 3, 5],
-        description: "**Comfort and Convenience:** Enjoy a relaxing stay in our Double Room, ideal for couples or friends, featuring a cozy Queen Bed."
+        description:
+            "**Comfort and Convenience:** Enjoy a relaxing stay in our Double Room, " +
+            "ideal for couples or friends, featuring a cozy Queen Bed."
     },
     {
         id: 2,
@@ -73,7 +81,9 @@ export const roomList = [
         bedType: "King Bed",
         pricePerNight: 250,
         amenities: [1, 2, 3, 6],
-        description: "**Executive Luxury:** Experience premium comfort in our Executive Suite with spacious interiors and a plush King Bed."
+        description:
+            "**Executive Luxury:** Experience premium comfort in our Executive Suite " +
+            "with spacious interiors and a plush King Bed."
     },
     {
         id: 3,
@@ -83,7 +93,9 @@ export const roomList = [
         bedType: "Single Bed",
         pricePerNight: 80,
         amenities: [1, 11],
-        description: "**Cozy Solo Stay:** Perfect for solo travelers, our Single Room offers simplicity and comfort with a Single Bed."
+        description:
+            "**Cozy Solo Stay:** Perfect for solo travelers, our Single Room offers " +
+            "simplicity and comfort with a Single Bed."
     },
     {
         id: 4,
@@ -93,7 +105,9 @@ export const roomList = [
         bedType: "Bunk Bed",
         pricePerNight: 180,
         amenities: [1, 4, 7],
-        description: "**Family Friendly:** Spacious Family Suite designed for large groups, equipped with Bunk Beds and homely amenities."
+        description:
+            "**Family Friendly:** Spacious Family Suite designed for large groups, " +
+            "equipped with Bunk Beds and homely amenities."
     },
     {
         id: 5,
@@ -103,7 +117,9 @@ export const roomList = [
         bedType: "California King Bed",
         pricePerNight: 300,
         amenities: [1, 6, 9],
-        description: "**Romantic Escape:** Celebrate love in our Honeymoon Suite with a lavish California King Bed and elegant setting."
+        description:
+            "**Romantic Escape:** Celebrate love in our Honeymoon Suite with a lavish " +
+            "California King Bed and elegant setting."
     },
     {
         id: 6,
@@ -113,7 +129,9 @@ export const roomList = [
         bedType: "Double Bed",
         pricePerNight: 110,
         amenities: [1, 5, 11],
-        description: "**Inclusive Comfort:** Designed for accessibility, this room ensures ease of movement and comfort for all guests."
+        description:
+            "**Inclusive Comfort:** Designed for accessibility, this room ensures ease " +
+            "of movement and comfort for all guests."
     },
     {
         id: 7,
@@ -123,7 +141,9 @@ export const roomList = [
         bedType: "Single Bed",
         pricePerNight: 50,
         amenities: [1],
-        description: "**Smart Minimalism:** Our Pod Room offers an affordable, compact, and private sleep space for modern travelers."
+        description:
+            "**Smart Minimalism:** Our Pod Room offers an affordable, compact, and " +
+            "private sleep space for modern travelers."
     },
     {
         id: 8,
@@ -133,7 +153,9 @@ export const roomList = [
         bedType: "Super King Bed",
         pricePerNight: 400,
         amenities: [1, 2, 3, 6, 9],
-        description: "**Private Paradise:** Enjoy exclusivity and luxury in our Villa, perfect for families or groups seeking privacy."
+        description:
+            "**Private Paradise:** Enjoy exclusivity and luxury in our Villa, perfect " +
+            "for families or groups seeking privacy."
     },
     {
         id: 9,
@@ -143,7 +165,9 @@ export const roomList = [
         bedType: "King Bed",
         pricePerNight: 600,
         amenities: [1, 2, 3, 4, 5, 6, 8],
-        description: "**Elite Experience:** Unparalleled grandeur awaits in our Presidential Suite, featuring top-tier amenities and elegant space."
+        description:
+            "**Elite Experience:** Unparalleled grandeur awaits in our Presidential Suite, " +
+            "featuring top-tier amenities and elegant space."
     },
     {
         id: 10,
@@ -153,7 +177,9 @@ export const roomList = [
         bedType: "Daybed",
         pricePerNight: 220,
         amenities: [1, 2, 9],
-        description: "**Beachside Bliss:** Stay steps away from nature in our Cabana Room, ideal for tropical getaways and relaxation."
+        description:
+            "**Beachside Bliss:** Stay steps away from nature in our Cabana Room, ideal " +
+            "for tropical getaways and relaxation."
     },
     {
         id: 11,
@@ -163,7 +189,9 @@ export const roomList = [
         bedType: "Murphy Bed",
         pricePerNight: 90,
         amenities: [1, 11],
-        description: "**Space Saver:** Modern and functional, the Murphy Room maximizes space with a foldable bed and urban style."
+        description:
+            "**Space Saver:** Modern and functional, the Murphy Room maximizes space " +
+            "with a foldable bed and urban style."
     }
 ].map(room => ({
     ...room,

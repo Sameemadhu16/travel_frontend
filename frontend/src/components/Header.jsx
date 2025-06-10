@@ -16,7 +16,10 @@ export default function Header() {
                     />
                 </div>
                 <div className='flex gap-1 items-center'>
-                    <Navigate path={'/partner-details'} className='p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
+                    <Navigate 
+                        path={'/partner-details'} 
+                        className='p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'
+                    >
                         <Title
                             title='List your property'
                             size='text-[16px]'
