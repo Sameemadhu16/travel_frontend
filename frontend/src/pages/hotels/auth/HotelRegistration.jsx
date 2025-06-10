@@ -59,21 +59,24 @@ export default function HotelRegistration() {
     }, []);
 
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setLicenseError('')
-        setHotelImagesError('')
-        const submissionData = {
-            ...formData,
-            licensePhoto: licenseImage,
-            images: hotelImages
-        };
-
-        const validator = formValidator(formData);
-        setError(validator);
-        console.log(validator);
-        console.log(submissionData)
-    };
+    const handleSubmit = useCallback((e) => {
+        try {
+            e.preventDefault();
+            const submissionData = {
+                ...formData,
+                licensePhoto: licenseImage,
+                images: hotelImages
+            };
+            const validator = formValidator(submissionData);
+            setError(validator);
+            console.log(validator,licenseError,hotelImagesError)
+            if( validator === null && hotelImagesError.length === 0  && licenseError.length === 0 ){
+                console.log(submissionData);
+            }
+        } catch (error) {
+                console.error( error);
+            }
+        }, [formData, licenseImage, hotelImages]);
 
     const amenityList = useMemo(()=>{
         return amenities.map((amenity) => {
@@ -223,7 +226,8 @@ export default function HotelRegistration() {
                             label={'Business Registration License Photo'}
                             images={licenseImage}
                             setImages={setLicenseImage}
-                            error={licenseError}
+                            error={error?.errors?.licensePhoto || licenseError}
+                            setError={setLicenseError}
                         />
                     </div>
                 </div>
@@ -267,7 +271,8 @@ export default function HotelRegistration() {
                             images={hotelImages}
                             setImages={setHotelImages}
                             multiple={true}
-                            error={hotelImagesError}
+                            error={error?.errors?.images || hotelImagesError}
+                            setError={setHotelImagesError}
                         />
                     </div>
                 </div>

@@ -6,7 +6,7 @@
  * @param {Array} multiple - Check if uploaded multiple images or not
  * @returns {Object|null} Validation errors or null if valid
  */
-export const validateImageUpload  = (files , limit , maxTotalSizeMB, multiple)  => {
+export const validateImageUpload  = (files, maxTotalSizeMB,)  => {
     let error = '';
     const validExtensions = ['image/jpg', 'image/jpeg', 'image/png', 'image/svg+xml'];
     const invalidFiles = files.filter(file => !validExtensions.includes(file.type));
@@ -14,12 +14,6 @@ export const validateImageUpload  = (files , limit , maxTotalSizeMB, multiple)  
 
     if (!files || files.length === 0) {
         error = '*You must upload at least one image';
-    }
-    if (files.length !== 5 && multiple) {
-        error = '*You should add 5 images to verify';
-    }
-    if (files.length > limit) {
-        error = `*You can upload a maximum of ${limit} ${limit === 1 ? 'image':'images'}`;
     }
     if (invalidFiles.length > 0) {
         error =  '*Only JPG, PNG, and SVG files are allowed';

@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { validateImageUpload } from "../core/validation";
 
 /**
@@ -16,17 +16,36 @@ const ImageUploader = ({
     images,
     setImages,
     error,
+    setError = () => {},
     multiple = false,
 }) => {
     const [uploading, setUploading] = useState(false);
-    const [imageError, setImageError] = useState('');
 
     const handleFiles = async (files) => {
-        const validationError = validateImageUpload(files, 5, 5, multiple); // Limit: 1 file, max 5 MB
+        const validationError = validateImageUpload(files, 5,);
         if (validationError) {
-            setImageError(validationError);
+            setError(validationError);
             return;
         }
+console.log(files)
+        //check wether image length
+        let uploadFiles = files;
+        let errorMsg = '';
+
+        if (multiple) {
+            if (files.length < 5) {
+                errorMsg = ('*You should add 5 images to verify');
+            } else if (files.length > 5) {
+                errorMsg = ('*You can upload a maximum of 5');
+                // Only upload the first 5 images
+                uploadFiles = files.slice(0, 5);
+            } else {
+                // Exactly 5 images, no error
+                setError('');
+            }
+        }
+
+        setError(errorMsg);
         setUploading(true);
         //const urls = [];
         // for (const file of files) {
@@ -42,6 +61,10 @@ const ImageUploader = ({
         setImages((prev) => [...prev, ...urls]);
         setUploading(false);
     };
+
+    useEffect(() => {
+    console.log("Current error:", error);
+}, [error]);
 
     const handleImageChange = (event) => {
         const files = Array.from(event.target.files);
@@ -76,7 +99,7 @@ const ImageUploader = ({
                     cursor-pointer bg-fourthColor
                     border-dashed
                     focus-within:border-brand-primary
-                    ${error || imageError ? 'border-danger' : 'border-gray-300'}
+                    ${ error ? 'border-danger' : 'border-gray-300'}
                 `}
                 tabIndex={0}
                 onDrop={handleDrop}
@@ -112,9 +135,9 @@ const ImageUploader = ({
                     multiple={multiple}
                 />
 
-                {(error || imageError) && (
+                {( error ) && (
                     <p className="text-danger text-[16px] font-medium mt-2">
-                        {error || imageError}
+                        { error }
                     </p>
                 )}
             </div>
@@ -150,6 +173,7 @@ ImageUploader.propTypes = {
     images: PropTypes.array.isRequired,
     setImages: PropTypes.func.isRequired,
     error: PropTypes.string,
+    setError: PropTypes.func,
     multiple: PropTypes.bool,
 };
 
