@@ -33,7 +33,7 @@ export default function PartnerRegisterStep1() {
             console.log(e)
         }
     },[formData]);
-
+    
     return (
         <AnimatePresence>
             <motion.div

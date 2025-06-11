@@ -14,7 +14,7 @@ export default function Message({setMessage}) {
             <RiErrorWarningLine size={24}/>
             <div className="w-3/4 flex flex-wrap ">
                 <Title
-                    title="We’ve completed the signup form using your account information as you’re logged in to your Booking.com account."
+                    title="We’ve completed the signup form using your account information as you’re logged in to your travel.lk account."
                     size="text-[16px]"
                     font="font-[400]"
                 />
