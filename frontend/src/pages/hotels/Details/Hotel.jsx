@@ -7,6 +7,7 @@ import Breadcrumb from '../../../components/Breadcrumb';
 import { roomList } from '../../../core/Lists/rooms';
 import RoomCard from './components/RoomCard';
 import FormatText from '../../../components/FormatText';
+import Border from '../../../components/Border';
 
 export default function Hotel() {
     const [hotel,setHotel] = useState({});
@@ -122,7 +123,7 @@ export default function Hotel() {
             <div className='flex flex-wrap'>
                 <FormatText text={hotel.about}/>
             </div>
-            <div className='h-[0.5px] w-full bg-border-light mt-5'></div>
+            <Border/>
             <div className='w-full mt-5'>
                 <Title
                     title={'Rooms'}
