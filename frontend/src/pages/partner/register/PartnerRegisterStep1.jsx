@@ -11,7 +11,7 @@ import SecondaryButton from "../../../components/SecondaryButton";
 import Border from "../../../components/Border";
 import Navigate from "../../../components/Navigate";
 
-export default function PartnerRegister() {
+export default function PartnerRegisterStep1() {
 
     const [message,setMessage] = useState(true);
     const [formData,setFormData] = useState({
@@ -77,7 +77,7 @@ export default function PartnerRegister() {
                                 size="text-[14px]"
                                 font="font-[400]"
                             />
-                            <Navigate className="hover:underline text-brand-primary">
+                            <Navigate path="" className="hover:underline text-brand-primary">
                                 <Title 
                                     title=" Partner Help"
                                     size="text-[14px]"
@@ -90,7 +90,7 @@ export default function PartnerRegister() {
                                 size="text-[14px]"
                                 font="font-[400]"
                             />
-                            <Navigate className="hover:underline text-brand-primary">
+                            <Navigate path="" className="hover:underline text-brand-primary">
                                 <Title 
                                     title="Partner Community."
                                     size="text-[14px]"

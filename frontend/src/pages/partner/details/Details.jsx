@@ -202,7 +202,7 @@ export default function Details() {
                         </div>
                     </div>
                     <div className="w-1/2 md:w-1/4 mt-10">
-                        <Navigate path='/partner-register'>
+                        <Navigate path='/partner-register-step-1'>
                                 <PrimaryButton 
                                     text="Host with us today"
                                     type={'button'}
@@ -285,7 +285,7 @@ export default function Details() {
                     </div>
                 </div>
                 <div className="w-1/2 md:w-1/4 mt-10">
-                    <Navigate path='/partner-register'>
+                    <Navigate path='/partner-register-step-1'>
                         <PrimaryButton text="Get started today"
                             type={'button'}
                         />
@@ -303,7 +303,7 @@ export default function Details() {
                         {reviews}
                     </div>
                     <div className="w-1/2 md:w-1/4 mt-10">
-                        <Navigate path='/partner-register'>
+                        <Navigate path='/partner-register-step-1'>
                             <PrimaryButton 
                                 text="Join hosts like you"
                                 type={'button'}
