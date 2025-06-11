@@ -18,7 +18,6 @@ export default function SecondaryButton({
     text,
     type = "button",
     onClick,
-    textColor = "text-brand-primary",
     className = "",
     image = ""
 }) {

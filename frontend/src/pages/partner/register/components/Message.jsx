@@ -1,6 +1,7 @@
 import { RiErrorWarningLine } from "react-icons/ri";
 import { IoCloseSharp } from "react-icons/io5";
 import Title from "../../../../components/Title";
+import PropTypes from "prop-types";
 
 export default function Message({setMessage}) {
 
@@ -21,4 +22,8 @@ export default function Message({setMessage}) {
             <IoCloseSharp onClick={handleClose} className='cursor-pointer' size={24}/>
         </div>
     )
+}
+
+Message.propTypes = {
+    setMessage: PropTypes.func.isRequired
 }

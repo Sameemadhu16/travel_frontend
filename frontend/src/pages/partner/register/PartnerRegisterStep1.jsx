@@ -32,7 +32,7 @@ export default function PartnerRegisterStep1() {
         }catch(e){
             console.log(e)
         }
-    })
+    },[formData]);
 
     return (
         <AnimatePresence>
@@ -45,7 +45,7 @@ export default function PartnerRegisterStep1() {
                 className="relative w-full overflow-x-hidden"
             >
                 <Main>
-                    <form onSubmit={handleSubmit} className="w-full flex flex-col items-center justify-center overflow-x-hidden">
+                    <form onSubmit={handleSubmit} className="w-full flex flex-col items-center justify-center ">
                         <div className="w-full md:w-2/5">
                             <div className="h-[100px]">
                                 {

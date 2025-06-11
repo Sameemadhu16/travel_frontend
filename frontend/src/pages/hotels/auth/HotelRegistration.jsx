@@ -91,7 +91,7 @@ export default function HotelRegistration() {
         } catch (error) {
                 console.error( error);
             }
-        }, [formData, licenseImage, hotelImages]);
+        }, [formData, licenseImage, hotelImages, hotelImagesError.length, licenseError.length]);
 
     const amenityList = useMemo(()=>{
         return amenities.map((amenity) => {

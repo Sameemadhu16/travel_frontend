@@ -1,8 +1,38 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import React from 'react'
+import { useCallback, useState } from 'react'
 import Main from '../../../components/Main'
+import Title from '../../../components/Title'
+import { handleSelect } from '../../../core/service'
+import InputField from '../../../components/InputField'
+import PrimaryButton from '../../../components/PrimaryButton'
+import Navigate from '../../../components/Navigate'
+import Border from '../../../components/Border'
+import { formValidator } from '../../../core/validation'
+import { navigateTo } from '../../../core/navigateHelper'
 
 export default function PartnerRegisterStep2() {
+
+    const [formData,setFormData]=useState({
+        firstName: 'Sachith',
+        lastName: 'avintha',
+        phoneNumber: '',
+    });
+    const [errors,setErrors] = useState({});
+
+    const handleSubmit = useCallback((e)=>{
+        e.preventDefault();
+        try{
+            const error = formValidator(formData);
+            setErrors(error)
+
+            if(error === null){
+                navigateTo('/partner-register-step-3');
+            }
+        }catch(e){
+            console.log(e)
+        }
+    },[formData]);
+
     return (
         <AnimatePresence>
             <motion.div
@@ -14,7 +44,82 @@ export default function PartnerRegisterStep2() {
                 className="relative w-full overflow-x-hidden"
             >
                 <Main>
-                    
+                    <form onSubmit={handleSubmit} className="w-full flex flex-col items-center justify-center ">
+                        <div className="w-full md:w-2/5 flex flex-col justify-start mt-5 gap-2">
+                            <Title 
+                                title="Contact details"
+                                size="text-[24px]"
+                                font="font-[600]"
+                            />
+                            <Title 
+                                title="Your full name and phone number are needed to ensure the security of your Booking.com account."
+                                size="text-[16px]"
+                                font="font-[400]"
+                            />
+                            <div className="flex flex-col gap-4 mt-5">
+                                <InputField
+                                    label='First name'
+                                    type='text'
+                                    name='firstName'
+                                    value={formData.firstName}
+                                    onChange={e => handleSelect(setFormData, 'firstName', e.target.value)}
+                                    placeholder=''
+                                    error={errors?.errors?.firstName}
+                                />
+                                <InputField
+                                    label='Last name'
+                                    type='text'
+                                    name='lastName'
+                                    value={formData.lastName}
+                                    onChange={e => handleSelect(setFormData, 'lastName', e.target.value)}
+                                    placeholder=''
+                                    error={errors?.errors?.lastName}
+                                />
+                                <InputField
+                                    label='Phone number'
+                                    type='text'
+                                    name='phoneNumber'
+                                    value={formData.phoneNumber}
+                                    onChange={e => handleSelect(setFormData, 'phoneNumber', e.target.value)}
+                                    placeholder='+9477123123'
+                                    error={errors?.errors?.phoneNumber}
+                                />
+                                <PrimaryButton
+                                    text="Next"
+                                    type={'submit'}
+                                />
+                                <Border/>
+                                <div className="flex flex-wrap gap-1">
+                                    <Title 
+                                        title="By signing in or creating an account, you agree with our"
+                                        size="text-[14px]"
+                                        font="font-[400]"
+                                    />
+                                    <Navigate path="" className="hover:underline text-brand-primary">
+                                        <Title 
+                                            title="Terms & conditions "
+                                            size="text-[14px]"
+                                            font="font-[400]"
+                                            color="text-brand-primary"
+                                        />   
+                                    </Navigate>
+                                    <Title 
+                                        title="and"
+                                        size="text-[14px]"
+                                        font="font-[400]"
+                                    />
+                                    <Navigate path="" className="hover:underline text-brand-primary">
+                                        <Title 
+                                            title="Privacy statement"
+                                            size="text-[14px]"
+                                            font="font-[400]"
+                                            color="text-brand-primary"
+                                        />   
+                                    </Navigate>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
                 </Main>
             </motion.div>
         </AnimatePresence>

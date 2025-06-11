@@ -77,6 +77,14 @@ export const formValidator = (
             }
         }
 
+        // ✅ Phone number validation for +94xxxxxxxxx format
+        if (fields.includes('phoneNumber')) {
+            const phoneRegex = /^\+94\d{9}$/;
+            if (!phoneRegex.test(formData.phoneNumber)) {
+                specialErrors.phoneNumber = '*Invalid phone number. Use format +947XXXXXXXX';
+            }
+        }
+
         // Special validation for email format
         if (fields.includes('email') && formData.email) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
