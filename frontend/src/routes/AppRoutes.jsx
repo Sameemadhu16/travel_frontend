@@ -8,6 +8,7 @@ import Home from '../pages/home/Home'
 import Details from '../pages/partner/details/Details'
 import SearchVehicles from '../pages/vehicles/search/SearchVehicles'
 import PartnerRegisterStep1 from '../pages/partner/register/PartnerRegisterStep1'
+import PartnerRegisterStep2 from '../pages/partner/register/partnerRegisterStep2'
 
 export default function AppRoutes() {
     return (
@@ -27,6 +28,7 @@ export default function AppRoutes() {
                 {/* partner */}
                 <Route path='/partner-details' element={<Details/>}/>
                 <Route path='/partner-register-step-1' element={<PartnerRegisterStep1/>}/>
+                <Route path='/partner-register-step-2' element={<PartnerRegisterStep2/>}/>
 
             </Routes>
     )
