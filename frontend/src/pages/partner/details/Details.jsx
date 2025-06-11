@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import Main from '../../../components/Main';
 import Title from '../../../components/Title';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -13,6 +13,7 @@ import search from '../../../assets/images/Search.png'
 import { testimonials } from '../../../core/Lists/reviews';
 import ReviewCard from './components/ReviewCard';
 import PrimaryButton from '../../../components/PrimaryButton';
+import Navigate from '../../../components/Navigate';
 
 const titles = [ 'anything', 'guides', 'hotels', 'vehicles' ];
 
@@ -201,7 +202,12 @@ export default function Details() {
                         </div>
                     </div>
                     <div className="w-1/2 md:w-1/4 mt-10">
-                        <PrimaryButton text="Host with us today"/>
+                        <Navigate path='/partner-register'>
+                                <PrimaryButton 
+                                    text="Host with us today"
+                                    type={'button'}
+                                />
+                        </Navigate>
                     </div>
                 </Main>
             </div>
@@ -279,7 +285,11 @@ export default function Details() {
                     </div>
                 </div>
                 <div className="w-1/2 md:w-1/4 mt-10">
-                    <PrimaryButton text="Get started today"/>
+                    <Navigate path='/partner-register'>
+                        <PrimaryButton text="Get started today"
+                            type={'button'}
+                        />
+                    </Navigate>
                 </div>
             </Main>
             <div className='mt-24 w-full h-full py-10 bg-background-muted'>
@@ -293,7 +303,12 @@ export default function Details() {
                         {reviews}
                     </div>
                     <div className="w-1/2 md:w-1/4 mt-10">
-                        <PrimaryButton text="Join hosts like you"/>
+                        <Navigate path='/partner-register'>
+                            <PrimaryButton 
+                                text="Join hosts like you"
+                                type={'button'}
+                            />
+                        </Navigate>
                     </div>
                 </Main>
             </div>
