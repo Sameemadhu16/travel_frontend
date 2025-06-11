@@ -3,6 +3,7 @@ import Header from './components/Header'
 import AppRoutes from './routes/AppRoutes'
 import { useEffect } from 'react';
 import { setNavigator } from './core/navigateHelper';
+import { ToastContainer } from 'react-toastify';
 
 export default function App() {
 
@@ -16,6 +17,7 @@ export default function App() {
     <>
       <Header/>
       <AppRoutes/>
+      <ToastContainer theme="colored"/>
     </>
     
   )

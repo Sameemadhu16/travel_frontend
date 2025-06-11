@@ -11,6 +11,8 @@ import PrimaryButton from "../../../components/PrimaryButton";
 import { handleSelect } from "../../../core/service";
 import Checkbox from "../../../components/CheckBox";
 import { formValidator } from "../../../core/validation";
+import { showToastMessage } from "../../../utils/toastHelper";
+import { navigateTo } from "../../../core/navigateHelper";
 
 export default function HotelRegistration() {
     const [licenseImage, setLicenseImage] = useState([]);
@@ -19,9 +21,6 @@ export default function HotelRegistration() {
     const [hotelImagesError,setHotelImagesError] = useState('');
     const [formData, setFormData] = useState({
         hotelName: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
         street: '',
         city: '',
         district: '',
@@ -70,7 +69,7 @@ export default function HotelRegistration() {
             const customValidations = {
                 licensePhoto: {
                     exactLength: 1,
-                    message: '*Please add Business license phot'
+                    message: '*Please add one Business license photo'
                 },
                 images: {
                     exactLength: 5,
@@ -79,10 +78,16 @@ export default function HotelRegistration() {
             };
             const validator = formValidator(submissionData,[],customValidations);
             setError(validator);
-            console.log(error)
-            if( validator === null && hotelImagesError.length === 0  && licenseError.length === 0 ){
-                console.log(submissionData);
+            
+            const hasValidationErrors = validator !== null || hotelImagesError.length > 0 || licenseError.length > 0;
+
+            if (hasValidationErrors) {
+                showToastMessage('error', 'Please correct the highlighted errors before submitting.');
+                return;
             }
+            showToastMessage('success', 'Hotel registered successfully!');
+            navigateTo('/partner-details');
+
         } catch (error) {
                 console.error( error);
             }
@@ -128,43 +133,6 @@ export default function HotelRegistration() {
                                 onChange={e => handleSelect(setFormData, 'hotelName', e.target.value)}
                                 placeholder=''
                                 error={error?.errors?.hotelName}
-                            />
-                        </div>
-                        <div className="w-1/2">
-                            <InputField
-                                label='Email'
-                                type='text'
-                                name='email'
-                                value={formData.email}
-                                onChange={e => handleSelect(setFormData, 'email', e.target.value)}
-                                placeholder=''
-                                error={error?.errors?.email}
-                            />
-                        </div>
-                    </div>
-                    <div className="flex w-full gap-2">
-                        <div className="w-1/2">
-                            <InputField
-                                label='Password'
-                                type='password'
-                                name='password'
-                                value={formData.password}
-                                onChange={e => handleSelect(setFormData, 'password', e.target.value)}
-                                placeholder=''
-                                error={error?.errors?.password}
-                                icon={true}
-                            />
-                        </div>
-                        <div className="w-1/2">
-                            <InputField
-                                label='Confirm Password'
-                                type='password'
-                                name='confirmPassword'
-                                value={formData.confirmPassword}
-                                onChange={e => handleSelect(setFormData, 'confirmPassword', e.target.value)}
-                                placeholder=''
-                                error={error?.errors?.confirmPassword}
-                                icon={true}
                             />
                         </div>
                     </div>
