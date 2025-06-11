@@ -75,8 +75,8 @@ export default function Details() {
                 )}
             </AnimatePresence>
             <Main>
-                <div className='flex w-full items-center'>
-                    <div className='w-1/2 h-[400px] flex flex-col items-start justify-center'>
+                <div className='flex flex-col md:flex-row w-full items-center'>
+                    <div className='w-1/2 h-[400px] md:flex hidden md:flex-col items-start justify-center'>
                         <Title
                             title='List your'
                             size='text-[60px]'
@@ -109,8 +109,8 @@ export default function Details() {
                             font='font-[600]'
                         />
                     </div>
-                    <div className='flex items-center justify-center w-1/2'>
-                        <div className='w-3/4 z-50'>
+                    <div className='flex items-center justify-center w-full md:w-1/2'>
+                        <div className='w-full md:w-3/4 z-50'>
                             <RegisterCard/>
                         </div>
                     </div>
@@ -122,10 +122,10 @@ export default function Details() {
                     <div className='w-full'>
                         <Title
                             title='Host worry-free. We’ve got your back'
-                            size='text-[48px]'
+                            size='text-[32px] md:text-[48px]'
                             font='font-[600]'
                         />
-                        <div className='w-full grid grid-cols-3 gap-5 items-start mt-10'>
+                        <div className='w-full grid grid-cols-1 md:grid-cols-3 gap-5 items-start mt-10'>
                             <div className='flex flex-col gap-3'>
                                 <Title
                                     title='Your rental, your rules'
@@ -200,7 +200,7 @@ export default function Details() {
                             </div>
                         </div>
                     </div>
-                    <div className="w-1/4 mt-10">
+                    <div className="w-1/2 md:w-1/4 mt-10">
                         <PrimaryButton text="Host with us today"/>
                     </div>
                 </Main>
@@ -209,10 +209,10 @@ export default function Details() {
                 <div className='w-full mt-24'>
                     <Title
                         title='Simple to begin and stay ahead'
-                        size='text-[48px]'
+                        size='text-[32px] md:text-[48px]'
                         font='font-[600]'
                     />
-                    <div className='w-full grid grid-cols-3 gap-5 items-start mt-10'>
+                    <div className='w-full grid grid-cols-1 md:grid-cols-3 gap-5 items-start mt-10'>
                         <div className='flex flex-col gap-3 justify-center items-center'>
                             <div className='w-40 h-40'>
                                 <img 
@@ -278,7 +278,7 @@ export default function Details() {
                         </div>
                     </div>
                 </div>
-                <div className="w-1/4 mt-10">
+                <div className="w-1/2 md:w-1/4 mt-10">
                     <PrimaryButton text="Get started today"/>
                 </div>
             </Main>
@@ -286,13 +286,13 @@ export default function Details() {
                 <Main>
                     <Title
                         title='What hosts like you say'
-                        size='text-[48px]'
+                        size='text-[32px] md:text-[48px]'
                         font='font-[600]'
                     />
-                    <div className='grid grid-cols-3 gap-2 mt-4'>
+                    <div className='grid grid-cols-1 md:grid-cols-3 gap-2 mt-4'>
                         {reviews}
                     </div>
-                    <div className="w-1/4 mt-10">
+                    <div className="w-1/2 md:w-1/4 mt-10">
                         <PrimaryButton text="Join hosts like you"/>
                     </div>
                 </Main>
