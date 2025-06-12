@@ -22,13 +22,13 @@ const options = [
         id: 2,
         name: 'Forgot your username',
         icon: FaUserCircle,
-        path: '',
+        path: '/partner-forgot-username',
     },
     { 
         id: 3,
         name: 'Go to sign-in',
         icon: IoMdLogOut,
-        path: '',
+        path: '/partner-login-step-1',
     },
 ]
 
