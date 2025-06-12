@@ -5,8 +5,59 @@ import PrimaryButton from '../../../components/PrimaryButton'
 import Navigate from '../../../components/Navigate'
 import Border from '../../../components/Border'
 import SecondaryButton from '../../../components/SecondaryButton'
+import { FiLock } from "react-icons/fi";
+import { FaAngleRight, FaUserCircle } from "react-icons/fa";
+import { useMemo } from 'react'
+import { IoMdLogOut } from 'react-icons/io'
+import TermsAndPrivacy from '../components/TermsAndPrivacy'
+
+const options = [
+    { 
+        id: 1,
+        name: 'Forgot your password?',
+        icon: FiLock,
+        path: '',
+    },
+    { 
+        id: 2,
+        name: 'Forgot your username',
+        icon: FaUserCircle,
+        path: '',
+    },
+    { 
+        id: 3,
+        name: 'Go to sign-in',
+        icon: IoMdLogOut,
+        path: '',
+    },
+]
 
 export default function ForgotDetailsStep1() {
+
+    const optionList = useMemo(()=>{
+        return options.map((option)=>{
+            const Icon = option.icon;
+            return (
+                <Navigate path={option.path} className='w-full flex flex-col gap-2 hover:underline text-brand-primary'>
+                    <div className='w-full  flex justify-between items-center'>
+                        <div className='flex items-center gap-3'>
+                            <Icon size={24}/>
+                            <Title
+                                title={option.name}
+                                size='text-[16px]'
+                                font='font-[400]'
+                                color='text-brand-primary'
+                            />
+                        </div>
+                        <div>
+                            <FaAngleRight size={24}/>
+                        </div>
+                    </div>
+                    <Border/>
+                </Navigate>
+            )
+        })
+    })
     return (
         <AnimatePresence>
             <motion.div
@@ -30,33 +81,10 @@ export default function ForgotDetailsStep1() {
                                 size="text-[16px]"
                                 font="font-[400]"
                             />
-                            <div className="flex flex-col gap-4 mt-5">
-                                <PrimaryButton
-                                    text="Reset your password"
-                                    type={'button'}
-                                    // onClick={...} // Add navigation if needed
-                                />
-                                <PrimaryButton
-                                    text="Recover your username"
-                                    type={'button'}
-                                    // onClick={...} // Add navigation if needed
-                                />
-                                <Navigate path='/' className='w-full py-3 flex justify-center hover:bg-brand-accent rounded-[8px] cursor-pointer mt-10'>
-                                    <Title
-                                        title="Back to sign in"
-                                        size="text-[18px]"
-                                        font="font-[500]"
-                                        color='text-brand-primary'
-                                    />
-                                </Navigate>
-                                <Border />
-                                <SecondaryButton
-                                    text="Contact support"
-                                    type={'button'}
-                                    // onClick={...} // Add navigation if needed
-                                />
-                                <Border />
+                            <div className='w-full flex items-center flex-col gap-4 mt-10 mb-10'>
+                                {optionList}
                             </div>
+                            <TermsAndPrivacy/>
                         </div>
                     </div>
                 </Main>
