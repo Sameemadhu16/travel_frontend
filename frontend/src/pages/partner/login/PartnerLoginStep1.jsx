@@ -1,9 +1,9 @@
 import React from 'react'
 
-export default function PartnerRegisterStep3() {
+export default function PartnerLoginStep1() {
     return (
         <div>
-            3333
+        123
         </div>
     )
 }

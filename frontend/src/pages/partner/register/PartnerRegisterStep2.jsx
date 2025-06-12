@@ -26,7 +26,7 @@ export default function PartnerRegisterStep2() {
             setErrors(error)
 
             if(error === null){
-                navigateTo('/partner-register-step-3');
+                navigateTo('/partner-login-step-1');
             }
         }catch(e){
             console.log(e)

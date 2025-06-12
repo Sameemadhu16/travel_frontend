@@ -10,6 +10,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
  * @param {string} placeholder - Placeholder for input.
  * @param {string} [error=""] - Optional error message displayed below the input.
  * @param {boolean} [icon=false] - Optional flag to show/hide the eye icon.
+ * @param {boolean} [disabled=false] - Optional flag to disable the input.
  * @returns {JSX.Element} InputField component - A labeled input with error display.
  */
 
@@ -20,7 +21,8 @@ const InputField = ({
     onChange = () => {},
     placeholder = '',
     error = '',
-    icon = false
+    icon = false,
+    disabled = false
 }) => {
 
     const [visibility, setVisibility] = useState(false);
@@ -30,7 +32,7 @@ const InputField = ({
     }
 
     return (
-        <div className="text-start ">
+        <div className={`text-start ${disabled ? 'opacity-60 pointer-events-none' : ''}`}>
             <label className="font-medium text-[16px]">
                 {label}
             </label>
@@ -39,16 +41,19 @@ const InputField = ({
                     type={visibility ? "text" : type}
                     className={`border-2 w-full py-2 px-4 rounded-md ${
                         error ? 'border-danger' : 'border-b-2'
-                    } focus:border-brand-primary focus:outline-none`}
+                    } focus:border-brand-primary focus:outline-none ${
+                        disabled ? 'bg-gray-100 cursor-not-allowed' : ''
+                    }`}
                     placeholder={placeholder}
                     value={value}
                     onChange={onChange}
+                    disabled={disabled}
                     min={0}
                 />
-                {icon && type === 'password' && (
-                <div className="absolute inset-y-0 right-3 flex items-center cursor-pointer" onClick={toggleVisibility}>
-                    {visibility ? <FaEye className='text-gray-400'/> : <FaEyeSlash className='text-gray-400'/>}
-                </div>
+                {icon && type === 'password' && !disabled && (
+                    <div className="absolute inset-y-0 right-3 flex items-center cursor-pointer" onClick={toggleVisibility}>
+                        {visibility ? <FaEye className='text-gray-400'/> : <FaEyeSlash className='text-gray-400'/>}
+                    </div>
                 )}
             </div>
             {error && <p className="text-danger text-[16px] font-medium">{error}</p>}
@@ -56,7 +61,6 @@ const InputField = ({
     );
 };
 
-// Remove defaultProps here
 InputField.propTypes = {
     label: PropTypes.string.isRequired,
     type: PropTypes.string,
@@ -64,7 +68,8 @@ InputField.propTypes = {
     onChange: PropTypes.func.isRequired,
     placeholder: PropTypes.string,
     error: PropTypes.string,
-    icon: PropTypes.bool
+    icon: PropTypes.bool,
+    disabled: PropTypes.bool
 };
 
 export default InputField;

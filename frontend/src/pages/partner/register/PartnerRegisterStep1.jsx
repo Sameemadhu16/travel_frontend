@@ -15,24 +15,10 @@ import { motion, AnimatePresence } from "framer-motion";
 export default function PartnerRegisterStep1() {
 
     const [message,setMessage] = useState(true);
-    const [formData,setFormData] = useState({
-        'email':'sachithavintha@gmail.com'
-    })
-    const [error,setError] = useState({});
+    const formData = {
+        email: 'sachithavinta@gmail.com'
+    }
 
-    const handleSubmit = useCallback((e)=>{
-        e.preventDefault();
-        try{
-            const error = formValidator(formData);
-            setError(error)
-
-            if(error === null){
-                navigateTo('/partner-register-step-2');
-            }
-        }catch(e){
-            console.log(e)
-        }
-    },[formData]);
     
     return (
         <AnimatePresence>
@@ -45,7 +31,7 @@ export default function PartnerRegisterStep1() {
                 className="relative w-full overflow-x-hidden"
             >
                 <Main>
-                    <form onSubmit={handleSubmit} className="w-full flex flex-col items-center justify-center ">
+                    <div className="w-full flex flex-col items-center justify-center ">
                         <div className="w-full md:w-2/5">
                             <div className="h-[100px]">
                                 {
@@ -72,13 +58,13 @@ export default function PartnerRegisterStep1() {
                                     type='text'
                                     name='email'
                                     value={formData.email}
-                                    onChange={e => handleSelect(setFormData, 'email', e.target.value)}
                                     placeholder=''
-                                    error={error?.errors?.email}
+                                    disabled={true}
                                 />
                                 <PrimaryButton
                                     text="Continue"
-                                    type={'submit'}
+                                    type={'button'}
+                                    onClick={() => navigateTo('/partner-register-step-2')}
                                 />
                                 <Border/>
                                 <div className="flex flex-wrap gap-1">
@@ -112,11 +98,12 @@ export default function PartnerRegisterStep1() {
                                 <SecondaryButton
                                     text="Sign in"
                                     type={'button'}
+                                    onClick={() => navigateTo('/partner-login-step-1')}
                                 />
                                 <Border/>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </Main>
             </motion.div>
         </AnimatePresence>
