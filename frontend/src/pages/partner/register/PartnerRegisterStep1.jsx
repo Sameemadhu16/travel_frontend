@@ -11,6 +11,7 @@ import SecondaryButton from "../../../components/SecondaryButton";
 import Border from "../../../components/Border";
 import Navigate from "../../../components/Navigate";
 import { motion, AnimatePresence } from "framer-motion";
+import AnyQuestion from "../components/AnyQuestion";
 
 export default function PartnerRegisterStep1() {
 
@@ -67,34 +68,7 @@ export default function PartnerRegisterStep1() {
                                     onClick={() => navigateTo('/partner-register-step-2')}
                                 />
                                 <Border/>
-                                <div className="flex flex-wrap gap-1">
-                                    <Title 
-                                        title="Do you have questions about your property or the extranet? Visit"
-                                        size="text-[14px]"
-                                        font="font-[400]"
-                                    />
-                                    <Navigate path="" className="hover:underline text-brand-primary">
-                                        <Title 
-                                            title=" Partner Help"
-                                            size="text-[14px]"
-                                            font="font-[400]"
-                                            color="text-brand-primary"
-                                        />   
-                                    </Navigate>
-                                    <Title 
-                                        title="or ask another question on the"
-                                        size="text-[14px]"
-                                        font="font-[400]"
-                                    />
-                                    <Navigate path="" className="hover:underline text-brand-primary">
-                                        <Title 
-                                            title="Partner Community."
-                                            size="text-[14px]"
-                                            font="font-[400]"
-                                            color="text-brand-primary"
-                                        />   
-                                    </Navigate>
-                                </div>
+                                <AnyQuestion/>
                                 <SecondaryButton
                                     text="Sign in"
                                     type={'button'}
