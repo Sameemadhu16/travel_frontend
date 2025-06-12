@@ -11,6 +11,7 @@ import AnyQuestion from '../components/AnyQuestion';
 import SecondaryButton from '../../../components/SecondaryButton';
 import { navigateTo } from '../../../core/navigateHelper';
 import { formValidator } from '../../../core/validation';
+import TextLink from '../components/TextLink';
 
 export default function PartnerLoginStep1() {
 
@@ -63,14 +64,10 @@ export default function PartnerLoginStep1() {
                                 text="Next"
                                 type={'submit'}
                             />
-                            <Navigate path='/partner-details-forgot' className='w-full py-3 flex justify-center hover:bg-brand-accent rounded-[8px] cursor-pointer mt-10'>
-                                <Title
-                                    title="Having trouble signing in?"
-                                    size="text-[18px]"
-                                    font="font-[500]"
-                                    color='text-brand-primary'
-                                />
-                            </Navigate>
+                            <TextLink
+                                title='Having trouble signing in?'
+                                path='/partner-details-forgot'
+                            />
                             <Border/>
                             <AnyQuestion/>
                             <SecondaryButton

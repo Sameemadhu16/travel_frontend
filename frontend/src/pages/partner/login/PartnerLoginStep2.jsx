@@ -11,6 +11,7 @@ import SecondaryButton from '../../../components/SecondaryButton';
 import { handleSelect } from '../../../core/service';
 import { formValidator } from '../../../core/validation';
 import TermsAndPrivacy from '../components/TermsAndPrivacy';
+import TextLink from '../components/TextLink';
 
 export default function PartnerLoginStep2() {
 
@@ -77,14 +78,10 @@ export default function PartnerLoginStep2() {
                                 text="Sign in"
                                 type={'submit'}
                             />
-                            <Navigate path='' className='w-full py-3 flex justify-center hover:bg-brand-accent rounded-[8px] cursor-pointer mt-10'>
-                                <Title
-                                    title="Forgotten your password?"
-                                    size="text-[18px]"
-                                    font="font-[500]"
-                                    color='text-brand-primary'
-                                />
-                            </Navigate>
+                            <TextLink
+                                title='Forgotten your password?'
+                                path='/partner-forgot-password'
+                            />
                             <Border/>
                             <TermsAndPrivacy/>
                         </div>

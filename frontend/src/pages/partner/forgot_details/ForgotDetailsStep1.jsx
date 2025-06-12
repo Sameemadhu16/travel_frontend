@@ -16,7 +16,7 @@ const options = [
         id: 1,
         name: 'Forgot your password?',
         icon: FiLock,
-        path: '',
+        path: '/partner-forgot-password',
     },
     { 
         id: 2,
