@@ -10,6 +10,7 @@ import Border from '../../../components/Border';
 import AnyQuestion from '../components/AnyQuestion';
 import SecondaryButton from '../../../components/SecondaryButton';
 import { navigateTo } from '../../../core/navigateHelper';
+import { formValidator } from '../../../core/validation';
 
 export default function PartnerLoginStep1() {
 
@@ -18,9 +19,18 @@ export default function PartnerLoginStep1() {
     });
     const [error,setError]=useState({});
 
-    const handleSubmit = useCallback(()=>{
-
-    },[]);
+    const handleSubmit = useCallback((e)=>{
+        e.preventDefault();
+        try{
+            const error = formValidator(formData);
+            setError(error)
+            if(error === null){
+                navigateTo('/partner-login-step-2');
+            }
+        }catch(e){
+            console.log(e)
+        }
+    },[formData]);
 
     return (
         <AnimatePresence>

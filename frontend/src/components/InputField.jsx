@@ -65,7 +65,7 @@ InputField.propTypes = {
     label: PropTypes.string.isRequired,
     type: PropTypes.string,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-    onChange: PropTypes.func.isRequired,
+    onChange: PropTypes.func,
     placeholder: PropTypes.string,
     error: PropTypes.string,
     icon: PropTypes.bool,
