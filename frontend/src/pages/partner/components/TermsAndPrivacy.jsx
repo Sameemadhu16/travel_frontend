@@ -4,7 +4,7 @@ import Navigate from '../../../components/Navigate'
 
 export default function TermsAndPrivacy() {
     return (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap justify-center gap-1">
             <Title 
                 title="By signing in or creating an account, you agree with our"
                 size="text-[14px]"

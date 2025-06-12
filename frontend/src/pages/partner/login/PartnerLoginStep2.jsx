@@ -43,11 +43,25 @@ export default function PartnerLoginStep2() {
             >
                 <Main>
                     <form onSubmit={handleSubmit} className="w-full flex flex-col items-center justify-center">
-                        <Title
-                            title="Sign in to manage your property"
-                            size="text-[24px]"
-                            font="font-[600]"
-                        />
+                        <div className='flex flex-col w-full md:w-2/5'>
+                            <Title
+                                title="Enter your password"
+                                size="text-[24px]"
+                                font="font-[600]"
+                            />
+                            <div className='mt-5'>
+                                <Title 
+                                    title="Please enter your Booking.com password for"
+                                    size="text-[16px]"
+                                    font="font-[400]"
+                                />
+                                <Title 
+                                    title="sachithavintha35@gmail.com"
+                                    size="text-[16px]"
+                                    font="font-[600]"
+                                />
+                            </div>
+                        </div>
                         <div className="w-full md:w-2/5 flex flex-col gap-4 mt-5">
                             <InputField
                                 label='Password'

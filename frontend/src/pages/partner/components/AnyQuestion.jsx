@@ -4,7 +4,7 @@ import Title from '../../../components/Title'
 
 export default function AnyQuestion() {
     return (
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap justify-center gap-1">
             <Title 
                 title="Do you have questions about your property or the extranet? Visit"
                 size="text-[14px]"
