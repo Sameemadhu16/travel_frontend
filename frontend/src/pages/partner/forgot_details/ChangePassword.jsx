@@ -10,6 +10,7 @@ import { navigateTo } from '../../../core/navigateHelper'
 import { formValidator } from '../../../core/validation'
 import TermsAndPrivacy from '../components/TermsAndPrivacy'
 import { handleSelect } from '../../../core/service'
+import { showToastMessage } from '../../../utils/toastHelper'
 
 export default function ChangePassword() {
 
@@ -25,6 +26,7 @@ export default function ChangePassword() {
             const error = formValidator(formData);
             setError(error)
             if(error === null){
+                showToastMessage('success','Your password has been reset.')
                 navigateTo('/partner-login-step-1')
             }
         }catch(e){

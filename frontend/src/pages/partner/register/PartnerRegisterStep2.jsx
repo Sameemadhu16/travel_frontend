@@ -10,6 +10,7 @@ import Border from '../../../components/Border'
 import { formValidator } from '../../../core/validation'
 import { navigateTo } from '../../../core/navigateHelper'
 import TermsAndPrivacy from '../components/TermsAndPrivacy'
+import { showToastMessage } from '../../../utils/toastHelper'
 
 export default function PartnerRegisterStep2() {
 
@@ -27,6 +28,7 @@ export default function PartnerRegisterStep2() {
             setErrors(error)
 
             if(error === null){
+                showToastMessage('success', 'You have successfully created your partner account.');
                 navigateTo('/partner-login-step-1');
             }
         }catch(e){
