@@ -14,21 +14,22 @@ import TextLink from '../components/TextLink'
 export default function ForgotPassword() {
     const [formData,setFormData] = useState({
             email: '',
-        });
-        const [error,setError]=useState({});
-    
-        const handleSubmit = useCallback((e)=>{
-            e.preventDefault();
-            try{
-                const error = formValidator(formData);
-                setError(error)
-                if(error === null){
-                    //need email verify sending function call here
-                }
-            }catch(e){
-                console.log(e)
+    });
+    const [error,setError]=useState({});
+
+    const handleSubmit = useCallback((e)=>{
+        e.preventDefault();
+        try{
+            const error = formValidator(formData);
+            setError(error)
+            if(error === null){
+                //need email verify sending function call here
             }
-        },[formData]);
+        }catch(e){
+            console.log(e)
+        }
+    },[formData]);
+    
     return (
         <AnimatePresence>
             <motion.div
