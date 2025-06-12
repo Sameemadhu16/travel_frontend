@@ -1,19 +1,21 @@
 import { AnimatePresence, motion } from 'framer-motion'
-import { useCallback, useState } from 'react'
-import Main from '../../../components/Main'
-import Title from '../../../components/Title'
-import TermsAndPrivacy from '../components/TermsAndPrivacy'
 import InputField from '../../../components/InputField'
+import Title from '../../../components/Title'
+import Main from '../../../components/Main'
 import PrimaryButton from '../../../components/PrimaryButton'
-import { handleSelect } from '../../../core/service'
-import { formValidator } from '../../../core/validation'
-import Border from '../../../components/Border'
 import TextLink from '../components/TextLink'
+import Border from '../../../components/Border'
+import { useCallback, useState } from 'react'
 import { navigateTo } from '../../../core/navigateHelper'
+import { formValidator } from '../../../core/validation'
+import TermsAndPrivacy from '../components/TermsAndPrivacy'
+import { handleSelect } from '../../../core/service'
 
-export default function ForgotPassword() {
+export default function ChangePassword() {
+
     const [formData,setFormData] = useState({
-            email: '',
+            password: '',
+            confirmPassword: '',
     });
     const [error,setError]=useState({});
 
@@ -23,14 +25,13 @@ export default function ForgotPassword() {
             const error = formValidator(formData);
             setError(error)
             if(error === null){
-                //need email verify sending function call here
-                navigateTo('/change-password')
+                navigateTo('/partner-login-step-1')
             }
         }catch(e){
             console.log(e)
         }
     },[formData]);
-    
+
     return (
         <AnimatePresence>
             <motion.div
@@ -45,23 +46,34 @@ export default function ForgotPassword() {
                     <form onSubmit={handleSubmit} className="w-full flex flex-col items-center justify-center">
                         <div className='flex flex-col gap-4 w-full md:w-2/5'>
                             <Title
-                                title="Forgotten your password?"
+                                title="Change password"
                                 size="text-[24px]"
                                 font="font-[600]"
                             />
                             <Title
-                                title="Please confirm your username and we'll send you a link to reset your password."
+                                title="Add new password and confirm it"
                                 size="text-[16px]"
                                 font="font-[400]"
                             />
                             <InputField
-                                label='Account Email'
-                                type='text'
-                                name='email'
-                                value={formData.email}
-                                onChange={e => handleSelect(setFormData, 'email', e.target.value)}
-                                placeholder='Also known as username'
-                                error={error?.errors?.email}
+                                label='New Password'
+                                type='password'
+                                name='password'
+                                value={formData.password}
+                                onChange={e => handleSelect(setFormData, 'password', e.target.value)}
+                                placeholder='password'
+                                error={error?.errors?.password}
+                                icon={true}
+                            />
+                            <InputField
+                                label='Confirm password'
+                                type='password'
+                                name='confirmPassword'
+                                value={formData.confirmPassword}
+                                onChange={e => handleSelect(setFormData, 'confirmPassword', e.target.value)}
+                                placeholder='Confirm password'
+                                error={error?.errors?.confirmPassword}
+                                icon={true}
                             />
                             <PrimaryButton
                                 text="Send reset link"

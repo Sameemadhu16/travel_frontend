@@ -14,6 +14,7 @@ import PartnerLoginStep2 from '../pages/partner/login/PartnerLoginStep2'
 import ForgotDetailsStep1 from '../pages/partner/forgot_details/ForgotDetailsStep1'
 import ForgotPassword from '../pages/partner/forgot_details/ForgotPassword'
 import ForgotUsername from '../pages/partner/forgot_details/Forgotusername'
+import ChangePassword from '../pages/partner/forgot_details/ChangePassword'
 
 export default function AppRoutes() {
     return (
@@ -43,6 +44,7 @@ export default function AppRoutes() {
                 <Route path='/partner-details-forgot' element={<ForgotDetailsStep1/>}/>
                 <Route path='/partner-forgot-password' element={<ForgotPassword/>}/>
                 <Route path='/partner-forgot-username' element={<ForgotUsername/>}/>
+                <Route path='/change-password' element={<ChangePassword/>}/>
             </Routes>
     )
 }
