@@ -63,7 +63,7 @@ export default function PartnerLoginStep1() {
                                 text="Next"
                                 type={'submit'}
                             />
-                            <Navigate path='/' className='w-full py-3 flex justify-center hover:bg-brand-accent rounded-[8px] cursor-pointer mt-10'>
+                            <Navigate path='/partner-details-forgot' className='w-full py-3 flex justify-center hover:bg-brand-accent rounded-[8px] cursor-pointer mt-10'>
                                 <Title
                                     title="Having trouble signing in?"
                                     size="text-[18px]"

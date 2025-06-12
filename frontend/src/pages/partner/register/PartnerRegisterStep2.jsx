@@ -53,7 +53,7 @@ export default function PartnerRegisterStep2() {
                                 font="font-[600]"
                             />
                             <Title 
-                                title="Your full name and phone number are needed to ensure the security of your Booking.com account."
+                                title="Your full name and phone number are needed to ensure the security of your travel.lk account."
                                 size="text-[16px]"
                                 font="font-[400]"
                             />
