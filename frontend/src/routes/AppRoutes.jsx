@@ -10,6 +10,7 @@ import SearchVehicles from '../pages/vehicles/search/SearchVehicles'
 import PartnerRegisterStep1 from '../pages/partner/register/PartnerRegisterStep1'
 import PartnerRegisterStep2 from '../pages/partner/register/partnerRegisterStep2'
 import PartnerLoginStep1 from '../pages/partner/login/PartnerLoginStep1'
+import PartnerLoginStep2 from '../pages/partner/login/PartnerLoginStep2'
 
 export default function AppRoutes() {
     return (
@@ -33,7 +34,7 @@ export default function AppRoutes() {
 
                 {/* partner login */}
                 <Route path='/partner-login-step-1' element={<PartnerLoginStep1/>}/>
-
+                <Route path='/partner-login-step-2' element={<PartnerLoginStep2/>}/>
             </Routes>
     )
 }

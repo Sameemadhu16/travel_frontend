@@ -52,7 +52,7 @@ const InputField = ({
                 />
                 {icon && type === 'password' && !disabled && (
                     <div className="absolute inset-y-0 right-3 flex items-center cursor-pointer" onClick={toggleVisibility}>
-                        {visibility ? <FaEye className='text-gray-400'/> : <FaEyeSlash className='text-gray-400'/>}
+                        {visibility ? <FaEyeSlash className='text-gray-400'/> : <FaEye className='text-gray-400'/>}
                     </div>
                 )}
             </div>

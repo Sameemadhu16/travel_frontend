@@ -9,6 +9,7 @@ import Navigate from '../../../components/Navigate'
 import Border from '../../../components/Border'
 import { formValidator } from '../../../core/validation'
 import { navigateTo } from '../../../core/navigateHelper'
+import TermsAndPrivacy from '../components/TermsAndPrivacy'
 
 export default function PartnerRegisterStep2() {
 
@@ -89,34 +90,7 @@ export default function PartnerRegisterStep2() {
                                     type={'submit'}
                                 />
                                 <Border/>
-                                <div className="flex flex-wrap gap-1">
-                                    <Title 
-                                        title="By signing in or creating an account, you agree with our"
-                                        size="text-[14px]"
-                                        font="font-[400]"
-                                    />
-                                    <Navigate path="" className="hover:underline text-brand-primary">
-                                        <Title 
-                                            title="Terms & conditions "
-                                            size="text-[14px]"
-                                            font="font-[400]"
-                                            color="text-brand-primary"
-                                        />   
-                                    </Navigate>
-                                    <Title 
-                                        title="and"
-                                        size="text-[14px]"
-                                        font="font-[400]"
-                                    />
-                                    <Navigate path="" className="hover:underline text-brand-primary">
-                                        <Title 
-                                            title="Privacy statement"
-                                            size="text-[14px]"
-                                            font="font-[400]"
-                                            color="text-brand-primary"
-                                        />   
-                                    </Navigate>
-                                </div>
+                                <TermsAndPrivacy/>
                             </div>
                         </div>
                     </form>
