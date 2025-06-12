@@ -12,6 +12,7 @@ import { handleSelect } from '../../../core/service';
 import { formValidator } from '../../../core/validation';
 import TermsAndPrivacy from '../components/TermsAndPrivacy';
 import TextLink from '../components/TextLink';
+import { showToastMessage } from '../../../utils/toastHelper';
 
 export default function PartnerLoginStep2() {
 
@@ -27,6 +28,7 @@ export default function PartnerLoginStep2() {
             setError(error)
             if(error === null){
                 navigateTo('/partner-login-step-2');
+                showToastMessage('success','Welcome back! You’ve logged in successfully.')
             }
         }catch(e){
             console.log(e)
