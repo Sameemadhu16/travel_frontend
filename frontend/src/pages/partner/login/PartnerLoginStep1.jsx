@@ -5,7 +5,6 @@ import Title from '../../../components/Title';
 import { handleSelect } from '../../../core/service';
 import InputField from '../../../components/InputField';
 import PrimaryButton from '../../../components/PrimaryButton';
-import Navigate from '../../../components/Navigate';
 import Border from '../../../components/Border';
 import AnyQuestion from '../components/AnyQuestion';
 import SecondaryButton from '../../../components/SecondaryButton';

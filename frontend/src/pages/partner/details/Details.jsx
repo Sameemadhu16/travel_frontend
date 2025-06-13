@@ -13,7 +13,6 @@ import search from '../../../assets/images/Search.png'
 import { testimonials } from '../../../core/Lists/reviews';
 import ReviewCard from './components/ReviewCard';
 import PrimaryButton from '../../../components/PrimaryButton';
-import Navigate from '../../../components/Navigate';
 import { navigateTo } from '../../../core/navigateHelper';
 
 const titles = [ 'anything', 'guides', 'hotels', 'vehicles' ];

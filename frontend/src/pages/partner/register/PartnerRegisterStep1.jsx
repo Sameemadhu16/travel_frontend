@@ -1,15 +1,12 @@
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import Main from "../../../components/Main";
 import Message from "./components/Message";
 import Title from "../../../components/Title";
 import InputField from "../../../components/InputField";
-import { handleSelect } from "../../../core/service";
-import { formValidator } from "../../../core/validation";
 import { navigateTo } from "../../../core/navigateHelper";
 import PrimaryButton from "../../../components/PrimaryButton";
 import SecondaryButton from "../../../components/SecondaryButton";
 import Border from "../../../components/Border";
-import Navigate from "../../../components/Navigate";
 import { motion, AnimatePresence } from "framer-motion";
 import AnyQuestion from "../components/AnyQuestion";
 

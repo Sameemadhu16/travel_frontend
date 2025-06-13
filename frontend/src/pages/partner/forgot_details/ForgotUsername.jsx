@@ -1,11 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import Main from '../../../components/Main'
 import Title from '../../../components/Title'
-import InputField from '../../../components/InputField'
 import TextLink from '../components/TextLink'
 import Border from '../../../components/Border'
 import TermsAndPrivacy from '../components/TermsAndPrivacy'
-import { useState } from 'react'
 import PrimaryButton from '../../../components/PrimaryButton'
 
 export default function ForgotUsername() {

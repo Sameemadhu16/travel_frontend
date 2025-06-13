@@ -3,11 +3,9 @@ import Main from '../../../components/Main'
 import { useCallback, useState } from 'react'
 import InputField from '../../../components/InputField';
 import PrimaryButton from '../../../components/PrimaryButton';
-import Navigate from '../../../components/Navigate';
 import Title from '../../../components/Title';
 import { navigateTo } from '../../../core/navigateHelper';
 import Border from '../../../components/Border';
-import SecondaryButton from '../../../components/SecondaryButton';
 import { handleSelect } from '../../../core/service';
 import { formValidator } from '../../../core/validation';
 import TermsAndPrivacy from '../components/TermsAndPrivacy';

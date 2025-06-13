@@ -1,4 +1,3 @@
-import React from 'react'
 import Navigate from '../../../components/Navigate'
 import Title from '../../../components/Title'
 

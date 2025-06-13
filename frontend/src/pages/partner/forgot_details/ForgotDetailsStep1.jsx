@@ -1,10 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import Main from '../../../components/Main'
 import Title from '../../../components/Title'
-import PrimaryButton from '../../../components/PrimaryButton'
 import Navigate from '../../../components/Navigate'
 import Border from '../../../components/Border'
-import SecondaryButton from '../../../components/SecondaryButton'
 import { FiLock } from "react-icons/fi";
 import { FaAngleRight, FaUserCircle } from "react-icons/fa";
 import { useMemo } from 'react'
@@ -38,7 +36,7 @@ export default function ForgotDetailsStep1() {
         return options.map((option)=>{
             const Icon = option.icon;
             return (
-                <Navigate path={option.path} className='w-full flex flex-col gap-2 hover:underline text-brand-primary'>
+                <Navigate key={option.id} path={option.path} className='w-full flex flex-col gap-2 hover:underline text-brand-primary'>
                     <div className='w-full  flex justify-between items-center'>
                         <div className='flex items-center gap-3'>
                             <Icon size={24}/>
@@ -57,7 +55,7 @@ export default function ForgotDetailsStep1() {
                 </Navigate>
             )
         })
-    })
+    },[])
     return (
         <AnimatePresence>
             <motion.div
