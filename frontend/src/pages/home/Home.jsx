@@ -62,7 +62,7 @@ export default function Home() {
             <Main>
                 <div className='relative flex flex-row gap-2 w-full mt-4'>
                     {placesContainer}
-                    <div className='absolute top-60 left-1/2 transform -translate-x-1/2 w-4/6'>
+                    <div className='absolute top-60 left-1/2 transform -translate-x-1/2 w-5/6'>
                         <SearchContainer/>
                     </div>
                 </div>
