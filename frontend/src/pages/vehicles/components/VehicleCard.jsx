@@ -107,7 +107,7 @@ export default function VehicleCard({
                             <Tag title={`${rating} (${reviews})`} icon={star} />
                             <Tag
                                 title={available ? "Available" : "Not Available"}
-                                color={available ? "bg-brand-primary" : "bg-red-500"}
+                                color={available ? "bg-brand-primary" : "bg-danger"}
                                 textColor="text-white"
                                 icon={info}
                             />
