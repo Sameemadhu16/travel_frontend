@@ -16,7 +16,6 @@ export default function PartnerRegisterStep2() {
 
     const { formData, setFormData } = useContext(FormContext);
     const [errors,setErrors] = useState({});
-console.log(formData)
     const handleSubmit = useCallback((e)=>{
         e.preventDefault();
         try{

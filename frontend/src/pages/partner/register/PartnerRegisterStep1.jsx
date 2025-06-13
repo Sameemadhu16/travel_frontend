@@ -27,7 +27,7 @@ export default function PartnerRegisterStep1() {
             email,
         }))
     }, [setFormData]);
-console.log(formData)
+
     return (
         <AnimatePresence>
             <motion.div
