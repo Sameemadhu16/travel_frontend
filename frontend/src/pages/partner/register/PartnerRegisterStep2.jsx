@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { useCallback, useState } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import Main from '../../../components/Main'
 import Title from '../../../components/Title'
 import { handleSelect } from '../../../core/service'
@@ -10,16 +10,13 @@ import { formValidator } from '../../../core/validation'
 import { navigateTo } from '../../../core/navigateHelper'
 import TermsAndPrivacy from '../components/TermsAndPrivacy'
 import { showToastMessage } from '../../../utils/toastHelper'
+import FormContext from '../../../context/InitialValues'
 
 export default function PartnerRegisterStep2() {
 
-    const [formData,setFormData]=useState({
-        firstName: 'Sachith',
-        lastName: 'avintha',
-        phoneNumber: '',
-    });
+    const { formData, setFormData } = useContext(FormContext);
     const [errors,setErrors] = useState({});
-
+console.log(formData)
     const handleSubmit = useCallback((e)=>{
         e.preventDefault();
         try{
@@ -63,7 +60,7 @@ export default function PartnerRegisterStep2() {
                                     label='First name'
                                     type='text'
                                     name='firstName'
-                                    value={formData.firstName}
+                                    value={formData.firstName || ''}
                                     onChange={e => handleSelect(setFormData, 'firstName', e.target.value)}
                                     placeholder=''
                                     error={errors?.errors?.firstName}
@@ -72,7 +69,7 @@ export default function PartnerRegisterStep2() {
                                     label='Last name'
                                     type='text'
                                     name='lastName'
-                                    value={formData.lastName}
+                                    value={formData.lastName || ''}
                                     onChange={e => handleSelect(setFormData, 'lastName', e.target.value)}
                                     placeholder=''
                                     error={errors?.errors?.lastName}
@@ -81,7 +78,7 @@ export default function PartnerRegisterStep2() {
                                     label='Phone number'
                                     type='text'
                                     name='phoneNumber'
-                                    value={formData.phoneNumber}
+                                    value={formData.phoneNumber || ''}
                                     onChange={e => handleSelect(setFormData, 'phoneNumber', e.target.value)}
                                     placeholder='+9477123123'
                                     error={errors?.errors?.phoneNumber}

@@ -4,6 +4,7 @@ import AppRoutes from './routes/AppRoutes'
 import { useEffect } from 'react';
 import { setNavigator } from './core/navigateHelper';
 import { ToastContainer } from 'react-toastify';
+import { FormProvider } from './context/FormContext';
 
 export default function App() {
 
@@ -14,11 +15,11 @@ export default function App() {
   },[navigate]);
   
   return (
-    <>
-      <Header/>
-      <AppRoutes/>
-      <ToastContainer theme="colored"/>
-    </>
+      <FormProvider>
+        <Header/>
+        <AppRoutes/>
+        <ToastContainer theme="colored"/>
+      </FormProvider>
     
   )
 }

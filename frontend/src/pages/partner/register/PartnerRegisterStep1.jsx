@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import Main from "../../../components/Main";
 import Message from "./components/Message";
 import Title from "../../../components/Title";
@@ -9,15 +9,25 @@ import SecondaryButton from "../../../components/SecondaryButton";
 import Border from "../../../components/Border";
 import { motion, AnimatePresence } from "framer-motion";
 import AnyQuestion from "../components/AnyQuestion";
+import FormContext, { registerPartnerAccountForm } from "../../../context/InitialValues";
 
 export default function PartnerRegisterStep1() {
 
     const [message,setMessage] = useState(true);
-    const formData = {
-        email: 'sachithavinta@gmail.com'
-    }
+    const { formData, setFormData } = useContext(FormContext);
 
-    
+    useEffect(() => {
+        // Clear form data from localStorage and reset context state
+        localStorage.removeItem('formData');
+        setFormData(registerPartnerAccountForm.formData);
+
+        const email = 'sachithavintha@gmail.com';
+        setFormData((prev)=>({
+            ...prev,
+            email,
+        }))
+    }, [setFormData]);
+console.log(formData)
     return (
         <AnimatePresence>
             <motion.div
