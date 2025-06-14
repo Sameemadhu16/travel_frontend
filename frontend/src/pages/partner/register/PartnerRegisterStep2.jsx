@@ -13,6 +13,9 @@ import { showToastMessage } from '../../../utils/toastHelper'
 import FormContext from '../../../context/InitialValues'
 import { useDispatch, useSelector } from 'react-redux'
 import { registerFailure, registerStart, registerSuccess } from '../../../redux/slices/authSlice'
+import BlurPage from '../../../components/BlurPage'
+import SpinnerWithBlur from '../../../components/Spinner'
+import Spinner from '../../../components/Spinner'
 
 export default function PartnerRegisterStep2() {
 
@@ -134,6 +137,11 @@ export default function PartnerRegisterStep2() {
                     </form>
                 </Main>
             </motion.div>
+            {
+                loading && (
+                    <Spinner/>
+                )
+            }
         </AnimatePresence>
     )
 }
