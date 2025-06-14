@@ -16,19 +16,19 @@ import ForgotPassword from '../pages/partner/forgot_details/ForgotPassword'
 import ForgotUsername from '../pages/partner/forgot_details/ForgotUsername'
 import ChangePassword from '../pages/partner/forgot_details/ChangePassword'
 import { FormProvider } from '../context/FormContext'
-import { registerPartnerAccountForm } from '../context/InitialValues'
+import { loginPartnerAccountForm, registerPartnerAccountForm } from '../context/InitialValues'
 
 export default function AppRoutes() {
     return (
             <Routes>
                 <Route path='/' element={<Welcome/>}/>
                 <Route path='/home' element={<Home/>}/>
-                <Route path='/hotels-search' element={<Search/>}/>
                 <Route path='/vehicle-search' element={<SearchVehicles/>}/>
                 <Route path='/hotel/:id' element={<Hotel/>}/>
 
                 {/* hotels*/}
                 <Route path='/hotel-registration' element={<HotelRegistration/>}/>
+                <Route path='/hotels-search' element={<Search/>}/>
 
                 {/* rooms */}
                 <Route path='/rooms-add' element={<RoomsAdd/>}/>
@@ -38,17 +38,26 @@ export default function AppRoutes() {
                 <Route
                     path="/partner-register/*"
                     element={
-                        <FormProvider>
-                        <Routes>
-                            <Route path="step-1" element={<PartnerRegisterStep1 />} />
-                            <Route path="step-2" element={<PartnerRegisterStep2 />} />
-                        </Routes>
+                        <FormProvider initialValues={registerPartnerAccountForm.formData}>
+                            <Routes>
+                                <Route path="step-1" element={<PartnerRegisterStep1 />} />
+                                <Route path="step-2" element={<PartnerRegisterStep2 />} />
+                            </Routes>
                         </FormProvider>
                     }
                 />
                 {/* partner login */}
-                <Route path='/partner-login-step-1' element={<PartnerLoginStep1/>}/>
-                <Route path='/partner-login-step-2' element={<PartnerLoginStep2/>}/>
+                <Route 
+                    path="/partner-login/*"
+                    element={
+                        <FormProvider initialValues={loginPartnerAccountForm.formData}>
+                            <Routes>
+                                <Route path='step-1' element={<PartnerLoginStep1/>}/>
+                                <Route path='step-2' element={<PartnerLoginStep2/>}/>
+                            </Routes>
+                        </FormProvider>
+                    }
+                />
 
                 {/* partner details forgot */}
                 <Route path='/partner-details-forgot' element={<ForgotDetailsStep1/>}/>

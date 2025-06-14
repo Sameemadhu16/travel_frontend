@@ -26,7 +26,7 @@ const options = [
         id: 3,
         name: 'Go to sign-in',
         icon: IoMdLogOut,
-        path: '/partner-login-step-1',
+        path: '/partner-login/step-1',
     },
 ]
 

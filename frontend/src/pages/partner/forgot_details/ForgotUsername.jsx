@@ -37,7 +37,7 @@ export default function ForgotUsername() {
                             />
                             <TextLink
                                 title='Back to sign-in'
-                                path='/partner-login-step-1'
+                                path='/partner-login/step-1'
                             />
                             <Border/>
                             <TermsAndPrivacy/>

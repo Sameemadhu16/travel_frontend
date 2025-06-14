@@ -23,8 +23,9 @@ export default function PartnerRegisterStep2() {
             setErrors(error)
 
             if(error === null){
+                localStorage.removeItem('formData');
                 showToastMessage('success', 'You have successfully created your partner account.');
-                navigateTo('/partner-login-step-1');
+                navigateTo('/partner-login/step-1');
             }
         }catch(e){
             console.log(e)

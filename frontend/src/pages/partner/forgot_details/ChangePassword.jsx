@@ -27,7 +27,7 @@ export default function ChangePassword() {
             setError(error)
             if(error === null){
                 showToastMessage('success','Your password has been reset.')
-                navigateTo('/partner-login-step-1')
+                navigateTo('/partner-login/step-1')
             }
         }catch(e){
             console.log(e)

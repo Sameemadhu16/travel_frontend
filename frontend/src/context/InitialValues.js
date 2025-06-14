@@ -13,7 +13,15 @@ const registerPartnerAccountForm = {
     setFormData: () => {},
 }
 
+const loginPartnerAccountForm = {
+    formData: {
+        email: INITIAL_STRING,
+        password: INITIAL_STRING,
+    },
+    setFormData: () => {},
+}
+
 const FormContext = createContext();
 
 export default FormContext;
-export { registerPartnerAccountForm }; 
+export { registerPartnerAccountForm, loginPartnerAccountForm }; 

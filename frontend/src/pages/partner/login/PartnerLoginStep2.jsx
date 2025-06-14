@@ -25,7 +25,7 @@ export default function PartnerLoginStep2() {
             const error = formValidator(formData);
             setError(error)
             if(error === null){
-                navigateTo('/partner-login-step-2');
+                navigateTo('/partner-login/step-2');
                 showToastMessage('success','Welcome back! You’ve logged in successfully.')
             }
         }catch(e){

@@ -27,7 +27,6 @@ export default function PartnerRegisterStep1() {
             email,
         }))
     }, [setFormData]);
-    console.log(formData)
 
     return (
         <AnimatePresence>
@@ -80,7 +79,7 @@ export default function PartnerRegisterStep1() {
                                 <SecondaryButton
                                     text="Sign in"
                                     type={'button'}
-                                    onClick={() => navigateTo('/partner-login-step-1')}
+                                    onClick={() => navigateTo('/partner-login/step-1')}
                                 />
                                 <Border/>
                             </div>
