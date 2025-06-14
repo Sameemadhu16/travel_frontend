@@ -44,7 +44,7 @@ export default function RegisterCard() {
             <Border/>
 
             <div className="w-full mt-5 flex items-center justify-center">
-                <Navigate path="/partner-register-step-1" className="w-1/2">
+                <Navigate path="/partner-register/step-1" className="w-1/2">
                     <PrimaryButton text="Get start now"/>
                 </Navigate>
             </div>

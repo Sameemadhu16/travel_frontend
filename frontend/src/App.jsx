@@ -15,11 +15,11 @@ export default function App() {
   },[navigate]);
   
   return (
-      <FormProvider>
+      <>
         <Header/>
         <AppRoutes/>
         <ToastContainer theme="colored"/>
-      </FormProvider>
+      </>
     
   )
 }

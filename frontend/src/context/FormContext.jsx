@@ -3,22 +3,12 @@ import FormContext, { registerPartnerAccountForm } from "./InitialValues";
 import PropTypes from 'prop-types';
 import { useLocation } from "react-router-dom";
 
-export const FormProvider = ({ children }) => {
+export const FormProvider = ({ children, initialValues = {} }) => {
 
-    const location = useLocation();
-    const currentForm = '';
-    let initialValues = {};
     const [formData,setFormData] = useState(() => {
         const savedData = localStorage.getItem('formData');
         return savedData ? JSON.parse(savedData): initialValues
     });
-
-
-    switch(location.pathname){
-        case '/partner-register-step-1': 
-            initialValues = registerPartnerAccountForm.formData
-            break;
-    }
 
     useEffect(() => {
         localStorage.setItem('formData', JSON.stringify(formData));

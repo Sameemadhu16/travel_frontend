@@ -72,7 +72,7 @@ export default function PartnerLoginStep1() {
                             <SecondaryButton
                                 text="Create a Partner Account"
                                 type={'button'}
-                                onClick={() => navigateTo('/partner-register-step-1')}
+                                onClick={() => navigateTo('/partner-register/step-1')}
                             />
                             <Border/>
                         </div>

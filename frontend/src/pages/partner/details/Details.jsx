@@ -205,7 +205,7 @@ export default function Details() {
                         <PrimaryButton 
                             text="Host with us today"
                             type={'button'}
-                            onClick={() => navigateTo('/partner-register-step-1')}
+                            onClick={() => navigateTo('/partner-register/step-1')}
                         />
                     </div>
                 </Main>
@@ -287,7 +287,7 @@ export default function Details() {
                     <PrimaryButton
                         text="Get started today"
                         type={'button'}
-                        onClick={() => navigateTo('/partner-register-step-1')}
+                        onClick={() => navigateTo('/partner-register/step-1')}
                     />
                 </div>
             </Main>
@@ -305,7 +305,7 @@ export default function Details() {
                         <PrimaryButton
                             text="Join hosts like you"
                             type={'button'}
-                            onClick={() => navigateTo('/partner-register-step-1')}
+                            onClick={() => navigateTo('/partner-register/step-1')}
                         />
                     </div>
                 </Main>

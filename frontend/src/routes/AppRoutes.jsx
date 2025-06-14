@@ -13,8 +13,10 @@ import PartnerLoginStep1 from '../pages/partner/login/PartnerLoginStep1'
 import PartnerLoginStep2 from '../pages/partner/login/PartnerLoginStep2'
 import ForgotDetailsStep1 from '../pages/partner/forgot_details/ForgotDetailsStep1'
 import ForgotPassword from '../pages/partner/forgot_details/ForgotPassword'
-import ForgotUsername from '../pages/partner/forgot_details/Forgotusername'
+import ForgotUsername from '../pages/partner/forgot_details/ForgotUsername'
 import ChangePassword from '../pages/partner/forgot_details/ChangePassword'
+import { FormProvider } from '../context/FormContext'
+import { registerPartnerAccountForm } from '../context/InitialValues'
 
 export default function AppRoutes() {
     return (
@@ -33,9 +35,17 @@ export default function AppRoutes() {
 
                 {/* partner register */}
                 <Route path='/partner-details' element={<Details/>}/>
-                <Route path='/partner-register-step-1' element={<PartnerRegisterStep1/>}/>
-                <Route path='/partner-register-step-2' element={<PartnerRegisterStep2/>}/>
-
+                <Route
+                    path="/partner-register/*"
+                    element={
+                        <FormProvider>
+                        <Routes>
+                            <Route path="step-1" element={<PartnerRegisterStep1 />} />
+                            <Route path="step-2" element={<PartnerRegisterStep2 />} />
+                        </Routes>
+                        </FormProvider>
+                    }
+                />
                 {/* partner login */}
                 <Route path='/partner-login-step-1' element={<PartnerLoginStep1/>}/>
                 <Route path='/partner-login-step-2' element={<PartnerLoginStep2/>}/>

@@ -19,7 +19,7 @@ export default function PartnerRegisterStep2() {
     const handleSubmit = useCallback((e)=>{
         e.preventDefault();
         try{
-            const error = formValidator(formData);
+            const error = formValidator(formData,);
             setErrors(error)
 
             if(error === null){

@@ -27,6 +27,7 @@ export default function PartnerRegisterStep1() {
             email,
         }))
     }, [setFormData]);
+    console.log(formData)
 
     return (
         <AnimatePresence>
@@ -72,7 +73,7 @@ export default function PartnerRegisterStep1() {
                                 <PrimaryButton
                                     text="Continue"
                                     type={'button'}
-                                    onClick={() => navigateTo('/partner-register-step-2')}
+                                    onClick={() => navigateTo('/partner-register/step-2')}
                                 />
                                 <Border/>
                                 <AnyQuestion/>
@@ -90,3 +91,16 @@ export default function PartnerRegisterStep1() {
         </AnimatePresence>
     )
 }
+
+/*
+This error occurs if FormContext.Provider is missing in your component tree above this component.
+Make sure you wrap your app (or at least the parent of this page) with <FormContext.Provider value={{ formData, setFormData }}>.
+
+Example (usually in App.jsx or a layout file):
+<FormContext.Provider value={{ formData, setFormData }}>
+    <YourRoutesOrComponentTree />
+</FormContext.Provider>
+
+If you do not wrap with the provider, useContext(FormContext) will return undefined,
+causing destructuring to fail with "Cannot destructure property 'formData' of 'undefined'".
+*/
