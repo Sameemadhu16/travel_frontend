@@ -11,26 +11,66 @@ import { navigateTo } from '../../../core/navigateHelper'
 import TermsAndPrivacy from '../components/TermsAndPrivacy'
 import { showToastMessage } from '../../../utils/toastHelper'
 import FormContext from '../../../context/InitialValues'
+import { useDispatch, useSelector } from 'react-redux'
+import { registerFailure, registerStart, registerSuccess } from '../../../redux/slices/authSlice'
 
 export default function PartnerRegisterStep2() {
 
     const { formData, setFormData } = useContext(FormContext);
     const [errors,setErrors] = useState({});
-    const handleSubmit = useCallback((e)=>{
+    const dispatch = useDispatch();
+    const { loading, error } = useSelector(state => state.auth);
+
+    const handleSubmit = useCallback( async (e) => {
         e.preventDefault();
         try{
             const error = formValidator(formData,);
             setErrors(error)
 
             if(error === null){
+                dispatch(registerStart());
+                // const response = await fetch('/api/register', {
+                //     method: 'POST',
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //     },
+                //     body: JSON.stringify(formData),
+                // });
+                
+                // 
+                // if (response.ok) {
+                //     const data = await response.json();
+                    
+                //     // Success - update Redux state
+                //     dispatch(registerSuccess({
+                //         user: data.user,
+                //         token: data.token
+                //     }));
+                    
+                //     // Clean up and navigate
+                //     localStorage.removeItem('formData');
+                //     showToastMessage('success', 'You have successfully created your partner account.');
+                //     navigateTo('/partner-login/step-1');
+                    
+                // } else {
+                //     const errorData = await response.json();
+                //     throw new Error(errorData.message || 'Registration failed');
+                // }
+
+                dispatch(registerSuccess({
+                    user: formData, // or extract user info from formData
+                    token: 'temporary-token' // or generate/get from somewhere
+                }));
+
                 localStorage.removeItem('formData');
                 showToastMessage('success', 'You have successfully created your partner account.');
                 navigateTo('/partner-login/step-1');
             }
         }catch(e){
-            console.log(e)
+            dispatch(registerFailure(e.message));
+            showToastMessage('error', e.message || 'Registration failed. Please try again.');
         }
-    },[formData]);
+    },[formData, dispatch]);
 
     return (
         <AnimatePresence>

@@ -4,7 +4,8 @@ import AppRoutes from './routes/AppRoutes'
 import { useEffect } from 'react';
 import { setNavigator } from './core/navigateHelper';
 import { ToastContainer } from 'react-toastify';
-import { FormProvider } from './context/FormContext';
+import { Provider } from 'react-redux';
+import store from './redux/store';
 
 export default function App() {
 
@@ -15,11 +16,11 @@ export default function App() {
   },[navigate]);
   
   return (
-      <>
+      <Provider store={store}>
         <Header/>
         <AppRoutes/>
         <ToastContainer theme="colored"/>
-      </>
+      </Provider>
     
   )
 }
