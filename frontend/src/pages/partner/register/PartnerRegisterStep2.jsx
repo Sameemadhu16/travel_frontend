@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
-import { useCallback, useContext, useState } from 'react'
+import { useCallback, useContext, useEffect, useState } from 'react'
 import Main from '../../../components/Main'
 import Title from '../../../components/Title'
 import { handleSelect } from '../../../core/service'
@@ -13,8 +13,6 @@ import { showToastMessage } from '../../../utils/toastHelper'
 import FormContext from '../../../context/InitialValues'
 import { useDispatch, useSelector } from 'react-redux'
 import { registerFailure, registerStart, registerSuccess } from '../../../redux/slices/authSlice'
-import BlurPage from '../../../components/BlurPage'
-import SpinnerWithBlur from '../../../components/Spinner'
 import Spinner from '../../../components/Spinner'
 
 export default function PartnerRegisterStep2() {
@@ -22,7 +20,7 @@ export default function PartnerRegisterStep2() {
     const { formData, setFormData } = useContext(FormContext);
     const [errors,setErrors] = useState({});
     const dispatch = useDispatch();
-    const { loading, error } = useSelector(state => state.auth);
+    const { loading, isAuthenticated, user, error } = useSelector(state => state.auth);
 
     const handleSubmit = useCallback( async (e) => {
         e.preventDefault();
