@@ -67,44 +67,46 @@ export default function ChatBot() {
 
     return (
         <Main>
-            <div className='w-full max-w-4xl mx-auto px-4'>
+            <div className='w-full max-w-4xl mx-auto px-2 sm:px-4 lg:px-6'>
                 {/* Chat Container */}
-                <div className='bg-white rounded-xl shadow-md border border-gray-100 overflow-hidden'>
+                <div className='bg-white rounded-lg sm:rounded-xl shadow-md border border-gray-100 overflow-hidden'>
                     {/* Header */}
-                <div className='w-full flex flex-col items-center justify-center mt-6 mb-8'>
-                    <div className='flex gap-2 items-center justify-center'>
+                <div className='w-full flex flex-col items-center justify-center mt-4 sm:mt-6 mb-6 sm:mb-8 px-4'>
+                    <div className='flex flex-col sm:flex-row gap-1 sm:gap-2 items-center justify-center text-center'>
                         <Title
                             title='Welcome to Travel.lk'
                             font='font-[500]'
-                            size='text-3xl md:text-4xl'
+                            size='text-2xl sm:text-3xl md:text-4xl'
                         />
                         <Title
                             title='Assistant!'
                             color='text-brand-primary'
-                            size='text-3xl md:text-4xl'
+                            size='text-2xl sm:text-3xl md:text-4xl'
                             font='font-[600]'
                         />
                     </div>
-                    <div className='text-center  mt-1 max-w-2xl'>
+                    <div className='text-center mt-1 max-w-2xl px-4'>
                         <Title
                             title="I'm here to help you explore Sri Lanka effortlessly. Ask me anything about travel plans, bookings, or account help."
                             color='text-content-tertiary'
-                            size='text-lg'
+                            size='text-base sm:text-lg'
                             font='font-[400]'
                         />
                     </div>
                 </div>
                     {/* Messages Area */}
-                    <div className='h-[340px] overflow-y-auto p-4 space-y-4 scrollbar-hide'>
+                    <div className='h-[280px] sm:h-[320px] md:h-[340px] lg:h-[400px] overflow-y-auto p-2 sm:p-4 space-y-3 sm:space-y-4 scrollbar-hide'>
                         {messageContainer}
                         <div ref={messagesEndRef} />
                     </div>
                     {/* Quick Actions */}
-                    <QuickActions
-                        setInputMessage={setInputMessage}
-                    />
+                    <div className='px-2 sm:px-4'>
+                        <QuickActions
+                            setInputMessage={setInputMessage}
+                        />
+                    </div>
                     {/* Input Area */}
-                    <div className='mt-5'>
+                    <div className='mt-3 sm:mt-5'>
                         <InputField
                             handleSendMessage={handleSendMessage}
                             setInputMessage={setInputMessage}
