@@ -16,13 +16,17 @@ export default function ChatBot() {
     }
     ]);
     const [inputMessage, setInputMessage] = useState('');
+    const [error, setError] = useState('');
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
     const handleSendMessage = () => {
-        if (inputMessage.trim() === '') return;
+        if (inputMessage.trim() === ''){
+            setError("Please enter a message before sending.");
+            return;
+        };
         
         // Add user message
         setMessages(prev => [
@@ -105,6 +109,7 @@ export default function ChatBot() {
                             handleSendMessage={handleSendMessage}
                             setInputMessage={setInputMessage}
                             inputMessage={inputMessage}
+                            error={error}
                         />
                     </div>
                 </div>
