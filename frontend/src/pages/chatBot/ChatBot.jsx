@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import Main from '../../components/Main';
 import Title from '../../components/Title';
-import { FiSend, FiUser, FiMessageSquare } from 'react-icons/fi';
+import Message from './components/Message';
+import InputField from './components/InputField';
+import QuickActions from './components/QuickActions';
 
 export default function ChatBot() {
     const messagesEndRef = useRef(null);
@@ -40,10 +42,10 @@ export default function ChatBot() {
             setMessages(prev => [
                 ...prev,
                 {
-                id: prev.length + 1,
-                text: "Thanks for your message! I'll help you with that shortly.",
-                sender: 'bot',
-                timestamp: new Date(),
+                    id: prev.length + 1,
+                    text: "Under construction...",
+                    sender: 'bot',
+                    timestamp: new Date(),
                 }
             ]);
         }, 1000);
@@ -52,6 +54,12 @@ export default function ChatBot() {
     useEffect(() => {
         scrollToBottom();
     }, [messages]);
+
+    const messageContainer = useMemo(()=>{
+        return messages.map((message, index)=>(
+            <Message key={index} message={message}/>
+        ))
+    },[messages]);
 
     return (
         <Main>
@@ -62,82 +70,43 @@ export default function ChatBot() {
                 <div className='w-full flex flex-col items-center justify-center mt-6 mb-8'>
                     <div className='flex gap-2 items-center justify-center'>
                         <Title
-                        title='Welcome to Travel.lk'
-                        font='font-[500]'
-                        size='text-3xl md:text-4xl'
+                            title='Welcome to Travel.lk'
+                            font='font-[500]'
+                            size='text-3xl md:text-4xl'
                         />
                         <Title
-                        title='Assistant!'
-                        color='text-brand-primary'
-                        size='text-3xl md:text-4xl'
-                        font='font-[600]'
+                            title='Assistant!'
+                            color='text-brand-primary'
+                            size='text-3xl md:text-4xl'
+                            font='font-[600]'
                         />
                     </div>
-                    <p className='text-center text-lg text-content-tertiary mt-2 max-w-2xl'>
-                        I'm here to help you explore Sri Lanka effortlessly. Ask me anything about travel plans, bookings, or account help.
-                    </p>
+                    <div className='text-center  mt-1 max-w-2xl'>
+                        <Title
+                            title="I'm here to help you explore Sri Lanka effortlessly. Ask me anything about travel plans, bookings, or account help."
+                            color='text-content-tertiary'
+                            size='text-lg'
+                            font='font-[400]'
+                        />
+                    </div>
                 </div>
                     {/* Messages Area */}
-                    <div className='h-[300px] overflow-y-auto p-4 space-y-4 scrollbar-hide'>
-                        {messages.map((message) => (
-                        <div
-                            key={message.id}
-                            className={`flex ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
-                        >
-                            <div
-                                className={`max-w-[80%] rounded-lg p-4 ${message.sender === 'user' 
-                                    ? 'bg-brand-primary text-white rounded-tr-none' 
-                                    : 'bg-gray-50 text-content-primary rounded-tl-none'}`}
-                            >
-                            <div className='flex items-center gap-2 mb-1'>
-                                {message.sender === 'user' ? (
-                                    <FiUser className='text-white' />
-                                ) : (
-                                    <FiMessageSquare className='text-brand-primary' />
-                                )}
-                                <span className='text-xs opacity-80'>
-                                    {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                </span>
-                            </div>
-                            <p>{message.text}</p>
-                            </div>
-                        </div>
-                        ))}
+                    <div className='h-[340px] overflow-y-auto p-4 space-y-4 scrollbar-hide'>
+                        {messageContainer}
                         <div ref={messagesEndRef} />
                     </div>
-
+                    {/* Quick Actions */}
+                    <QuickActions
+                        setInputMessage={setInputMessage}
+                    />
                     {/* Input Area */}
-                    <div className='border-t border-gray-100 p-4 bg-gray-50'>
-                        <div className='flex items-center gap-2'>
-                            <input
-                                type='text'
-                                value={inputMessage}
-                                onChange={(e) => setInputMessage(e.target.value)}
-                                placeholder='Type your message here...'
-                                className='flex-1 border border-gray-200 rounded-full px-4 py-3 focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent'
-                                onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
-                            />
-                            <button
-                                onClick={handleSendMessage}
-                                className='bg-brand-primary text-white p-3 rounded-full hover:bg-brand-primary-dark transition-colors'
-                            >
-                                <FiSend />
-                            </button>
-                        </div>
+                    <div className='mt-5'>
+                        <InputField
+                            handleSendMessage={handleSendMessage}
+                            setInputMessage={setInputMessage}
+                            inputMessage={inputMessage}
+                        />
                     </div>
-                </div>
-
-                {/* Quick Actions */}
-                <div className='mt-6 flex flex-wrap justify-center gap-3'>
-                    {['Plan a trip', 'Find hotels', 'Reset password', 'Contact support'].map((action) => (
-                        <button
-                        key={action}
-                        onClick={() => setInputMessage(action)}
-                        className='px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-full text-sm font-medium transition-colors'
-                        >
-                            {action}
-                        </button>
-                    ))}
                 </div>
             </div>
         </Main>
