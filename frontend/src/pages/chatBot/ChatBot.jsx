@@ -27,7 +27,7 @@ export default function ChatBot() {
             setError("Please enter a message before sending.");
             return;
         };
-        
+        setError('');
         // Add user message
         setMessages(prev => [
             ...prev,
