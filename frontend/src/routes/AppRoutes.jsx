@@ -17,6 +17,7 @@ import ForgotUsername from '../pages/partner/forgot_details/ForgotUsername'
 import ChangePassword from '../pages/partner/forgot_details/ChangePassword'
 import { FormProvider } from '../context/FormContext'
 import { loginPartnerAccountForm, registerPartnerAccountForm } from '../context/InitialValues'
+import ChatBot from '../pages/chatBot/ChatBot'
 
 export default function AppRoutes() {
     return (
@@ -64,6 +65,8 @@ export default function AppRoutes() {
                 <Route path='/partner-forgot-password' element={<ForgotPassword/>}/>
                 <Route path='/partner-forgot-username' element={<ForgotUsername/>}/>
                 <Route path='/change-password' element={<ChangePassword/>}/>
+
+                <Route path='/chat-bot' element={<ChatBot/>}/>
             </Routes>
     )
 }
