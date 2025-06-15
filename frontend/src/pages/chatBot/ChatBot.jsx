@@ -95,7 +95,7 @@ export default function ChatBot() {
                     </div>
                 </div>
                     {/* Messages Area */}
-                    <div className='h-[280px] sm:h-[320px] md:h-[340px] lg:h-[400px] overflow-y-auto p-2 sm:p-4 space-y-3 sm:space-y-4 scrollbar-hide'>
+                    <div className='h-[280px] sm:h-[320px] md:h-[340px] lg:h-[340px] overflow-y-auto p-2 sm:p-4 space-y-3 sm:space-y-4 scrollbar-hide'>
                         {messageContainer}
                         <div ref={messagesEndRef} />
                     </div>
