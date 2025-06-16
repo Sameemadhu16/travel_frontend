@@ -388,12 +388,12 @@ export default function SearchContainer() {
                         <div className="flex items-center justify-center gap-6 mb-4">
                             <div className="flex flex-col items-center">
                                 <span className="text-xs text-gray-500 mb-1">Hour</span>
-                                <button
+                                {/* <button
                                     className="w-7 h-7 rounded-full bg-gray-100 hover:bg-orange-100 mb-1 text-lg"
                                     onClick={() => setTempHour(h => (String((parseInt(h, 10) + 1) % 24).padStart(2, '0')))}
                                     tabIndex={-1}
                                     type="button"
-                                >▲</button>
+                                >▲</button> */}
                                 <select
                                     value={tempHour}
                                     onChange={e => setTempHour(e.target.value)}
@@ -405,16 +405,16 @@ export default function SearchContainer() {
                                         </option>
                                     ))}
                                 </select>
-                                <button
+                                {/* <button
                                     className="w-7 h-7 rounded-full bg-gray-100 hover:bg-orange-100 mt-1 text-lg"
                                     onClick={() => setTempHour(h => (String((parseInt(h, 10) + 23) % 24).padStart(2, '0')))}
                                     tabIndex={-1}
                                     type="button"
-                                >▼</button>
+                                >▼</button> */}
                             </div>
                             <div className="flex flex-col items-center">
                                 <span className="text-xs text-gray-500 mb-1">Minute</span>
-                                <button
+                                {/* <button
                                     className="w-7 h-7 rounded-full bg-gray-100 hover:bg-orange-100 mb-1 text-lg"
                                     onClick={() => setTempMinute(m => {
                                         const mins = ['00','05','10','15','20','25','30','35','40','45','50','55'];
@@ -423,7 +423,7 @@ export default function SearchContainer() {
                                     })}
                                     tabIndex={-1}
                                     type="button"
-                                >▲</button>
+                                >▲</button> */}
                                 <select
                                     value={tempMinute}
                                     onChange={e => setTempMinute(e.target.value)}
@@ -433,7 +433,7 @@ export default function SearchContainer() {
                                         <option key={m} value={m}>{m}</option>
                                     ))}
                                 </select>
-                                <button
+                                {/* <button
                                     className="w-7 h-7 rounded-full bg-gray-100 hover:bg-orange-100 mt-1 text-lg"
                                     onClick={() => setTempMinute(m => {
                                         const mins = ['00','05','10','15','20','25','30','35','40','45','50','55'];
@@ -442,7 +442,7 @@ export default function SearchContainer() {
                                     })}
                                     tabIndex={-1}
                                     type="button"
-                                >▼</button>
+                                >▼</button> */}
                             </div>
                         </div>
                         <div className="flex justify-between mt-2 pt-2 border-t">

@@ -63,16 +63,27 @@ export default function VehicleCard({
                         <p className='text-sm text-gray-500'>
                             {type} {brand && `• ${brand}`}{model && ` ${model}`}
                         </p>
-                        {location && (
-                            <div className='text-xs text-gray-400'>
-                                {location}
-                            </div>
-                        )}
-                        {rentalAgency && (
-                            <div className='text-xs text-brand-primary font-semibold mt-1'>
-                                {rentalAgency}
-                            </div>
-                        )}
+
+                        <div className='flex flex-row flex-wrap gap-x-4 gap-y-1 items-center mt-1'>
+                            {rentalAgency && (
+                                <div
+                                    className='text-s text-brand-primary font-semibold mt-1 cursor-pointer'
+                                    onClick={e => {
+                                        e.stopPropagation();
+                                        handleNavigate('/vehicle-agency');
+                                    }}
+                                >
+                                    {rentalAgency}
+                                </div>
+                            )}
+                            {location && (
+                                <div className='text-xs text-gray-400'>
+                                    {location}
+                                </div>
+                            )}
+                        </div>
+                        
+                        
                         <div className='text-xs text-gray-400 mt-1'>
                             {seats && <span>{seats} seats</span>}
                             {transmission && <span> • {transmission}</span>}
@@ -103,7 +114,7 @@ export default function VehicleCard({
                             <p className='text-sm text-gray-400'>Starting from</p>
                             <p className='text-lg font-semibold text-brand-primary'>LKR {pricePerDay} / day</p>
                         </div>
-                        <div className='flex gap-2 w-1/2'>
+                        <div className='flex gap-2 w-1/2 cursor-pointer'>
                             <Tag title={`${rating} (${reviews})`} icon={star} />
                             <Tag
                                 title={available ? "Available" : "Not Available"}
