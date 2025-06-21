@@ -8,17 +8,19 @@ import { provinces, districts, cities } from "../../../core/Lists/location";
 import { amenities, propertyTypes } from "../../../core/constant";
 import InputArea from "../../../components/InputArea";
 import PrimaryButton from "../../../components/PrimaryButton";
-import { handleSelect } from "../../../core/service";
+import { handleSelect, postRequest } from "../../../core/service";
 import Checkbox from "../../../components/CheckBox";
 import { formValidator } from "../../../core/validation";
 import { showToastMessage } from "../../../utils/toastHelper";
 import { navigateTo } from "../../../core/navigateHelper";
+import Spinner from '../../../components/Spinner'
 
 export default function HotelRegistration() {
     const [licenseImage, setLicenseImage] = useState([]);
     const [hotelImages, setHotelImages] = useState([]);
     const [licenseError,setLicenseError] = useState('');
     const [hotelImagesError,setHotelImagesError] = useState('');
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         hotelName: '',
         street: '',
@@ -58,14 +60,16 @@ export default function HotelRegistration() {
     }, []);
 
 
-    const handleSubmit = useCallback((e) => {
+    const handleSubmit = useCallback( async (e) => {
         try {
             e.preventDefault();
+            setLoading(true);
             const submissionData = {
                 ...formData,
                 licensePhoto: licenseImage,
                 images: hotelImages
             };
+
             const customValidations = {
                 licensePhoto: {
                     exactLength: 1,
@@ -76,6 +80,7 @@ export default function HotelRegistration() {
                     message: '*Exactly 5 images required'
                 }
             };
+
             const validator = formValidator(submissionData,[],customValidations);
             setError(validator);
             
@@ -83,13 +88,18 @@ export default function HotelRegistration() {
 
             if (hasValidationErrors) {
                 showToastMessage('error', 'Please correct the highlighted errors before submitting.');
+                setLoading(false);
                 return;
             }
+            // Call your API
+            await postRequest("/api/hotels/register", submissionData);
             showToastMessage('success', 'Hotel registered successfully!');
             navigateTo('/partner-details');
 
         } catch (error) {
                 console.error( error);
+            }finally {
+                setLoading(false);
             }
         }, [formData, licenseImage, hotelImages, hotelImagesError.length, licenseError.length]);
 
@@ -260,6 +270,11 @@ export default function HotelRegistration() {
                     </div>
                 </div>
             </form>
+            {
+                loading && (
+                    <Spinner/>
+                )
+            }
         </Main>
     );
 }

@@ -48,7 +48,7 @@ export default function PartnerRegisterStep1() {
                                     )
                                 }
                             </div>
-                            <div className="w-full flex flex-col justify-start mt-5 gap-2">
+                            <div className="w-full flex flex-col justify-start mt-8 gap-2">
                                 <Title 
                                     title="Create your partner account"
                                     size="text-[24px]"

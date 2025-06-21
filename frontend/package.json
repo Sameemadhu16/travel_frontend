@@ -11,9 +11,9 @@
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.8.2",
-    "axios": "^1.9.0",
+    "axios": "^1.10.0",
     "dotenv": "^16.5.0",
-    "firebase": "^11.8.1",
+    "firebase": "^11.9.1",
     "framer-motion": "^12.16.0",
     "myapp": "file:",
     "react": "^18.3.1",
