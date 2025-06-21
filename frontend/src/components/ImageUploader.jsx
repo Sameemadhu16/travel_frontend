@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useState } from "react";
 import { validateImageUpload } from "../core/validation";
 
 /**
@@ -49,7 +49,7 @@ const ImageUploader = ({
         );
         setImages((prev) => [...prev, ...urls]);
         setUploading(false);
-    }, [multiple, images.length]);
+    }, [multiple, setError, setImages]);
 
     const handleImageChange = (event) => {
         const files = Array.from(event.target.files);

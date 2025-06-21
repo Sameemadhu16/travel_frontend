@@ -45,9 +45,6 @@ export default function Header() {
                     </div>
                 </div>
             </div>
-            <div>
-                <ReserveOptions/>
-            </div>
         </Main>
     )
 }
