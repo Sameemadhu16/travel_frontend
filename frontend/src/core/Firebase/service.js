@@ -15,15 +15,14 @@ export const handleFirebaseRegister = async (email, password) => {
         if (!user.emailVerified) {
             await sendEmailVerification(user)
                 .then(() => {
-                console.log("Verification email sent.");
+                    
                 })
                 .catch((error) => {
-                console.error("Error sending verification email:", error);
+                    console.error("Error sending verification email:", error);
                 });
         }
         return user;
     } catch (error) {
-        console.log(error);
         return error;
     }
 };
@@ -41,7 +40,6 @@ export const handleFirebaseLogin = async (email, password) => {
         }
         return user;
     } catch (error) {
-        console.error(error.message);
         const errorMessage = getFirebaseErrorMessage(error.code);
         showToastMessage("error",errorMessage);
         throw error;
@@ -54,6 +52,7 @@ export const signInWithGoogle = async () => {
         const { user } = await signInWithPopup(auth,provider);
         return user;
     }catch(e){
-        console.log(e)
+        const errorMessage = getFirebaseErrorMessage(e.code);
+        showToastMessage("error",errorMessage);
     }
 }

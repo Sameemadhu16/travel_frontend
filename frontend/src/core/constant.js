@@ -12,6 +12,13 @@ import {
     FaSmoking,} from "react-icons/fa";
 import { TbAirConditioning } from "react-icons/tb";
 
+//user roles
+export const USER_ROLES = {
+    TRAVELER: 'traveler',
+    PARTNER: 'partner',
+    ADMIN: 'admin',
+};
+
 export const handleNavigate = (path) => {
     navigateTo(path);
 }
