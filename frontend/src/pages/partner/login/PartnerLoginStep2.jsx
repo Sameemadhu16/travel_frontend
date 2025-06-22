@@ -1,6 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion'
 import Main from '../../../components/Main'
-import { useCallback, useState } from 'react'
+import { useCallback, useContext, useState } from 'react'
 import InputField from '../../../components/InputField';
 import PrimaryButton from '../../../components/PrimaryButton';
 import Title from '../../../components/Title';
@@ -11,27 +11,36 @@ import { formValidator } from '../../../core/validation';
 import TermsAndPrivacy from '../components/TermsAndPrivacy';
 import TextLink from '../components/TextLink';
 import { showToastMessage } from '../../../utils/toastHelper';
+import FormContext from '../../../context/InitialValues';
+import { handleFirebaseLogin } from '../../../core/Firebase/service';
+import Spinner from '../../../components/Spinner';
 
 export default function PartnerLoginStep2() {
+    const { formData, setFormData } = useContext(FormContext);
+    const [error, setError] = useState({});
+    const [loading, setLoading] = useState(false);
 
-    const [formData,setFormData] = useState({
-            password: '',
-        });
-        const [error,setError]=useState({});
-
-    const handleSubmit = useCallback((e)=>{
+    const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
-        try{
-            const error = formValidator(formData);
-            setError(error)
-            if(error === null){
-                navigateTo('/partner-login/step-2');
-                showToastMessage('success','Welcome back! You’ve logged in successfully.')
+        try {
+            setLoading(true);
+            const error = formValidator(formData, ['password']);
+            setError(error);
+            if (error === null) {
+                const user = await handleFirebaseLogin(formData.email, formData.password);
+                if (user) {
+                    navigateTo('/home');
+                    showToastMessage('success', 'Welcome back! You’ve logged in successfully.');
+                }
             }
-        }catch(e){
-            console.log(e)
+        } catch (e) {
+            console.error("Unexpected error:", e);
+            showToastMessage('error', 'Registration failed. Please try again.');
+        }finally{
+            setLoading(false);
         }
-    },[formData]);
+    }, [formData]);
+
     return (
         <AnimatePresence>
             <motion.div
@@ -57,7 +66,7 @@ export default function PartnerLoginStep2() {
                                     font="font-[400]"
                                 />
                                 <Title 
-                                    title="sachithavintha35@gmail.com"
+                                    title={formData.email}
                                     size="text-[16px]"
                                     font="font-[600]"
                                 />
@@ -68,7 +77,7 @@ export default function PartnerLoginStep2() {
                                 label='Password'
                                 type='password'
                                 name='password'
-                                value={formData.password}
+                                value={formData.password || ''}
                                 onChange={e => handleSelect(setFormData, 'password', e.target.value)}
                                 placeholder='password'
                                 error={error?.errors?.password}
@@ -80,14 +89,20 @@ export default function PartnerLoginStep2() {
                             />
                             <TextLink
                                 title='Forgotten your password?'
-                                path='/partner-forgot-password'
+                                path='/partner-for-forgot-password'
                             />
                             <Border/>
                             <TermsAndPrivacy/>
                         </div>
                     </form>
                 </Main>
+                {
+                    loading && (
+                        <Spinner/>
+                    )
+                }
             </motion.div>
         </AnimatePresence>
     )
 }
+

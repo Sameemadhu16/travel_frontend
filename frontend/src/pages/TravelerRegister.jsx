@@ -12,6 +12,7 @@ import { handleSelect, postRequest } from '../core/service';
 import { handleFirebaseRegister } from '../core/Firebase/service';
 import { USER_ROLES } from '../core/constant';
 import { getFirebaseErrorMessage } from '../core/Firebase/validation';
+import Spinner from '../components/Spinner';
 
 export default function TravelerRegister() {
     const [formData, setFormData] = useState({
@@ -20,10 +21,12 @@ export default function TravelerRegister() {
         confirmPassword: ''
     });
     const [errors, setErrors] = useState({});
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = useCallback( async (e) => {
         e.preventDefault();
         try {
+            setLoading(true);  
             const error = formValidator(formData);
             setErrors(error);
 
@@ -32,7 +35,7 @@ export default function TravelerRegister() {
 
                 if (firebaseUser.code) {
                     const errorMessage = getFirebaseErrorMessage(firebaseUser.code);
-                    showToastMessage('error', errorMessage);
+                    showToastMessage('error', errorMessage); 
                     return; // Stop execution; do not proceed to backend registration
                 }
 
@@ -46,6 +49,8 @@ export default function TravelerRegister() {
         } catch (e) {
             console.error("Unexpected error:", e);
             showToastMessage('error', 'Registration failed. Please try again.');
+        }finally{
+            setLoading(false);  
         }
     }, [formData]);
 
@@ -102,6 +107,11 @@ export default function TravelerRegister() {
                     </div>
                 </div>
             </form>
+            {
+                loading && (
+                    <Spinner/>
+                )
+            }
         </Main>
     );
 }

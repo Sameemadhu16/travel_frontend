@@ -6,6 +6,8 @@ import {
     signInWithEmailAndPassword,
     signInWithPopup
 } from 'firebase/auth';
+import { getFirebaseErrorMessage } from './validation';
+import { showToastMessage } from '../../utils/toastHelper';
 
 export const handleFirebaseRegister = async (email, password) => {
     const auth = getAuth(app);
@@ -35,7 +37,7 @@ export const handleFirebaseLogin = async (email, password) => {
             await user.reload();
         }
         if (!user.emailVerified) {
-            showToastMessage("success","Please check your inbox to verify your email.");
+            showToastMessage("warning","Please check your inbox to verify your email.");
             return;
         }
         return user;
