@@ -49,7 +49,7 @@ export default function PartnerLoginStep1() {
                 <Main>
                     <form onSubmit={handleSubmit} className="w-full flex flex-col items-center justify-center">
                         <Title
-                            title="Sign in to manage your property"
+                            title="Enter your account to get started"
                             size="text-[24px]"
                             font="font-[600]"
                         />
