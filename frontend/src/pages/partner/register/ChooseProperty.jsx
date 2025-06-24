@@ -45,7 +45,7 @@ export default function ChooseProperty() {
                     font='font-[600]'
                 />
                 <Title
-                    title='To get started, choose the type of property you want to list on Booking.com'
+                    title='To get started, choose the type of property you want to list on travel.lk'
                     size='text-[24px]'
                     font='font-[400]'
                 />
