@@ -19,6 +19,7 @@ import { FormProvider } from '../context/FormContext'
 import { loginPartnerAccountForm, registerPartnerAccountForm } from '../context/InitialValues'
 import ChatBot from '../pages/chatBot/ChatBot'
 import TravelerRegister from '../pages/TravelerRegister'
+import ChooseProperty from '../pages/partner/register/ChooseProperty'
 
 export default function AppRoutes() {
     return (
@@ -66,6 +67,7 @@ export default function AppRoutes() {
                 <Route path='/partner-forgot-password' element={<ForgotPassword/>}/>
                 <Route path='/partner-forgot-username' element={<ForgotUsername/>}/>
                 <Route path='/change-password' element={<ChangePassword/>}/>
+                <Route path='/choose-property' element={<ChooseProperty/>}/>
 
                 <Route path='/traveler-register' element={<TravelerRegister/>}/>
 

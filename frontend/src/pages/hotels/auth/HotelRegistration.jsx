@@ -14,6 +14,12 @@ import { formValidator } from "../../../core/validation";
 import { showToastMessage } from "../../../utils/toastHelper";
 import { navigateTo } from "../../../core/navigateHelper";
 import Spinner from '../../../components/Spinner'
+import Breadcrumb from "../../../components/Breadcrumb";
+
+const breadcrumbItems = [
+    { label: "Property Choose", path: "/choose-property" },
+    { label: "Hotel Register", path: "/hotel-registration" },
+];
 
 export default function HotelRegistration() {
     const [licenseImage, setLicenseImage] = useState([]);
@@ -127,6 +133,9 @@ export default function HotelRegistration() {
 
     return (
         <Main>
+            <Breadcrumb
+                items={breadcrumbItems} 
+            />
             <form onSubmit={handleSubmit} className="flex w-full flex-col items-center">
                 <Title title="Hotel Registration" size="text-[48px]" font="font-[600]" />
 
