@@ -1,4 +1,3 @@
-// navigateHelper.js
 let navigate;
 
 export const setNavigator = (navInstance) => {

@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { validateImageUpload } from "../core/validation";
 
 /**
@@ -16,32 +16,40 @@ const ImageUploader = ({
     images,
     setImages,
     error,
+    setError = () => {},
     multiple = false,
 }) => {
     const [uploading, setUploading] = useState(false);
-    const [imageError, setImageError] = useState('');
 
-    const handleFiles = async (files) => {
-        const validationError = validateImageUpload(files, 5, 5, multiple); // Limit: 1 file, max 5 MB
+    const handleFiles = useCallback(async (files) => {
+        setUploading(true);
+        const validationError = validateImageUpload(files, 5);
         if (validationError) {
-            setImageError(validationError);
+            setError(validationError);
+            setUploading(false);
             return;
         }
-        setUploading(true);
-        //const urls = [];
-        // for (const file of files) {
-        //     const uploadedUrl = await uploadToServer(file);
-        //     if (uploadedUrl) {
-        //         urls.push(uploadedUrl);
-        //     }
-        // }
-        // Convert File objects to object URLs for preview
+
+        if (multiple) {
+            if (files.length < 5) {
+                setError('*You should add 5 images to verify');
+                setUploading(false);
+                return;
+            } else if (files.length > 5) {
+                setError('*You can upload a maximum of 5');
+                setUploading(false);
+                return;
+            } else {
+                setError('');
+            }
+        }
+
         const urls = files.map(file =>
             typeof file === "string" ? file : URL.createObjectURL(file)
         );
         setImages((prev) => [...prev, ...urls]);
         setUploading(false);
-    };
+    }, [multiple, setError, setImages]);
 
     const handleImageChange = (event) => {
         const files = Array.from(event.target.files);
@@ -76,7 +84,7 @@ const ImageUploader = ({
                     cursor-pointer bg-fourthColor
                     border-dashed
                     focus-within:border-brand-primary
-                    ${error || imageError ? 'border-danger' : 'border-gray-300'}
+                    ${ error ? 'border-danger' : 'border-gray-300'}
                 `}
                 tabIndex={0}
                 onDrop={handleDrop}
@@ -112,9 +120,9 @@ const ImageUploader = ({
                     multiple={multiple}
                 />
 
-                {(error || imageError) && (
+                {( error ) && (
                     <p className="text-danger text-[16px] font-medium mt-2">
-                        {error || imageError}
+                        { error }
                     </p>
                 )}
             </div>
@@ -150,6 +158,7 @@ ImageUploader.propTypes = {
     images: PropTypes.array.isRequired,
     setImages: PropTypes.func.isRequired,
     error: PropTypes.string,
+    setError: PropTypes.func,
     multiple: PropTypes.bool,
 };
 
