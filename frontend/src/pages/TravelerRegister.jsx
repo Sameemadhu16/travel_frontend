@@ -13,6 +13,8 @@ import { handleFirebaseRegister } from '../core/Firebase/service';
 import { USER_ROLES } from '../core/constant';
 import { getFirebaseErrorMessage } from '../core/Firebase/validation';
 import Spinner from '../components/Spinner';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerFailure, registerStart, registerSuccess } from '../redux/slices/authSlice';
 
 export default function TravelerRegister() {
     const [formData, setFormData] = useState({
@@ -21,36 +23,42 @@ export default function TravelerRegister() {
         confirmPassword: ''
     });
     const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
+    const dispatch = useDispatch();
+    const { loading } = useSelector((state) => state.auth);
 
     const handleSubmit = useCallback( async (e) => {
         e.preventDefault();
         try {
-            setLoading(true);  
+            dispatch(registerStart());
             const error = formValidator(formData);
             setErrors(error);
 
             if (error === null) {
-                const firebaseUser = await handleFirebaseRegister(formData.email, formData.password);
-
-                if (firebaseUser.code) {
-                    const errorMessage = getFirebaseErrorMessage(firebaseUser.code);
+                const { uid, code, accessToken } = await handleFirebaseRegister(formData.email, formData.password);
+                if (code) {
+                    const errorMessage = getFirebaseErrorMessage(code);
                     showToastMessage('error', errorMessage); 
+                    dispatch(registerFailure());
                     return; // Stop execution; do not proceed to backend registration
                 }
 
-                formData.docId = firebaseUser.uid;
+                formData.docId = uid;
                 formData.role = USER_ROLES.TRAVELER;
 
                 await postRequest('/api/users/register', formData);
+                dispatch(registerSuccess({
+                    user: formData,
+                    token: accessToken
+                }))
                 showToastMessage('success', 'Traveler account created successfully!');
-                navigateTo('/partner-login/step-1');
+                //navigateTo('/partner-login/step-1');
+            } else {
+                dispatch(registerFailure());
             }
         } catch (e) {
             console.error("Unexpected error:", e);
+            dispatch(registerFailure());
             showToastMessage('error', 'Registration failed. Please try again.');
-        }finally{
-            setLoading(false);  
         }
     }, [formData]);
 
