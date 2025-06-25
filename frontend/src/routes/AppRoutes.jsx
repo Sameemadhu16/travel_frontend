@@ -20,6 +20,7 @@ import { loginPartnerAccountForm, registerPartnerAccountForm } from '../context/
 import ChatBot from '../pages/chatBot/ChatBot'
 import TravelerRegister from '../pages/TravelerRegister'
 import ChooseProperty from '../pages/partner/register/ChooseProperty'
+import Vehicle from '../pages/vehicles/Details/components/vehicle'
 
 export default function AppRoutes() {
     return (
@@ -28,6 +29,7 @@ export default function AppRoutes() {
                 <Route path='/home' element={<Home/>}/>
                 <Route path='/vehicle-search' element={<SearchVehicles/>}/>
                 <Route path='/hotel/:id' element={<Hotel/>}/>
+                <Route path='/vehicle/:id' element={<Vehicle />} />
 
                 {/* hotels*/}
                 <Route path='/hotel-registration' element={<HotelRegistration/>}/>
