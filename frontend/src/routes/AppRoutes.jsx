@@ -22,6 +22,7 @@ import TravelerRegister from '../pages/TravelerRegister'
 import ChooseProperty from '../pages/partner/register/ChooseProperty'
 import Vehicle from '../pages/vehicles/Details/components/vehicle'
 import VehicleRegistration from '../pages/vehicles/auth/VehicleRegistration'
+import VehicleAgencyRegistration from '../pages/vehicles/auth/VehicleAgencyRegistration'
 
 export default function AppRoutes() {
     return (
@@ -40,6 +41,7 @@ export default function AppRoutes() {
                 <Route path='/vehicle-search' element={<SearchVehicles />} />
                 <Route path='/vehicle/:id' element={<Vehicle />} />
                 <Route path='/vehicle-registration' element={<VehicleRegistration/>}/>
+                <Route path='/agency-registration' element={<VehicleAgencyRegistration/>} />
 
                 {/* rooms */}
                 <Route path='/rooms-add' element={<RoomsAdd/>}/>
