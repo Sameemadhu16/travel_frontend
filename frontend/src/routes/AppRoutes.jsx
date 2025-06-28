@@ -21,19 +21,25 @@ import ChatBot from '../pages/chatBot/ChatBot'
 import TravelerRegister from '../pages/TravelerRegister'
 import ChooseProperty from '../pages/partner/register/ChooseProperty'
 import Vehicle from '../pages/vehicles/Details/components/vehicle'
+import VehicleRegistration from '../pages/vehicles/auth/VehicleRegistration'
 
 export default function AppRoutes() {
     return (
             <Routes>
                 <Route path='/' element={<Welcome/>}/>
                 <Route path='/home' element={<Home/>}/>
-                <Route path='/vehicle-search' element={<SearchVehicles/>}/>
+                
                 <Route path='/hotel/:id' element={<Hotel/>}/>
-                <Route path='/vehicle/:id' element={<Vehicle />} />
+                
 
                 {/* hotels*/}
                 <Route path='/hotel-registration' element={<HotelRegistration/>}/>
                 <Route path='/hotels-search' element={<Search/>}/>
+
+                {/* vehicles */}
+                <Route path='/vehicle-search' element={<SearchVehicles />} />
+                <Route path='/vehicle/:id' element={<Vehicle />} />
+                <Route path='/vehicle-registration' element={<VehicleRegistration/>}/>
 
                 {/* rooms */}
                 <Route path='/rooms-add' element={<RoomsAdd/>}/>

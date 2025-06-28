@@ -6,6 +6,28 @@ import heartFill from '../../../assets/icons/Heart-fill.svg';
 import Tag from '../../hotels/components/Tag';
 import PropTypes from 'prop-types';
 import { handleNavigate } from '../../../core/constant';
+// Add icon imports for amenities
+import { FaSnowflake, FaBluetooth, FaCarBattery, FaMapMarkedAlt, FaCamera, FaMusic, FaCogs, FaChair, FaPlug, FaSun, FaRoad, FaGasPump } from "react-icons/fa";
+
+const amenityIconMap = {
+    "Air Conditioning": <FaSnowflake className="inline mr-1" />,
+    "Bluetooth": <FaBluetooth className="inline mr-1" />,
+    "ABS": <FaCarBattery className="inline mr-1" />,
+    "Power Steering": <FaCogs className="inline mr-1" />,
+    "USB Charger": <FaPlug className="inline mr-1" />,
+    "4WD": <FaRoad className="inline mr-1" />,
+    "Navigation System": <FaMapMarkedAlt className="inline mr-1" />,
+    "Parking Sensors": <FaCogs className="inline mr-1" />,
+    "Cruise Control": <FaRoad className="inline mr-1" />,
+    "Rear Camera": <FaCamera className="inline mr-1" />,
+    "Leather Seats": <FaChair className="inline mr-1" />,
+    "Sunroof": <FaSun className="inline mr-1" />,
+    "Premium Audio": <FaMusic className="inline mr-1" />,
+    "Electric Charging": <FaPlug className="inline mr-1" />,
+    "Climate Control": <FaSnowflake className="inline mr-1" />,
+    "Hybrid Engine": <FaGasPump className="inline mr-1" />,
+    "Convertible Roof": <FaSun className="inline mr-1" />,
+};
 
 export default function VehicleCard({
     id,
@@ -91,13 +113,14 @@ export default function VehicleCard({
                         </div>
                     </div>
 
-                    {/* Amenities */}
+                    {/* Amenities with icons */}
                     <div className='flex gap-2 items-center flex-wrap mt-2 text-xs text-gray-600'>
                         {amenities?.slice(0, 3).map((item, index) => (
                             <span
                                 key={index}
-                                className='bg-gray-100 rounded-full px-3 py-1 border'
+                                className='bg-gray-100 rounded-full px-3 py-1 border flex items-center gap-1'
                             >
+                                {amenityIconMap[item] || null}
                                 {item}
                             </span>
                         ))}
@@ -105,8 +128,6 @@ export default function VehicleCard({
                             <span className='cursor-pointer text-blue-500'>+{amenities.length - 3} more</span>
                         )}
                     </div>
-
-                    
 
                     {/* Footer Row: Price and status */}
                     <div className='flex justify-between items-center mt-4'>

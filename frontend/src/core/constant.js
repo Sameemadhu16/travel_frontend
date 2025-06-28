@@ -9,7 +9,18 @@ import {
     FaDog, 
     FaShuttleVan, 
     FaUmbrellaBeach, 
-    FaSmoking,} from "react-icons/fa";
+    FaSmoking,
+    FaBluetooth, 
+    FaCarBattery, 
+    FaMapMarkedAlt, 
+    FaCamera, 
+    FaCogs, 
+    FaPlug, 
+    FaRoad, 
+    FaGasPump, 
+    FaChild, 
+    FaCarSide 
+} from "react-icons/fa";
 import { TbAirConditioning } from "react-icons/tb";
 
 //user roles
@@ -156,19 +167,19 @@ export const vehiclePropertyTypes = [
 
 // Vehicle amenities (features)
 export const vehicleAmenities = [
-    { id: 1, value: "Air Conditioning" },
-    { id: 2, value: "Automatic Transmission" },
-    { id: 3, value: "Manual Transmission" },
-    { id: 4, value: "GPS Included" },
-    { id: 5, value: "Bluetooth" },
-    { id: 6, value: "Child Seat" },
-    { id: 7, value: "Unlimited Mileage" },
-    { id: 8, value: "Free Wi-Fi" },
-    { id: 9, value: "Pet Friendly" },
-    { id: 10, value: "Electric Vehicle" },
-    { id: 11, value: "Hybrid Vehicle" },
-    { id: 12, value: "Parking Sensors" },
-    { id: 13, value: "Rear Camera" }
+    { id: 1, value: "Air Conditioning", icon: FaCarSide },
+    { id: 2, value: "Automatic Transmission", icon: FaCogs },
+    { id: 3, value: "Manual Transmission", icon: FaCogs },
+    { id: 4, value: "GPS Included", icon: FaMapMarkedAlt },
+    { id: 5, value: "Bluetooth", icon: FaBluetooth },
+    { id: 6, value: "Child Seat", icon: FaChild },
+    { id: 7, value: "Unlimited Mileage", icon: FaRoad },
+    { id: 8, value: "Free Wi-Fi", icon: FaWifi },
+    { id: 9, value: "Pet Friendly", icon: FaCarSide },
+    { id: 10, value: "Electric Vehicle", icon: FaPlug },
+    { id: 11, value: "Hybrid Vehicle", icon: FaGasPump },
+    { id: 12, value: "Parking Sensors", icon: FaCarBattery },
+    { id: 13, value: "Rear Camera", icon: FaCamera }
 ];
 
 // Vehicle price ranges

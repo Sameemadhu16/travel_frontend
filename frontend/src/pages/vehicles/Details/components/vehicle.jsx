@@ -92,18 +92,34 @@ export default function Vehicle() {
                     </div>
                 </div>
             </div>
-            <div className='flex flex-row gap-5'>
+            <div className='flex flex-row gap-10'>
                 <div className='flex gap-2 mt-5'>
                     <Title title={vehicle.name || ''} />
-                    <Title title={vehicle.location || ''} color='text-brand-primary' />
+                    <Title title={vehicle.location || ''} color='text-brand-secondary' />
                 </div>
-                <div className='flex gap-2 mt-5 cursor-pointer' onClick={() => handleNavigate(`/`)}>
+                <div className='flex gap-2 mt-5 cursor-pointer' onClick={() => handleNavigate(`/vehicle-agency/${id}`)}>
                     <Title title={vehicle.rentalAgency || ''} color='text-brand-primary' />
                 </div>
+                <div className='flex flex-between mt-4 p-2  w-1/3 rounded-lg  text-[15px]  leading-relaxed cursor-pointer'>
+
+                    <Tag
+                        title={vehicle.available ? "Available" : "Not Available"}
+                        color={vehicle.available ? "bg-brand-primary" : "bg-danger"}
+                        textColor="text-white"
+                        icon={info}
+                    />
+                </div>
             </div>
-            <div className='flex gap-2 mt-2 flex-wrap'>
-                {amenityList}
+            <div className='flex flex-row gap-5'>
+                <div className='flex gap-2 mt-2 flex-wrap'>
+                    {amenityList}
+                </div>
+                <div className='flex  w-1/5 cursor-pointer'>
+                    <Tag title={`${vehicle.rating} (${vehicle.reviews})`} icon={star} />
+                </div>
+
             </div>
+            
             {/* Additional vehicle details */}
             <div className='grid grid-cols-1 md:grid-cols-2 gap-y-2 gap-x-8 mt-4 text-[15px] text-gray-700'>
                 <div>
@@ -134,7 +150,7 @@ export default function Vehicle() {
                 
             </div>
             {/* Vehicle Description */}
-            <div className='mt-4 p-4 bg-gray-50 rounded-lg border text-[15px] text-gray-700 leading-relaxed'>
+            <div className='mt-4 p-4  rounded-lg border text-[15px]  leading-relaxed'>
                 <FormatText text={vehicle.about} />
             </div>
             <Border />
@@ -143,10 +159,10 @@ export default function Vehicle() {
                     <p className='text-sm text-gray-400'>Starting from</p>
                     <p className='text-lg font-semibold text-brand-primary'>LKR {vehicle.pricePerDay} / day</p>
                 </div>
-                <div className='flex gap-2 w-1/2 cursor-pointer'>
-                    <Tag title={`${vehicle.rating} (${vehicle.reviews})`} icon={star} />
+                <div className='flex gap-2 w-1/3 cursor-pointer'>
+                    
                     <Tag
-                        title={vehicle.available ? "Available" : "Not Available"}
+                        title={vehicle.available ? "Book Now" : "Not Available"}
                         color={vehicle.available ? "bg-brand-primary" : "bg-danger"}
                         textColor="text-white"
                         icon={info}
