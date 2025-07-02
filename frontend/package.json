@@ -10,10 +10,15 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@fullcalendar/core": "^6.1.17",
+    "@fullcalendar/daygrid": "^6.1.17",
+    "@fullcalendar/react": "^6.1.17",
+    "@fullcalendar/timegrid": "^6.1.17",
     "axios": "^1.9.0",
     "dotenv": "^16.5.0",
     "firebase": "^11.8.1",
     "framer-motion": "^12.16.0",
+    "lucide-react": "^0.522.0",
     "myapp": "file:",
     "react": "^18.3.1",
     "react-datepicker": "^8.4.0",
