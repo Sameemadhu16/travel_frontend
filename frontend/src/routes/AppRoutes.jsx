@@ -20,6 +20,12 @@ import { loginPartnerAccountForm, registerPartnerAccountForm } from '../context/
 import ChatBot from '../pages/chatBot/ChatBot'
 import TravelerRegister from '../pages/TravelerRegister'
 import ChooseProperty from '../pages/partner/register/ChooseProperty'
+import GuideProfile from '../pages/guide/GuideProfile'
+import GuideAvailability from '../pages/guide/GuideAvailability'
+import GuideEarnings from '../pages/guide/GuideEarnings'
+import GuideRegister from '../pages/guide/GuideRegister'
+import GuideComplaints from '../pages/guide/GuideComplaints'
+import GuideTourPackages from '../pages/guide/GuideTourPackages'
 
 export default function AppRoutes() {
     return (
@@ -72,6 +78,15 @@ export default function AppRoutes() {
                 <Route path='/traveler-register' element={<TravelerRegister/>}/>
 
                 <Route path='/chat-bot' element={<ChatBot/>}/>
+
+
+                {/* Guide */}
+                <Route path='/guide-profile' element={<GuideProfile/>}/>
+                <Route path='/guide-availability' element={<GuideAvailability/>}/>
+                <Route path='/guide-complaints' element={<GuideComplaints/>}/>
+                <Route path='/guide-earnings' element={<GuideEarnings/>}/>
+                <Route path='/guide-register' element={<GuideRegister/>}/>
+                <Route path='/guide-tour-packages' element={<GuideTourPackages/>}/>
             </Routes>
     )
 }
