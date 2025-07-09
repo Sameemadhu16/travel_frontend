@@ -9,13 +9,13 @@ import Main from '../../components/Main';
 
 export default function Home() {
     return (
-        <>
+        <div id="main-content-blur">
             <HeroSection />
             <RecommendedDestinations />
             <TravelBlogSection />
             <WhyChooseUs />
             <CallToAction />
             {/* <Footer /> */}
-        </>
+        </div>
     );
 }

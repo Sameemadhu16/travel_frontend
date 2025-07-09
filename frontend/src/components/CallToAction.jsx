@@ -14,7 +14,7 @@ export default function CallToAction() {
                         <span className="text-brand-primary font-bold">Create Your Tour Request</span>
                     </span>
                 }
-                className="bg-white text-brand-primary font-bold px-8 py-3 rounded-lg shadow hover:bg-brand-accent transition w-fit mx-auto"
+                className="bg-white text-brand-primary font-bold px-4 py-2 rounded-lg shadow hover:bg-brand-accent transition w-auto mx-auto min-w-0"
             />
         </section>
     );
