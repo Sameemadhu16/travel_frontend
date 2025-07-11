@@ -20,18 +20,34 @@ import { loginPartnerAccountForm, registerPartnerAccountForm } from '../context/
 import ChatBot from '../pages/chatBot/ChatBot'
 import TravelerRegister from '../pages/TravelerRegister'
 import ChooseProperty from '../pages/partner/register/ChooseProperty'
+import Vehicle from '../pages/vehicles/Details/components/vehicle'
+import VehicleRegistration from '../pages/vehicles/auth/VehicleRegistration'
+import VehicleAgencyRegistration from '../pages/vehicles/auth/VehicleAgencyRegistration'
+import CreateTour from '../pages/tour/createTour'
+import SelectGuide from '../pages/tour/selectGuide'
 
 export default function AppRoutes() {
     return (
             <Routes>
-                <Route path='/' element={<Welcome/>}/>
+                <Route path='/' element={<Home/>}/>
                 <Route path='/home' element={<Home/>}/>
-                <Route path='/vehicle-search' element={<SearchVehicles/>}/>
+                <Route path='/tour/create-tour' element={<CreateTour/>}/>
+                <Route path='/tour/select-guide' element={<SelectGuide/>}/>
+                <Route path='/tour/select-hotel' element={<Search />} />
+                <Route path='/tour/select-hotel/:id' element={<Hotel />} />
+                
                 <Route path='/hotel/:id' element={<Hotel/>}/>
+                
 
                 {/* hotels*/}
                 <Route path='/hotel-registration' element={<HotelRegistration/>}/>
                 <Route path='/hotels-search' element={<Search/>}/>
+
+                {/* vehicles */}
+                <Route path='/vehicle-search' element={<SearchVehicles />} />
+                <Route path='/vehicle/:id' element={<Vehicle />} />
+                <Route path='/vehicle-registration' element={<VehicleRegistration/>}/>
+                <Route path='/agency-registration' element={<VehicleAgencyRegistration/>} />
 
                 {/* rooms */}
                 <Route path='/rooms-add' element={<RoomsAdd/>}/>

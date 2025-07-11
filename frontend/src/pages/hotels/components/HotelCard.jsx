@@ -6,6 +6,7 @@ import heartFill from '../../../assets/icons/Heart-fill.svg';
 import Tag from './Tag';
 import PropTypes from 'prop-types';
 import { handleNavigate } from '../../../core/constant';
+import { useLocation } from 'react-router-dom';
 
 export default function HotelCard({
     id,
@@ -20,13 +21,23 @@ export default function HotelCard({
     reviews,
     isFavorite = true,
 }) {
+    const currentLocation = useLocation();
+
     const handleFavoriteClick = (e) => {
         e.stopPropagation();
         // toggle favorite logic here
     };
+
+    const handleCardClick = () => {
+        if (currentLocation.pathname === '/hotels-search') {
+            handleNavigate(`/hotel/${id}`);
+        } else if (currentLocation.pathname === '/tour/select-hotel') {
+            handleNavigate(`/tour/select-hotel/${id}`);
+        }
+    };
     return (
         <div 
-            onClick={() => handleNavigate(`/hotel/${id}`)}
+            onClick={handleCardClick}
             className='border p-4 rounded-[8px] shadow-sm bg-white'>
             <div className='flex gap-4'>
                 {/* Hotel Image */}

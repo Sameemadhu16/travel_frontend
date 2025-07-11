@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useLocation, useNavigate } from 'react-router-dom'
 import cover from '../../../assets/images/cover.png'
 import CustomSelector from '../../../components/CustomSelector'
 import Main from '../../../components/Main'
@@ -16,11 +17,22 @@ const breadcrumbItems = [
 ];
 
 export default function Search() {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const isTourSelectHotel = location.pathname === '/tour/select-hotel';
 
     const [selectedPropertyTypes, setSelectedPropertyTypes] = useState([]);
     const [selectedMeals, setSelectedMeals] = useState([]);
     const [selectedFacilities, setSelectedFacilities] = useState([]);
     const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
+
+    const handleSkip = () => {
+        navigate('/tour/select-vehicle');
+    };
+
+    const handleNext = () => {
+        navigate('/tour/select-vehicle');
+    };
 
     const hotelsContainer = useMemo(()=>{
         return hotelList.map((hotel,index)=>(
@@ -72,13 +84,29 @@ export default function Search() {
                                 title={`Kandy: ${hotelList.length} matches`}
                                 size='text-[16px]'
                             />
-                            <div className='w-1/2'>
-                                <CustomSelector
-                                    options={hotelFilterOptions}
-                                    placeholder="Recommended"
-                                    onChange={handleSelect}
-                                />
-                            </div>
+                            {!isTourSelectHotel && (
+                                <div className='w-1/2'>
+                                    <CustomSelector
+                                        options={hotelFilterOptions}
+                                        placeholder="Recommended"
+                                        onChange={handleSelect}
+                                    />
+                                </div>
+                            )}
+                            {isTourSelectHotel && (
+                                <div className='flex gap-4'>
+                                    
+                                    <button 
+                                        onClick={handleNext}
+                                        className="px-6 py-2 rounded bg-brand-primary text-white font-semibold flex items-center gap-2 hover:bg-warning transition"
+                                    >
+                                        Skip & Next
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
