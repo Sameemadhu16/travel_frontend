@@ -23,6 +23,9 @@ export default function SearchContainer() {
     const [selectedFrom, setSelectedFrom] = useState('Colombo');
     const fromRef = useRef(null);
     const sriLankaTravelPlaces = travelPlaces;
+    const [pickupTime, setPickupTime] = useState('');
+    const [showTimePicker, setShowTimePicker] = useState(false);
+    const timePickerRef = useRef(null);
 
     // Close date picker and suggestions when clicking outside
     useEffect(() => {
@@ -36,6 +39,10 @@ export default function SearchContainer() {
             }
             if (fromRef.current && !fromRef.current.contains(event.target)) {
                 setShowFromSuggestions(false);
+            }
+            if (timePickerRef.current && !timePickerRef.current.contains(event.target) &&
+                !event.target.closest('.time-trigger')) {
+                setShowTimePicker(false);
             }
         };
 
@@ -202,6 +209,25 @@ export default function SearchContainer() {
         setSelectingDate('start');
     };
 
+    // Time picker state
+    const [tempHour, setTempHour] = useState('12');
+    const [tempMinute, setTempMinute] = useState('00');
+
+    const openTimePicker = () => {
+        setTempHour(pickupTime ? pickupTime.split(':')[0] : '12');
+        setTempMinute(pickupTime ? pickupTime.split(':')[1] : '00');
+        setShowTimePicker(true);
+    };
+
+    const handleTimeDone = () => {
+        setPickupTime(`${tempHour.padStart(2, '0')}:${tempMinute.padStart(2, '0')}`);
+        setShowTimePicker(false);
+    };
+
+    const handleTimeCancel = () => {
+        setShowTimePicker(false);
+    };
+
     return (
         <div className='relative h-[60px] p-4 bg-white flex flex-col 
             md:flex-row items-center justify-between shadow-md rounded-[16px]'>
@@ -334,6 +360,110 @@ export default function SearchContainer() {
 
             <div className='h-[50px] w-[2px] bg-gray-600 shrink-0'></div>
 
+            {/* 🔸 Pickup Time */}
+            <div className='flex flex-col items-center cursor-pointer relative'>
+                <label htmlFor="pickup-time" className='text-black text-[20px] cursor-pointer'>Time</label>
+                <input
+                    id="pickup-time"
+                    type="text"
+                    value={pickupTime ? pickupTime : ''}
+                    placeholder="Select time"
+                    className='text-gray-600 text-[14px] bg-white border rounded px-2 py-1 w-[100px] focus:outline-none focus:ring-2 focus:ring-orange-300 time-trigger text-center'
+                    readOnly
+                    onClick={openTimePicker}
+                    style={{ cursor: 'pointer', backgroundColor: '#fff' }}
+                />
+                {/* Custom Time Picker */}
+                {showTimePicker && (
+                    <div
+                        ref={timePickerRef}
+                        className="absolute top-[60px] z-20 bg-white shadow-lg border rounded-lg p-4 min-w-[240px]"
+                    >
+                        <div className="mb-3 text-gray-700 font-medium text-center">Select Pickup Time</div>
+                        <div className="flex items-center justify-center gap-2 mb-2">
+                            <span className="text-2xl font-bold text-brand-primary">
+                                {tempHour.padStart(2, '0')}:{tempMinute.padStart(2, '0')}
+                            </span>
+                        </div>
+                        <div className="flex items-center justify-center gap-6 mb-4">
+                            <div className="flex flex-col items-center">
+                                <span className="text-xs text-gray-500 mb-1">Hour</span>
+                                {/* <button
+                                    className="w-7 h-7 rounded-full bg-gray-100 hover:bg-orange-100 mb-1 text-lg"
+                                    onClick={() => setTempHour(h => (String((parseInt(h, 10) + 1) % 24).padStart(2, '0')))}
+                                    tabIndex={-1}
+                                    type="button"
+                                >▲</button> */}
+                                <select
+                                    value={tempHour}
+                                    onChange={e => setTempHour(e.target.value)}
+                                    className="border rounded p-1 text-lg w-14 text-center"
+                                >
+                                    {[...Array(24).keys()].map(h => (
+                                        <option key={h} value={h.toString().padStart(2, '0')}>
+                                            {h.toString().padStart(2, '0')}
+                                        </option>
+                                    ))}
+                                </select>
+                                {/* <button
+                                    className="w-7 h-7 rounded-full bg-gray-100 hover:bg-orange-100 mt-1 text-lg"
+                                    onClick={() => setTempHour(h => (String((parseInt(h, 10) + 23) % 24).padStart(2, '0')))}
+                                    tabIndex={-1}
+                                    type="button"
+                                >▼</button> */}
+                            </div>
+                            <div className="flex flex-col items-center">
+                                <span className="text-xs text-gray-500 mb-1">Minute</span>
+                                {/* <button
+                                    className="w-7 h-7 rounded-full bg-gray-100 hover:bg-orange-100 mb-1 text-lg"
+                                    onClick={() => setTempMinute(m => {
+                                        const mins = ['00','05','10','15','20','25','30','35','40','45','50','55'];
+                                        let idx = mins.indexOf(m);
+                                        return mins[(idx + 1) % mins.length];
+                                    })}
+                                    tabIndex={-1}
+                                    type="button"
+                                >▲</button> */}
+                                <select
+                                    value={tempMinute}
+                                    onChange={e => setTempMinute(e.target.value)}
+                                    className="border rounded p-1 text-lg w-14 text-center"
+                                >
+                                    {['00', '05', '10', '15', '20', '25', '30', '35', '40', '45', '50', '55'].map(m => (
+                                        <option key={m} value={m}>{m}</option>
+                                    ))}
+                                </select>
+                                {/* <button
+                                    className="w-7 h-7 rounded-full bg-gray-100 hover:bg-orange-100 mt-1 text-lg"
+                                    onClick={() => setTempMinute(m => {
+                                        const mins = ['00','05','10','15','20','25','30','35','40','45','50','55'];
+                                        let idx = mins.indexOf(m);
+                                        return mins[(idx + mins.length - 1) % mins.length];
+                                    })}
+                                    tabIndex={-1}
+                                    type="button"
+                                >▼</button> */}
+                            </div>
+                        </div>
+                        <div className="flex justify-between mt-2 pt-2 border-t">
+                            <button
+                                onClick={handleTimeCancel}
+                                className="px-4 py-2 text-gray-600 hover:text-gray-800"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleTimeDone}
+                                className="px-4 py-2 bg-brand-primary text-white rounded hover:bg-brand-primary-dark"
+                            >
+                                Done
+                            </button>
+                        </div>
+                    </div>
+                )}
+            </div>
+
+            <div className='h-[50px] w-[2px] bg-gray-600 shrink-0'></div>
             {/* Search button */}
             <div className='flex flex-col items-center cursor-pointer'>
                 <div className='bg-brand-primary hover:bg-opacity-95 
@@ -461,6 +591,8 @@ export default function SearchContainer() {
                     </div>
                 </div>
             )}
+
+            
         </div>
     );
 }
