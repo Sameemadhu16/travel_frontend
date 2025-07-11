@@ -1,8 +1,10 @@
 import React from 'react';
 import PrimaryButton from './PrimaryButton';
 import { FaPlus } from "react-icons/fa";
+import { useNavigate } from 'react-router-dom';
 
 export default function HeroSection() {
+    const navigate = useNavigate();
     return (
         <section className="relative h-[500px] flex items-center justify-start bg-cover bg-center" style={{ backgroundImage: "url('src/assets/home/colombo.png')" }}>
             <div className="absolute inset-0 bg-black/40" />
@@ -17,6 +19,7 @@ export default function HeroSection() {
                         </span>
                     }
                     className="w-fit px-4"
+                    onClick={() => navigate('/tour/create-tour')}
                 />
             </div>
         </section>
