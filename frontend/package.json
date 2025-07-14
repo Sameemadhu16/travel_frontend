@@ -16,6 +16,9 @@
     "firebase": "^11.9.1",
     "framer-motion": "^12.16.0",
     "lucide-react": "^0.525.0",
+
+    "jspdf": "^3.0.1",
+
     "myapp": "file:",
     "react": "^18.3.1",
     "react-datepicker": "^8.4.0",

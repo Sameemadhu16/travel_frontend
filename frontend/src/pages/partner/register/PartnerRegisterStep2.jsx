@@ -2,74 +2,45 @@ import { motion, AnimatePresence } from 'framer-motion'
 import { useCallback, useContext, useEffect, useState } from 'react'
 import Main from '../../../components/Main'
 import Title from '../../../components/Title'
-import { handleSelect } from '../../../core/service'
+import { handleSelect, putRequest } from '../../../core/service'
 import InputField from '../../../components/InputField'
 import PrimaryButton from '../../../components/PrimaryButton'
 import Border from '../../../components/Border'
 import { formValidator } from '../../../core/validation'
-import { navigateTo } from '../../../core/navigateHelper'
 import TermsAndPrivacy from '../components/TermsAndPrivacy'
 import { showToastMessage } from '../../../utils/toastHelper'
 import FormContext from '../../../context/InitialValues'
 import { useDispatch, useSelector } from 'react-redux'
-import { registerFailure, registerStart, registerSuccess } from '../../../redux/slices/authSlice'
+import { registerFailure, registerStart, registerSuccess, setUserData } from '../../../redux/slices/authSlice'
 import Spinner from '../../../components/Spinner'
+import { navigateTo } from '../../../core/navigateHelper'
 
 export default function PartnerRegisterStep2() {
 
     const { formData, setFormData } = useContext(FormContext);
     const [errors,setErrors] = useState({});
     const dispatch = useDispatch();
-    const { loading, isAuthenticated, user, error } = useSelector(state => state.auth);
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = useCallback( async (e) => {
         e.preventDefault();
         try{
+            setLoading(true);
             const error = formValidator(formData,);
             setErrors(error)
 
             if(error === null){
-                dispatch(registerStart());
-                // const response = await fetch('/api/register', {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //     },
-                //     body: JSON.stringify(formData),
-                // });
-                
-                // 
-                // if (response.ok) {
-                //     const data = await response.json();
-                    
-                //     // Success - update Redux state
-                //     dispatch(registerSuccess({
-                //         user: data.user,
-                //         token: data.token
-                //     }));
-                    
-                //     // Clean up and navigate
-                //     localStorage.removeItem('formData');
-                //     showToastMessage('success', 'You have successfully created your partner account.');
-                //     navigateTo('/partner-login/step-1');
-                    
-                // } else {
-                //     const errorData = await response.json();
-                //     throw new Error(errorData.message || 'Registration failed');
-                // }
-
-                dispatch(registerSuccess({
-                    user: formData, // or extract user info from formData
-                    token: 'temporary-token' // or generate/get from somewhere
-                }));
-
-                localStorage.removeItem('formData');
-                showToastMessage('success', 'You have successfully created your partner account.');
-                navigateTo('/partner-login/step-1');
+                const res = await putRequest(`/api/users/${formData.id}`, formData);
+                if(res === 'OK'){
+                    dispatch(setUserData(formData));
+                    showToastMessage('success', 'You have successfully created your partner account.');
+                    navigateTo('/choose-property')
+                }
             }
         }catch(e){
-            dispatch(registerFailure(e.message));
             showToastMessage('error', e.message || 'Registration failed. Please try again.');
+        }finally {
+            setLoading(false);
         }
     },[formData, dispatch]);
 

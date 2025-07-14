@@ -31,12 +31,17 @@ const authSlice = createSlice({
             state.isAuthenticated = false;
         },
 
-        resetAuth: (state) => {
+        resetAuth: () => {
             return initialState; 
         },
 
         clearError: (state) => {
             state.error = null;
+        },
+        setUserData: (state, action) => {
+            if (state.user) {
+                state.user.data = action.payload;
+            }
         },
     }
 });
@@ -45,6 +50,8 @@ export const {
     registerStart,
     registerSuccess,
     registerFailure,
+    setUserData,
+    resetAuth,
 } = authSlice.actions;
 
-export default authSlice.reducer; // ✅ Export the reducer, not actions
+export default authSlice.reducer;
