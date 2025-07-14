@@ -2,13 +2,15 @@ import Main from './Main'
 import Title from '../components/Title'
 import room from '../assets/rooms/room1.png'
 import Navigate from './Navigate'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { checkTokenExpiration } from '../core/authChecker';
+import { resetAuth } from '../redux/slices/authSlice';
 
 export default function Header() {
 
     const { user, token } = useSelector((state) => state.auth);
     const isExpired = checkTokenExpiration(token);
+    const dispatch = useDispatch();
 
     return (
         <Main>
@@ -33,7 +35,7 @@ export default function Header() {
                                     font='font-[500]'
                                 />
                             </Navigate>
-                            <div className='flex items-center w-[300px] gap-2 p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
+                            <div onClick={() => dispatch(resetAuth())} className='flex items-center w-[300px] gap-2 p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
                                 <div className='h-[40px] w-[40px] border-2 border-brand-primary rounded-full overflow-hidden'>
                                     <img src={room} alt="room" className='h-full w-full object-cover'/>
                                 </div>

@@ -14,6 +14,6 @@ export default function Navigate({path,children,className=''}) {
 
 Navigate.propTypes = {
     path: PropTypes.string.isRequired,
-    children: PropTypes.node.isRequired,
+    children: PropTypes.node,
     className: PropTypes.string
 };
