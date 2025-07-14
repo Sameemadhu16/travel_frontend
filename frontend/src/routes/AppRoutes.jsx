@@ -20,8 +20,14 @@ import { loginPartnerAccountForm, registerPartnerAccountForm } from '../context/
 import ChatBot from '../pages/chatBot/ChatBot'
 import TravelerRegister from '../pages/TravelerRegister'
 import ChooseProperty from '../pages/partner/register/ChooseProperty'
+import { useSelector } from 'react-redux'
+import { checkTokenExpiration } from '../core/authChecker'
 
 export default function AppRoutes() {
+
+    const { token } = useSelector((state) => state.auth);
+    const isExpired = checkTokenExpiration(token);
+
     return (
             <Routes>
                 <Route path='/' element={<Welcome/>}/>
@@ -50,18 +56,21 @@ export default function AppRoutes() {
                     }
                 />
                 {/* partner login */}
-                <Route 
-                    path="/partner-login/*"
-                    element={
-                        <FormProvider initialValues={loginPartnerAccountForm.formData}>
-                            <Routes>
-                                <Route path='step-1' element={<PartnerLoginStep1/>}/>
-                                <Route path='step-2' element={<PartnerLoginStep2/>}/>
-                            </Routes>
-                        </FormProvider>
-                    }
-                />
-
+                {
+                    !token || isExpired &&(
+                        <Route 
+                            path="/partner-login/*"
+                            element={
+                                <FormProvider initialValues={loginPartnerAccountForm.formData}>
+                                    <Routes>
+                                        <Route path='step-1' element={<PartnerLoginStep1/>}/>
+                                        <Route path='step-2' element={<PartnerLoginStep2/>}/>
+                                    </Routes>
+                                </FormProvider>
+                            }
+                        />
+                    )
+                }
                 {/* partner details forgot */}
                 <Route path='/partner-details-forgot' element={<ForgotDetailsStep1/>}/>
                 <Route path='/partner-forgot-password' element={<ForgotPassword/>}/>
