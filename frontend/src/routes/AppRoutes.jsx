@@ -40,14 +40,6 @@ export default function AppRoutes() {
         <Routes>
             <Route path='/' element={<Home/>}/>
             <Route path='/home' element={<Home/>}/>
-            <Route path='/tour/create-tour' element={<CreateTour/>}/>
-            <Route path='/tour/select-guide' element={<SelectGuide/>}/>
-            <Route path='/tour/select-hotel' element={<Search />} />
-            <Route path='/tour/select-hotel/:id' element={<Hotel />} />
-            <Route path='/tour/complete-request' element={<CompleteRequest/>}/>
-            <Route path='/tour/request-sent' element={<RequestSent />} />
-            <Route path='/tour/payment' element={<Payment/>} />
-            <Route path='/hotel/:id' element={<Hotel/>}/>
 
             {/* Conditional auth routes */}
             {isAuthenticated ? (
@@ -85,6 +77,15 @@ export default function AppRoutes() {
                             </FormProvider>
                         }
                     />
+
+                    <Route path='/tour/create-tour' element={<CreateTour/>}/>
+                    <Route path='/tour/select-guide' element={<SelectGuide/>}/>
+                    <Route path='/tour/select-hotel' element={<Search />} />
+                    <Route path='/tour/select-hotel/:id' element={<Hotel />} />
+                    <Route path='/tour/complete-request' element={<CompleteRequest/>}/>
+                    <Route path='/tour/request-sent' element={<RequestSent />} />
+                    <Route path='/tour/payment' element={<Payment/>} />
+                    <Route path='/hotel/:id' element={<Hotel/>}/>
                 </>
             ) : (
                 <>
