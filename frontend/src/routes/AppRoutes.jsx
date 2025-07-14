@@ -57,7 +57,7 @@ export default function AppRoutes() {
                 />
                 {/* partner login */}
                 {
-                    !token || isExpired &&(
+                    !token && isExpired && (
                         <Route 
                             path="/partner-login/*"
                             element={
