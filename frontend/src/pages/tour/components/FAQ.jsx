@@ -20,18 +20,18 @@ export default function FAQ() {
     ];
 
     return (
-        <div className="bg-white rounded-lg border-l-4 border-brand-primary p-6 mb-6">
-            <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900 mb-6">
+        <div className="bg-surface-primary rounded-lg border-l-4 border-brand-primary p-6 mb-6">
+            <h2 className="flex items-center gap-2 text-lg font-semibold text-content-primary mb-6">
                 <span className="text-brand-primary">❓</span>
                 Frequently Asked Questions
             </h2>
             
             <div className="space-y-4">
                 {faqs.map((faq, index) => (
-                    <div key={index} className="border-b border-gray-200 pb-4 last:border-b-0">
-                        <h3 className="font-medium text-gray-900 mb-2">{faq.question}</h3>
+                    <div key={index} className="border-b border-border-light pb-4 last:border-b-0">
+                        <h3 className="font-medium text-content-primary mb-2">{faq.question}</h3>
                         {faq.isOpen && (
-                            <p className="text-sm text-gray-600">{faq.answer}</p>
+                            <p className="text-sm text-content-secondary">{faq.answer}</p>
                         )}
                     </div>
                 ))}

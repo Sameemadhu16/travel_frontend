@@ -27,6 +27,7 @@ import CreateTour from '../pages/tour/createTour'
 import SelectGuide from '../pages/tour/selectGuide'
 import CompleteRequest from '../pages/tour/completeRequest'
 import RequestSent from '../pages/tour/requestSent'
+import Payment from '../pages/tour/payment'
 
 export default function AppRoutes() {
     return (
@@ -39,6 +40,7 @@ export default function AppRoutes() {
                 <Route path='/tour/select-hotel/:id' element={<Hotel />} />
                 <Route path='/tour/complete-request' element={<CompleteRequest/>}/>
             <Route path='/tour/request-sent' element={<RequestSent />} />
+            <Route path='/tour/payment' element={<Payment/>} />
                 
                 <Route path='/hotel/:id' element={<Hotel/>}/>
                 
