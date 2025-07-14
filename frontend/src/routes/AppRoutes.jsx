@@ -25,6 +25,8 @@ import VehicleRegistration from '../pages/vehicles/auth/VehicleRegistration'
 import VehicleAgencyRegistration from '../pages/vehicles/auth/VehicleAgencyRegistration'
 import CreateTour from '../pages/tour/createTour'
 import SelectGuide from '../pages/tour/selectGuide'
+import CompleteRequest from '../pages/tour/completeRequest'
+import RequestSent from '../pages/tour/requestSent'
 
 export default function AppRoutes() {
     return (
@@ -35,6 +37,8 @@ export default function AppRoutes() {
                 <Route path='/tour/select-guide' element={<SelectGuide/>}/>
                 <Route path='/tour/select-hotel' element={<Search />} />
                 <Route path='/tour/select-hotel/:id' element={<Hotel />} />
+                <Route path='/tour/complete-request' element={<CompleteRequest/>}/>
+            <Route path='/tour/request-sent' element={<RequestSent />} />
                 
                 <Route path='/hotel/:id' element={<Hotel/>}/>
                 
