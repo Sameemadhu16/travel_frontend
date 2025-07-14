@@ -28,27 +28,29 @@ export default function RecommendedDestinations() {
     return (
         <section className="py-12 bg-[#fcfbf7]">
             <h2 className="text-3xl font-semibold text-center mb-10">Recommended Destinations</h2>
-            <div className="flex justify-center gap-8 flex-wrap">
-                {destinations.map((d, i) => (
-                    <div
-                        key={i}
-                        className="bg-white rounded-xl shadow-lg w-72 overflow-hidden flex flex-col transition-transform hover:-translate-y-1 hover:shadow-xl"
-                    >
-                        <img src={d.image} alt={d.name} className="h-44 w-full object-cover" />
-                        <div className="p-5 flex flex-col flex-1">
-                            <h3 className="text-lg font-bold mb-1">{d.name}</h3>
-                            <p className="text-sm text-gray-600 mb-6">{d.desc}</p>
-                            <div className="mt-auto">
-                                <a
-                                    href="#"
-                                    className="text-[15px] text-orange-400 font-medium flex items-center gap-1 hover:underline"
-                                >
-                                    Explore <FaArrowRight className="inline text-[13px] mt-[2px]" />
-                                </a>
+            <div className="max-w-7xl mx-auto px-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {destinations.map((d, i) => (
+                        <div
+                            key={i}
+                            className="bg-white rounded-xl shadow-lg overflow-hidden flex flex-col transition-transform hover:-translate-y-1 hover:shadow-xl"
+                        >
+                            <img src={d.image} alt={d.name} className="h-44 w-full object-cover" />
+                            <div className="p-5 flex flex-col flex-1">
+                                <h3 className="text-lg font-bold mb-1">{d.name}</h3>
+                                <p className="text-sm text-gray-600 mb-6">{d.desc}</p>
+                                <div className="mt-auto">
+                                    <a
+                                        href="#"
+                                        className="text-[15px] text-orange-400 font-medium flex items-center gap-1 hover:underline"
+                                    >
+                                        Explore <FaArrowRight className="inline text-[13px] mt-[2px]" />
+                                    </a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    ))}
+                </div>
             </div>
         </section>
     );
