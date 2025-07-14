@@ -25,6 +25,12 @@ import VehicleRegistration from '../pages/vehicles/auth/VehicleRegistration'
 import VehicleAgencyRegistration from '../pages/vehicles/auth/VehicleAgencyRegistration'
 import CreateTour from '../pages/tour/createTour'
 import SelectGuide from '../pages/tour/selectGuide'
+import TourRequest from '../pages/guide/TourRequest'
+import AcceptedTours from '../pages/guide/AcceptedTours'
+import ConfirmedTours from '../pages/guide/ConfirmedTours'
+import ActiveTour from '../pages/guide/ActiveTour'
+import GuideProfile from '../pages/guide/GuideProfile'
+import GuideComplaints from '../pages/guide/GuideComplaints'
 
 export default function AppRoutes() {
     return (
@@ -91,12 +97,12 @@ export default function AppRoutes() {
 
 
                 {/* Guide */}
-                <Route path='/guide-profile' element={<GuideProfile/>}/>
-                <Route path='/guide-availability' element={<GuideAvailability/>}/>
-                <Route path='/guide-complaints' element={<GuideComplaints/>}/>
-                <Route path='/guide-earnings' element={<GuideEarnings/>}/>
-                <Route path='/guide-register' element={<GuideRegister/>}/>
-                <Route path='/guide-tour-packages' element={<GuideTourPackages/>}/>
+                <Route path='/guide-profile' element={<GuideProfile />}/>
+                <Route path='/guide-complaints' element={<GuideComplaints />}/>
+                <Route path='/guide-tour-request' element={<TourRequest />} />
+                <Route path='/guide-accepted-tours' element={<AcceptedTours />} />
+                <Route path='/guide-confirmed-tours' element={<ConfirmedTours />} />
+                <Route path='/guide-active-tour' element={<ActiveTour />} />
             </Routes>
     )
 }

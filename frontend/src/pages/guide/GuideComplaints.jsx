@@ -1,160 +1,145 @@
 import Main from '../../components/Main'
-import { Plus, Clock, Paperclip, TimerReset, User, ForwardIcon, Check } from 'lucide-react'
+import { Clock, Paperclip, TimerReset, User, ForwardIcon, Check } from 'lucide-react'
 import Card from './guideComponents/Card'
 import { Link } from 'react-router-dom'
+// import { FaCalendar, FaFilter } from 'react-icons/fa'
+import PrimaryButton from '../../components/PrimaryButton'
 
 const GuideComplaints = () => {
+    // Data array for complaints
+    const complaintsData = [
+        {
+            id: 1,
+            title: "Payment delay for October tours",
+            category: "Payment Issues",
+            submittedDate: "Apr 4, 2025",
+            status: "Responded",
+            statusColor: "orange",
+            statusIcon: ForwardIcon,
+            description: "During the city tour on November 8th, a group of travelers were consistently late, disruptive, and ignored safety instructions...",
+            adminResponse: {
+                date: "Apr 6, 2025",
+                message: "Thank you for reporting this. We've contacted the travelers and issued a warning. We're also implementing stricter guidelines for future bookings. You'll receive a bonus payment for handling this difficult situation professionally."
+            },
+            attachments: 1,
+            timeAgo: "2 days ago"
+        },
+        {
+            id: 2,
+            title: "Payment delay for October tours",
+            category: "Payment Issues", 
+            submittedDate: "Apr 4, 2025",
+            status: "Pending",
+            statusColor: "yellow",
+            statusIcon: Clock,
+            description: "I haven't received payment for the tours I conducted in October. The payment was supposed to be processed by November 10th according to our agreement...",
+            adminResponse: null,
+            attachments: 1,
+            timeAgo: "2 days ago"
+        },
+        {
+            id: 3,
+            title: "Equipment malfunction during mountain tour",
+            category: "Equipment Issues",
+            submittedDate: "Apr 4, 2025", 
+            status: "Resolved",
+            statusColor: "orange",
+            statusIcon: Check,
+            description: "The GPS device provided for the mountain hiking tour malfunctioned, causing navigation issues and delays...",
+            adminResponse: {
+                date: "Apr 6, 2025",
+                message: "We've replaced all GPS devices and implemented a pre-tour equipment check protocol. You'll receive compensation for the inconvenience caused. Thank you for your quick thinking in handling the situation."
+            },
+            attachments: 1,
+            timeAgo: "2 days ago"
+        }
+    ]
+
+    // Function to get status badge styling
+    const getStatusBadge = (status, statusColor, StatusIcon) => {
+        const colorClasses = {
+            orange: "bg-orange-200 text-orange-800",
+            yellow: "bg-yellow-200 text-yellow-800",
+            green: "bg-green-200 text-green-800"
+        }
+        
+        return (
+            <p className={`flex items-center gap-1 mt-1 px-2 py-1 ${colorClasses[statusColor]} text-xs rounded-full`}>
+                <StatusIcon className="w-4 h-4" />
+                {status}
+            </p>
+        )
+    }
+
     return (
         <Main>
             <div>
                 {/* Header */}
-                <div className="mb-8 flex items-center justify-between">
+                <div className="flex justify-between items-center">
                     <div>
-                        <h1 className="text-2xl font-bold text-gray-900">Complaints</h1>
-                        <p className="text-gray-600">Submit and track your complaints to administration</p>
+                        <h1 className="text-2xl font-bold mb-1">Complaints</h1>
+                        <p className="text-gray-600 mb-6">Submit and track your complaints to administration</p>
                     </div>
-                    <div>
-                        <button className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
-                            <Plus className="w-4 h-4" />
-                            <span>New Complaint</span>
-                        </button>
+                    <div className="flex items-center space-x-3">
+                        <PrimaryButton
+                            text="+ &nbsp; New Complaint"
+                            type={'button'}
+                            className={'text-base'}
+                        />
                     </div>
                 </div>
+
                 <div>
-                    <h3 className='font-bold text-gray-600 text-lg'>Your Complaints</h3>
-                </div>
-                <div>
-                    <Card>
-                        <div>
-                            <div className='flex gap-5 items-center'>
-                                <h3 className='font-bold'>Payment delay for October tours</h3>
-                                <p className='flex items-center gap-1 mt-1 px-2 py-1 bg-blue-200 text-blue-800 text-xs rounded-full'>
-                                    <ForwardIcon className="w-4 h-4" />
-                                    Responded
-                                </p>
-                            </div>
-                            <div className='text-sm text-gray-500'>
-                                <p>Category: Payment Issues</p>
-                                <p>Submitted: Apr 4,2025</p>
-                            </div>
-                            <div className='my-5 pb-5 border-b-2'>
-                                <div>
-                                    <p>During the city tour on November 8th, a group of travelers were consistently late, disruptive, and ignored safety instructions...</p>
+                    {complaintsData.map((complaint) => (
+                        <Card key={complaint.id}>
+                            <div>
+                                <div className='flex gap-5 items-center'>
+                                    <h3 className='font-bold'>{complaint.title}</h3>
+                                    {getStatusBadge(complaint.status, complaint.statusColor, complaint.statusIcon)}
                                 </div>
-                                <div className='flex gap-2 items-start mt-3 bg-blue-200 p-4 rounded-lg border-l-4 border-blue-600'>
-                                    <div className='bg-blue-100 p-2 rounded-full'>
-                                        <User />
+                                <div className='text-sm text-gray-500'>
+                                    <p>Category: {complaint.category}</p>
+                                    <p>Submitted: {complaint.submittedDate}</p>
+                                </div>
+                                <div className='my-5 pb-5 border-b-2'>
+                                    <div>
+                                        <p>{complaint.description}</p>
                                     </div>
-                                    <div className='text-sm items-center'>
-                                        <div className='flex gap-2 mb-2 items-center'>
-                                            <p className='text-md'>Admin Response</p>
-                                            <p>Apr 6, 2025</p>
+                                    {complaint.adminResponse && (
+                                        <div className='flex gap-2 items-start mt-3 bg-orange-200 p-4 rounded-lg border-l-4 border-orange-600'>
+                                            <div className='bg-orange-100 p-2 rounded-full'>
+                                                <User />
+                                            </div>
+                                            <div className='text-sm items-center'>
+                                                <div className='flex gap-2 mb-2 items-center'>
+                                                    <p className='text-md'>Admin Response</p>
+                                                    <p>{complaint.adminResponse.date}</p>
+                                                </div>
+                                                <div>
+                                                    <p>{complaint.adminResponse.message}</p>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <p>Thank you for reporting this. We&apos;ve contacted the travelers and issued a warning. We&apos;re also implementing stricter guidelines for future bookings. You&apos;ll receive a bonus payment for handling this difficult situation professionally.</p>
+                                    )}
+                                </div>
+                                <div className='flex justify-between items-center text-sm'>
+                                    <div className='flex gap-5'>
+                                        <div className='gap-1 flex items-center'>
+                                            <Paperclip className='w-4 h-4' />
+                                            <p>{complaint.attachments} attachment{complaint.attachments > 1 ? 's' : ''}</p>
                                         </div>
-                                    </div>
-                                </div>
-                            </div>
-                            <div className='flex justify-between items-center text-sm'>
-                                <div className='flex gap-5'>
-                                    <div className='gap-1 flex items-center'>
-                                        <Paperclip className='w-4 h-4' />
-                                        <p>1 attachment</p>
-                                    </div>
-                                    <div className='gap-1 flex items-center'>
-                                        <TimerReset className='w-4 h-4' />
-                                        <p>2 days ago</p>
-                                    </div>
-                                </div>
-                                <div className='text-blue-600 hover:text-blue-800'>
-                                    <Link to={'/guide-earnings'}>View details</Link>
-                                </div>
-                            </div>
-                        </div>
-                    </Card>
-                    <Card>
-                        <div>
-                            <div className='flex gap-5 items-center'>
-                                <h3 className='font-bold'>Payment delay for October tours</h3>
-                                <p className='flex items-center gap-1 mt-1 px-2 py-1 bg-yellow-200 text-yellow-800 text-xs rounded-full'>
-                                    <Clock className="w-4 h-4" />
-                                    Pending
-                                </p>
-                            </div>
-                            <div className='text-sm text-gray-500'>
-                                <p>Category: Payment Issues</p>
-                                <p>Submitted: Apr 4,2025</p>
-                            </div>
-                            <div className='my-5 pb-5 border-b-2'>
-                                <p>I haven&apos;t received payment for the tours I conducted in October. The payment was supposed to be processed by November 10th according to our agreement...</p>
-                            </div>
-                            <div className='flex justify-between items-center text-sm'>
-                                <div className='flex gap-5'>
-                                    <div className='gap-1 flex items-center'>
-                                        <Paperclip className='w-4 h-4' />
-                                        <p>1 attachment</p>
-                                    </div>
-                                    <div className='gap-1 flex items-center'>
-                                        <TimerReset className='w-4 h-4' />
-                                        <p>2 days ago</p>
-                                    </div>
-                                </div>
-                                <div className='text-blue-600 hover:text-blue-800'>
-                                    <Link to={'/guide-earnings'}>View details</Link>
-                                </div>
-                            </div>
-                        </div>
-                    </Card>
-                    <Card>
-                        <div>
-                            <div className='flex gap-5 items-center'>
-                                <h3 className='font-bold'>Payment delay for October tours</h3>
-                                <p className='flex items-center gap-1 mt-1 px-2 py-1 bg-green-200 text-green-800 text-xs rounded-full'>
-                                    <Check className="w-4 h-4" />
-                                    Resolved
-                                </p>
-                            </div>
-                            <div className='text-sm text-gray-500'>
-                                <p>Category: Payment Issues</p>
-                                <p>Submitted: Apr 4,2025</p>
-                            </div>
-                            <div className='my-5 pb-5 border-b-2'>
-                                <div>
-                                    <p>The GPS device provided for the mountain hiking tour malfunctioned, causing navigation issues and delays...</p>
-                                </div>
-                                <div className='flex gap-2 items-start mt-3 bg-green-200 p-4 rounded-lg border-l-4 border-green-600'>
-                                    <div className='bg-green-100 p-2 rounded-full'>
-                                        <User />
-                                    </div>
-                                    <div className='text-sm items-center'>
-                                        <div className='flex gap-2 mb-2 items-center'>
-                                            <p className='text-md'>Admin Response</p>
-                                            <p>Apr 6, 2025</p>
-                                        </div>
-                                        <div>
-                                            <p>We&apos;ve replaced all GPS devices and implemented a pre-tour equipment check protocol. You&apos;ll receive compensation for the inconvenience caused. Thank you for your quick thinking in handling the situation.</p>
+                                        <div className='gap-1 flex items-center'>
+                                            <TimerReset className='w-4 h-4' />
+                                            <p>{complaint.timeAgo}</p>
                                         </div>
                                     </div>
-                                </div>
-                            </div>
-                            <div className='flex justify-between items-center text-sm'>
-                                <div className='flex gap-5'>
-                                    <div className='gap-1 flex items-center'>
-                                        <Paperclip className='w-4 h-4' />
-                                        <p>1 attachment</p>
-                                    </div>
-                                    <div className='gap-1 flex items-center'>
-                                        <TimerReset className='w-4 h-4' />
-                                        <p>2 days ago</p>
+                                    <div className='text-orange-600 hover:text-orange-800'>
+                                        <Link to={'/guide-earnings'}>View details</Link>
                                     </div>
                                 </div>
-                                <div className='text-blue-600 hover:text-blue-800'>
-                                    <Link to={'/guide-earnings'}>View details</Link>
-                                </div>
                             </div>
-                        </div>
-                    </Card>
+                        </Card>
+                    ))}
                 </div>
             </div>
         </Main>

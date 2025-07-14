@@ -2,7 +2,7 @@ import PropTypes from 'prop-types'
 
 const Card = ({ children, className }) => {
     return (
-        <div className={`bg-gray-50 px-6 py-4 my-5 rounded-lg flex gap-5 items-center shadow-md w-full ${className}`}>
+        <div className={`bg-white border border-orange-400 shadow rounded-lg p-4 flex flex-col justify-between mb-4 ${className}`}>
             {children}
         </div>
     );
