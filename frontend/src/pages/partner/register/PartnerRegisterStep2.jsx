@@ -7,7 +7,6 @@ import InputField from '../../../components/InputField'
 import PrimaryButton from '../../../components/PrimaryButton'
 import Border from '../../../components/Border'
 import { formValidator } from '../../../core/validation'
-import { navigateTo } from '../../../core/navigateHelper'
 import TermsAndPrivacy from '../components/TermsAndPrivacy'
 import { showToastMessage } from '../../../utils/toastHelper'
 import FormContext from '../../../context/InitialValues'
@@ -30,42 +29,15 @@ export default function PartnerRegisterStep2() {
 
             if(error === null){
                 dispatch(registerStart());
-                // const response = await fetch('/api/register', {
-                //     method: 'POST',
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //     },
-                //     body: JSON.stringify(formData),
-                // });
-                
-                // 
-                // if (response.ok) {
-                //     const data = await response.json();
-                    
-                //     // Success - update Redux state
-                //     dispatch(registerSuccess({
-                //         user: data.user,
-                //         token: data.token
-                //     }));
-                    
-                //     // Clean up and navigate
-                //     localStorage.removeItem('formData');
-                //     showToastMessage('success', 'You have successfully created your partner account.');
-                //     navigateTo('/partner-login/step-1');
-                    
-                // } else {
-                //     const errorData = await response.json();
-                //     throw new Error(errorData.message || 'Registration failed');
-                // }
 
                 dispatch(registerSuccess({
-                    user: formData, // or extract user info from formData
-                    token: 'temporary-token' // or generate/get from somewhere
+                    user: formData,
+                    token: 'temporary-token' 
                 }));
-
+                console.log(formData);
                 localStorage.removeItem('formData');
                 showToastMessage('success', 'You have successfully created your partner account.');
-                navigateTo('/partner-login/step-1');
+                //navigateTo('/partner-login/step-1');
             }
         }catch(e){
             dispatch(registerFailure(e.message));

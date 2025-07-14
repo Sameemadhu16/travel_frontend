@@ -39,7 +39,7 @@ export default function TravelerRegister() {
                     const errorMessage = getFirebaseErrorMessage(code);
                     showToastMessage('error', errorMessage); 
                     dispatch(registerFailure());
-                    return; // Stop execution; do not proceed to backend registration
+                    return;
                 }
 
                 formData.docId = uid;
@@ -51,7 +51,7 @@ export default function TravelerRegister() {
                     token: accessToken
                 }))
                 showToastMessage('success', 'Traveler account created successfully!');
-                //navigateTo('/partner-login/step-1');
+                navigateTo('/partner-login/step-1');
             } else {
                 dispatch(registerFailure());
             }
