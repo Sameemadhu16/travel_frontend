@@ -20,7 +20,7 @@ export default function PartnerRegisterStep2() {
     const { formData, setFormData } = useContext(FormContext);
     const [errors,setErrors] = useState({});
     const dispatch = useDispatch();
-    const { loading, user } = useSelector(state => state.auth);
+    const { loading } = useSelector(state => state.auth);
 
     const handleSubmit = useCallback( async (e) => {
         e.preventDefault();
@@ -30,9 +30,8 @@ export default function PartnerRegisterStep2() {
 
             if(error === null){
                 const res = await putRequest(`/api/users/${formData.id}`, formData);
-                console.log(res)
                 if(res === 'OK'){
-                    setUserData(formData);
+                    dispatch(setUserData(formData));
                     showToastMessage('success', 'You have successfully created your partner account.');
                     navigateTo('/choose-property')
                 }
