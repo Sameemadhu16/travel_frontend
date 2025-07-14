@@ -7,7 +7,7 @@ import { checkTokenExpiration } from '../core/authChecker';
 
 export default function Header() {
 
-    const { token } = useSelector((state) => state.auth);
+    const { user, token } = useSelector((state) => state.auth);
     const isExpired = checkTokenExpiration(token);
 
     return (
@@ -33,13 +33,13 @@ export default function Header() {
                                     font='font-[500]'
                                 />
                             </Navigate>
-                            <div className='flex items-center gap-2 p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
+                            <div className='flex items-center w-[300px] gap-2 p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
                                 <div className='h-[40px] w-[40px] border-2 border-brand-primary rounded-full overflow-hidden'>
                                     <img src={room} alt="room" className='h-full w-full object-cover'/>
                                 </div>
-                                <div className='flex flex-col'>
+                                <div className='flex flex-col overflow-hidden'>
                                     <Title
-                                        title='Sachith'
+                                        title={user.data.email}
                                         size='text-[16px]'
                                         font='font-[600]'
                                     />
