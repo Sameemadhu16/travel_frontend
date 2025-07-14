@@ -31,8 +31,6 @@ const options = [
 ];
 
 export default function ChooseProperty() {
-    const { loading, user } = useSelector(state => state.auth);
-    console.log(user);
 
     const optionList = useMemo(() => {  
         return options.map((option) => (

@@ -20,11 +20,12 @@ export default function PartnerRegisterStep2() {
     const { formData, setFormData } = useContext(FormContext);
     const [errors,setErrors] = useState({});
     const dispatch = useDispatch();
-    const { loading } = useSelector(state => state.auth);
+    const [loading, setLoading] = useState(false);
 
     const handleSubmit = useCallback( async (e) => {
         e.preventDefault();
         try{
+            setLoading(true);
             const error = formValidator(formData,);
             setErrors(error)
 
@@ -38,6 +39,8 @@ export default function PartnerRegisterStep2() {
             }
         }catch(e){
             showToastMessage('error', e.message || 'Registration failed. Please try again.');
+        }finally {
+            setLoading(false);
         }
     },[formData, dispatch]);
 
