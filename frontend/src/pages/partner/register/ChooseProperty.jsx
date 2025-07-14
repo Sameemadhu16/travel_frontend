@@ -4,6 +4,7 @@ import Title from '../../../components/Title'
 import { IoIosBed } from 'react-icons/io'
 import { useMemo } from 'react';
 import PropertyCard from './components/PropertyCard';
+import { useSelector } from 'react-redux';
 
 const options = [
     {
@@ -30,6 +31,8 @@ const options = [
 ];
 
 export default function ChooseProperty() {
+    const { loading, user } = useSelector(state => state.auth);
+    console.log(user);
 
     const optionList = useMemo(() => {  
         return options.map((option) => (

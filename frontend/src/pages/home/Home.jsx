@@ -20,7 +20,7 @@ export default function Home() {
 
     const containerRef = useRef();
     const { user } = useSelector((state) => state.auth);
-console.log(user)
+
     const placesContainer = useMemo(()=>{
         return places.map((place,index)=>(
                 <div key={index} className='w-1/4 h-[600px] rounded-[8px] overflow-hidden relative'>
