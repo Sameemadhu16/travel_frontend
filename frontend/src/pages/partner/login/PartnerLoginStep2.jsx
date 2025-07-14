@@ -1,4 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion'
+import {useDispatch} from 'react-redux'
 import Main from '../../../components/Main'
 import { useCallback, useContext, useState } from 'react'
 import InputField from '../../../components/InputField';
@@ -6,7 +7,7 @@ import PrimaryButton from '../../../components/PrimaryButton';
 import Title from '../../../components/Title';
 import { navigateTo } from '../../../core/navigateHelper';
 import Border from '../../../components/Border';
-import { handleSelect } from '../../../core/service';
+import { getRequest, handleSelect } from '../../../core/service';
 import { formValidator } from '../../../core/validation';
 import TermsAndPrivacy from '../components/TermsAndPrivacy';
 import TextLink from '../components/TextLink';
@@ -14,23 +15,43 @@ import { showToastMessage } from '../../../utils/toastHelper';
 import FormContext from '../../../context/InitialValues';
 import { handleFirebaseLogin } from '../../../core/Firebase/service';
 import Spinner from '../../../components/Spinner';
+import { registerStart, registerSuccess } from '../../../redux/slices/authSlice';
 
 export default function PartnerLoginStep2() {
     const { formData, setFormData } = useContext(FormContext);
     const [error, setError] = useState({});
     const [loading, setLoading] = useState(false);
+    const dispatch = useDispatch();
 
     const handleSubmit = useCallback(async (e) => {
         e.preventDefault();
+        dispatch(registerStart());
         try {
             setLoading(true);
             const error = formValidator(formData, ['password']);
             setError(error);
             if (error === null) {
                 const user = await handleFirebaseLogin(formData.email, formData.password);
-                if (user) {
+                if (user && user.emailVerified) {
+                    const userData = await getRequest(`/api/users/public/${user.uid}`);
+                    console.log(userData);
+                    dispatch(
+                        registerSuccess({
+                        user: {
+                            email: user.email,
+                            uid: user.uid,
+                            data: userData 
+                        },
+                        token: user.accessToken,
+                        }),
+                    );
                     navigateTo('/home');
                     showToastMessage('success', 'Welcome back! You’ve logged in successfully.');
+                }else if (user && !user.emailVerified) {
+                    showToastMessage('warning', 'Your email is not verified. Please check your inbox or resend the verification email.');
+                } else {
+                    showToastMessage('error', 'Login failed. Please try again.');
+                    dispatch(registerFailure('Login failed'));
                 }
             }
         } catch (e) {

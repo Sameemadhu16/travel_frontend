@@ -7,6 +7,7 @@ import { useMemo, useRef } from 'react';
 import SearchContainer from '../../components/SearchContainer';
 import Title from '../../components/Title';
 import PrimaryButton from '../../components/PrimaryButton';
+import { useSelector } from 'react-redux';
 
 const places = [
     {name:'Anuradhapura',image:anuradhapura},
@@ -18,7 +19,8 @@ const places = [
 export default function Home() {
 
     const containerRef = useRef();
-
+    const { user } = useSelector((state) => state.auth);
+console.log(user)
     const placesContainer = useMemo(()=>{
         return places.map((place,index)=>(
                 <div key={index} className='w-1/4 h-[600px] rounded-[8px] overflow-hidden relative'>
