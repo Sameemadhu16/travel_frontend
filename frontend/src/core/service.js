@@ -33,3 +33,13 @@ export const postRequest = async (endpoint, data = {}) => {
         throw error;
     }
 };
+
+export const putRequest = async (endpoint, data = {}) => {
+    try {
+        const response = await apiClient.put(endpoint, data);
+        return response.data;
+    } catch (error) {
+        console.error('PUT request error:', error);
+        throw error;
+    }
+};
