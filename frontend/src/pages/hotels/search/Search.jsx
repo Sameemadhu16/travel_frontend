@@ -59,18 +59,6 @@ export default function Search() {
 
     return (
         <>
-            <div className='w-full relative'>
-                <img 
-                    src={cover} 
-                    alt="cover" 
-                    className='h-full w-full object-fit'
-                />
-                <div>
-                    <div className='z-10 absolute top-24 left-1/2 transform -translate-x-1/2 w-1/2'>
-                        <SearchContainer/>
-                    </div>
-                </div>
-            </div>
             <Main>
                 <div className='flex items-center w-full mt-5'>
                     <div className='w-1/4'>

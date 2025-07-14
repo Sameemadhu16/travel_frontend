@@ -4,6 +4,7 @@ import Title from '../../../components/Title'
 import { IoIosBed } from 'react-icons/io'
 import { useMemo } from 'react';
 import PropertyCard from './components/PropertyCard';
+import { useSelector } from 'react-redux';
 
 const options = [
     {

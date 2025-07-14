@@ -10,20 +10,28 @@ import Border from "../../../components/Border";
 import { motion, AnimatePresence } from "framer-motion";
 import AnyQuestion from "../components/AnyQuestion";
 import FormContext, { registerPartnerAccountForm } from "../../../context/InitialValues";
+import { useSelector } from 'react-redux';
+import { USER_ROLES } from "../../../core/constant";
 
 export default function PartnerRegisterStep1() {
 
     const [message,setMessage] = useState(true);
     const { formData, setFormData } = useContext(FormContext);
+    const {user} = useSelector((state) => state.auth);
 
     useEffect(() => {
         // Clear form data from localStorage and reset context state
         localStorage.removeItem('formData');
         setFormData(registerPartnerAccountForm.formData);
 
-        const email = 'sachithavintha@gmail.com';
+        const email = user.data.email;
+        const id = user.data.id;
+        const role = USER_ROLES.PARTNER;
+
         setFormData((prev)=>({
             ...prev,
+            id:id,
+            role: role,
             email,
         }))
     }, [setFormData]);
@@ -76,11 +84,6 @@ export default function PartnerRegisterStep1() {
                                 />
                                 <Border/>
                                 <AnyQuestion/>
-                                <SecondaryButton
-                                    text="Sign in"
-                                    type={'button'}
-                                    onClick={() => navigateTo('/partner-login/step-1')}
-                                />
                                 <Border/>
                             </div>
                         </div>
@@ -90,16 +93,3 @@ export default function PartnerRegisterStep1() {
         </AnimatePresence>
     )
 }
-
-/*
-This error occurs if FormContext.Provider is missing in your component tree above this component.
-Make sure you wrap your app (or at least the parent of this page) with <FormContext.Provider value={{ formData, setFormData }}>.
-
-Example (usually in App.jsx or a layout file):
-<FormContext.Provider value={{ formData, setFormData }}>
-    <YourRoutesOrComponentTree />
-</FormContext.Provider>
-
-If you do not wrap with the provider, useContext(FormContext) will return undefined,
-causing destructuring to fail with "Cannot destructure property 'formData' of 'undefined'".
-*/
