@@ -6,8 +6,67 @@ export default function ContactInformation() {
         email: '',
         phone: '',
         country: '',
+        nicNumber: '',
+        optionalContact: '',
         specialRequests: ''
     });
+
+    const [errors, setErrors] = useState({});
+    const [touched, setTouched] = useState({});
+
+    const validateField = (name, value) => {
+        let error = '';
+        
+        switch (name) {
+            case 'fullName':
+                if (!value.trim()) {
+                    error = 'Full name is required';
+                } else if (value.trim().length < 2) {
+                    error = 'Name must be at least 2 characters';
+                } else if (!/^[a-zA-Z\s]+$/.test(value)) {
+                    error = 'Name can only contain letters and spaces';
+                }
+                break;
+                
+            case 'email':
+                if (!value.trim()) {
+                    error = 'Email is required';
+                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                    error = 'Please enter a valid email address';
+                }
+                break;
+                
+            case 'phone':
+                if (!value.trim()) {
+                    error = 'Phone number is required';
+                } else if (!/^\+?[\d\s-()]{10,15}$/.test(value.replace(/\s/g, ''))) {
+                    error = 'Please enter a valid phone number';
+                }
+                break;
+                
+            case 'country':
+                if (!value) {
+                    error = 'Please select your country';
+                }
+                break;
+                
+            case 'nicNumber':
+                if (!value.trim()) {
+                    error = 'NIC number is required';
+                } else if (!/^(\d{9}[vVxX]|\d{12})$/.test(value.replace(/\s/g, ''))) {
+                    error = 'Please enter a valid NIC number (e.g., 123456789V or 199812345678)';
+                }
+                break;
+                
+            case 'optionalContact':
+                if (value && !/^\+?[\d\s-()]{10,15}$/.test(value.replace(/\s/g, ''))) {
+                    error = 'Please enter a valid phone number';
+                }
+                break;
+        }
+        
+        return error;
+    };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
@@ -15,6 +74,37 @@ export default function ContactInformation() {
             ...prev,
             [name]: value
         }));
+
+        // Validate field on change if it has been touched
+        if (touched[name]) {
+            const error = validateField(name, value);
+            setErrors(prev => ({
+                ...prev,
+                [name]: error
+            }));
+        }
+    };
+
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        setTouched(prev => ({
+            ...prev,
+            [name]: true
+        }));
+
+        const error = validateField(name, value);
+        setErrors(prev => ({
+            ...prev,
+            [name]: error
+        }));
+    };
+
+    const isFormValid = () => {
+        const requiredFields = ['fullName', 'email', 'phone', 'country', 'nicNumber'];
+        return requiredFields.every(field => {
+            const error = validateField(field, formData[field]);
+            return !error && formData[field].trim();
+        });
     };
 
     return (
@@ -29,50 +119,137 @@ export default function ContactInformation() {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label className="block text-sm font-semibold mb-1">Full Name</label>
+                    <label className="block text-sm font-semibold mb-1">
+                        Full Name <span className="text-red-500">*</span>
+                    </label>
                     <input 
                         type="text"
                         name="fullName"
                         value={formData.fullName}
                         onChange={handleInputChange}
-                        className="w-full border border-border-light rounded px-3 py-2 text-sm focus:outline-none focus:border-brand-primary" 
-                        placeholder="Enter your name" 
+                        onBlur={handleBlur}
+                        className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
+                            errors.fullName ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
+                            'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
+                        }`}
+                        placeholder="John Doe" 
+                        required
                     />
+                    {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold mb-1">Email Address</label>
+                    <label className="block text-sm font-semibold mb-1">
+                        Email Address <span className="text-red-500">*</span>
+                    </label>
                     <input 
                         type="email"
                         name="email"
                         value={formData.email}
                         onChange={handleInputChange}
-                        className="w-full border border-border-light rounded px-3 py-2 text-sm focus:outline-none focus:border-brand-primary" 
-                        placeholder="Enter your email" 
+                        onBlur={handleBlur}
+                        className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
+                            errors.email ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
+                            'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
+                        }`}
+                        placeholder="john.doe@example.com" 
+                        required
                     />
+                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
                 </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                 <div>
-                    <label className="block text-sm font-semibold mb-1">Phone Number</label>
+                    <label className="block text-sm font-semibold mb-1">
+                        Phone Number <span className="text-red-500">*</span>
+                    </label>
                     <input 
                         type="tel"
                         name="phone"
                         value={formData.phone}
                         onChange={handleInputChange}
-                        className="w-full border border-border-light rounded px-3 py-2 text-sm focus:outline-none focus:border-brand-primary" 
-                        placeholder="Enter your phone" 
+                        onBlur={handleBlur}
+                        className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
+                            errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
+                            'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
+                        }`}
+                        placeholder="+94 71 234 5678" 
+                        required
                     />
+                    {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
                 </div>
                 <div>
-                    <label className="block text-sm font-semibold mb-1">Country</label>
-                    <input 
-                        type="text"
+                    <label className="block text-sm font-semibold mb-1">
+                        Country <span className="text-red-500">*</span>
+                    </label>
+                    <select
                         name="country"
                         value={formData.country}
                         onChange={handleInputChange}
-                        className="w-full border border-border-light rounded px-3 py-2 text-sm focus:outline-none focus:border-brand-primary" 
-                        placeholder="Enter your country" 
+                        onBlur={handleBlur}
+                        className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all bg-white ${
+                            errors.country ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
+                            'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
+                        }`}
+                        required
+                    >
+                        <option value="">Select your country</option>
+                        <option value="sri-lanka">Sri Lanka</option>
+                        <option value="india">India</option>
+                        <option value="maldives">Maldives</option>
+                        <option value="usa">United States</option>
+                        <option value="uk">United Kingdom</option>
+                        <option value="australia">Australia</option>
+                        <option value="other">Other</option>
+                    </select>
+                    {errors.country && <p className="text-red-500 text-xs mt-1">{errors.country}</p>}
+                </div>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label className="block text-sm font-semibold mb-1">
+                        NIC Number <span className="text-red-500">*</span>
+                    </label>
+                    <input 
+                        type="text"
+                        name="nicNumber"
+                        value={formData.nicNumber}
+                        onChange={handleInputChange}
+                        onBlur={handleBlur}
+                        className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
+                            errors.nicNumber ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
+                            'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
+                        }`}
+                        placeholder="123456789V or 199812345678" 
+                        required
                     />
+                    {errors.nicNumber ? (
+                        <p className="text-red-500 text-xs mt-1">{errors.nicNumber}</p>
+                    ) : (
+                        <p className="text-xs text-gray-500 mt-1">Enter your National Identity Card number</p>
+                    )}
+                </div>
+                <div>
+                    <label className="block text-sm font-medium mb-1">
+                        Emergency Contact
+                        <span className="text-xs text-gray-500 ml-1">(Optional)</span>
+                    </label>
+                    <input 
+                        type="tel"
+                        name="optionalContact"
+                        value={formData.optionalContact}
+                        onChange={handleInputChange}
+                        onBlur={handleBlur}
+                        className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
+                            errors.optionalContact ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
+                            'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
+                        }`}
+                        placeholder="+94 77 987 6543" 
+                    />
+                    {errors.optionalContact ? (
+                        <p className="text-red-500 text-xs mt-1">{errors.optionalContact}</p>
+                    ) : (
+                        <p className="text-xs text-gray-500 mt-1">Alternative contact for emergencies</p>
+                    )}
                 </div>
             </div>
             <div>
@@ -81,10 +258,32 @@ export default function ContactInformation() {
                     name="specialRequests"
                     value={formData.specialRequests}
                     onChange={handleInputChange}
-                    className="w-full border border-border-light rounded px-3 py-2 text-sm focus:outline-none focus:border-brand-primary" 
-                    placeholder="Any special requirements or requests for your tour..."
+                    className="w-full border border-border-light rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-all resize-none" 
+                    placeholder="Tell us about any dietary restrictions, accessibility needs, special celebrations, or other requirements..."
                     rows="4"
                 />
+                <p className="text-xs text-gray-500 mt-1">Help us make your tour perfect by sharing any special needs or preferences</p>
+            </div>
+            
+            {/* Form validation status */}
+            <div className="mt-4 p-3 rounded-lg bg-gray-50">
+                <div className="flex items-center gap-2">
+                    {isFormValid() ? (
+                        <>
+                            <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
+                            </svg>
+                            <span className="text-green-700 text-sm font-medium">All required fields are completed</span>
+                        </>
+                    ) : (
+                        <>
+                            <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd"/>
+                            </svg>
+                            <span className="text-orange-700 text-sm font-medium">Please complete all required fields</span>
+                        </>
+                    )}
+                </div>
             </div>
         </section>
     );
