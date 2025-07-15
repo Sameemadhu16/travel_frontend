@@ -2,11 +2,11 @@ import Main from './Main';
 import Title from '../components/Title';
 import room from '../assets/rooms/room1.png';
 import Navigate from './Navigate';
-import { Link } from 'react-router-dom';
+import logo from '../../src/assets/travellk/travellk/orangeT.svg'
 import { useDispatch, useSelector } from 'react-redux';
 import { checkTokenExpiration } from '../core/authChecker';
 import { resetAuth } from '../redux/slices/authSlice';
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 
 export default function Header() {
     const { user, token } = useSelector((state) => state.auth);
@@ -14,10 +14,6 @@ export default function Header() {
     const dispatch = useDispatch();
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const menuRef = useRef(null);
-
-    const userLogOut = useCallback(() => {
-        dispatch(resetAuth());
-    }, [dispatch]);
 
     // Close menu on outside click
     useEffect(() => {
@@ -42,21 +38,13 @@ export default function Header() {
         };
     }, [showProfileMenu]);
 
-    const handleMenuClick = () => {
-        setShowProfileMenu(false); // Close menu when clicking a link
-    };
-
     return (
         <Main>
-            <div className='flex justify-between items-center mt-2'>
-                <div>
-                    <Title
-                        title='travel.lk'
-                        size='text-[28px]'
-                        font='font-[600]'
-                    />
+            <div className='flex justify-between items-center'>
+                <div className='h-10 w-20 rounded-[4px] overflow-hidden'>
+                    <img src={logo} alt="" className='h-full w-full object-cover' />
                 </div>
-                {token && !isExpired ? (
+                {token && !isExpired && (
                     <div className='flex gap-1 items-center'>
                         <Navigate
                             path={'/partner-details'}
@@ -68,46 +56,13 @@ export default function Header() {
                                 font='font-[500]'
                             />
                         </Navigate>
-                        <div onClick={() => dispatch(resetAuth())} className='flex items-center w-[300px] gap-2 p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
-                            <div className='h-[40px] w-[40px] border-2 border-brand-primary rounded-full overflow-hidden'>
+                        <div className='flex items-center w-[300px] gap-2 p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
+                            <div onClick={() => setShowProfileMenu((v) => !v)} className='h-[40px] w-[40px] border-2 border-brand-primary rounded-full overflow-hidden'>
                                 <img src={room} alt="room" className='h-full w-full object-cover' />
                             </div>
-                            <div className='flex flex-col overflow-hidden'>
+                            <div className='flex flex-col overflow-hidden' onClick={() => setShowProfileMenu((v) => !v)}>
                                 <Title
                                     title={user?.data?.email}
-                                    size='text-[16px]'
-                                    font='font-[600]'
-                                />
-                                <Title
-                                    title='Level 1'
-                                    size='text-[14px]'
-                                    font='font-[300]'
-                                />
-                            </div>
-                        </div>
-                    </div>
-                ) : (
-                    <div className='flex gap-1 items-center'>
-                        <Navigate
-                            path={'/partner-details'}
-                            className='p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'
-                        >
-                            <Title
-                                title='List your property'
-                                size='text-[16px]'
-                                font='font-[500]'
-                            />
-                        </Navigate>
-                        <div className='relative flex items-center gap-2 p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
-                            <div
-                                className='h-[40px] w-[40px] border-2 border-brand-primary rounded-full overflow-hidden'
-                                onClick={() => setShowProfileMenu((v) => !v)}
-                            >
-                                <img src={room} alt="room" className='h-full w-full object-cover' />
-                            </div>
-                            <div className='flex flex-col' onClick={() => setShowProfileMenu((v) => !v)}>
-                                <Title
-                                    title='Sachith'
                                     size='text-[16px]'
                                     font='font-[600]'
                                 />
@@ -124,56 +79,37 @@ export default function Header() {
                                 >
                                     <ul className="py-2">
                                         <li>
-                                            <Link
-                                                to="/settings/general"
-                                                onClick={handleMenuClick}
-                                                className="block px-5 py-3 text-sm font-semibold text-brand-primary bg-brand-accent hover:bg-brand-secondary rounded-t-xl"
-                                            >
+                                            <a href="/settings/general" className="block px-5 py-3 text-sm font-semibold text-brand-primary bg-brand-accent hover:bg-brand-secondary rounded-t-xl">
                                                 General Settings
-                                            </Link>
+                                            </a>
                                         </li>
                                         <li>
-                                            <Link
-                                                to="/settings/profile"
-                                                onClick={handleMenuClick}
-                                                className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent"
-                                            >
+                                            <a href="/settings/profile" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
                                                 Profile Settings
-                                            </Link>
+                                            </a>
                                         </li>
                                         <li>
-                                            <Link
-                                                to="/bookings"
-                                                onClick={handleMenuClick}
-                                                className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent"
-                                            >
+                                            <a href="/bookings" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
                                                 Bookings
-                                            </Link>
+                                            </a>
                                         </li>
                                         <li>
-                                            <Link
-                                                to="/payments"
-                                                onClick={handleMenuClick}
-                                                className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent"
-                                            >
+                                            <a href="/payments" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent rounded-b-xl">
                                                 Payments
-                                            </Link>
+                                            </a>
                                         </li>
                                         <li>
-                                            <Link
-                                                to="/partner-login/step-1"
-                                                onClick={() => userLogOut()}
-                                                className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent rounded-b-xl"
-                                            >
-                                                LogOut
-                                            </Link>
+                                            <a href="/partner-register/step-1" onClick={() => dispatch(resetAuth())} className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent rounded-b-xl">
+                                                Log Out
+                                            </a>
                                         </li>
                                     </ul>
                                 </div>
                             )}
                         </div>
                     </div>
-                )}
+                )
+                }
             </div>
         </Main>
     );
