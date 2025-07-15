@@ -5,6 +5,7 @@ import heart from '../../../assets/icons/Heart.svg';
 import heartFill from '../../../assets/icons/Heart-fill.svg';
 import Tag from '../../hotels/components/Tag';
 import PropTypes from 'prop-types';
+import { useLocation } from 'react-router-dom';
 import { handleNavigate } from '../../../core/constant';
 // Add icon imports for amenities
 import { FaSnowflake, FaBluetooth, FaCarBattery, FaMapMarkedAlt, FaCamera, FaMusic, FaCogs, FaChair, FaPlug, FaSun, FaRoad, FaGasPump } from "react-icons/fa";
@@ -46,17 +47,31 @@ export default function VehicleCard({
     isFavorite = false,
     availableCount,
     rentalAgency,
-    location,
+    location: vehicleLocation,
     about,
     available,
 }) {
+    const location = useLocation();
+    
+    const handleCardClick = () => {
+        // Check if current path includes tour/select-vehicle
+        if (location.pathname.includes('/tour/select-vehicle')) {
+            // Tour vehicle selection flow
+            handleNavigate(`/tour/select-vehicle/${id}`);
+        } else {
+            // Regular vehicle details flow
+            handleNavigate(`/vehicle/${id}`);
+        }
+    };
+
     const handleFavoriteClick = (e) => {
         e.stopPropagation();
         // toggle favorite logic here
     };
+    
     return (
         <div
-            onClick={() => handleNavigate(`/vehicle/${id}`)}
+            onClick={handleCardClick}
             className='border p-4 rounded-[8px] shadow-sm bg-white'
         >
             <div className='flex gap-4'>
@@ -98,9 +113,9 @@ export default function VehicleCard({
                                     {rentalAgency}
                                 </div>
                             )}
-                            {location && (
+                            {vehicleLocation && (
                                 <div className='text-xs text-gray-400'>
-                                    {location}
+                                    {vehicleLocation}
                                 </div>
                             )}
                         </div>

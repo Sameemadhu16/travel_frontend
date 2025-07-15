@@ -3,6 +3,7 @@ import SearchContainer from '../../../components/SearchContainer'
 import Main from '../../../components/Main';
 import Breadcrumb from '../../../components/Breadcrumb';
 import Title from '../../../components/Title';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
     vehicleAmenities,
     vehicleFuelPolicies,
@@ -27,6 +28,9 @@ const breadcrumbItems = [
 
 
 export default function SearchVehicles() {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const isTourSelectVehicle = location.pathname === '/tour/select-vehicle';
 
     const [selectedPropertyTypes, setSelectedPropertyTypes] = useState([]);
     const [selectedFacilities, setSelectedFacilities] = useState([]);
@@ -61,9 +65,21 @@ export default function SearchVehicles() {
             ));
         }, []);
 
+    // const handleSkip = () => {
+    //     navigate('/tour/complete-request');
+    // };
+
+    const handleNext = () => {
+        navigate('/tour/complete-request');
+    };
+
+    const handleSelect = (value) => {
+        console.log('Selected:', value);
+    };
+
     return (
         <>
-            <div className='w-full relative'>
+            {/* <div className='w-full relative'>
                 <img
                     src={cover}
                     alt="cover"
@@ -74,7 +90,7 @@ export default function SearchVehicles() {
                         <SearchContainer />
                     </div>
                 </div>
-            </div>
+            </div> */}
             <Main>
                 <div className='flex items-center w-full mt-5'>
                     <div className='w-1/4'>
@@ -88,13 +104,28 @@ export default function SearchVehicles() {
                                 title={`Kandy: ${hotelList.length} matches`}
                                 size='text-[16px]'
                             />
-                            <div className='w-1/2'>
-                                <CustomSelector
-                                    options={vehicleFilterOptions}
-                                    placeholder="Recommended"
-                                    onChange={handleSelect}
-                                />
-                            </div>
+                            {!isTourSelectVehicle && (
+                                <div className='w-1/2'>
+                                    <CustomSelector
+                                        options={vehicleFilterOptions}
+                                        placeholder="Recommended"
+                                        onChange={handleSelect}
+                                    />
+                                </div>
+                            )}
+                            {isTourSelectVehicle && (
+                                <div className='flex gap-4'>
+                                    <button 
+                                        onClick={handleNext}
+                                        className="px-6 py-2 rounded bg-brand-primary text-white font-semibold flex items-center gap-2 hover:bg-warning transition"
+                                    >
+                                        Skip & Next
+                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>

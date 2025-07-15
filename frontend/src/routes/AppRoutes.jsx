@@ -82,6 +82,8 @@ export default function AppRoutes() {
                     <Route path='/tour/select-guide' element={<SelectGuide/>}/>
                     <Route path='/tour/select-hotel' element={<Search />} />
                     <Route path='/tour/select-hotel/:id' element={<Hotel />} />
+                    <Route path='/tour/select-vehicle' element={<SearchVehicles/>}/>
+                    <Route path='/tour/select-vehicle/:id' element={<Vehicle/>} />
                     <Route path='/tour/complete-request' element={<CompleteRequest/>}/>
                     <Route path='/tour/request-sent' element={<RequestSent />} />
                     <Route path='/tour/payment' element={<Payment/>} />

@@ -2,9 +2,27 @@ import Title from '../../../../components/Title'
 import FormatText from '../../../../components/FormatText'
 import { FaBed, FaUser } from 'react-icons/fa'
 import PrimaryButton from '../../../../components/PrimaryButton'
+import { useNavigate, useLocation } from 'react-router-dom'
 import PropTypes from 'prop-types'
 
 export default function RoomCard({room}) {
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const handleReserve = () => {
+        // Store selected room data
+        localStorage.setItem('selectedRoom', JSON.stringify(room));
+        
+        // Check if current path includes tour/select-hotel
+        if (location.pathname.includes('/tour/select-hotel')) {
+            // Tour booking flow - go to vehicle selection
+            navigate('/tour/select-vehicle');
+        } else {
+            // Regular hotel booking flow
+            navigate('/book-hotel');
+        }
+    };
+
     return (
         <div className='border rounded-[8px]  overflow-hidden pb-4'>
             <div className='w-full flex h-[400px] gap-2'>
@@ -101,6 +119,7 @@ export default function RoomCard({room}) {
                     <PrimaryButton
                         text='Reserve'
                         type={'button'}
+                        onClick={handleReserve}
                     />
                 </div>
             </div>
