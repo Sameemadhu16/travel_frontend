@@ -20,6 +20,7 @@ import CheckboxGroup from '../../hotels/components/CheckboxGroup';
 import { useMemo, useState } from 'react';
 import VehicleCard from '../components/VehicleCard.jsx';
 import { vehicleList } from '../../../core/Lists/vehicles';
+import { useTourContext } from '../../../context/TourContext';
 
 const breadcrumbItems = [
     { label: "Home", path: "/home" },
@@ -31,6 +32,10 @@ export default function SearchVehicles() {
     const location = useLocation();
     const navigate = useNavigate();
     const isTourSelectVehicle = location.pathname === '/tour/select-vehicle';
+    
+    // Use TourContext if in tour flow
+    const tourContext = isTourSelectVehicle ? useTourContext() : null;
+    const { selectedItems, travelDetails } = tourContext || {};
 
     const [selectedPropertyTypes, setSelectedPropertyTypes] = useState([]);
     const [selectedFacilities, setSelectedFacilities] = useState([]);
@@ -39,8 +44,22 @@ export default function SearchVehicles() {
     const [selectedInsuranceOptions, setSelectedInsuranceOptions] = useState([]);
     const [selectedPickupOptions, setSelectedPickupOptions] = useState([]);
 
+    // Filter vehicles based on travel details if available
+    const filteredVehicles = useMemo(() => {
+        if (!isTourSelectVehicle || !travelDetails?.adults) {
+            return vehicleList;
+        }
+        
+        const totalPassengers = (travelDetails.adults || 0) + (travelDetails.children || 0);
+        
+        // Filter vehicles by passenger capacity
+        return vehicleList.filter(vehicle => 
+            vehicle.seats >= totalPassengers
+        );
+    }, [isTourSelectVehicle, travelDetails?.adults, travelDetails?.children]);
+
     const vehiclesContainer = useMemo(() => {
-            return vehicleList.map((vehicle, index) => (
+            return filteredVehicles.map((vehicle, index) => (
                 <div key={index}>
                     <VehicleCard
                         id={vehicle.id}
@@ -60,14 +79,12 @@ export default function SearchVehicles() {
                         location={vehicle.location}
                         about={vehicle.about}
                         available={vehicle.available}
+                        isTourMode={isTourSelectVehicle}
+                        selectedVehicle={selectedItems?.selectedVehicle}
                     />
                 </div>
             ));
-        }, []);
-
-    // const handleSkip = () => {
-    //     navigate('/tour/complete-request');
-    // };
+        }, [filteredVehicles, isTourSelectVehicle, selectedItems?.selectedVehicle]);
 
     const handleNext = () => {
         navigate('/tour/complete-request');
@@ -79,18 +96,6 @@ export default function SearchVehicles() {
 
     return (
         <>
-            {/* <div className='w-full relative'>
-                <img
-                    src={cover}
-                    alt="cover"
-                    className='h-full w-full object-fit'
-                />
-                <div>
-                    <div className='z-10 absolute top-24 left-1/2 transform -translate-x-1/2 w-1/2'>
-                        <SearchContainer />
-                    </div>
-                </div>
-            </div> */}
             <Main>
                 <div className='flex items-center w-full mt-5'>
                     <div className='w-1/4'>
@@ -101,7 +106,7 @@ export default function SearchVehicles() {
                     <div className='flex flex-1'>
                         <div className='w-full flex justify-between items-center'>
                             <Title
-                                title={`Kandy: ${hotelList.length} matches`}
+                                title={`Vehicles: ${filteredVehicles.length} matches ${travelDetails?.adults ? `(${(travelDetails.adults || 0) + (travelDetails.children || 0)} passengers)` : ''}`}
                                 size='text-[16px]'
                             />
                             {!isTourSelectVehicle && (
@@ -115,11 +120,16 @@ export default function SearchVehicles() {
                             )}
                             {isTourSelectVehicle && (
                                 <div className='flex gap-4'>
+                                    {selectedItems?.selectedVehicle && (
+                                        <span className="px-4 py-2 bg-brand-primary/10 text-brand-primary rounded-lg font-medium">
+                                            Vehicle selected: {selectedItems.selectedVehicle.name}
+                                        </span>
+                                    )}
                                     <button 
                                         onClick={handleNext}
                                         className="px-6 py-2 rounded bg-brand-primary text-white font-semibold flex items-center gap-2 hover:bg-warning transition"
                                     >
-                                        Skip & Next
+                                        {selectedItems?.selectedVehicle ? 'Continue' : 'Skip & Next'}
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                                         </svg>
@@ -129,71 +139,68 @@ export default function SearchVehicles() {
                         </div>
                     </div>
                 </div>
-            </Main>
-
-            <Main>
 
                 <div className='flex gap-2 mt-5'>
-                {/* for filter */}
-                <div className='w-1/4 h-full overflow-y-auto sticky top-[100px] scrollbar-hide'>
-                    <div className='flex flex-col gap-2 border rounded-[8px]'>
-                        <div className='p-4 border-b'>
-                            <Title
-                                title='Filter By:'
-                                size='text-[20px]'
-                                font='font-[600]'
-                            />
-                        </div>
-                        <div className='p-4 border-b'>
-                            <CheckboxGroup
-                                title="Vehicle Type"
-                                options={vehiclePropertyTypes}
-                                selected={selectedPropertyTypes}
-                                onChange={setSelectedPropertyTypes}
-                            />
-                        </div>
-                        <div className='p-4 border-b'>
-                            <CheckboxGroup
-                                title="Facilities"
-                                options={vehicleAmenities}
-                                selected={selectedFacilities}
-                                onChange={setSelectedFacilities}
-                            />
-                        </div>
-                        <div className='p-4 border-b'>
-                            <CheckboxGroup
-                                title="Price Range"
-                                options={vehiclePriceRanges}
-                                selected={selectedPriceRanges}
-                                onChange={setSelectedPriceRanges}
-                            />
-                        </div>
-                        <div className='p-4 border-b'>
-                            <CheckboxGroup
-                                title="Fuel Policy"
-                                options={vehicleFuelPolicies}
-                                selected={selectedFuelPolicies}
-                                onChange={setSelectedFuelPolicies}
-                            />
-                        </div>
-                        <div className='p-4 border-b'>
-                            <CheckboxGroup
-                                title="Insurance Options"
-                                options={vehicleInsuranceOptions}
-                                selected={selectedInsuranceOptions}
-                                onChange={setSelectedInsuranceOptions}
-                            />
-                        </div>
-                        <div className='p-4 border-b'>
-                            <CheckboxGroup
-                                title="Pickup Options"
-                                options={vehiclePickupOptions}
-                                selected={selectedPickupOptions}
-                                onChange={setSelectedPickupOptions}
-                            />
+                    {/* for filter */}
+                    <div className='w-1/4 h-full overflow-y-auto sticky top-[100px] scrollbar-hide'>
+                        <div className='flex flex-col gap-2 border rounded-[8px]'>
+                            <div className='p-4 border-b'>
+                                <Title
+                                    title='Filter By:'
+                                    size='text-[20px]'
+                                    font='font-[600]'
+                                />
+                            </div>
+                            <div className='p-4 border-b'>
+                                <CheckboxGroup
+                                    title="Vehicle Type"
+                                    options={vehiclePropertyTypes}
+                                    selected={selectedPropertyTypes}
+                                    onChange={setSelectedPropertyTypes}
+                                />
+                            </div>
+                            <div className='p-4 border-b'>
+                                <CheckboxGroup
+                                    title="Facilities"
+                                    options={vehicleAmenities}
+                                    selected={selectedFacilities}
+                                    onChange={setSelectedFacilities}
+                                />
+                            </div>
+                            <div className='p-4 border-b'>
+                                <CheckboxGroup
+                                    title="Price Range"
+                                    options={vehiclePriceRanges}
+                                    selected={selectedPriceRanges}
+                                    onChange={setSelectedPriceRanges}
+                                />
+                            </div>
+                            <div className='p-4 border-b'>
+                                <CheckboxGroup
+                                    title="Fuel Policy"
+                                    options={vehicleFuelPolicies}
+                                    selected={selectedFuelPolicies}
+                                    onChange={setSelectedFuelPolicies}
+                                />
+                            </div>
+                            <div className='p-4 border-b'>
+                                <CheckboxGroup
+                                    title="Insurance Options"
+                                    options={vehicleInsuranceOptions}
+                                    selected={selectedInsuranceOptions}
+                                    onChange={setSelectedInsuranceOptions}
+                                />
+                            </div>
+                            <div className='p-4 border-b'>
+                                <CheckboxGroup
+                                    title="Pickup Options"
+                                    options={vehiclePickupOptions}
+                                    selected={selectedPickupOptions}
+                                    onChange={setSelectedPickupOptions}
+                                />
+                            </div>
                         </div>
                     </div>
-                </div>
 
                     {/* for item list */}
                     <div className='flex flex-col flex-1'>
@@ -201,11 +208,8 @@ export default function SearchVehicles() {
                             {vehiclesContainer}
                         </div>
                     </div>
-
                 </div>
-
             </Main>
-
         </>
     )
 }

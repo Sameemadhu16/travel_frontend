@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useTourContext } from '../../context/TourContext';
 import Main from '../../components/Main';
 import GuideFilters from './components/GuideFilters';
 import GuideCard from './components/GuideCard';
@@ -8,71 +9,60 @@ import { guides } from '../../core/Lists/guides';
 
 export default function SelectGuide() {
     const navigate = useNavigate();
-    const [selectedGuides, setSelectedGuides] = useState([]);
-    const [errors, setErrors] = useState({});
+    const { 
+        selectedItems, 
+        addSelectedGuide, 
+        removeSelectedGuide,
+        nextStep,
+        errors,
+        setFieldError,
+        clearFieldError,
+        validateGuideSelection
+    } = useTourContext();
     const MAX_GUIDES = 5;
     const MIN_GUIDES = 1;
 
     const handleGuideSelection = (guide) => {
-        setSelectedGuides(prev => {
-            const isAlreadySelected = prev.some(g => g.id === guide.id);
-            
-            if (isAlreadySelected) {
-                // Remove guide from selection
-                const updated = prev.filter(g => g.id !== guide.id);
-                // Clear errors if we have valid selection count
-                if (updated.length >= MIN_GUIDES) {
-                    setErrors(prevErrors => ({ ...prevErrors, selection: '' }));
-                }
-                return updated;
-            } else {
-                // Add guide if under limit
-                if (prev.length < MAX_GUIDES) {
-                    const updated = [...prev, guide];
-                    // Clear errors if we have valid selection
-                    setErrors(prevErrors => ({ ...prevErrors, selection: '' }));
-                    return updated;
-                } else {
-                    // Show error for exceeding limit
-                    setErrors(prevErrors => ({ 
-                        ...prevErrors, 
-                        selection: `You can select maximum ${MAX_GUIDES} guides` 
-                    }));
-                    return prev;
-                }
+        const isAlreadySelected = selectedItems.guides.some(g => g.id === guide.id);
+        
+        if (isAlreadySelected) {
+            // Remove guide from selection
+            removeSelectedGuide(guide.id);
+            // Clear errors if we have valid selection count
+            if (selectedItems.guides.length - 1 >= MIN_GUIDES) {
+                clearFieldError('guideSelection');
             }
-        });
+        } else {
+            // Add guide if under limit
+            if (selectedItems.guides.length < MAX_GUIDES) {
+                addSelectedGuide(guide);
+                // Clear errors if we have valid selection
+                clearFieldError('guideSelection');
+            } else {
+                // Show error for exceeding limit
+                setFieldError('guideSelection', `You can select maximum ${MAX_GUIDES} guides`);
+            }
+        }
     };
 
     const isGuideSelected = (guideId) => {
-        return selectedGuides.some(guide => guide.id === guideId);
-    };
-
-    const validateSelection = () => {
-        if (selectedGuides.length === 0) {
-            setErrors(prev => ({ ...prev, selection: 'Please select at least one guide' }));
-            return false;
-        }
-        setErrors(prev => ({ ...prev, selection: '' }));
-        return true;
+        return selectedItems.guides.some(guide => guide.id === guideId);
     };
 
     const handleNext = () => {
-        if (validateSelection()) {
-            // Store selected guides in localStorage or context for the booking process
-            localStorage.setItem('selectedGuides', JSON.stringify(selectedGuides));
+        if (validateGuideSelection()) {
+            // Also store in localStorage for backwards compatibility
+            localStorage.setItem('selectedGuides', JSON.stringify(selectedItems.guides));
+            nextStep(); // Update context step
             navigate('/tour/select-hotel');
         }
     };
 
     const removeGuide = (guideId) => {
-        setSelectedGuides(prev => {
-            const updated = prev.filter(g => g.id !== guideId);
-            if (updated.length >= MIN_GUIDES) {
-                setErrors(prevErrors => ({ ...prevErrors, selection: '' }));
-            }
-            return updated;
-        });
+        removeSelectedGuide(guideId);
+        if (selectedItems.guides.length - 1 >= MIN_GUIDES) {
+            clearFieldError('guideSelection');
+        }
     };
 
     return (
@@ -89,25 +79,25 @@ export default function SelectGuide() {
                     <div className="flex items-center justify-between mb-3">
                         <h3 className="text-lg font-semibold text-brand-primary">Guide Selection</h3>
                         <span className={`px-3 py-1 rounded-full text-sm font-medium ${
-                            selectedGuides.length === 0 ? 'bg-surface-secondary text-content-tertiary' :
-                            selectedGuides.length <= MAX_GUIDES ? 'bg-success text-white' :
+                            selectedItems.guides.length === 0 ? 'bg-surface-secondary text-content-tertiary' :
+                            selectedItems.guides.length <= MAX_GUIDES ? 'bg-success text-white' :
                             'bg-danger text-white'
                         }`}>
-                            {selectedGuides.length}/{MAX_GUIDES} Selected
+                            {selectedItems.guides.length}/{MAX_GUIDES} Selected
                         </span>
                     </div>
                     
-                    {errors.selection && (
+                    {errors.guideSelection && (
                         <div className="mb-3 p-2 bg-danger-light border border-danger rounded text-danger text-sm">
-                            {errors.selection}
+                            {errors.guideSelection}
                         </div>
                     )}
 
-                    {selectedGuides.length > 0 ? (
+                    {selectedItems.guides.length > 0 ? (
                         <div>
                             <p className="text-sm text-content-tertiary mb-3">Selected Guides:</p>
                             <div className="flex flex-wrap gap-2">
-                                {selectedGuides.map((guide) => (
+                                {selectedItems.guides.map((guide) => (
                                     <div key={guide.id} className="flex items-center gap-2 bg-brand-light px-3 py-2 rounded-lg border border-brand-secondary">
                                         <img 
                                             src={guide.image} 
@@ -132,7 +122,7 @@ export default function SelectGuide() {
                         <p className="text-content-tertiary text-sm">No guides selected yet. Click on guide cards below to select them.</p>
                     )}
 
-                    {selectedGuides.length > 0 && (
+                    {selectedItems.guides.length > 0 && (
                         <div className="mt-3 p-3 bg-brand-light border border-brand-secondary rounded-lg">
                             <div className="flex items-start gap-2">
                                 <svg className="w-5 h-5 text-brand-primary mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
@@ -163,7 +153,7 @@ export default function SelectGuide() {
                             guide={guide}
                             isSelected={isGuideSelected(guide.id)}
                             onSelect={() => handleGuideSelection(guide)}
-                            disabled={selectedGuides.length >= MAX_GUIDES && !isGuideSelected(guide.id)}
+                            disabled={selectedItems.guides.length >= MAX_GUIDES && !isGuideSelected(guide.id)}
                         />
                     ))}
                 </div>
@@ -172,14 +162,14 @@ export default function SelectGuide() {
                 <div className="flex justify-start">
                     <button 
                         onClick={handleNext}
-                        disabled={selectedGuides.length === 0}
+                        disabled={selectedItems.guides.length === 0}
                         className={`px-8 py-3 rounded-lg font-semibold flex items-center gap-2 transition ${
-                            selectedGuides.length === 0 
+                            selectedItems.guides.length === 0 
                                 ? 'bg-surface-secondary text-content-tertiary cursor-not-allowed' 
                                 : 'bg-brand-primary text-white hover:bg-warning'
                         }`}
                     >
-                        {selectedGuides.length === 0 ? 'Select a Guide to Continue' : 'Next: Select Hotel'}
+                        {selectedItems.guides.length === 0 ? 'Select a Guide to Continue' : 'Next: Select Hotel'}
                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                         </svg>
@@ -188,8 +178,8 @@ export default function SelectGuide() {
                 
                 <div className="text-start mt-2">
                     <p className="text-content-tertiary text-sm">
-                        {selectedGuides.length > 0 
-                            ? `Continue with ${selectedGuides.length} selected guide${selectedGuides.length > 1 ? 's' : ''}`
+                        {selectedItems.guides.length > 0 
+                            ? `Continue with ${selectedItems.guides.length} selected guide${selectedItems.guides.length > 1 ? 's' : ''}`
                             : 'Select at least one guide to proceed'
                         }
                     </p>
