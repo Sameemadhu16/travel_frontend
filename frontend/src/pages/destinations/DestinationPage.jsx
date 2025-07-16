@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { FaStar, FaMapMarkerAlt, FaCalendarAlt, FaClock, FaDollarSign, FaThermometerHalf, FaWifi, FaCar, FaUtensils, FaHotel, FaBus, FaArrowLeft, FaUsers, FaHeart, FaShare } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
+import  Breadcrumb from '../../components/Breadcrumb';
+import Spinner from '../../components/Spinner';
 
 const destinations = [
     {
@@ -303,6 +305,8 @@ const DestinationPage = () => {
     const [activeTab, setActiveTab] = useState('overview');
     const [selectedImage, setSelectedImage] = useState(0);
     const [destination, setDestination] = useState({});
+    const [loading, setLoading] = useState(true);
+
     const { id } = useParams();
 
     const facilityIcons = {
@@ -321,9 +325,10 @@ const DestinationPage = () => {
 
     useEffect(() => {
         const des = destinations.find((d) => d.id === parseInt(id));
+        console.log(des);
         setDestination(des);
+        setLoading(false);
     }, [id]);
-
 
     const tabs = [
         { id: 'overview', label: 'Overview' },
@@ -450,7 +455,7 @@ const DestinationPage = () => {
                             <div>
                             <h4 className="text-xl font-semibold text-content-primary mb-4">Highlights</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {destination.highlights.map((highlight, index) => (
+                                {destination.highlights && destination.highlights.map((highlight, index) => (
                                 <div key={index} className="flex items-center gap-3 p-3 bg-background-hover rounded-lg">
                                     <div className="w-2 h-2 bg-brand-primary rounded-full"></div>
                                     <span className="text-content-secondary">{highlight}</span>
@@ -462,7 +467,7 @@ const DestinationPage = () => {
                             <div>
                             <h4 className="text-xl font-semibold text-content-primary mb-4">Facilities</h4>
                             <div className="flex flex-wrap gap-3">
-                                {destination.facilities.map((facility, index) => (
+                                {destination.facilities && destination.facilities.map((facility, index) => (
                                 <div key={index} className="flex items-center gap-2 bg-brand-light text-brand-primary px-4 py-2 rounded-lg">
                                     {facilityIcons[facility] || <FaUsers />}
                                     <span className="text-sm font-medium">{facility}</span>
@@ -477,7 +482,7 @@ const DestinationPage = () => {
                         <div>
                             <h3 className="text-2xl font-semibold text-content-primary mb-6">Activities & Experiences</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {destination.activities.map((activity, index) => (
+                            {destination.activities && destination.activities.map((activity, index) => (
                                 <div key={index} className="bg-background-hover rounded-lg p-6 hover:shadow-md transition-shadow">
                                 <div className="flex items-start gap-4">
                                     <div className="text-3xl">{activity.icon}</div>
@@ -507,7 +512,7 @@ const DestinationPage = () => {
                                 />
                             </div>
                             <div className="grid grid-cols-4 gap-4">
-                                {destination.gallery.map((image, index) => (
+                                {destination.gallery && destination.gallery.map((image, index) => (
                                 <button
                                     key={index}
                                     onClick={() => setSelectedImage(index)}
@@ -531,7 +536,7 @@ const DestinationPage = () => {
                         <div>
                             <h3 className="text-2xl font-semibold text-content-primary mb-6">Travel Tips</h3>
                             <div className="space-y-4">
-                            {destination.tips.map((tip, index) => (
+                            {destination.tips && destination.tips.map((tip, index) => (
                                 <div key={index} className="flex items-start gap-4 p-4 bg-brand-light rounded-lg">
                                 <div className="w-6 h-6 bg-brand-primary text-white rounded-full flex items-center justify-center text-sm font-semibold mt-1">
                                     {index + 1}
@@ -563,6 +568,11 @@ const DestinationPage = () => {
                     </div>
                 </div>
             </div>
+            {
+                loading && (
+                    <Spinner/>
+                )
+            }
         </div>
     );
 };
