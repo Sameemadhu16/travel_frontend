@@ -6,6 +6,7 @@ import Spinner from '../../components/Spinner';
 import SecondaryButton from '../../components/SecondaryButton';
 import PrimaryButton from '../../components/PrimaryButton'
 import Main from '../../components/Main';
+import { navigateTo } from '../../core/navigateHelper';
 
 const destinations = [
     {
@@ -587,7 +588,7 @@ const DestinationPage = () => {
                     </div>
                     <div className="flex gap-3 w-1/3">
                         <SecondaryButton text='Add to Wishlist'/>
-                        <PrimaryButton text={'Create Trip'}/>
+                        <PrimaryButton text={'Create Trip'} onClick={() => navigateTo('/tour/create-tour')}/>
                     </div>
                 </div>
             </div>

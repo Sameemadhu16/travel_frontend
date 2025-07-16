@@ -17,7 +17,7 @@ export default function HeroSection() {
                             text={
                                 <span className="flex items-center justify-center gap-2">
                                     <FaPlus className="inline" />
-                                    Create New Tour Request
+                                    Create New Tour
                                 </span>
                             }
                             className="w-fit px-4"
