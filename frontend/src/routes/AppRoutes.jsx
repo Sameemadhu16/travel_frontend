@@ -31,6 +31,7 @@ import SelectGuide from '../pages/tour/selectGuide';
 import CompleteRequest from '../pages/tour/completeRequest';
 import RequestSent from '../pages/tour/requestSent';
 import Payment from '../pages/tour/payment';
+import DestinationPage from '../pages/destinations/DestinationPage';
 
 export default function AppRoutes() {
     const { token } = useSelector((state) => state.auth);
@@ -67,6 +68,7 @@ export default function AppRoutes() {
                     <Route path='/partner-forgot-username' element={<ForgotUsername/>}/>
                     <Route path='/change-password' element={<ChangePassword/>}/>
                     {/* Auth-related routes */}
+
                     <Route
                         path="/partner-register/*"
                         element={
@@ -99,6 +101,7 @@ export default function AppRoutes() {
                         }
                     />
                     <Route path='/hotel/:id' element={<Hotel/>}/>
+                    <Route path="/destination/:id" element={<DestinationPage />} />
                 </>
             ) : (
                 <>
