@@ -1,7 +1,12 @@
-import React from 'react';
-import { FaArrowRight, FaChevronLeft, FaChevronRight } from "react-icons/fa";
-import SecondaryButton from './SecondaryButton';
-import { navigateTo } from '../core/navigateHelper';
+import { useEffect, useMemo, useState } from 'react';
+import { FaStar, FaMapMarkerAlt, FaCalendarAlt, FaClock, FaDollarSign, FaThermometerHalf, FaWifi, FaCar, FaUtensils, FaHotel, FaBus, FaArrowLeft, FaUsers, FaHeart, FaShare } from 'react-icons/fa';
+import { useParams } from 'react-router-dom';
+import  Breadcrumb from '../../components/Breadcrumb';
+import Spinner from '../../components/Spinner';
+import SecondaryButton from '../../components/SecondaryButton';
+import PrimaryButton from '../../components/PrimaryButton'
+import Main from '../../components/Main';
+import { navigateTo } from '../../core/navigateHelper';
 
 const destinations = [
     {
@@ -300,77 +305,300 @@ const destinations = [
     }
 ];
 
-export default function RecommendedDestinations() {
-    const scrollContainer = React.useRef(null);
+const facilityIcons = {
+    WiFi: <FaWifi />,
+    Parking: <FaCar />,
+    Restaurants: <FaUtensils />,
+    Hotels: <FaHotel />,
+    Transport: <FaBus />,
+    'Beach Access': <FaUsers />,
+    'Water Sports': <FaUsers />,
+    Guides: <FaUsers />,
+    'First Aid': <FaUsers />,
+    'Golf Course': <FaUsers />,
+    'Bicycle Rental': <FaUsers />
+};
 
-    const scrollLeft = () => {
-        scrollContainer.current.scrollBy({ left: -300, behavior: 'smooth' });
+const DestinationPage = () => {
+    const [activeTab, setActiveTab] = useState('overview');
+    const [selectedImage, setSelectedImage] = useState(0);
+    const [destination, setDestination] = useState({});
+    const [loading, setLoading] = useState(true);
+    const { id } = useParams();
+
+    const breadcrumbItems = [
+        { label: "Home", path: "/home" },
+        { label: "Hotels", path: `/destination/${id}` },
+    ];
+
+    const headers = [
+        {id: 1, Icon: FaCalendarAlt,title: 'Best Time', value: destination.bestTime},
+        {id: 2, Icon: FaClock,title: 'Duration', value: destination.duration},
+        {id: 3, Icon: FaDollarSign,title: 'Budget', value: destination.budget},
+        {id: 4, Icon: FaThermometerHalf,title: 'Temperature', value: destination.temperature}
+    ]
+
+    useEffect(() => {
+        const des = destinations.find((d) => d.id === parseInt(id));
+        setDestination(des);
+        setLoading(false);
+    }, [id]);
+
+    const tabs = [
+        { id: 'overview', label: 'Overview' },
+        { id: 'activities', label: 'Activities' },
+        { id: 'gallery', label: 'Gallery' },
+        { id: 'tips', label: 'Tips' }
+    ];
+
+    const IconActionButton = ({ icon: Icon, onClick ={}, className = '', ...props }) => {
+        return (
+            <button
+                onClick={onClick}
+                className={`bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all ${className}`}
+                {...props}
+            >
+                <Icon className="text-lg" />
+            </button>
+        );
     };
 
-    const scrollRight = () => {
-        scrollContainer.current.scrollBy({ left: 300, behavior: 'smooth' });
-    };
+    const info = useMemo(()=>{
+        
+    });
+
+    const heading = useMemo(()=>{
+        return headers.map((o,i)=>(
+            <div key={i} className="bg-white rounded-xl p-6 shadow-lg">
+                <div className="flex items-center gap-3 mb-2">
+                    <o.Icon className="text-brand-primary text-xl" />
+                    <span className="font-semibold text-content-primary">{o.title}</span>
+                </div>
+                <p className="text-content-secondary">{o.value}</p>
+            </div>
+        ))
+    },[headers]);
+
+    const highlight = useMemo(()=>{
+        return destination.highlights && destination.highlights.map((highlight, index) => (
+                    <div key={index} className="flex items-center gap-3 p-3 bg-background-hover rounded-lg">
+                        <div className="w-2 h-2 bg-brand-primary rounded-full"></div>
+                        <span className="text-content-secondary">{highlight}</span>
+                    </div>
+                ))
+    },[destination.highlight]);
+
+    const tabsHeading = useMemo(()=>{
+        return tabs.map((tab) => (
+            <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 py-4 px-6 text-sm font-medium transition-colors ${
+                activeTab === tab.id
+                    ? 'bg-brand-primary text-white'
+                    : 'text-content-secondary hover:text-content-primary hover:bg-background-hover'
+                }`}
+            >
+                {tab.label}
+            </button>
+        ))
+    },[tabs]);
+
+    const facilities = useMemo(() => {
+        return destination.facilities && destination.facilities.map((facility, index) => (
+            <div key={index} className="flex items-center gap-2 bg-brand-light text-brand-primary px-4 py-2 rounded-lg">
+                {facilityIcons[facility] || <FaUsers />}
+                <span className="text-sm font-medium">{facility}</span>
+            </div>
+        ))
+    },[destination.facilities]);
+
+    const activities = useMemo(()=> {
+        return destination.activities && destination.activities.map((activity, index) => (
+            <div key={index} className="bg-background-hover rounded-lg p-6 hover:shadow-md transition-shadow">
+                <div className="flex items-start gap-4">
+                    <div className="text-3xl">{activity.icon}</div>
+                        <div className="flex-1">
+                            <h5 className="font-semibold text-content-primary mb-2">{activity.name}</h5>
+                            <div className="flex items-center gap-2 text-sm text-content-secondary">
+                                <FaClock className="text-brand-primary" />
+                                <span>{activity.duration}</span>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        ))
+    },[destination.activities]);
+
+    const gallery = useMemo(() => {
+        return destination.gallery && destination.gallery.map((image, index) => (
+            <button
+                key={index}
+                onClick={() => setSelectedImage(index)}
+                className={`relative overflow-hidden rounded-lg ${
+                selectedImage === index ? 'ring-2 ring-brand-primary' : ''
+                }`} 
+            >
+            <img 
+                src={image} 
+                alt={`${destination.name} - Thumbnail ${index + 1}`}
+                className="w-full h-24 object-cover hover:scale-105 transition-transform"
+            />
+        </button>
+        ))
+    },[destination.gallery, selectedImage]);
+
+    const tips = useMemo(() => {
+        return destination.tips && destination.tips.map((tip, index) => (
+            <div key={index} className="flex items-start gap-4 p-4 bg-brand-light rounded-lg">
+            <div className="w-6 h-6 bg-brand-primary text-white rounded-full flex items-center justify-center text-sm font-semibold mt-1">
+                {index + 1}
+            </div>
+            <p className="text-content-secondary leading-relaxed">{tip}</p>
+            </div>
+        ))
+    },[destination.tips])
 
     return (
-        <div className="bg-gray-50">
-            <section className="py-12 px-6 max-w-7xl mx-auto">
-                <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-3xl font-semibold text-gray-800">Recommended Destinations</h2>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={scrollLeft}
-                            className="p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow border border-gray-200 hover:bg-gray-50"
-                        >
-                            <FaChevronLeft className="w-4 h-4 text-gray-600" />
-                        </button>
-                        <button
-                            onClick={scrollRight}
-                            className="p-2 bg-white rounded-full shadow-md hover:shadow-lg transition-shadow border border-gray-200 hover:bg-gray-50"
-                        >
-                            <FaChevronRight className="w-4 h-4 text-gray-600" />
-                        </button>
-                    </div>
+        <div className="min-h-screen">
+            <Main>
+                <Breadcrumb items={breadcrumbItems}/>
+            </Main>
+            {/* Header */}
+            <div className="relative h-[60vh] overflow-hidden">
+                <img 
+                    src={destination.image} 
+                    alt={destination.name}
+                    className="w-full h-full object-cover"
+                />
+
+                {/* Action Buttons */}
+                <div className="absolute top-6 right-6 flex gap-3 z-10">
+                    <IconActionButton icon={FaHeart} />
+                    <IconActionButton icon={FaShare} />
                 </div>
 
-                <div className="relative">
-                    <div
-                        ref={scrollContainer}
-                        className="flex gap-6 overflow-x-auto scrollbar-hide pb-4"
-                        style={{
-                            scrollbarWidth: 'none',
-                            msOverflowStyle: 'none',
-                            WebkitScrollbar: { display: 'none' }
-                        }}
-                    >
-                        {destinations.map((d, i) => (
-                            <div
-                                key={i}
-                                className="bg-white rounded-xl shadow-lg min-w-[280px] max-w-[280px] 
-                                    overflow-hidden flex flex-col transition-all duration-300 hover:-translate-y-2 hover:shadow-xl cursor-pointer group"
-                            >
-                                <div className="relative overflow-hidden">
-                                    <img
-                                        src={d.image}
-                                        alt={d.name}
-                                        className="h-44 w-full object-cover transition-transform duration-300 group-hover:scale-105"
-                                    />
-                                    <div className="absolute inset-0 bg-black bg-opacity-0 group-hover:bg-opacity-20 transition-opacity duration-300"></div>
-                                </div>
-                                <div className="p-5 flex flex-col flex-1">
-                                    <h3 className="text-[24px] font-semibold mb-2 text-gray-800 
-                                        group-hover:text-orange-500 transition-colors">
-                                        {d.name}
-                                    </h3>
-                                    <p className="text-sm text-gray-600 mb-6 line-clamp-2">{d.desc}</p>
-                                    <div className="mt-auto">
-                                        <SecondaryButton text='Explore' onClick={() => navigateTo(`/destination/${d.id}`)}/>
-                                    </div>
-                                </div>
-                            </div>
-                        ))}
+                {/* Title and Basic Info */}
+                <div className="absolute bottom-8 left-32 right-8 text-white">
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="bg-brand-primary px-3 py-1 rounded-full text-sm font-medium">
+                            {destination.category}
+                        </span>
+                    </div>
+                    <h1 className="text-5xl font-bold mb-4">{destination.name}</h1>
+                    <p className="text-xl text-gray-200 mb-4">{destination.desc}</p>
+                    
+                    <div className="flex items-center gap-6 text-sm">
+                        <div className="flex items-center gap-1">
+                            <FaStar className="text-yellow-400" />
+                            <span className="font-semibold">{destination.rating}</span>
+                            <span className="text-gray-300">({destination.reviews} reviews)</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <FaMapMarkerAlt className="text-brand-primary" />
+                            <span>{destination.location}</span>
+                        </div>
                     </div>
                 </div>
-            </section>
+            </div>
+
+            {/* Quick Info Cards */}
+            <div className="container mx-auto px-6 mt-20 relative z-10">
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    {heading}
+                </div>
+
+                {/* Tabs */}
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div className="flex border-b border-border-light">
+                    {tabsHeading}
+                </div>
+
+                    <div className="p-8">
+                        {activeTab === 'overview' && (
+                        <div className="space-y-8">
+                            <div>
+                                <h3 className="text-2xl font-semibold text-content-primary mb-4">About {destination.name}</h3>
+                                <p className="text-content-secondary leading-relaxed">{destination.description}</p>
+                            </div>
+
+                            <div>
+                            <h4 className="text-xl font-semibold text-content-primary mb-4">Highlights</h4>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                {highlight}
+                            </div>
+                            </div>
+
+                            <div>
+                            <h4 className="text-xl font-semibold text-content-primary mb-4">Facilities</h4>
+                            <div className="flex flex-wrap gap-3">
+                                {facilities}
+                            </div>
+                            </div>
+                        </div>
+                        )}
+
+                        {activeTab === 'activities' && (
+                        <div>
+                            <h3 className="text-2xl font-semibold text-content-primary mb-6">Activities & Experiences</h3>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                {activities}
+                            </div>
+                        </div>
+                        )}
+
+                        {activeTab === 'gallery' && (
+                        <div>
+                            <h3 className="text-2xl font-semibold text-content-primary mb-6">Photo Gallery</h3>
+                                <div className="space-y-6">
+                                <div className="relative">
+                                    {destination.gallery?.[selectedImage] && (
+                                        <img 
+                                            src={destination.gallery[selectedImage]} 
+                                            alt={`${destination.name} - Image ${selectedImage + 1}`}
+                                            className="w-full h-96 object-cover rounded-lg shadow-lg"
+                                        />
+                                    )}
+                                </div>
+                            <div className="grid grid-cols-4 gap-4">
+                                {gallery}
+                            </div>
+                            </div>
+                        </div>
+                        )}
+
+                        {activeTab === 'tips' && (
+                        <div>
+                            <h3 className="text-2xl font-semibold text-content-primary mb-6">Travel Tips</h3>
+                            <div className="space-y-4">
+                            {tips}
+                            </div>
+                        </div>
+                        )}
+                    </div>
+                </div>
+            </div>
+
+            {/* Bottom Action */}
+            <div className="container mx-auto px-6 py-8">
+                <div className="bg-white rounded-xl shadow-lg p-6 flex items-center justify-between">
+                    <div>
+                        <h4 className="text-xl font-semibold text-content-primary mb-2">Ready to explore {destination.name}?</h4>
+                        <p className="text-content-secondary">Start planning your journey to this amazing destination</p>
+                    </div>
+                    <div className="flex gap-3 w-1/3">
+                        <SecondaryButton text='Add to Wishlist'/>
+                        <PrimaryButton text={'Create Trip'} onClick={() => navigateTo('/tour/create-tour')}/>
+                    </div>
+                </div>
+            </div>
+            {
+                loading && (
+                    <Spinner/>
+                )
+            }
         </div>
     );
-}
+};
+
+export default DestinationPage;
