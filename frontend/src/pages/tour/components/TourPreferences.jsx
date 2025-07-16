@@ -1,56 +1,61 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { useTourContext } from '../../../context/TourContext';
 
 export default function TourPreferences() {
-    const [interests, setInterests] = useState([]);
-    const [accommodation, setAccommodation] = useState('');
-    const [errors, setErrors] = useState({});
-    const [touched, setTouched] = useState({});
+    const {
+        tourPreferences,
+        updateTourPreferences,
+        errors,
+        touched,
+        setFieldError,
+        setFieldTouched
+    } = useTourContext();
 
-    const validateInterests = () => {
-        return interests.length === 0 ? 'Please select at least one interest' : '';
+    const validateInterests = (interestList) => {
+        return interestList.length === 0 ? 'Please select at least one interest' : '';
     };
 
-    const validateAccommodation = () => {
-        return !accommodation ? 'Please select an accommodation preference' : '';
+    const validateAccommodation = (value) => {
+        return !value ? 'Please select an accommodation preference' : '';
     };
 
     const handleInterestChange = (interest) => {
-        const newInterests = interests.includes(interest) 
-            ? interests.filter(item => item !== interest)
-            : [...interests, interest];
+        const newInterests = tourPreferences.interests.includes(interest) 
+            ? tourPreferences.interests.filter(item => item !== interest)
+            : [...tourPreferences.interests, interest];
         
-        setInterests(newInterests);
+        updateTourPreferences({ interests: newInterests });
         
         // Validate if touched
         if (touched.interests) {
-            const error = newInterests.length === 0 ? 'Please select at least one interest' : '';
-            setErrors(prev => ({ ...prev, interests: error }));
+            const error = validateInterests(newInterests);
+            setFieldError('interests', error);
         }
     };
 
     const handleAccommodationChange = (value) => {
-        setAccommodation(value);
+        updateTourPreferences({ accommodation: value });
         
         // Clear error when selection is made
         if (touched.accommodation) {
-            setErrors(prev => ({ ...prev, accommodation: '' }));
+            setFieldError('accommodation', '');
         }
     };
 
     const handleInterestsBlur = () => {
-        setTouched(prev => ({ ...prev, interests: true }));
-        const error = validateInterests();
-        setErrors(prev => ({ ...prev, interests: error }));
+        setFieldTouched('interests', true);
+        const error = validateInterests(tourPreferences.interests);
+        setFieldError('interests', error);
     };
 
     const handleAccommodationBlur = () => {
-        setTouched(prev => ({ ...prev, accommodation: true }));
-        const error = validateAccommodation();
-        setErrors(prev => ({ ...prev, accommodation: error }));
+        setFieldTouched('accommodation', true);
+        const error = validateAccommodation(tourPreferences.accommodation);
+        setFieldError('accommodation', error);
     };
 
     const isFormValid = () => {
-        return interests.length > 0 && accommodation !== '';
+        return tourPreferences.interests.length > 0 && tourPreferences.accommodation !== '';
     };
 
     return (
@@ -89,7 +94,7 @@ export default function TourPreferences() {
                                     <input 
                                         type="checkbox" 
                                         className="accent-brand-primary w-5 h-5 rounded border-2 border-gray-300 focus:ring-2 focus:ring-brand-primary/20" 
-                                        checked={interests.includes(label)}
+                                        checked={tourPreferences.interests.includes(label)}
                                         onChange={() => handleInterestChange(label)}
                                     /> 
                                     <span className="text-lg">{/* {interest.icon} */}</span>
@@ -99,9 +104,9 @@ export default function TourPreferences() {
                         </div>
                     </div>
                     {errors.interests && <p className="text-red-500 text-xs mt-1">{errors.interests}</p>}
-                    {!errors.interests && interests.length > 0 && (
+                    {!errors.interests && tourPreferences.interests.length > 0 && (
                         <p className="text-green-600 text-xs mt-1">
-                            ✓ {interests.length} interest{interests.length > 1 ? 's' : ''} selected
+                            ✓ {tourPreferences.interests.length} interest{tourPreferences.interests.length > 1 ? 's' : ''} selected
                         </p>
                     )}
                 </div>
@@ -130,7 +135,7 @@ export default function TourPreferences() {
                                         type="radio" 
                                         name="accommodation" 
                                         className="accent-brand-primary w-5 h-5 mt-1 border-2 border-gray-300 focus:ring-2 focus:ring-brand-primary/20" 
-                                        checked={accommodation === label}
+                                        checked={tourPreferences.accommodation === label}
                                         onChange={() => handleAccommodationChange(label)}
                                     /> 
                                     <div className="flex-1">
@@ -145,9 +150,9 @@ export default function TourPreferences() {
                         </div>
                     </div>
                     {errors.accommodation && <p className="text-red-500 text-xs mt-1">{errors.accommodation}</p>}
-                    {!errors.accommodation && accommodation && (
+                    {!errors.accommodation && tourPreferences.accommodation && (
                         <p className="text-green-600 text-xs mt-1">
-                            ✓ {accommodation} selected
+                            ✓ {tourPreferences.accommodation} selected
                         </p>
                     )}
                 </div>

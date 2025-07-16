@@ -7,8 +7,10 @@ import Tag from '../../hotels/components/Tag';
 import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
 import { handleNavigate } from '../../../core/constant';
+import { useTourContext } from '../../../context/TourContext';
+import { useState } from 'react';
 // Add icon imports for amenities
-import { FaSnowflake, FaBluetooth, FaCarBattery, FaMapMarkedAlt, FaCamera, FaMusic, FaCogs, FaChair, FaPlug, FaSun, FaRoad, FaGasPump } from "react-icons/fa";
+import { FaSnowflake, FaBluetooth, FaCarBattery, FaMapMarkedAlt, FaCamera, FaMusic, FaCogs, FaChair, FaPlug, FaSun, FaRoad, FaGasPump, FaUser, FaCar } from "react-icons/fa";
 
 const amenityIconMap = {
     "Air Conditioning": <FaSnowflake className="inline mr-1" />,
@@ -48,10 +50,24 @@ export default function VehicleCard({
     availableCount,
     rentalAgency,
     location: vehicleLocation,
+    isTourMode = false,
+    selectedVehicle = null,
     about,
     available,
 }) {
     const location = useLocation();
+    const tourContext = isTourMode ? useTourContext() : null;
+    const { setSelectedVehicle } = tourContext || {};
+    
+    const [showDriverOptions, setShowDriverOptions] = useState(false);
+    const [driverOption, setDriverOption] = useState('without'); // 'with' or 'without'
+    
+    const isSelected = selectedVehicle?.id === id;
+    
+    // Calculate prices with/without driver
+    const driverFee = Math.round(pricePerDay * 0.3); // 30% of vehicle price for driver
+    const priceWithDriver = pricePerDay + driverFee;
+    const priceWithoutDriver = pricePerDay;
     
     const handleCardClick = () => {
         // Check if current path includes tour/select-vehicle
@@ -67,6 +83,47 @@ export default function VehicleCard({
     const handleFavoriteClick = (e) => {
         e.stopPropagation();
         // toggle favorite logic here
+    };
+
+    const handleVehicleSelection = (e) => {
+        e.stopPropagation();
+        if (!tourContext) return;
+        
+        if (isSelected) {
+            setSelectedVehicle(null);
+            setShowDriverOptions(false);
+        } else {
+            setShowDriverOptions(true);
+        }
+    };
+
+    const handleDriverOptionSelect = (option) => {
+        const vehicleData = {
+            id,
+            name,
+            brand,
+            model,
+            type,
+            pricePerDay: option === 'with' ? priceWithDriver : priceWithoutDriver,
+            basePrice: pricePerDay,
+            driverIncluded: option === 'with',
+            driverFee: option === 'with' ? driverFee : 0,
+            images,
+            amenities,
+            seats,
+            transmission,
+            fuelType,
+            rating,
+            reviews,
+            rentalAgency,
+            location: vehicleLocation,
+            about,
+            available
+        };
+        
+        setSelectedVehicle(vehicleData);
+        setDriverOption(option);
+        setShowDriverOptions(false);
     };
     
     return (
@@ -148,17 +205,97 @@ export default function VehicleCard({
                     <div className='flex justify-between items-center mt-4'>
                         <div>
                             <p className='text-sm text-gray-400'>Starting from</p>
-                            <p className='text-lg font-semibold text-brand-primary'>LKR {pricePerDay} / day</p>
+                            <p className='text-lg font-semibold text-brand-primary'>
+                                LKR {isSelected && driverOption === 'with' ? priceWithDriver.toLocaleString() : pricePerDay.toLocaleString()} / day
+                            </p>
+                            {isSelected && (
+                                <p className='text-xs text-content-secondary'>
+                                    {driverOption === 'with' ? 'With driver included' : 'Self-drive only'}
+                                </p>
+                            )}
                         </div>
-                        <div className='flex gap-2 w-1/2 cursor-pointer'>
-                            <Tag title={`${rating} (${reviews})`} icon={star} />
-                            <Tag
-                                title={available ? "Available" : "Not Available"}
-                                color={available ? "bg-brand-primary" : "bg-danger"}
-                                textColor="text-white"
-                                icon={info}
-                            />
-                        </div>
+                        
+                        {isTourMode ? (
+                            <div className='flex flex-col items-end gap-2'>
+                                <div className='flex gap-2'>
+                                    <Tag title={`${rating} (${reviews})`} icon={star} />
+                                    <Tag
+                                        title={available ? "Available" : "Not Available"}
+                                        color={available ? "bg-green-100" : "bg-red-100"}
+                                        textColor={available ? "text-green-600" : "text-red-600"}
+                                        icon={info}
+                                    />
+                                </div>
+                                
+                                {/* Vehicle Selection Button */}
+                                {!isSelected && !showDriverOptions && (
+                                    <button
+                                        onClick={handleVehicleSelection}
+                                        disabled={!available}
+                                        className={`px-4 py-2 rounded-lg font-semibold text-sm transition ${
+                                            available
+                                                ? 'bg-white text-brand-primary border-2 border-brand-primary hover:bg-brand-primary hover:text-white'
+                                                : 'bg-gray-100 text-gray-400 border-2 border-gray-200 cursor-not-allowed'
+                                        }`}
+                                    >
+                                        Select Vehicle
+                                    </button>
+                                )}
+                                
+                                {/* Driver Options */}
+                                {showDriverOptions && (
+                                    <div className='flex flex-col gap-2 p-3 bg-surface-secondary rounded-lg border'>
+                                        <p className='text-sm font-medium text-content-primary'>Choose option:</p>
+                                        <div className='flex gap-2'>
+                                            <button
+                                                onClick={() => handleDriverOptionSelect('without')}
+                                                className='flex flex-col items-center gap-1 px-3 py-2 bg-white border-2 border-brand-primary text-brand-primary rounded-lg hover:bg-brand-primary hover:text-white transition text-xs'
+                                            >
+                                                <FaCar className="text-base" />
+                                                <span>Self-drive</span>
+                                                <span className='font-bold'>LKR {priceWithoutDriver.toLocaleString()}</span>
+                                            </button>
+                                            <button
+                                                onClick={() => handleDriverOptionSelect('with')}
+                                                className='flex flex-col items-center gap-1 px-3 py-2 bg-white border-2 border-brand-primary text-brand-primary rounded-lg hover:bg-brand-primary hover:text-white transition text-xs'
+                                            >
+                                                <FaUser className="text-base" />
+                                                <span>With driver</span>
+                                                <span className='font-bold'>LKR {priceWithDriver.toLocaleString()}</span>
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+                                
+                                {/* Selected State */}
+                                {isSelected && (
+                                    <div className='flex items-center gap-2'>
+                                        <div className='flex items-center gap-1 px-3 py-1 bg-brand-primary text-white rounded-lg text-sm'>
+                                            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                                            </svg>
+                                            Selected
+                                        </div>
+                                        <button
+                                            onClick={handleVehicleSelection}
+                                            className='px-3 py-1 bg-red-100 text-red-600 rounded-lg text-sm hover:bg-red-200 transition'
+                                        >
+                                            Change
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        ) : (
+                            <div className='flex gap-2 w-1/2 cursor-pointer'>
+                                <Tag title={`${rating} (${reviews})`} icon={star} />
+                                <Tag
+                                    title={available ? "Available" : "Not Available"}
+                                    color={available ? "bg-brand-primary" : "bg-danger"}
+                                    textColor="text-white"
+                                    icon={info}
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -186,4 +323,6 @@ VehicleCard.propTypes = {
     location: PropTypes.string,
     about: PropTypes.string,
     available: PropTypes.bool,
+    isTourMode: PropTypes.bool,
+    selectedVehicle: PropTypes.object,
 };

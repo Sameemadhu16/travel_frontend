@@ -1,22 +1,30 @@
 import React, { useState } from 'react';
+import { useTourContext } from '../../../context/TourContext';
 
 export default function TravelDetails() {
-    const [formData, setFormData] = useState({
-        destination: '',
-        duration: '',
-        startDate: '',
-        location: '',
-        time: '',
-        adults: 2,
-        children: 0
-    });
+    const { 
+        travelDetails, 
+        itinerary,
+        updateTravelDetails,
+        updateItinerary,
+        addItineraryDay,
+        removeItineraryDay,
+        addItineraryActivity,
+        removeItineraryActivity,
+        updateItineraryActivity,
+        errors: contextErrors,
+        touched: contextTouched,
+        setFieldError,
+        clearFieldError,
+        setFieldTouched
+    } = useTourContext();
 
-    const [itinerary, setItinerary] = useState([
-        { day: 1, activities: [{ title: '', time: '', description: '' }] }
-    ]);
+    const [localErrors, setLocalErrors] = useState({});
+    const [localTouched, setLocalTouched] = useState({});
 
-    const [errors, setErrors] = useState({});
-    const [touched, setTouched] = useState({});
+    // Use context errors and touched, fallback to local state
+    const errors = { ...localErrors, ...contextErrors };
+    const touched = { ...localTouched, ...contextTouched };
 
     const validateField = (name, value) => {
         let error = '';
@@ -91,40 +99,28 @@ export default function TravelDetails() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        updateTravelDetails({ [name]: value });
 
         // Validate field on change if it has been touched
         if (touched[name]) {
             const error = validateField(name, value);
-            setErrors(prev => ({
-                ...prev,
-                [name]: error
-            }));
+            setFieldError(name, error);
         }
     };
 
     const handleBlur = (e) => {
         const { name, value } = e.target;
-        setTouched(prev => ({
-            ...prev,
-            [name]: true
-        }));
+        setFieldTouched(name, true);
 
         const error = validateField(name, value);
-        setErrors(prev => ({
-            ...prev,
-            [name]: error
-        }));
+        setFieldError(name, error);
     };
 
     const isFormValid = () => {
         const requiredFields = ['destination', 'duration', 'startDate', 'location', 'time', 'adults'];
         const hasFieldErrors = requiredFields.some(field => {
-            const error = validateField(field, formData[field]);
-            return error || !formData[field];
+            const error = validateField(field, travelDetails[field]);
+            return error || !travelDetails[field];
         });
         
         const itineraryError = validateItinerary();
@@ -133,61 +129,23 @@ export default function TravelDetails() {
     };
 
     const addDay = () => {
-        const newDay = {
-            day: itinerary.length + 1,
-            activities: [{ title: '', time: '', description: '' }]
-        };
-        setItinerary(prev => [...prev, newDay]);
+        addItineraryDay();
     };
 
     const addActivity = (dayIndex) => {
-        const newActivity = { title: '', time: '', description: '' };
-        setItinerary(prev => 
-            prev.map((day, index) => 
-                index === dayIndex 
-                    ? { ...day, activities: [...day.activities, newActivity] }
-                    : day
-            )
-        );
+        addItineraryActivity(dayIndex);
     };
 
     const updateActivity = (dayIndex, activityIndex, field, value) => {
-        setItinerary(prev =>
-            prev.map((day, dIndex) =>
-                dIndex === dayIndex
-                    ? {
-                        ...day,
-                        activities: day.activities.map((activity, aIndex) =>
-                            aIndex === activityIndex
-                                ? { ...activity, [field]: value }
-                                : activity
-                        )
-                    }
-                    : day
-            )
-        );
+        updateItineraryActivity(dayIndex, activityIndex, field, value);
     };
 
     const removeDay = (dayIndex) => {
-        if (itinerary.length > 1) {
-            setItinerary(prev => 
-                prev.filter((_, index) => index !== dayIndex)
-                    .map((day, index) => ({ ...day, day: index + 1 }))
-            );
-        }
+        removeItineraryDay(dayIndex);
     };
 
     const removeActivity = (dayIndex, activityIndex) => {
-        setItinerary(prev =>
-            prev.map((day, dIndex) =>
-                dIndex === dayIndex && day.activities.length > 1
-                    ? {
-                        ...day,
-                        activities: day.activities.filter((_, aIndex) => aIndex !== activityIndex)
-                    }
-                    : day
-            )
-        );
+        removeItineraryActivity(dayIndex, activityIndex);
     };
 
     return (
@@ -208,7 +166,7 @@ export default function TravelDetails() {
                     </label>
                     <select 
                         name="destination"
-                        value={formData.destination}
+                        value={travelDetails.destination}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition-all ${
@@ -232,7 +190,7 @@ export default function TravelDetails() {
                     </label>
                     <select 
                         name="duration"
-                        value={formData.duration}
+                        value={travelDetails.duration}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition-all ${
@@ -257,7 +215,7 @@ export default function TravelDetails() {
                     <input 
                         type="date" 
                         name="startDate"
-                        value={formData.startDate}
+                        value={travelDetails.startDate}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         min={new Date().toISOString().split('T')[0]}
@@ -276,8 +234,7 @@ export default function TravelDetails() {
                         <div className="flex items-center gap-2">
                             <button 
                                 type="button"
-                                onClick={() => setFormData(prev => ({ ...prev, adults: Math.max(1, prev.adults - 1) }))
-                                }
+                                onClick={() => updateTravelDetails({ adults: Math.max(1, travelDetails.adults - 1) })}
                                 className="bg-surface-secondary hover:bg-surface-tertiary px-3 py-2 rounded text-sm font-semibold"
                             >
                                 -
@@ -286,14 +243,13 @@ export default function TravelDetails() {
                                 type="number" 
                                 min="1" 
                                 name="adults"
-                                value={formData.adults}
+                                value={travelDetails.adults}
                                 onChange={handleInputChange}
                                 className="w-16 text-center border border-border-light rounded px-2 py-2 text-sm focus:outline-none focus:border-brand-primary" 
                             />
                             <button 
                                 type="button"
-                                onClick={() => setFormData(prev => ({ ...prev, adults: prev.adults + 1 }))
-                                }
+                                onClick={() => updateTravelDetails({ adults: travelDetails.adults + 1 })}
                                 className="bg-surface-secondary hover:bg-surface-tertiary px-3 py-2 rounded text-sm font-semibold"
                             >
                                 +
@@ -305,8 +261,7 @@ export default function TravelDetails() {
                         <div className="flex items-center gap-2">
                             <button 
                                 type="button"
-                                onClick={() => setFormData(prev => ({ ...prev, children: Math.max(0, prev.children - 1) }))
-                                }
+                                onClick={() => updateTravelDetails({ children: Math.max(0, travelDetails.children - 1) })}
                                 className="bg-surface-secondary hover:bg-surface-tertiary px-3 py-2 rounded text-sm font-semibold"
                             >
                                 -
@@ -315,14 +270,13 @@ export default function TravelDetails() {
                                 type="number" 
                                 min="0" 
                                 name="children"
-                                value={formData.children}
+                                value={travelDetails.children}
                                 onChange={handleInputChange}
                                 className="w-16 text-center border border-border-light rounded px-2 py-2 text-sm focus:outline-none focus:border-brand-primary" 
                             />
                             <button 
                                 type="button"
-                                onClick={() => setFormData(prev => ({ ...prev, children: prev.children + 1 }))
-                                }
+                                onClick={() => updateTravelDetails({ children: travelDetails.children + 1 })}
                                 className="bg-surface-secondary hover:bg-surface-tertiary px-3 py-2 rounded text-sm font-semibold"
                             >
                                 +
@@ -337,7 +291,7 @@ export default function TravelDetails() {
                     <input
                         type="text"
                         name="location"
-                        value={formData.location}
+                        value={travelDetails.location}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         placeholder="Enter pickup location (e.g., Hotel name, Address)"
@@ -356,7 +310,7 @@ export default function TravelDetails() {
                     <input
                         type="time"
                         name="time"
-                        value={formData.time}
+                        value={travelDetails.time}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition-all ${

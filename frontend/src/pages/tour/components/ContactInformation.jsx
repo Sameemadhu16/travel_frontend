@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
+import { useTourContext } from '../../../context/TourContext';
 
 export default function ContactInformation() {
-    const [formData, setFormData] = useState({
-        fullName: '',
-        email: '',
-        phone: '',
-        country: '',
-        nicNumber: '',
-        optionalContact: '',
-        specialRequests: ''
-    });
+    const { 
+        contactInfo, 
+        updateContactInfo, 
+        errors: contextErrors, 
+        touched: contextTouched,
+        setFieldError,
+        clearFieldError,
+        setFieldTouched
+    } = useTourContext();
 
-    const [errors, setErrors] = useState({});
-    const [touched, setTouched] = useState({});
+    const [localErrors, setLocalErrors] = useState({});
+    const [localTouched, setLocalTouched] = useState({});
+
+    // Use context errors and touched, fallback to local state
+    const errors = { ...localErrors, ...contextErrors };
+    const touched = { ...localTouched, ...contextTouched };
 
     const validateField = (name, value) => {
         let error = '';
@@ -70,40 +75,28 @@ export default function ContactInformation() {
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
+        updateContactInfo({ [name]: value });
 
         // Validate field on change if it has been touched
         if (touched[name]) {
             const error = validateField(name, value);
-            setErrors(prev => ({
-                ...prev,
-                [name]: error
-            }));
+            setFieldError(name, error);
         }
     };
 
     const handleBlur = (e) => {
         const { name, value } = e.target;
-        setTouched(prev => ({
-            ...prev,
-            [name]: true
-        }));
+        setFieldTouched(name, true);
 
         const error = validateField(name, value);
-        setErrors(prev => ({
-            ...prev,
-            [name]: error
-        }));
+        setFieldError(name, error);
     };
 
     const isFormValid = () => {
         const requiredFields = ['fullName', 'email', 'phone', 'country', 'nicNumber'];
         return requiredFields.every(field => {
-            const error = validateField(field, formData[field]);
-            return !error && formData[field].trim();
+            const error = validateField(field, contactInfo[field]);
+            return !error && contactInfo[field] && contactInfo[field].trim();
         });
     };
 
@@ -125,7 +118,7 @@ export default function ContactInformation() {
                     <input 
                         type="text"
                         name="fullName"
-                        value={formData.fullName}
+                        value={contactInfo.fullName}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
@@ -144,7 +137,7 @@ export default function ContactInformation() {
                     <input 
                         type="email"
                         name="email"
-                        value={formData.email}
+                        value={contactInfo.email}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
@@ -165,7 +158,7 @@ export default function ContactInformation() {
                     <input 
                         type="tel"
                         name="phone"
-                        value={formData.phone}
+                        value={contactInfo.phone}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
@@ -183,7 +176,7 @@ export default function ContactInformation() {
                     </label>
                     <select
                         name="country"
-                        value={formData.country}
+                        value={contactInfo.country}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all bg-white ${
@@ -212,7 +205,7 @@ export default function ContactInformation() {
                     <input 
                         type="text"
                         name="nicNumber"
-                        value={formData.nicNumber}
+                        value={contactInfo.nicNumber}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
@@ -236,7 +229,7 @@ export default function ContactInformation() {
                     <input 
                         type="tel"
                         name="optionalContact"
-                        value={formData.optionalContact}
+                        value={contactInfo.optionalContact}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
@@ -256,7 +249,7 @@ export default function ContactInformation() {
                 <label className="block text-sm font-semibold mb-1">Special Requests</label>
                 <textarea 
                     name="specialRequests"
-                    value={formData.specialRequests}
+                    value={contactInfo.specialRequests}
                     onChange={handleInputChange}
                     className="w-full border border-border-light rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-all resize-none" 
                     placeholder="Tell us about any dietary restrictions, accessibility needs, special celebrations, or other requirements..."

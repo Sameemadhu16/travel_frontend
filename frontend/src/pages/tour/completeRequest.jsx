@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTourContext } from '../../context/TourContext';
 import Main from '../../components/Main';
 import StepIndicator from './components/StepIndicator';
 import DestinationDetails from './components/DestinationDetails';
@@ -9,6 +10,13 @@ import ItineraryOverview from './components/ItineraryOverview';
 import BookingSummary from './components/BookingSummary';
 
 export default function CompleteRequest() {
+  const { 
+    travelDetails, 
+    selectedItems, 
+    bookingSummary,
+    isTourComplete 
+  } = useTourContext();
+
   return (
     <Main>
       <div className="max-w-7xl mx-auto py-8 px-4">

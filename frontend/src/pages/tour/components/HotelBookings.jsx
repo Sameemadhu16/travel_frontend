@@ -1,28 +1,85 @@
 import React from 'react';
+import { useTourContext } from '../../../context/TourContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function HotelBookings() {
-    const hotels = [
-        {
-            id: 1,
-            name: "Cinnamon Grand Colombo",
-            room: "Deluxe Room • 2 Nights",
-            dates: "Mar 15-17, 2024",
-            price: 32000
-        },
-        {
-            id: 2,
-            name: "Hotel Suisse Kandy",
-            room: "Superior Room • 2 Nights", 
-            dates: "Mar 17-19, 2024",
-            price: 28000
+    const navigate = useNavigate();
+    const { selectedItems, travelDetails } = useTourContext();
+    
+    // Combine hotels and rooms into a single bookings array
+    const getHotelBookings = () => {
+        const bookings = [];
+        
+        // Add selected hotels
+        if (selectedItems.hotels && selectedItems.hotels.length > 0) {
+            selectedItems.hotels.forEach(hotel => {
+                bookings.push({
+                    id: hotel.id,
+                    name: hotel.name,
+                    type: 'hotel',
+                    room: hotel.roomType || 'Standard Room',
+                    nights: hotel.nights || calculateNights(),
+                    price: hotel.price || hotel.pricePerNight || 25000,
+                    image: hotel.image,
+                    location: hotel.location
+                });
+            });
         }
-    ];
+        
+        // Add selected rooms
+        if (selectedItems.rooms && selectedItems.rooms.length > 0) {
+            selectedItems.rooms.forEach(room => {
+                bookings.push({
+                    id: room.id,
+                    name: room.hotelName || room.name,
+                    type: 'room',
+                    room: room.roomType || room.type,
+                    nights: room.nights || calculateNights(),
+                    price: room.price || room.pricePerNight || 25000,
+                    image: room.image,
+                    location: room.location
+                });
+            });
+        }
+        
+        return bookings;
+    };
+
+    // Calculate nights based on travel duration
+    const calculateNights = () => {
+        if (travelDetails.duration) {
+            const match = travelDetails.duration.match(/(\d+)/);
+            return match ? parseInt(match[1]) - 1 : 1;
+        }
+        return 1;
+    };
+
+    // Format dates for display
+    const formatDates = (startDate, nights) => {
+        if (!startDate) return 'Dates TBD';
+        
+        const start = new Date(startDate);
+        const end = new Date(start);
+        end.setDate(start.getDate() + nights);
+        
+        const formatOptions = { month: 'short', day: 'numeric', year: 'numeric' };
+        return `${start.toLocaleDateString('en-US', formatOptions)} - ${end.toLocaleDateString('en-US', formatOptions)}`;
+    };
+
+    const handleEdit = () => {
+        navigate('/tour/select-hotel');
+    };
+
+    const hotels = getHotelBookings();
 
     return (
         <div className="bg-white rounded-lg border border-brand-primary p-6">
             <div className="flex items-center justify-between mb-4">
                 <h2 className="text-lg font-semibold text-content-primary">Hotel Bookings</h2>
-                <button className="text-brand-primary text-sm font-medium hover:underline flex items-center gap-1">
+                <button 
+                    onClick={handleEdit}
+                    className="text-brand-primary text-sm font-medium hover:underline flex items-center gap-1"
+                >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
                     </svg>
@@ -30,20 +87,73 @@ export default function HotelBookings() {
                 </button>
             </div>
             
-            <div className="space-y-4">
-                {hotels.map((hotel, index) => (
-                    <div key={index} className="flex items-center justify-between p-4 border border-brand-primary rounded-lg">
-                        <div>
-                            <h3 className="font-semibold text-content-primary">{hotel.name}</h3>
-                            <p className="text-sm text-content-secondary">{hotel.room}</p>
-                            <p className="text-sm text-content-tertiary">{hotel.dates}</p>
-                        </div>
-                        <div className="text-right">
-                            <p className="text-lg font-semibold text-brand-primary">LKR {hotel.price.toLocaleString()}</p>
-                        </div>
+            {hotels.length === 0 ? (
+                <div className="text-center py-8">
+                    <div className="w-16 h-16 bg-surface-secondary rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg className="w-8 h-8 text-content-tertiary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+                        </svg>
                     </div>
-                ))}
-            </div>
+                    <h3 className="text-lg font-medium text-content-secondary mb-2">No Hotel Selected</h3>
+                    <p className="text-content-tertiary text-sm mb-4">Please select accommodation for your tour</p>
+                    <button 
+                        onClick={handleEdit}
+                        className="bg-brand-primary text-white px-4 py-2 rounded-lg font-medium hover:bg-brand-secondary transition"
+                    >
+                        Select Hotel
+                    </button>
+                </div>
+            ) : (
+                <div className="space-y-4">
+                    {hotels.map((hotel, index) => (
+                        <div key={hotel.id || index} className="flex items-center justify-between p-4 border border-brand-primary rounded-lg">
+                            <div className="flex items-center gap-4">
+                                {hotel.image && (
+                                    <img 
+                                        src={hotel.image} 
+                                        alt={hotel.name}
+                                        className="w-16 h-16 rounded-lg object-cover"
+                                    />
+                                )}
+                                <div>
+                                    <h3 className="font-semibold text-content-primary">{hotel.name}</h3>
+                                    <p className="text-sm text-content-secondary">
+                                        {hotel.room} • {hotel.nights} Night{hotel.nights > 1 ? 's' : ''}
+                                    </p>
+                                    <p className="text-sm text-content-tertiary">
+                                        {formatDates(travelDetails.startDate, hotel.nights)}
+                                    </p>
+                                    {hotel.location && (
+                                        <p className="text-xs text-content-tertiary">📍 {hotel.location}</p>
+                                    )}
+                                </div>
+                            </div>
+                            <div className="text-right">
+                                <p className="text-lg font-semibold text-brand-primary">
+                                    LKR {(hotel.price * hotel.nights).toLocaleString()}
+                                </p>
+                                <p className="text-xs text-content-secondary">
+                                    LKR {hotel.price.toLocaleString()} per night
+                                </p>
+                            </div>
+                        </div>
+                    ))}
+                    
+                    {/* Total Summary */}
+                    {hotels.length > 1 && (
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                            <div className="flex justify-between items-center">
+                                <span className="font-medium text-content-secondary">
+                                    Total Accommodation ({hotels.length} booking{hotels.length > 1 ? 's' : ''})
+                                </span>
+                                <span className="text-xl font-bold text-brand-primary">
+                                    LKR {hotels.reduce((total, hotel) => total + (hotel.price * hotel.nights), 0).toLocaleString()}
+                                </span>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

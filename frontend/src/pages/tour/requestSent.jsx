@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTourContext } from '../../context/TourContext';
 import Main from '../../components/Main';
 import SuccessMessage from './components/SuccessMessage';
 import RequestDetails from './components/RequestDetails';
@@ -9,6 +10,14 @@ import FAQ from './components/FAQ';
 import NeedAssistance from './components/NeedAssistance';
 
 export default function RequestSent() {
+  const { 
+    travelDetails, 
+    contactInfo, 
+    selectedItems, 
+    bookingSummary,
+    resetTour 
+  } = useTourContext();
+
   return (
     <Main>
       <div className="max-w-4xl mx-auto px-4">
