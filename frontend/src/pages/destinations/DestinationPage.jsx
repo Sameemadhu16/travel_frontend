@@ -1,8 +1,11 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { FaStar, FaMapMarkerAlt, FaCalendarAlt, FaClock, FaDollarSign, FaThermometerHalf, FaWifi, FaCar, FaUtensils, FaHotel, FaBus, FaArrowLeft, FaUsers, FaHeart, FaShare } from 'react-icons/fa';
 import { useParams } from 'react-router-dom';
 import  Breadcrumb from '../../components/Breadcrumb';
 import Spinner from '../../components/Spinner';
+import SecondaryButton from '../../components/SecondaryButton';
+import PrimaryButton from '../../components/PrimaryButton'
+import Main from '../../components/Main';
 
 const destinations = [
     {
@@ -301,31 +304,41 @@ const destinations = [
     }
 ];
 
+const facilityIcons = {
+    WiFi: <FaWifi />,
+    Parking: <FaCar />,
+    Restaurants: <FaUtensils />,
+    Hotels: <FaHotel />,
+    Transport: <FaBus />,
+    'Beach Access': <FaUsers />,
+    'Water Sports': <FaUsers />,
+    Guides: <FaUsers />,
+    'First Aid': <FaUsers />,
+    'Golf Course': <FaUsers />,
+    'Bicycle Rental': <FaUsers />
+};
+
 const DestinationPage = () => {
     const [activeTab, setActiveTab] = useState('overview');
     const [selectedImage, setSelectedImage] = useState(0);
     const [destination, setDestination] = useState({});
     const [loading, setLoading] = useState(true);
-
     const { id } = useParams();
 
-    const facilityIcons = {
-        WiFi: <FaWifi />,
-        Parking: <FaCar />,
-        Restaurants: <FaUtensils />,
-        Hotels: <FaHotel />,
-        Transport: <FaBus />,
-        'Beach Access': <FaUsers />,
-        'Water Sports': <FaUsers />,
-        Guides: <FaUsers />,
-        'First Aid': <FaUsers />,
-        'Golf Course': <FaUsers />,
-        'Bicycle Rental': <FaUsers />
-    };
+    const breadcrumbItems = [
+        { label: "Home", path: "/home" },
+        { label: "Hotels", path: `/destination/${id}` },
+    ];
+
+    const headers = [
+        {id: 1, Icon: FaCalendarAlt,title: 'Best Time', value: destination.bestTime},
+        {id: 2, Icon: FaClock,title: 'Duration', value: destination.duration},
+        {id: 3, Icon: FaDollarSign,title: 'Budget', value: destination.budget},
+        {id: 4, Icon: FaThermometerHalf,title: 'Temperature', value: destination.temperature}
+    ]
 
     useEffect(() => {
         const des = destinations.find((d) => d.id === parseInt(id));
-        console.log(des);
         setDestination(des);
         setLoading(false);
     }, [id]);
@@ -337,8 +350,119 @@ const DestinationPage = () => {
         { id: 'tips', label: 'Tips' }
     ];
 
+    const IconActionButton = ({ icon: Icon, onClick ={}, className = '', ...props }) => {
+        return (
+            <button
+                onClick={onClick}
+                className={`bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all ${className}`}
+                {...props}
+            >
+                <Icon className="text-lg" />
+            </button>
+        );
+    };
+
+    const info = useMemo(()=>{
+        
+    });
+
+    const heading = useMemo(()=>{
+        return headers.map((o,i)=>(
+            <div key={i} className="bg-white rounded-xl p-6 shadow-lg">
+                <div className="flex items-center gap-3 mb-2">
+                    <o.Icon className="text-brand-primary text-xl" />
+                    <span className="font-semibold text-content-primary">{o.title}</span>
+                </div>
+                <p className="text-content-secondary">{o.value}</p>
+            </div>
+        ))
+    },[headers]);
+
+    const highlight = useMemo(()=>{
+        return destination.highlights && destination.highlights.map((highlight, index) => (
+                    <div key={index} className="flex items-center gap-3 p-3 bg-background-hover rounded-lg">
+                        <div className="w-2 h-2 bg-brand-primary rounded-full"></div>
+                        <span className="text-content-secondary">{highlight}</span>
+                    </div>
+                ))
+    },[destination.highlight]);
+
+    const tabsHeading = useMemo(()=>{
+        return tabs.map((tab) => (
+            <button
+                key={tab.id}
+                onClick={() => setActiveTab(tab.id)}
+                className={`flex-1 py-4 px-6 text-sm font-medium transition-colors ${
+                activeTab === tab.id
+                    ? 'bg-brand-primary text-white'
+                    : 'text-content-secondary hover:text-content-primary hover:bg-background-hover'
+                }`}
+            >
+                {tab.label}
+            </button>
+        ))
+    },[tabs]);
+
+    const facilities = useMemo(() => {
+        return destination.facilities && destination.facilities.map((facility, index) => (
+            <div key={index} className="flex items-center gap-2 bg-brand-light text-brand-primary px-4 py-2 rounded-lg">
+                {facilityIcons[facility] || <FaUsers />}
+                <span className="text-sm font-medium">{facility}</span>
+            </div>
+        ))
+    },[destination.facilities]);
+
+    const activities = useMemo(()=> {
+        return destination.activities && destination.activities.map((activity, index) => (
+            <div key={index} className="bg-background-hover rounded-lg p-6 hover:shadow-md transition-shadow">
+                <div className="flex items-start gap-4">
+                    <div className="text-3xl">{activity.icon}</div>
+                        <div className="flex-1">
+                            <h5 className="font-semibold text-content-primary mb-2">{activity.name}</h5>
+                            <div className="flex items-center gap-2 text-sm text-content-secondary">
+                                <FaClock className="text-brand-primary" />
+                                <span>{activity.duration}</span>
+                            </div>
+                        </div>
+                </div>
+            </div>
+        ))
+    },[destination.activities]);
+
+    const gallery = useMemo(() => {
+        return destination.gallery && destination.gallery.map((image, index) => (
+            <button
+                key={index}
+                onClick={() => setSelectedImage(index)}
+                className={`relative overflow-hidden rounded-lg ${
+                selectedImage === index ? 'ring-2 ring-brand-primary' : ''
+                }`} 
+            >
+            <img 
+                src={image} 
+                alt={`${destination.name} - Thumbnail ${index + 1}`}
+                className="w-full h-24 object-cover hover:scale-105 transition-transform"
+            />
+        </button>
+        ))
+    },[destination.gallery, selectedImage]);
+
+    const tips = useMemo(() => {
+        return destination.tips && destination.tips.map((tip, index) => (
+            <div key={index} className="flex items-start gap-4 p-4 bg-brand-light rounded-lg">
+            <div className="w-6 h-6 bg-brand-primary text-white rounded-full flex items-center justify-center text-sm font-semibold mt-1">
+                {index + 1}
+            </div>
+            <p className="text-content-secondary leading-relaxed">{tip}</p>
+            </div>
+        ))
+    },[destination.tips])
+
     return (
-        <div className="min-h-screen bg-surface-secondary">
+        <div className="min-h-screen">
+            <Main>
+                <Breadcrumb items={breadcrumbItems}/>
+            </Main>
             {/* Header */}
             <div className="relative h-[60vh] overflow-hidden">
                 <img 
@@ -346,133 +470,68 @@ const DestinationPage = () => {
                     alt={destination.name}
                     className="w-full h-full object-cover"
                 />
-                <div className="absolute inset-0 bg-black bg-opacity-50"></div>
-                
-                {/* Back Button */}
-                <button
-                    //onClick={onBack}
-                    className="absolute top-6 left-6 bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all z-10"
-                >
-                    <FaArrowLeft className="text-lg" />
-                </button>
 
                 {/* Action Buttons */}
                 <div className="absolute top-6 right-6 flex gap-3 z-10">
-                    <button className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all">
-                        <FaHeart className="text-lg" />
-                    </button>
-                    <button className="bg-white bg-opacity-20 backdrop-blur-sm text-white p-3 rounded-full hover:bg-opacity-30 transition-all">
-                        <FaShare className="text-lg" />
-                    </button>
+                    <IconActionButton icon={FaHeart} />
+                    <IconActionButton icon={FaShare} />
                 </div>
 
                 {/* Title and Basic Info */}
-                <div className="absolute bottom-8 left-8 right-8 text-white">
-                <div className="flex items-center gap-2 mb-2">
-                    <span className="bg-brand-primary px-3 py-1 rounded-full text-sm font-medium">
-                        {destination.category}
-                    </span>
-                </div>
-                <h1 className="text-5xl font-bold mb-4">{destination.name}</h1>
-                <p className="text-xl text-gray-200 mb-4">{destination.desc}</p>
-                
-                <div className="flex items-center gap-6 text-sm">
-                    <div className="flex items-center gap-1">
-                        <FaStar className="text-yellow-400" />
-                        <span className="font-semibold">{destination.rating}</span>
-                        <span className="text-gray-300">({destination.reviews} reviews)</span>
+                <div className="absolute bottom-8 left-32 right-8 text-white">
+                    <div className="flex items-center gap-2 mb-2">
+                        <span className="bg-brand-primary px-3 py-1 rounded-full text-sm font-medium">
+                            {destination.category}
+                        </span>
                     </div>
-                    <div className="flex items-center gap-1">
-                        <FaMapMarkerAlt className="text-brand-primary" />
-                        <span>{destination.location}</span>
+                    <h1 className="text-5xl font-bold mb-4">{destination.name}</h1>
+                    <p className="text-xl text-gray-200 mb-4">{destination.desc}</p>
+                    
+                    <div className="flex items-center gap-6 text-sm">
+                        <div className="flex items-center gap-1">
+                            <FaStar className="text-yellow-400" />
+                            <span className="font-semibold">{destination.rating}</span>
+                            <span className="text-gray-300">({destination.reviews} reviews)</span>
+                        </div>
+                        <div className="flex items-center gap-1">
+                            <FaMapMarkerAlt className="text-brand-primary" />
+                            <span>{destination.location}</span>
+                        </div>
                     </div>
-                </div>
                 </div>
             </div>
 
             {/* Quick Info Cards */}
-            <div className="container mx-auto px-6 -mt-20 relative z-10">
+            <div className="container mx-auto px-6 mt-20 relative z-10">
                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-                <div className="bg-white rounded-xl p-6 shadow-lg">
-                    <div className="flex items-center gap-3 mb-2">
-                        <FaCalendarAlt className="text-brand-primary text-xl" />
-                        <span className="font-semibold text-content-primary">Best Time</span>
-                    </div>
-                    <p className="text-content-secondary">{destination.bestTime}</p>
-                </div>
-                
-                <div className="bg-white rounded-xl p-6 shadow-lg">
-                    <div className="flex items-center gap-3 mb-2">
-                        <FaClock className="text-brand-primary text-xl" />
-                        <span className="font-semibold text-content-primary">Duration</span>
-                    </div>
-                    <p className="text-content-secondary">{destination.duration}</p>
-                </div>
-                
-                <div className="bg-white rounded-xl p-6 shadow-lg">
-                    <div className="flex items-center gap-3 mb-2">
-                        <FaDollarSign className="text-brand-primary text-xl" />
-                        <span className="font-semibold text-content-primary">Budget</span>
-                    </div>
-                    <p className="text-content-secondary">{destination.budget}</p>
-                </div>
-                
-                <div className="bg-white rounded-xl p-6 shadow-lg">
-                    <div className="flex items-center gap-3 mb-2">
-                        <FaThermometerHalf className="text-brand-primary text-xl" />
-                        <span className="font-semibold text-content-primary">Temperature</span>
-                    </div>
-                    <p className="text-content-secondary">{destination.temperature}</p>
-                </div>
+                    {heading}
                 </div>
 
                 {/* Tabs */}
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 <div className="flex border-b border-border-light">
-                    {tabs.map((tab) => (
-                    <button
-                        key={tab.id}
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`flex-1 py-4 px-6 text-sm font-medium transition-colors ${
-                        activeTab === tab.id
-                            ? 'bg-brand-primary text-white'
-                            : 'text-content-secondary hover:text-content-primary hover:bg-background-hover'
-                        }`}
-                    >
-                        {tab.label}
-                    </button>
-                    ))}
+                    {tabsHeading}
                 </div>
 
                     <div className="p-8">
                         {activeTab === 'overview' && (
                         <div className="space-y-8">
                             <div>
-                            <h3 className="text-2xl font-semibold text-content-primary mb-4">About {destination.name}</h3>
-                            <p className="text-content-secondary leading-relaxed">{destination.description}</p>
+                                <h3 className="text-2xl font-semibold text-content-primary mb-4">About {destination.name}</h3>
+                                <p className="text-content-secondary leading-relaxed">{destination.description}</p>
                             </div>
 
                             <div>
                             <h4 className="text-xl font-semibold text-content-primary mb-4">Highlights</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                                {destination.highlights && destination.highlights.map((highlight, index) => (
-                                <div key={index} className="flex items-center gap-3 p-3 bg-background-hover rounded-lg">
-                                    <div className="w-2 h-2 bg-brand-primary rounded-full"></div>
-                                    <span className="text-content-secondary">{highlight}</span>
-                                </div>
-                                ))}
+                                {highlight}
                             </div>
                             </div>
 
                             <div>
                             <h4 className="text-xl font-semibold text-content-primary mb-4">Facilities</h4>
                             <div className="flex flex-wrap gap-3">
-                                {destination.facilities && destination.facilities.map((facility, index) => (
-                                <div key={index} className="flex items-center gap-2 bg-brand-light text-brand-primary px-4 py-2 rounded-lg">
-                                    {facilityIcons[facility] || <FaUsers />}
-                                    <span className="text-sm font-medium">{facility}</span>
-                                </div>
-                                ))}
+                                {facilities}
                             </div>
                             </div>
                         </div>
@@ -482,20 +541,7 @@ const DestinationPage = () => {
                         <div>
                             <h3 className="text-2xl font-semibold text-content-primary mb-6">Activities & Experiences</h3>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            {destination.activities && destination.activities.map((activity, index) => (
-                                <div key={index} className="bg-background-hover rounded-lg p-6 hover:shadow-md transition-shadow">
-                                <div className="flex items-start gap-4">
-                                    <div className="text-3xl">{activity.icon}</div>
-                                    <div className="flex-1">
-                                    <h5 className="font-semibold text-content-primary mb-2">{activity.name}</h5>
-                                    <div className="flex items-center gap-2 text-sm text-content-secondary">
-                                        <FaClock className="text-brand-primary" />
-                                        <span>{activity.duration}</span>
-                                    </div>
-                                    </div>
-                                </div>
-                                </div>
-                            ))}
+                                {activities}
                             </div>
                         </div>
                         )}
@@ -503,30 +549,18 @@ const DestinationPage = () => {
                         {activeTab === 'gallery' && (
                         <div>
                             <h3 className="text-2xl font-semibold text-content-primary mb-6">Photo Gallery</h3>
-                            <div className="space-y-6">
-                            <div className="relative">
-                                <img 
-                                src={destination.gallery[selectedImage]} 
-                                alt={`${destination.name} - Image ${selectedImage + 1}`}
-                                className="w-full h-96 object-cover rounded-lg shadow-lg"
-                                />
-                            </div>
+                                <div className="space-y-6">
+                                <div className="relative">
+                                    {destination.gallery?.[selectedImage] && (
+                                        <img 
+                                            src={destination.gallery[selectedImage]} 
+                                            alt={`${destination.name} - Image ${selectedImage + 1}`}
+                                            className="w-full h-96 object-cover rounded-lg shadow-lg"
+                                        />
+                                    )}
+                                </div>
                             <div className="grid grid-cols-4 gap-4">
-                                {destination.gallery && destination.gallery.map((image, index) => (
-                                <button
-                                    key={index}
-                                    onClick={() => setSelectedImage(index)}
-                                    className={`relative overflow-hidden rounded-lg ${
-                                    selectedImage === index ? 'ring-2 ring-brand-primary' : ''
-                                    }`}
-                                >
-                                    <img 
-                                    src={image} 
-                                    alt={`${destination.name} - Thumbnail ${index + 1}`}
-                                    className="w-full h-24 object-cover hover:scale-105 transition-transform"
-                                    />
-                                </button>
-                                ))}
+                                {gallery}
                             </div>
                             </div>
                         </div>
@@ -536,14 +570,7 @@ const DestinationPage = () => {
                         <div>
                             <h3 className="text-2xl font-semibold text-content-primary mb-6">Travel Tips</h3>
                             <div className="space-y-4">
-                            {destination.tips && destination.tips.map((tip, index) => (
-                                <div key={index} className="flex items-start gap-4 p-4 bg-brand-light rounded-lg">
-                                <div className="w-6 h-6 bg-brand-primary text-white rounded-full flex items-center justify-center text-sm font-semibold mt-1">
-                                    {index + 1}
-                                </div>
-                                <p className="text-content-secondary leading-relaxed">{tip}</p>
-                                </div>
-                            ))}
+                            {tips}
                             </div>
                         </div>
                         )}
@@ -558,13 +585,9 @@ const DestinationPage = () => {
                         <h4 className="text-xl font-semibold text-content-primary mb-2">Ready to explore {destination.name}?</h4>
                         <p className="text-content-secondary">Start planning your journey to this amazing destination</p>
                     </div>
-                    <div className="flex gap-3">
-                        <button className="bg-brand-secondary text-brand-primary px-6 py-3 rounded-lg font-medium hover:bg-brand-accent transition-colors">
-                        Add to Wishlist
-                        </button>
-                        <button className="bg-brand-primary text-white px-6 py-3 rounded-lg font-medium hover:bg-orange-500 transition-colors">
-                        Book Now
-                        </button>
+                    <div className="flex gap-3 w-1/3">
+                        <SecondaryButton text='Add to Wishlist'/>
+                        <PrimaryButton text={'Create Trip'}/>
                     </div>
                 </div>
             </div>
