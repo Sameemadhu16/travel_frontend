@@ -1,4 +1,7 @@
-import { FaBell, FaEnvelope, FaExclamationTriangle, FaCheck, FaPlus } from 'react-icons/fa';
+import { FaFilter, FaBell, FaUser, FaExclamationCircle, FaCog, FaEye, FaTrash } from 'react-icons/fa';
+import AdminLayout from '../../components/admin/AdminLayout';
+import AdminHeader from '../../components/admin/AdminHeader';
+import Pagination from '../../components/admin/Pagination';
 
 const notifications = [
   {
@@ -48,128 +51,98 @@ const notifications = [
   }
 ];
 
+function NotificationItem({ notification }) {
+  const typeConfig = {
+    system: {
+      icon: <FaCog className="text-blue-500" />,
+      bgColor: 'bg-blue-50'
+    },
+    user: {
+      icon: <FaUser className="text-green-500" />,
+      bgColor: 'bg-green-50'
+    },
+    alert: {
+      icon: <FaExclamationCircle className="text-red-500" />,
+      bgColor: 'bg-red-50'
+    },
+    booking: {
+      icon: <FaBell className="text-purple-500" />,
+      bgColor: 'bg-purple-50'
+    }
+  };
+
+  const config = typeConfig[notification.type] || typeConfig.system;
+
+  return (
+    <div className={`p-4 rounded-lg ${config.bgColor} ${notification.status === 'unread' ? 'border-l-4 border-brand-primary' : ''}`}>
+      <div className="flex items-start justify-between">
+        <div className="flex gap-3">
+          <div className="mt-1">{config.icon}</div>
+          <div>
+            <h3 className="font-semibold text-content-primary">{notification.title}</h3>
+            <p className="text-content-secondary text-sm">{notification.message}</p>
+            <span className="text-content-tertiary text-xs">{notification.time}</span>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button className="text-blue-500 hover:text-blue-700">
+            <FaEye />
+          </button>
+          <button className="text-red-500 hover:text-red-700">
+            <FaTrash />
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function Notifications() {
   return (
-    <div className="flex">
-      {/* Sidebar */}
-      <aside className="w-1/5 bg-white rounded-xl shadow p-4 flex flex-col gap-4">
-        <div className="font-bold text-xl text-brand-primary mb-4">Travel.lk</div>
-        <nav className="flex flex-col gap-2">
-          <button className="text-content-primary px-4 py-2 rounded hover:bg-brand-accent text-left">Dashboard</button>
-          <button className="text-content-primary px-4 py-2 rounded hover:bg-brand-accent text-left">Users</button>
-          <button className="text-content-primary px-4 py-2 rounded hover:bg-brand-accent text-left">Listings</button>
-          <button className="text-content-primary px-4 py-2 rounded hover:bg-brand-accent text-left">Bookings</button>
-          <button className="text-content-primary px-4 py-2 rounded hover:bg-brand-accent text-left">Reviews</button>
-          <button className="text-content-primary px-4 py-2 rounded hover:bg-brand-accent text-left">Reports</button>
-          <button className="bg-brand-primary text-white px-4 py-2 rounded font-semibold">Notifications</button>
-          <button className="text-content-primary px-4 py-2 rounded hover:bg-brand-accent text-left">Payments</button>
-          <button className="text-content-primary px-4 py-2 rounded hover:bg-brand-accent text-left">Settings</button>
-        </nav>
-      </aside>
+    <AdminLayout activePage="notifications">
+      <AdminHeader 
+        title="Notifications" 
+        subtitle="Manage system notifications and alerts" 
+      />
 
-      {/* Main Content */}
-      <main className="flex-1 p-8">
-        <div className="flex justify-between items-center mb-6">
-          <div>
-            <h1 className="text-2xl font-bold">Notifications Center</h1>
-            <p className="text-content-secondary">Manage all system and user notifications</p>
-          </div>
-          <div className="flex items-center gap-4">
-            <span className="font-semibold">Admin User</span>
-            <img src="https://randomuser.me/api/portraits/men/4.jpg" alt="Admin" className="w-10 h-10 rounded-full" />
-          </div>
+      {/* Filters */}
+      <div className="bg-white rounded-xl shadow p-4 mb-4 flex items-center gap-4">
+        <input 
+          className="border rounded px-3 py-2 flex-1" 
+          placeholder="Search notifications..." 
+        />
+        <select className="border rounded px-3 py-2">
+          <option>All Types</option>
+          <option>System</option>
+          <option>User</option>
+          <option>Alert</option>
+          <option>Booking</option>
+        </select>
+        <select className="border rounded px-3 py-2">
+          <option>All Status</option>
+          <option>Read</option>
+          <option>Unread</option>
+        </select>
+        <button className="bg-orange-500 text-white px-4 py-2 rounded flex items-center gap-2">
+          <FaFilter /> Apply Filters
+        </button>
+      </div>
+
+      {/* Notifications List */}
+      <div className="bg-white rounded-xl shadow p-4">
+        <div className="space-y-4">
+          {notifications.map(notification => (
+            <NotificationItem key={notification.id} notification={notification} />
+          ))}
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-4 gap-4 mb-6">
-          <div className="bg-blue-50 rounded-xl p-4">
-            <div className="text-sm text-blue-600">Total Notifications</div>
-            <div className="text-2xl font-bold text-blue-700">247</div>
-          </div>
-          <div className="bg-red-50 rounded-xl p-4">
-            <div className="text-sm text-red-600">Unread</div>
-            <div className="text-2xl font-bold text-red-700">23</div>
-          </div>
-          <div className="bg-yellow-50 rounded-xl p-4">
-            <div className="text-sm text-yellow-600">System Alerts</div>
-            <div className="text-2xl font-bold text-yellow-700">5</div>
-          </div>
-          <div className="bg-green-50 rounded-xl p-4">
-            <div className="text-sm text-green-600">Today</div>
-            <div className="text-2xl font-bold text-green-700">18</div>
-          </div>
-        </div>
-
-        {/* Filters and Actions */}
-        <div className="bg-white rounded-xl shadow p-4 mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <select className="border rounded px-3 py-2">
-              <option>All Types</option>
-              <option>System</option>
-              <option>User</option>
-              <option>Alert</option>
-            </select>
-            <select className="border rounded px-3 py-2">
-              <option>All</option>
-              <option>Unread</option>
-              <option>Read</option>
-            </select>
-          </div>
-          <div className="flex items-center gap-4">
-            <button className="text-blue-600 hover:underline">Mark All Read</button>
-            <button className="bg-blue-600 text-white px-4 py-2 rounded flex items-center gap-2">
-              <FaPlus /> New Notification
-            </button>
-          </div>
-        </div>
-
-        {/* Notifications List */}
-        <div className="bg-white rounded-xl shadow">
-          <div className="p-4 border-b">
-            <h2 className="font-semibold">Recent Notifications</h2>
-          </div>
-          <div className="divide-y">
-            {notifications.map(notification => (
-              <div key={notification.id} className="p-4 hover:bg-gray-50">
-                <div className="flex items-start gap-4">
-                  <div className={`p-2 rounded-full 
-                    ${notification.type === 'system' ? 'bg-blue-100' : 
-                      notification.type === 'alert' ? 'bg-red-100' : 
-                      notification.type === 'user' ? 'bg-green-100' : 'bg-gray-100'}`}>
-                    {notification.type === 'system' && <FaBell className="text-blue-600" />}
-                    {notification.type === 'alert' && <FaExclamationTriangle className="text-red-600" />}
-                    {notification.type === 'user' && <FaEnvelope className="text-green-600" />}
-                  </div>
-                  <div className="flex-1">
-                    <div className="flex items-center justify-between">
-                      <h3 className="font-semibold">{notification.title}</h3>
-                      <span className="text-sm text-gray-500">{notification.time}</span>
-                    </div>
-                    <p className="text-gray-600 mt-1">{notification.message}</p>
-                    <div className="flex items-center gap-2 mt-2">
-                      <span className={`text-xs px-2 py-1 rounded-full 
-                        ${notification.priority === 'high' ? 'bg-red-100 text-red-600' : 
-                          notification.priority === 'medium' ? 'bg-yellow-100 text-yellow-600' : 
-                          'bg-green-100 text-green-600'}`}>
-                        {notification.priority.charAt(0).toUpperCase() + notification.priority.slice(1)}
-                      </span>
-                      {notification.status === 'unread' && (
-                        <span className="text-xs bg-blue-100 text-blue-600 px-2 py-1 rounded-full">New</span>
-                      )}
-                    </div>
-                  </div>
-                  <button className="text-gray-400 hover:text-gray-600">
-                    <FaCheck />
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-          <div className="p-4 text-center border-t">
-            <button className="text-blue-600 hover:underline">Load More Notifications</button>
-          </div>
-        </div>
-      </main>
-    </div>
+        <Pagination 
+          currentPage={1}
+          totalPages={5}
+          totalResults={42}
+          onPageChange={(page) => console.log('Page changed to:', page)}
+        />
+      </div>
+    </AdminLayout>
   );
 }
