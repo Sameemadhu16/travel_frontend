@@ -27,6 +27,65 @@ export default function DestinationDetails() {
         return duration.replace('-', ' ').replace(/\b\w/g, l => l.toUpperCase());
     };
 
+    // Format destination for display
+    const formatDestination = (destination) => {
+        if (!destination) return 'Not specified';
+        
+        // Map destination values to readable names
+        const destinationMap = {
+            'colombo-city': 'Colombo City Tour',
+            'kandy-day': 'Kandy Day Trip',
+            'galle-day': 'Galle Fort & Southern Coast',
+            'pinnawala-kandy': 'Pinnawala Elephant Orphanage & Kandy',
+            'bentota-day': 'Bentota Beach Day Trip',
+            'kandy-nuwara': 'Kandy & Nuwara Eliya',
+            'southern-beaches': 'Southern Beaches (Galle, Mirissa, Unawatuna)',
+            'sigiriya-dambulla': 'Sigiriya & Dambulla Cultural Tour',
+            'ella-adventure': 'Ella Adventure (Train Journey & Hiking)',
+            'yala-safari': 'Yala National Park Safari',
+            'negombo-colombo': 'Negombo & Colombo',
+            'cultural-triangle': 'Cultural Triangle (Anuradhapura, Polonnaruwa, Sigiriya)',
+            'hill-country': 'Hill Country Explorer (Kandy, Nuwara Eliya, Ella)',
+            'south-west-coast': 'South West Coast (Colombo to Galle)',
+            'central-highlands': 'Central Highlands & Tea Country',
+            'wildlife-adventure': 'Wildlife & Adventure (Yala, Udawalawe, Sinharaja)',
+            'beaches-culture': 'Beaches & Culture Combo',
+            'ancient-kingdoms': 'Ancient Kingdoms Tour',
+            'grand-tour': 'Grand Sri Lanka Tour',
+            'complete-island': 'Complete Island Experience',
+            'cultural-nature': 'Cultural Sites & Nature Reserves',
+            'coast-to-mountains': 'Coast to Mountains Adventure',
+            'photography-tour': 'Photography Expedition',
+            'ayurveda-wellness': 'Ayurveda & Wellness Journey',
+            'adventure-explorer': 'Adventure Explorer Tour',
+            'luxury-sri-lanka': 'Luxury Sri Lanka Experience',
+            'honeymoon-special': 'Honeymoon Special Tour',
+            'family-adventure': 'Family Adventure Package',
+            'wildlife-photography': 'Wildlife Photography Tour',
+            'culinary-journey': 'Culinary Journey of Sri Lanka',
+            'spiritual-tour': 'Spiritual & Meditation Tour',
+            'eco-adventure': 'Eco-Adventure & Conservation Tour',
+            'custom-tour': 'Custom Itinerary',
+            'business-travel': 'Business Travel Package',
+            'educational-tour': 'Educational/School Group Tour'
+        };
+        
+        return destinationMap[destination] || destination.charAt(0).toUpperCase() + destination.slice(1);
+    };
+
+    // Format travel style for display
+    const formatTravelStyle = (style) => {
+        if (!style) return 'Not specified';
+        const styleMap = {
+            'budget': 'Budget (Economy hotels, local transport)',
+            'standard': 'Standard (3-star hotels, AC vehicle)',
+            'comfort': 'Comfort (4-star hotels, premium vehicle)',
+            'luxury': 'Luxury (5-star hotels, luxury vehicle)',
+            'premium': 'Premium (Boutique hotels, exclusive experiences)'
+        };
+        return styleMap[style] || style;
+    };
+
     // Handle edit button click
     const handleEdit = () => {
         navigate('/tour/create-tour');
@@ -85,7 +144,7 @@ export default function DestinationDetails() {
             <div className="grid grid-cols-2 gap-6">
                 <div>
                     <h3 className="text-sm font-medium text-content-secondary mb-2">Tour Package</h3>
-                    <p className="text-content-primary font-medium">{getTourPackageName()}</p>
+                    <p className="text-content-primary font-medium">{formatDestination(travelDetails.destination)}</p>
                 </div>
                 <div>
                     <h3 className="text-sm font-medium text-content-secondary mb-2">Duration</h3>
@@ -98,17 +157,17 @@ export default function DestinationDetails() {
                 <div>
                     <h3 className="text-sm font-medium text-content-secondary mb-2">Travelers</h3>
                     <p className="text-content-primary font-medium">
-                        {travelDetails.adults > 0 && (
-                            <span>{travelDetails.adults} Adult{travelDetails.adults > 1 ? 's' : ''}</span>
-                        )}
-                        {travelDetails.children > 0 && (
-                            <span>
-                                {travelDetails.adults > 0 ? ', ' : ''}
-                                {travelDetails.children} Child{travelDetails.children > 1 ? 'ren' : ''}
-                            </span>
-                        )}
-                        {travelDetails.adults === 0 && travelDetails.children === 0 && 'Not specified'}
+                        {travelDetails.adults} Adult{travelDetails.adults > 1 ? 's' : ''}
+                        {travelDetails.children > 0 && `, ${travelDetails.children} Child${travelDetails.children > 1 ? 'ren' : ''}`}
                     </p>
+                </div>
+                <div>
+                    <h3 className="text-sm font-medium text-content-secondary mb-2">Travel Style</h3>
+                    <p className="text-content-primary font-medium">{formatTravelStyle(travelDetails.travelStyle)}</p>
+                </div>
+                <div>
+                    <h3 className="text-sm font-medium text-content-secondary mb-2">Group Type</h3>
+                    <p className="text-content-primary font-medium">{travelDetails.groupType || 'Not specified'}</p>
                 </div>
             </div>
             

@@ -10,6 +10,8 @@ export default function BookingSummary() {
         travelDetails, 
         selectedItems, 
         contactInfo,
+        tourPreferences,
+        itinerary,
         agreedToTerms, 
         setAgreedToTerms,
         isTourComplete,
@@ -30,18 +32,28 @@ export default function BookingSummary() {
     const calculateIndividualGuideCosts = () => {
         if (!selectedItems.guides || selectedItems.guides.length === 0) return [];
         
+        const duration = travelDetails.duration ? 
+            parseInt(travelDetails.duration.match(/(\d+)/)?.[1] || '1') : 1;
+        const nights = Math.max(duration - 1, 1);
+        
         const baseCosts = {
-            hotels: bookingSummary.hotelsCost || 0,
-            vehicles: bookingSummary.vehiclesCost || 0,
+            hotels: (selectedItems.hotels || []).reduce((total, hotel) => {
+                const nightlyRate = hotel.pricePerNight || hotel.price || 0;
+                return total + (nightlyRate * nights);
+            }, 0),
+            rooms: (selectedItems.rooms || []).reduce((total, room) => {
+                const nightlyRate = room.pricePerNight || room.price || 0;
+                return total + (nightlyRate * nights);
+            }, 0),
+            vehicles: selectedItems.selectedVehicle ? 
+                (selectedItems.selectedVehicle.pricePerDay || selectedItems.selectedVehicle.price || 0) * duration : 0
         };
         
         return selectedItems.guides.map((guide, index) => {
             const guidePrice = guide.price || guide.pricePerDay || 8500;
-            const duration = travelDetails.duration ? 
-                parseInt(travelDetails.duration.match(/(\d+)/)?.[1] || '1') : 1;
             const guideCost = guidePrice * duration;
             
-            const subtotal = guideCost + baseCosts.hotels + baseCosts.vehicles;
+            const subtotal = guideCost + baseCosts.hotels + baseCosts.rooms + baseCosts.vehicles;
             const serviceFee = Math.round(subtotal * 0.05);
             const taxes = Math.round(subtotal * 0.08);
             const totalCost = subtotal + serviceFee + taxes;
@@ -49,13 +61,14 @@ export default function BookingSummary() {
             return {
                 guide,
                 guideCost,
-                hotelsCost: baseCosts.hotels,
+                hotelsCost: baseCosts.hotels + baseCosts.rooms,
                 vehiclesCost: baseCosts.vehicles,
                 subtotal,
                 serviceFee,
                 taxes,
                 totalCost,
-                duration
+                duration,
+                nights
             };
         });
     };
@@ -76,27 +89,49 @@ export default function BookingSummary() {
         doc.setTextColor(0, 0, 0);
         doc.text(`Generated on: ${new Date().toLocaleDateString()}`, 20, 45);
         
+        // Personal Details Section
+        doc.setFontSize(16);
+        doc.setTextColor(251, 146, 60);
+        doc.text('Personal Details', 20, 65);
+        doc.setFontSize(12);
+        doc.setTextColor(0, 0, 0);
+        doc.text(`Name: ${contactInfo.fullName || 'Not specified'}`, 20, 80);
+        doc.text(`Email: ${contactInfo.email || 'Not specified'}`, 20, 95);
+        doc.text(`Phone: ${contactInfo.phone || 'Not specified'}`, 20, 110);
+        doc.text(`Country: ${contactInfo.country || 'Not specified'}`, 20, 125);
+        if (contactInfo.nicNumber) {
+            doc.text(`NIC Number: ${contactInfo.nicNumber}`, 20, 140);
+        }
+        if (contactInfo.specialRequests) {
+            doc.text(`Special Requests: ${contactInfo.specialRequests}`, 20, 155);
+        }
+        
         // Destination Details
         doc.setFontSize(16);
         doc.setTextColor(251, 146, 60);
-        doc.text('Destination Details', 20, 65);
+        doc.text('Trip Details', 20, 180);
         doc.setFontSize(12);
         doc.setTextColor(0, 0, 0);
-        doc.text(`Destination: ${travelDetails.destination || 'Not specified'}`, 20, 80);
-        doc.text(`Duration: ${travelDetails.duration || 'Not specified'}`, 20, 95);
-        doc.text(`Start Date: ${travelDetails.startDate || 'Not specified'}`, 20, 110);
-        doc.text(`Travelers: ${travelDetails.adults} Adults${travelDetails.children > 0 ? `, ${travelDetails.children} Children` : ''}`, 20, 125);
+        doc.text(`Destination: ${travelDetails.destination || 'Not specified'}`, 20, 195);
+        doc.text(`Duration: ${travelDetails.duration || 'Not specified'}`, 20, 210);
+        doc.text(`Start Date: ${travelDetails.startDate || 'Not specified'}`, 20, 225);
+        doc.text(`Pickup Location: ${travelDetails.location || 'Not specified'}`, 20, 240);
+        doc.text(`Pickup Time: ${travelDetails.time || 'Not specified'}`, 20, 255);
+        doc.text(`Travelers: ${travelDetails.adults} Adults${travelDetails.children > 0 ? `, ${travelDetails.children} Children` : ''}`, 20, 270);
+        
+        // Add new page for guide options
+        doc.addPage();
         
         // Individual Guide Requests
         if (individualCosts.length > 0) {
             doc.setFontSize(16);
             doc.setTextColor(251, 146, 60);
-            doc.text('Guide Request Options', 20, 150);
+            doc.text('Guide Request Options', 20, 30);
             
-            let currentY = 170;
+            let currentY = 50;
             individualCosts.forEach((guideCost, index) => {
                 // Check if we need a new page
-                if (currentY > 250) {
+                if (currentY > 240) {
                     doc.addPage();
                     currentY = 30;
                 }
@@ -125,9 +160,9 @@ export default function BookingSummary() {
                 currentY += 12;
                 doc.text(`Guide Cost (${guideCost.duration} days): LKR ${guideCost.guideCost.toLocaleString()}`, 30, currentY);
                 currentY += 12;
-                doc.text(`Hotels Cost: LKR ${guideCost.hotelsCost.toLocaleString()}`, 30, currentY);
+                doc.text(`Accommodation (${guideCost.nights} nights): LKR ${guideCost.hotelsCost.toLocaleString()}`, 30, currentY);
                 currentY += 12;
-                doc.text(`Transportation: LKR ${guideCost.vehiclesCost.toLocaleString()}`, 30, currentY);
+                doc.text(`Transportation (${guideCost.duration} days): LKR ${guideCost.vehiclesCost.toLocaleString()}`, 30, currentY);
                 currentY += 12;
                 doc.text(`Service Fee (5%): LKR ${guideCost.serviceFee.toLocaleString()}`, 30, currentY);
                 currentY += 12;
@@ -137,61 +172,81 @@ export default function BookingSummary() {
                 doc.setFontSize(14);
                 doc.setTextColor(251, 146, 60);
                 doc.text(`Total for Option ${index + 1}: LKR ${guideCost.totalCost.toLocaleString()}`, 30, currentY);
-                currentY += 25;
+                currentY += 30;
             });
         }
         
-        // Add new page for additional details
+        // Add new page for detailed selections
         doc.addPage();
         
-        // Hotel Bookings
+        // Selected Accommodations
         doc.setFontSize(16);
         doc.setTextColor(251, 146, 60);
-        doc.text('Hotel Bookings', 20, 30);
+        doc.text('Selected Accommodations', 20, 30);
         doc.setFontSize(12);
         doc.setTextColor(0, 0, 0);
         
+        let yPos = 45;
         if (selectedItems.hotels && selectedItems.hotels.length > 0) {
-            let yPos = 45;
             selectedItems.hotels.forEach((hotel, index) => {
-                doc.text(`${index + 1}. ${hotel.name} - ${hotel.roomType || 'Standard Room'}`, 20, yPos);
+                doc.text(`${index + 1}. ${hotel.name} - ${hotel.location}`, 20, yPos);
+                yPos += 12;
+                doc.text(`   LKR ${(hotel.pricePerNight || 0).toLocaleString()} per night`, 25, yPos);
                 yPos += 15;
-                if (hotel.checkIn && hotel.checkOut) {
-                    doc.text(`   ${hotel.checkIn} to ${hotel.checkOut}`, 25, yPos);
-                    yPos += 15;
-                }
             });
-        } else {
-            doc.text('No hotels selected yet', 20, 45);
         }
         
-        // Transportation
-        let transportY = 120;
+        if (selectedItems.rooms && selectedItems.rooms.length > 0) {
+            selectedItems.rooms.forEach((room, index) => {
+                doc.text(`Room ${index + 1}: ${room.roomType} - ${room.bedType}`, 20, yPos);
+                yPos += 12;
+                doc.text(`   LKR ${(room.pricePerNight || 0).toLocaleString()} per night, Max ${room.maxGuests} guests`, 25, yPos);
+                yPos += 15;
+            });
+        }
+        
+        if ((!selectedItems.hotels || selectedItems.hotels.length === 0) && 
+            (!selectedItems.rooms || selectedItems.rooms.length === 0)) {
+            doc.text('No accommodations selected', 20, yPos);
+            yPos += 15;
+        }
+        
+        // Selected Transportation
+        yPos += 10;
         doc.setFontSize(16);
         doc.setTextColor(251, 146, 60);
-        doc.text('Transportation', 20, transportY);
+        doc.text('Selected Transportation', 20, yPos);
         doc.setFontSize(12);
         doc.setTextColor(0, 0, 0);
-        transportY += 15;
+        yPos += 15;
         
         if (selectedItems.selectedVehicle) {
-            doc.text(`Vehicle: ${selectedItems.selectedVehicle.name}`, 20, transportY);
-            transportY += 15;
-            doc.text(`Type: ${selectedItems.selectedVehicle.type}`, 20, transportY);
-            transportY += 15;
-            doc.text(`Features: ${selectedItems.selectedVehicle.features?.join(', ') || 'Standard features'}`, 20, transportY);
+            const vehicle = selectedItems.selectedVehicle;
+            doc.text(`Vehicle: ${vehicle.name}`, 20, yPos);
+            yPos += 12;
+            doc.text(`Type: ${vehicle.type || 'N/A'} | Seats: ${vehicle.seats || 'N/A'}`, 20, yPos);
+            yPos += 12;
+            doc.text(`Features: ${vehicle.amenities?.join(', ') || 'Standard features'}`, 20, yPos);
+            yPos += 12;
+            doc.text(`Driver: ${vehicle.driverIncluded ? 'Included' : 'Self-drive'}`, 20, yPos);
+            yPos += 12;
+            doc.text(`Cost: LKR ${(vehicle.pricePerDay || 0).toLocaleString()} per day`, 20, yPos);
+            if (vehicle.driverIncluded && vehicle.driverFee) {
+                yPos += 12;
+                doc.text(`   (Base: LKR ${(vehicle.basePrice || 0).toLocaleString()} + Driver: LKR ${vehicle.driverFee.toLocaleString()})`, 25, yPos);
+            }
         } else {
-            doc.text('No vehicle selected yet', 20, transportY);
+            doc.text('No vehicle selected', 20, yPos);
         }
         
         // Footer
         doc.setFontSize(10);
         doc.setTextColor(128, 128, 128);
-        doc.text('This is a draft tour request. You will choose one guide from the options above.', 20, 250);
-        doc.text('Prices are subject to change. Contact us: +94 11 234 5678 | support@travel.lk', 20, 265);
+        doc.text('This is a draft tour request. You will choose one guide from the options above.', 20, 280);
+        doc.text('Prices are subject to change. Contact us: +94 11 234 5678 | support@travel.lk', 20, 290);
         
         // Save the PDF
-        doc.save('tour-request-draft.pdf');
+        doc.save(`tour-request-${contactInfo.fullName || 'draft'}-${new Date().toISOString().split('T')[0]}.pdf`);
     };
 
     return (
@@ -236,11 +291,17 @@ export default function BookingSummary() {
                                     <span className="font-medium">LKR {guideCost.guideCost.toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-content-secondary">Hotels Cost:</span>
+                                    <span className="text-content-secondary">
+                                        Hotels Cost:
+                                        {guideCost.hotelsCost === 0 && <span className="text-xs text-gray-400 ml-1">(Optional - Not selected)</span>}
+                                    </span>
                                     <span className="font-medium">LKR {guideCost.hotelsCost.toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
-                                    <span className="text-content-secondary">Vehicles Cost:</span>
+                                    <span className="text-content-secondary">
+                                        Vehicles Cost:
+                                        {guideCost.vehiclesCost === 0 && <span className="text-xs text-gray-400 ml-1">(Optional - Not selected)</span>}
+                                    </span>
                                     <span className="font-medium">LKR {guideCost.vehiclesCost.toLocaleString()}</span>
                                 </div>
                                 <div className="border-t border-border-light pt-2">
@@ -253,6 +314,22 @@ export default function BookingSummary() {
                                         <span className="font-medium">LKR {guideCost.taxes.toLocaleString()}</span>
                                     </div>
                                 </div>
+                                
+                                {/* Show note about optional items */}
+                                {(guideCost.hotelsCost === 0 || guideCost.vehiclesCost === 0) && (
+                                    <div className="bg-blue-50 border border-blue-200 rounded p-2 mt-2">
+                                        <div className="text-xs text-blue-700">
+                                            <strong>💡 Note:</strong> 
+                                            {guideCost.hotelsCost === 0 && guideCost.vehiclesCost === 0 && 
+                                                " Hotels and vehicles not selected. Your guide can help arrange accommodation and transportation."}
+                                            {guideCost.hotelsCost === 0 && guideCost.vehiclesCost > 0 && 
+                                                " Hotels not selected. Your guide can help arrange accommodation."}
+                                            {guideCost.hotelsCost > 0 && guideCost.vehiclesCost === 0 && 
+                                                " Vehicle not selected. Your guide can arrange transportation."}
+                                        </div>
+                                    </div>
+                                )}
+                                
                                 <div className="border-t border-brand-primary pt-2">
                                     <div className="flex justify-between text-md font-bold">
                                         <span className="text-content-primary">Option {index + 1} Total:</span>

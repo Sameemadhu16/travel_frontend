@@ -186,13 +186,99 @@ export default function ContactInformation() {
                         required
                     >
                         <option value="">Select your country</option>
-                        <option value="sri-lanka">Sri Lanka</option>
-                        <option value="india">India</option>
-                        <option value="maldives">Maldives</option>
-                        <option value="usa">United States</option>
-                        <option value="uk">United Kingdom</option>
-                        <option value="australia">Australia</option>
-                        <option value="other">Other</option>
+                        
+                        {/* South Asian Countries */}
+                        <optgroup label="South Asia">
+                            <option value="sri-lanka">🇱🇰 Sri Lanka</option>
+                            <option value="india">🇮🇳 India</option>
+                            <option value="maldives">🇲🇻 Maldives</option>
+                            <option value="bangladesh">🇧🇩 Bangladesh</option>
+                            <option value="pakistan">🇵🇰 Pakistan</option>
+                            <option value="nepal">🇳🇵 Nepal</option>
+                            <option value="bhutan">🇧🇹 Bhutan</option>
+                        </optgroup>
+
+                        {/* Popular Tourist Countries */}
+                        <optgroup label="Popular Destinations">
+                            <option value="usa">🇺🇸 United States</option>
+                            <option value="uk">🇬🇧 United Kingdom</option>
+                            <option value="canada">🇨🇦 Canada</option>
+                            <option value="australia">🇦🇺 Australia</option>
+                            <option value="new-zealand">🇳🇿 New Zealand</option>
+                            <option value="germany">🇩🇪 Germany</option>
+                            <option value="france">🇫🇷 France</option>
+                            <option value="netherlands">🇳🇱 Netherlands</option>
+                            <option value="sweden">🇸🇪 Sweden</option>
+                            <option value="norway">🇳🇴 Norway</option>
+                            <option value="denmark">🇩🇰 Denmark</option>
+                            <option value="switzerland">🇨🇭 Switzerland</option>
+                        </optgroup>
+
+                        {/* Southeast Asia */}
+                        <optgroup label="Southeast Asia">
+                            <option value="thailand">🇹🇭 Thailand</option>
+                            <option value="singapore">🇸🇬 Singapore</option>
+                            <option value="malaysia">🇲🇾 Malaysia</option>
+                            <option value="indonesia">🇮🇩 Indonesia</option>
+                            <option value="philippines">🇵🇭 Philippines</option>
+                            <option value="vietnam">🇻🇳 Vietnam</option>
+                            <option value="myanmar">🇲🇲 Myanmar</option>
+                            <option value="cambodia">🇰🇭 Cambodia</option>
+                            <option value="laos">🇱🇦 Laos</option>
+                            <option value="brunei">🇧🇳 Brunei</option>
+                        </optgroup>
+
+                        {/* East Asia */}
+                        <optgroup label="East Asia">
+                            <option value="china">🇨🇳 China</option>
+                            <option value="japan">🇯🇵 Japan</option>
+                            <option value="south-korea">🇰🇷 South Korea</option>
+                            <option value="taiwan">🇹🇼 Taiwan</option>
+                            <option value="hong-kong">🇭🇰 Hong Kong</option>
+                            <option value="macau">🇲🇴 Macau</option>
+                        </optgroup>
+
+                        {/* Middle East */}
+                        <optgroup label="Middle East">
+                            <option value="uae">🇦🇪 United Arab Emirates</option>
+                            <option value="saudi-arabia">🇸🇦 Saudi Arabia</option>
+                            <option value="qatar">🇶🇦 Qatar</option>
+                            <option value="kuwait">🇰🇼 Kuwait</option>
+                            <option value="oman">🇴🇲 Oman</option>
+                            <option value="bahrain">🇧🇭 Bahrain</option>
+                            <option value="israel">🇮🇱 Israel</option>
+                            <option value="jordan">🇯🇴 Jordan</option>
+                            <option value="lebanon">🇱🇧 Lebanon</option>
+                        </optgroup>
+
+                        {/* Africa */}
+                        <optgroup label="Africa">
+                            <option value="south-africa">🇿🇦 South Africa</option>
+                            <option value="egypt">🇪🇬 Egypt</option>
+                            <option value="morocco">🇲🇦 Morocco</option>
+                            <option value="kenya">🇰🇪 Kenya</option>
+                            <option value="tanzania">🇹🇿 Tanzania</option>
+                            <option value="nigeria">🇳🇬 Nigeria</option>
+                            <option value="ghana">🇬🇭 Ghana</option>
+                            <option value="ethiopia">🇪🇹 Ethiopia</option>
+                        </optgroup>
+
+                        {/* Others */}
+                        <optgroup label="Other Countries">
+                            <option value="brazil">🇧🇷 Brazil</option>
+                            <option value="argentina">🇦🇷 Argentina</option>
+                            <option value="mexico">🇲🇽 Mexico</option>
+                            <option value="chile">🇨🇱 Chile</option>
+                            <option value="russia">🇷🇺 Russia</option>
+                            <option value="italy">🇮🇹 Italy</option>
+                            <option value="spain">🇪🇸 Spain</option>
+                            <option value="portugal">🇵🇹 Portugal</option>
+                            <option value="austria">🇦🇹 Austria</option>
+                            <option value="belgium">🇧🇪 Belgium</option>
+                            <option value="poland">🇵🇱 Poland</option>
+                            <option value="czech-republic">🇨🇿 Czech Republic</option>
+                            <option value="other">🌍 Other</option>
+                        </optgroup>
                     </select>
                     {errors.country && <p className="text-red-500 text-xs mt-1">{errors.country}</p>}
                 </div>
@@ -245,6 +331,96 @@ export default function ContactInformation() {
                     )}
                 </div>
             </div>
+            
+            {/* Additional Information */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label className="block text-sm font-semibold mb-1">
+                        Age Group
+                    </label>
+                    <select
+                        name="ageGroup"
+                        value={contactInfo.ageGroup || ''}
+                        onChange={handleInputChange}
+                        className="w-full border border-border-light rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-all bg-white"
+                    >
+                        <option value="">Select age group</option>
+                        <option value="18-25">👨‍🎓 18-25 years</option>
+                        <option value="26-35">👨‍💼 26-35 years</option>
+                        <option value="36-45">👨‍👩‍👧 36-45 years</option>
+                        <option value="46-55">👨‍🦳 46-55 years</option>
+                        <option value="56-65">👴 56-65 years</option>
+                        <option value="65+">👵 65+ years</option>
+                    </select>
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold mb-1">
+                        Occupation
+                    </label>
+                    <select
+                        name="occupation"
+                        value={contactInfo.occupation || ''}
+                        onChange={handleInputChange}
+                        className="w-full border border-border-light rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-all bg-white"
+                    >
+                        <option value="">Select occupation</option>
+                        <option value="student">👨‍🎓 Student</option>
+                        <option value="teacher">👨‍🏫 Teacher/Educator</option>
+                        <option value="engineer">👨‍💻 Engineer/IT Professional</option>
+                        <option value="doctor">👨‍⚕️ Doctor/Healthcare</option>
+                        <option value="business">👨‍💼 Business Professional</option>
+                        <option value="government">🏛️ Government Employee</option>
+                        <option value="retired">👴 Retired</option>
+                        <option value="freelancer">💼 Freelancer</option>
+                        <option value="artist">🎨 Artist/Creative</option>
+                        <option value="other">🔧 Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <div>
+                    <label className="block text-sm font-semibold mb-1">
+                        Travel Experience
+                    </label>
+                    <select
+                        name="travelExperience"
+                        value={contactInfo.travelExperience || ''}
+                        onChange={handleInputChange}
+                        className="w-full border border-border-light rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-all bg-white"
+                    >
+                        <option value="">Select travel experience</option>
+                        <option value="first-time">🆕 First time to Sri Lanka</option>
+                        <option value="second-visit">🔄 Second visit to Sri Lanka</option>
+                        <option value="frequent">✈️ Frequent visitor</option>
+                        <option value="experienced">🌍 Experienced international traveler</option>
+                        <option value="backpacker">🎒 Backpacking experience</option>
+                        <option value="luxury">💎 Luxury travel experience</option>
+                    </select>
+                </div>
+                <div>
+                    <label className="block text-sm font-semibold mb-1">
+                        How did you hear about us?
+                    </label>
+                    <select
+                        name="referralSource"
+                        value={contactInfo.referralSource || ''}
+                        onChange={handleInputChange}
+                        className="w-full border border-border-light rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-all bg-white"
+                    >
+                        <option value="">Select source</option>
+                        <option value="google">🔍 Google Search</option>
+                        <option value="social-media">📱 Social Media</option>
+                        <option value="friend">👥 Friend/Family Recommendation</option>
+                        <option value="travel-agent">🏢 Travel Agent</option>
+                        <option value="hotel">🏨 Hotel Recommendation</option>
+                        <option value="online-review">⭐ Online Reviews</option>
+                        <option value="repeat-customer">🔄 Previous Customer</option>
+                        <option value="other">📝 Other</option>
+                    </select>
+                </div>
+            </div>
+
             <div>
                 <label className="block text-sm font-semibold mb-1">Special Requests</label>
                 <textarea 

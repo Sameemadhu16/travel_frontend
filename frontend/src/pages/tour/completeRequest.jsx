@@ -3,6 +3,8 @@ import { useTourContext } from '../../context/TourContext';
 import Main from '../../components/Main';
 import StepIndicator from './components/StepIndicator';
 import DestinationDetails from './components/DestinationDetails';
+import TourPreferencesSummary from './components/TourPreferencesSummary';
+import ContactSummary from './components/ContactSummary';
 import SelectedTourGuide from './components/SelectedTourGuide';
 import HotelBookings from './components/HotelBookings';
 import Transportation from './components/Transportation';
@@ -32,6 +34,8 @@ export default function CompleteRequest() {
             {/* Left Column - Tour Details */}
             <div className="flex-1 space-y-6">
               <DestinationDetails />
+              <TourPreferencesSummary />
+              <ContactSummary />
               <SelectedTourGuide />
               <HotelBookings />
               <Transportation />

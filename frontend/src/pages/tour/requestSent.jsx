@@ -14,6 +14,8 @@ export default function RequestSent() {
     travelDetails, 
     contactInfo, 
     selectedItems, 
+    tourPreferences,
+    itinerary,
     bookingSummary,
     resetTour 
   } = useTourContext();

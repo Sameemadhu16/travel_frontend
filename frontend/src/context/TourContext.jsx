@@ -15,6 +15,8 @@ export const useTourContext = () => {
 const initialTravelDetails = {
   destination: '',
   duration: '',
+  travelStyle: '',
+  groupType: '',
   startDate: '',
   location: '',
   time: '',
@@ -30,7 +32,9 @@ const initialTourPreferences = {
   interests: [],
   accommodation: '',
   travelStyle: '',
-  budgetRange: ''
+  budgetRange: '',
+  activityLevel: '',
+  diningPreference: ''
 };
 
 const initialContactInfo = {
@@ -40,7 +44,11 @@ const initialContactInfo = {
     country: '',
     nicNumber: '',
     optionalContact: '',
-    specialRequests: ''
+    specialRequests: '',
+    ageGroup: '',
+    occupation: '',
+    travelExperience: '',
+    referralSource: ''
 };
 
 const initialSelectedItems = {
@@ -242,15 +250,43 @@ export const TourProvider = ({ children }) => {
   };
 
   const calculateTotalCost = () => {
-    const guidesCost = selectedItems.guides.reduce((total, guide) => total + (guide.price || 0), 0);
-    const hotelsCost = selectedItems.hotels.reduce((total, hotel) => total + (hotel.price || 0), 0);
-    const roomsCost = selectedItems.rooms.reduce((total, room) => total + (room.price || 0), 0);
-    const vehiclesCost = selectedItems.vehicles.reduce((total, vehicle) => total + (vehicle.price || 0), 0);
-    const selectedVehicleCost = selectedItems.selectedVehicle?.price || 0;
+    // Extract duration in days for calculations
+    const duration = travelDetails.duration ? 
+      parseInt(travelDetails.duration.match(/(\d+)/)?.[1] || '1') : 1;
+    
+    // Calculate guides cost (per day * duration)
+    const guidesCost = selectedItems.guides.reduce((total, guide) => {
+      const dailyRate = guide.price || guide.pricePerDay || 0;
+      return total + (dailyRate * duration);
+    }, 0);
+    
+    // Calculate hotels cost (per night * number of nights)
+    // Assuming duration - 1 nights (e.g., 3 days = 2 nights)
+    const nights = Math.max(duration - 1, 1);
+    const hotelsCost = selectedItems.hotels.reduce((total, hotel) => {
+      const nightlyRate = hotel.pricePerNight || hotel.price || 0;
+      return total + (nightlyRate * nights);
+    }, 0);
+    
+    // Calculate rooms cost (per night * number of nights)
+    const roomsCost = selectedItems.rooms.reduce((total, room) => {
+      const nightlyRate = room.pricePerNight || room.price || 0;
+      return total + (nightlyRate * nights);
+    }, 0);
+    
+    // Calculate vehicles cost (per day * duration)
+    const vehiclesCost = selectedItems.vehicles.reduce((total, vehicle) => {
+      const dailyRate = vehicle.pricePerDay || vehicle.price || 0;
+      return total + (dailyRate * duration);
+    }, 0);
+    
+    // Calculate selected vehicle cost (per day * duration)
+    const selectedVehicleCost = selectedItems.selectedVehicle ? 
+      (selectedItems.selectedVehicle.pricePerDay || selectedItems.selectedVehicle.price || 0) * duration : 0;
     
     const subtotal = guidesCost + hotelsCost + roomsCost + vehiclesCost + selectedVehicleCost;
-    const serviceFee = subtotal * 0.05; // 5% service fee
-    const taxes = subtotal * 0.08; // 8% taxes
+    const serviceFee = Math.round(subtotal * 0.05); // 5% service fee
+    const taxes = Math.round(subtotal * 0.08); // 8% taxes
     const totalCost = subtotal + serviceFee + taxes;
 
     setBookingSummary({
@@ -259,9 +295,16 @@ export const TourProvider = ({ children }) => {
       vehiclesCost: vehiclesCost + selectedVehicleCost,
       serviceFee,
       taxes,
-      totalCost
+      totalCost,
+      duration,
+      nights
     });
   };
+
+  // Auto-calculate costs when selections change
+  useEffect(() => {
+    calculateTotalCost();
+  }, [selectedItems, travelDetails.duration]);
 
   // Validation Actions
   const setFieldError = (field, error) => {
@@ -289,12 +332,23 @@ export const TourProvider = ({ children }) => {
   const validateTravelDetails = () => {
     const newErrors = {};
     
-    if (!travelDetails.destination) newErrors.destination = 'Please select a destination';
+    if (!travelDetails.destination) newErrors.destination = 'Please select a destination package';
     if (!travelDetails.duration) newErrors.duration = 'Please select trip duration';
+    if (!travelDetails.travelStyle) newErrors.travelStyle = 'Please select your preferred travel style';
     if (!travelDetails.startDate) newErrors.startDate = 'Start date is required';
     if (!travelDetails.location) newErrors.location = 'Pickup location is required';
     if (!travelDetails.time) newErrors.time = 'Pickup time is required';
     if (!travelDetails.adults || travelDetails.adults < 1) newErrors.adults = 'At least 1 adult is required';
+
+    // Validate start date is not in the past
+    if (travelDetails.startDate) {
+      const selectedDate = new Date(travelDetails.startDate);
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      if (selectedDate < today) {
+        newErrors.startDate = 'Start date cannot be in the past';
+      }
+    }
 
     // Validate itinerary
     let hasItineraryError = false;
@@ -336,6 +390,8 @@ export const TourProvider = ({ children }) => {
     if (!contactInfo.fullName || !contactInfo.fullName.trim()) newErrors.fullName = 'Full name is required';
     if (!contactInfo.email || !contactInfo.email.trim()) newErrors.email = 'Email is required';
     if (!contactInfo.phone || !contactInfo.phone.trim()) newErrors.phone = 'Phone number is required';
+    if (!contactInfo.country) newErrors.country = 'Please select your country';
+    if (!contactInfo.nicNumber || !contactInfo.nicNumber.trim()) newErrors.nicNumber = 'NIC number is required';
 
     // Email validation
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -343,10 +399,21 @@ export const TourProvider = ({ children }) => {
       newErrors.email = 'Please enter a valid email address';
     }
 
-    // Phone validation (basic)
-    const phoneRegex = /^[\+]?[1-9][\d]{0,15}$/;
+    // Phone validation
+    const phoneRegex = /^\+?[\d\s-()]{10,15}$/;
     if (contactInfo.phone && !phoneRegex.test(contactInfo.phone.replace(/\s/g, ''))) {
       newErrors.phone = 'Please enter a valid phone number';
+    }
+
+    // NIC validation (Sri Lankan format)
+    const nicRegex = /^(\d{9}[vVxX]|\d{12})$/;
+    if (contactInfo.nicNumber && !nicRegex.test(contactInfo.nicNumber.replace(/\s/g, ''))) {
+      newErrors.nicNumber = 'Please enter a valid NIC number (e.g., 123456789V or 199812345678)';
+    }
+
+    // Optional contact validation
+    if (contactInfo.optionalContact && !phoneRegex.test(contactInfo.optionalContact.replace(/\s/g, ''))) {
+      newErrors.optionalContact = 'Please enter a valid phone number';
     }
 
     setErrors(prev => ({ ...prev, ...newErrors }));
@@ -534,9 +601,9 @@ export const TourProvider = ({ children }) => {
         case 4:
           return validateGuideSelection();
         case 5:
-          return selectedItems.hotels.length > 0 || selectedItems.rooms.length > 0;
+          return true; // Hotels/rooms are now optional
         case 6:
-          return selectedItems.vehicles.length > 0 || selectedItems.selectedVehicle !== null;
+          return true; // Vehicles are now optional
         default:
           return true;
       }
@@ -546,18 +613,17 @@ export const TourProvider = ({ children }) => {
       return validateTravelDetails() &&
              validateTourPreferences() &&
              validateContactInfo() &&
-             validateGuideSelection() &&
-             (selectedItems.hotels.length > 0 || selectedItems.rooms.length > 0) &&
-             (selectedItems.vehicles.length > 0 || selectedItems.selectedVehicle !== null) &&
-             agreedToTerms;
+             validateGuideSelection();
+      // Note: Hotels/rooms and vehicles are now optional
     },
 
     // Render-safe version that doesn't trigger state updates
     isTourCompleteCheck: () => {
       // Basic checks without calling validation functions that update state
       const hasTravelDetails = travelDetails.destination && travelDetails.duration && 
-                              travelDetails.startDate && travelDetails.location && 
-                              travelDetails.time && travelDetails.adults >= 1;
+                              travelDetails.travelStyle && travelDetails.startDate && 
+                              travelDetails.location && travelDetails.time && 
+                              travelDetails.adults >= 1;
       
       const hasItinerary = itinerary.length > 0 && 
                           itinerary.every(day => 
@@ -572,15 +638,15 @@ export const TourProvider = ({ children }) => {
       
       const hasContactInfo = contactInfo.fullName && contactInfo.fullName.trim() && 
                             contactInfo.email && contactInfo.email.trim() && 
-                            contactInfo.phone && contactInfo.phone.trim();
+                            contactInfo.phone && contactInfo.phone.trim() &&
+                            contactInfo.country && contactInfo.nicNumber && 
+                            contactInfo.nicNumber.trim();
       
-      const hasGuides = selectedItems.guides.length > 0;
-      const hasAccommodation = selectedItems.hotels.length > 0 || selectedItems.rooms.length > 0;
-      const hasTransportation = selectedItems.vehicles.length > 0 || selectedItems.selectedVehicle !== null;
+      const hasGuides = selectedItems.guides.length > 0; // Required
+      // Hotels/rooms and vehicles are now optional
       
       return hasTravelDetails && hasItinerary && hasPreferences && 
-             hasContactInfo && hasGuides && hasAccommodation && 
-             hasTransportation && agreedToTerms;
+             hasContactInfo && hasGuides;
     }
   };
 

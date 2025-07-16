@@ -32,13 +32,19 @@ export default function TravelDetails() {
         switch (name) {
             case 'destination':
                 if (!value) {
-                    error = 'Please select a destination';
+                    error = 'Please select a destination package';
                 }
                 break;
                 
             case 'duration':
                 if (!value) {
                     error = 'Please select trip duration';
+                }
+                break;
+
+            case 'travelStyle':
+                if (!value) {
+                    error = 'Please select your preferred travel style';
                 }
                 break;
                 
@@ -67,12 +73,14 @@ export default function TravelDetails() {
                 if (!value) {
                     error = 'Pickup time is required';
                 }
-                break;
-                
-            case 'adults':
+                break;                case 'adults':
                 if (!value || value < 1) {
                     error = 'At least 1 adult is required';
                 }
+                break;
+
+            case 'groupType':
+                // Optional field, no validation required
                 break;
         }
         
@@ -117,7 +125,7 @@ export default function TravelDetails() {
     };
 
     const isFormValid = () => {
-        const requiredFields = ['destination', 'duration', 'startDate', 'location', 'time', 'adults'];
+        const requiredFields = ['destination', 'duration', 'travelStyle', 'startDate', 'location', 'time', 'adults'];
         const hasFieldErrors = requiredFields.some(field => {
             const error = validateField(field, travelDetails[field]);
             return error || !travelDetails[field];
@@ -175,14 +183,92 @@ export default function TravelDetails() {
                         }`}
                         required
                     >
-                        <option value="">Select Destination</option>
-                        <option value="colombo">Colombo</option>
-                        <option value="kandy">Kandy</option>
-                        <option value="galle">Galle</option>
-                        <option value="ella">Ella</option>
-                        <option value="sigiriya">Sigiriya</option>
+                        <option value="">Select Destination Package</option>
+                        
+                        {/* Day Trip Options (1 day) */}
+                        <optgroup label="Day Trips (1 Day)">
+                            <option value="colombo-city">Colombo City Tour</option>
+                            <option value="kandy-day">Kandy Day Trip</option>
+                            <option value="galle-day">Galle Fort & Southern Coast</option>
+                            <option value="pinnawala-kandy">Pinnawala Elephant Orphanage & Kandy</option>
+                            <option value="bentota-day">Bentota Beach Day Trip</option>
+                        </optgroup>
+
+                        {/* Short Tours (2-3 days) */}
+                        <optgroup label="Short Getaways (2-3 Days)">
+                            <option value="kandy-nuwara">Kandy & Nuwara Eliya</option>
+                            <option value="southern-beaches">Southern Beaches (Galle, Mirissa, Unawatuna)</option>
+                            <option value="sigiriya-dambulla">Sigiriya & Dambulla Cultural Tour</option>
+                            <option value="ella-adventure">Ella Adventure (Train Journey & Hiking)</option>
+                            <option value="yala-safari">Yala National Park Safari</option>
+                            <option value="negombo-colombo">Negombo & Colombo</option>
+                        </optgroup>
+
+                        {/* Medium Tours (4-7 days) */}
+                        <optgroup label="Classic Tours (4-7 Days)">
+                            <option value="cultural-triangle">Cultural Triangle (Anuradhapura, Polonnaruwa, Sigiriya)</option>
+                            <option value="hill-country">Hill Country Explorer (Kandy, Nuwara Eliya, Ella)</option>
+                            <option value="south-west-coast">South West Coast (Colombo to Galle)</option>
+                            <option value="central-highlands">Central Highlands & Tea Country</option>
+                            <option value="wildlife-adventure">Wildlife & Adventure (Yala, Udawalawe, Sinharaja)</option>
+                            <option value="beaches-culture">Beaches & Culture Combo</option>
+                            <option value="ancient-kingdoms">Ancient Kingdoms Tour</option>
+                        </optgroup>
+
+                        {/* Extended Tours (8-14 days) */}
+                        <optgroup label="Extended Tours (8-14 Days)">
+                            <option value="grand-tour">Grand Sri Lanka Tour</option>
+                            <option value="complete-island">Complete Island Experience</option>
+                            <option value="cultural-nature">Cultural Sites & Nature Reserves</option>
+                            <option value="coast-to-mountains">Coast to Mountains Adventure</option>
+                            <option value="photography-tour">Photography Expedition</option>
+                            <option value="ayurveda-wellness">Ayurveda & Wellness Journey</option>
+                            <option value="adventure-explorer">Adventure Explorer Tour</option>
+                        </optgroup>
+
+                        {/* Luxury Tours (10+ days) */}
+                        <optgroup label="Luxury & Special Interest (10+ Days)">
+                            <option value="luxury-sri-lanka">Luxury Sri Lanka Experience</option>
+                            <option value="honeymoon-special">Honeymoon Special Tour</option>
+                            <option value="family-adventure">Family Adventure Package</option>
+                            <option value="wildlife-photography">Wildlife Photography Tour</option>
+                            <option value="culinary-journey">Culinary Journey of Sri Lanka</option>
+                            <option value="spiritual-tour">Spiritual & Meditation Tour</option>
+                            <option value="eco-adventure">Eco-Adventure & Conservation Tour</option>
+                        </optgroup>
+
+                        {/* Custom Options */}
+                        <optgroup label="Custom Options">
+                            <option value="custom-tour">Custom Itinerary (Tell us your preferences)</option>
+                            <option value="business-travel">Business Travel Package</option>
+                            <option value="educational-tour">Educational/School Group Tour</option>
+                        </optgroup>
                     </select>
                     {errors.destination && <p className="text-red-500 text-xs mt-1">{errors.destination}</p>}
+                    
+                    {/* Destination recommendations based on duration */}
+                    {travelDetails.duration && (
+                        <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
+                            <span className="font-medium text-blue-800">💡 Recommended for {travelDetails.duration}:</span>
+                            <div className="text-blue-700 mt-1">
+                                {travelDetails.duration === '1-day' && 
+                                    "Day trips perfect for exploring single destinations like Colombo city or Kandy temple complex."
+                                }
+                                {(travelDetails.duration === '2-days' || travelDetails.duration === '3-days') && 
+                                    "Short getaways ideal for nearby destinations or quick cultural experiences like Kandy-Nuwara Eliya or Sigiriya-Dambulla."
+                                }
+                                {(travelDetails.duration === '4-days' || travelDetails.duration === '5-days' || travelDetails.duration === '6-days' || travelDetails.duration === '7-days') && 
+                                    "Classic tours allowing deeper exploration of regions like Cultural Triangle, Hill Country, or South Coast with comfortable pace."
+                                }
+                                {(travelDetails.duration === '8-days' || travelDetails.duration === '9-days' || travelDetails.duration === '10-days' || travelDetails.duration === '12-days' || travelDetails.duration === '14-days') && 
+                                    "Extended tours perfect for comprehensive island exploration, wildlife safaris, and cultural immersion experiences."
+                                }
+                                {(travelDetails.duration === '16-days' || travelDetails.duration === '18-days' || travelDetails.duration === '21-days') && 
+                                    "Luxury tours allowing in-depth exploration, multiple activities per location, and relaxed travel pace with premium experiences."
+                                }
+                            </div>
+                        </div>
+                    )}
                 </div>
                 <div>
                     <label className="block text-sm font-semibold mb-1">
@@ -200,14 +286,111 @@ export default function TravelDetails() {
                         required
                     >
                         <option value="">Select Duration</option>
-                        <option value="3-days">3 Days</option>
-                        <option value="5-days">5 Days</option>
-                        <option value="7-days">7 Days</option>
-                        <option value="10-days">10 Days</option>
-                        <option value="14-days">14 Days</option>
+                        
+                        {/* Day Trips */}
+                        <option value="1-day">1 Day (Day Trip)</option>
+                        
+                        {/* Short Trips */}
+                        <option value="2-days">2 Days / 1 Night</option>
+                        <option value="3-days">3 Days / 2 Nights</option>
+                        
+                        {/* Medium Trips */}
+                        <option value="4-days">4 Days / 3 Nights</option>
+                        <option value="5-days">5 Days / 4 Nights</option>
+                        <option value="6-days">6 Days / 5 Nights</option>
+                        <option value="7-days">7 Days / 6 Nights (1 Week)</option>
+                        
+                        {/* Extended Trips */}
+                        <option value="8-days">8 Days / 7 Nights</option>
+                        <option value="9-days">9 Days / 8 Nights</option>
+                        <option value="10-days">10 Days / 9 Nights</option>
+                        <option value="12-days">12 Days / 11 Nights</option>
+                        <option value="14-days">14 Days / 13 Nights (2 Weeks)</option>
+                        
+                        {/* Long Tours */}
+                        <option value="16-days">16 Days / 15 Nights</option>
+                        <option value="18-days">18 Days / 17 Nights</option>
+                        <option value="21-days">21 Days / 20 Nights (3 Weeks)</option>
+                        
+                        {/* Custom */}
+                        <option value="custom">Custom Duration (Contact us)</option>
                     </select>
                     {errors.duration && <p className="text-red-500 text-xs mt-1">{errors.duration}</p>}
+                    
+                    {/* Duration information */}
+                    {travelDetails.duration && (
+                        <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs">
+                            <span className="font-medium text-green-800">ℹ️ What's included in {travelDetails.duration}:</span>
+                            <div className="text-green-700 mt-1">
+                                {travelDetails.duration === '1-day' && 
+                                    "Transportation, guide, entrance fees, lunch. Perfect for exploring one main attraction with nearby sites."
+                                }
+                                {(travelDetails.duration === '2-days' || travelDetails.duration === '3-days') && 
+                                    "Accommodation, meals, transportation, guide, entrance fees. Ideal for 2-3 main destinations with comfortable travel."
+                                }
+                                {(travelDetails.duration === '4-days' || travelDetails.duration === '5-days' || travelDetails.duration === '6-days' || travelDetails.duration === '7-days') && 
+                                    "Hotels, all meals, AC transport, expert guide, entrance fees, airport transfers. Perfect for exploring 1-2 regions thoroughly."
+                                }
+                                {(travelDetails.duration === '8-days' || travelDetails.duration === '9-days' || travelDetails.duration === '10-days' || travelDetails.duration === '12-days' || travelDetails.duration === '14-days') && 
+                                    "Premium hotels, all meals, luxury transport, expert guide, all fees, multiple activities. Covers 3-4 major regions."
+                                }
+                                {(travelDetails.duration === '16-days' || travelDetails.duration === '18-days' || travelDetails.duration === '21-days') && 
+                                    "Luxury accommodations, gourmet dining, premium vehicles, specialist guides, exclusive experiences, complete island coverage."
+                                }
+                            </div>
+                        </div>
+                    )}
                 </div>
+                
+                {/* Travel Style/Budget */}
+                <div>
+                    <label className="block text-sm font-semibold mb-1">
+                        Travel Style <span className="text-red-500">*</span>
+                    </label>
+                    <select 
+                        name="travelStyle"
+                        value={travelDetails.travelStyle || ''}
+                        onChange={handleInputChange}
+                        onBlur={handleBlur}
+                        className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition-all ${
+                            errors.travelStyle ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
+                            'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
+                        }`}
+                        required
+                    >
+                        <option value="">Select Travel Style</option>
+                        <option value="budget">💰 Budget (Economy hotels, local transport)</option>
+                        <option value="standard">🏨 Standard (3-star hotels, AC vehicle)</option>
+                        <option value="comfort">✨ Comfort (4-star hotels, premium vehicle)</option>
+                        <option value="luxury">👑 Luxury (5-star hotels, luxury vehicle)</option>
+                        <option value="premium">💎 Premium (Boutique hotels, exclusive experiences)</option>
+                    </select>
+                    {errors.travelStyle && <p className="text-red-500 text-xs mt-1">{errors.travelStyle}</p>}
+                </div>
+
+                {/* Group Type */}
+                <div>
+                    <label className="block text-sm font-semibold mb-1">
+                        Group Type
+                    </label>
+                    <select 
+                        name="groupType"
+                        value={travelDetails.groupType || ''}
+                        onChange={handleInputChange}
+                        className="w-full border border-border-light rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
+                    >
+                        <option value="">Select Group Type</option>
+                        <option value="family">👨‍👩‍👧‍👦 Family with Children</option>
+                        <option value="couple">💑 Couple/Honeymoon</option>
+                        <option value="friends">👥 Friends Group</option>
+                        <option value="solo">🧑 Solo Traveler</option>
+                        <option value="business">💼 Business/Corporate</option>
+                        <option value="elderly">👴 Senior Citizens</option>
+                        <option value="adventure">🏃 Adventure Seekers</option>
+                        <option value="cultural">🏛️ Cultural Enthusiasts</option>
+                    </select>
+                </div>
+
                 <div>
                     <label className="block text-sm font-semibold mb-1">
                         Start Date <span className="text-red-500">*</span>
