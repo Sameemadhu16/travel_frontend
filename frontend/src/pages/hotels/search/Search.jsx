@@ -10,6 +10,7 @@ import { hotelList } from '../../../core/Lists/hotels'
 import HotelCard from '../components/HotelCard'
 import CheckboxGroup from '../components/CheckboxGroup'
 import Breadcrumb from '../../../components/Breadcrumb'
+import { useTourContext } from '../../../context/TourContext'
 
 const breadcrumbItems = [
     { label: "Home", path: "/home" },
@@ -20,6 +21,10 @@ export default function Search() {
     const location = useLocation();
     const navigate = useNavigate();
     const isTourSelectHotel = location.pathname === '/tour/select-hotel';
+    
+    // Use TourContext if in tour flow
+    const tourContext = isTourSelectHotel ? useTourContext() : null;
+    const { selectedItems, travelDetails } = tourContext || {};
 
     const [selectedPropertyTypes, setSelectedPropertyTypes] = useState([]);
     const [selectedMeals, setSelectedMeals] = useState([]);
@@ -34,8 +39,21 @@ export default function Search() {
         navigate('/tour/select-vehicle');
     };
 
+    // Filter hotels based on travel details if available
+    const filteredHotels = useMemo(() => {
+        if (!isTourSelectHotel || !travelDetails?.destination) {
+            return hotelList;
+        }
+        
+        // Filter hotels by destination/location
+        return hotelList.filter(hotel => 
+            hotel.location?.toLowerCase().includes(travelDetails.destination.toLowerCase()) ||
+            hotel.city?.toLowerCase().includes(travelDetails.destination.toLowerCase())
+        );
+    }, [isTourSelectHotel, travelDetails?.destination]);
+
     const hotelsContainer = useMemo(()=>{
-        return hotelList.map((hotel,index)=>(
+        return filteredHotels.map((hotel,index)=>(
             <div key={index}>
                 <HotelCard
                     id={hotel.id}
@@ -48,10 +66,12 @@ export default function Search() {
                     type={hotel.type}
                     roomLeft={hotel.leftRooms}
                     reviews={hotel.reviews}
+                    isTourMode={isTourSelectHotel}
+                    selectedHotels={selectedItems?.hotels || []}
                 />
             </div>
         ))
-    },[]);
+    },[filteredHotels, isTourSelectHotel, selectedItems?.hotels]);
 
     const handleSelect = (value) => {
         console.log('Selected:', value);
@@ -69,7 +89,7 @@ export default function Search() {
                     <div className='flex flex-1'>
                         <div className='w-full flex justify-between items-center'>
                             <Title 
-                                title={`Kandy: ${hotelList.length} matches`}
+                                title={`${travelDetails?.destination || 'Hotels'}: ${filteredHotels.length} matches`}
                                 size='text-[16px]'
                             />
                             {!isTourSelectHotel && (
@@ -83,12 +103,16 @@ export default function Search() {
                             )}
                             {isTourSelectHotel && (
                                 <div className='flex gap-4'>
-                                    
+                                    {selectedItems?.hotels && selectedItems.hotels.length > 0 && (
+                                        <span className="px-4 py-2 bg-brand-primary/10 text-brand-primary rounded-lg font-medium">
+                                            {selectedItems.hotels.length} hotel{selectedItems.hotels.length > 1 ? 's' : ''} selected
+                                        </span>
+                                    )}
                                     <button 
                                         onClick={handleNext}
                                         className="px-6 py-2 rounded bg-brand-primary text-white font-semibold flex items-center gap-2 hover:bg-warning transition"
                                     >
-                                        Skip & Next
+                                        {selectedItems?.hotels && selectedItems.hotels.length > 0 ? 'Continue' : 'Skip & Next'}
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                                         </svg>

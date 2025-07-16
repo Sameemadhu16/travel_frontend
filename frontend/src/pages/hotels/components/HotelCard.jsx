@@ -7,6 +7,7 @@ import Tag from './Tag';
 import PropTypes from 'prop-types';
 import { handleNavigate } from '../../../core/constant';
 import { useLocation } from 'react-router-dom';
+import { useTourContext } from '../../../context/TourContext';
 
 export default function HotelCard({
     id,
@@ -20,12 +21,42 @@ export default function HotelCard({
     roomLeft,
     reviews,
     isFavorite = true,
+    isTourMode = false,
+    selectedHotels = [],
 }) {
     const currentLocation = useLocation();
+    const tourContext = isTourMode ? useTourContext() : null;
+    const { addSelectedHotel, removeSelectedHotel } = tourContext || {};
+    
+    const isSelected = selectedHotels.some(hotel => hotel.id === id);
 
     const handleFavoriteClick = (e) => {
         e.stopPropagation();
         // toggle favorite logic here
+    };
+
+    const handleTourSelection = (e) => {
+        e.stopPropagation();
+        if (!tourContext) return;
+        
+        const hotelData = {
+            id,
+            name,
+            location,
+            rating,
+            pricePerNight,
+            images,
+            amenities,
+            type,
+            roomLeft,
+            reviews
+        };
+        
+        if (isSelected) {
+            removeSelectedHotel(id);
+        } else {
+            addSelectedHotel(hotelData);
+        }
     };
 
     const handleCardClick = () => {
@@ -83,15 +114,49 @@ export default function HotelCard({
                             <p className='text-sm text-gray-400'>Starting from</p>
                             <p className='text-lg font-semibold text-brand-primary'>LKR {pricePerNight} / night</p>
                         </div>
-                        <div className='flex gap-2 w-1/2'>
-                            <Tag title={`${rating} (${reviews})`} icon={star} />
-                            <Tag
-                                title={`Only ${roomLeft} left`}
-                                color='bg-brand-primary'
-                                textColor='text-white'
-                                icon={info}
-                            />
-                        </div>
+                        
+                        {isTourMode ? (
+                            <div className='flex flex-col items-end gap-2'>
+                                <div className='flex gap-2'>
+                                    <Tag title={`${rating} (${reviews})`} icon={star} />
+                                    <Tag
+                                        title={`Only ${roomLeft} left`}
+                                        color='bg-red-100'
+                                        textColor='text-red-600'
+                                        icon={info}
+                                    />
+                                </div>
+                                <button
+                                    onClick={handleTourSelection}
+                                    className={`px-4 py-2 rounded-lg font-semibold text-sm transition ${
+                                        isSelected 
+                                            ? 'bg-brand-primary text-white border-2 border-brand-primary' 
+                                            : 'bg-white text-brand-primary border-2 border-brand-primary hover:bg-brand-primary hover:text-white'
+                                    }`}
+                                >
+                                    {isSelected ? (
+                                        <>
+                                            <svg className="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                                            </svg>
+                                            Selected
+                                        </>
+                                    ) : (
+                                        'Select Hotel'
+                                    )}
+                                </button>
+                            </div>
+                        ) : (
+                            <div className='flex gap-2 w-1/2'>
+                                <Tag title={`${rating} (${reviews})`} icon={star} />
+                                <Tag
+                                    title={`Only ${roomLeft} left`}
+                                    color='bg-brand-primary'
+                                    textColor='text-white'
+                                    icon={info}
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -111,4 +176,6 @@ HotelCard.propTypes = {
     roomLeft: PropTypes.number.isRequired,
     reviews: PropTypes.number.isRequired,
     isFavorite: PropTypes.bool,
+    isTourMode: PropTypes.bool,
+    selectedHotels: PropTypes.array,
 };
