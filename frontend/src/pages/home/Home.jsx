@@ -1,4 +1,3 @@
-import React from 'react';
 import HeroSection from '../../components/HeroSection';
 import RecommendedDestinations from '../../components/RecommendedDestinations';
 import TravelBlogSection from '../../components/TravelBlogSection';
@@ -9,13 +8,13 @@ import Main from '../../components/Main';
 
 export default function Home() {
     return (
-        <Main id="main-content-blur">
+        <>
             <HeroSection />
             <RecommendedDestinations />
             <TravelBlogSection />
             <WhyChooseUs />
             {/* <CallToAction /> */}
             {/* <Footer /> */}
-        </Main>
+        </>
     );
 }
