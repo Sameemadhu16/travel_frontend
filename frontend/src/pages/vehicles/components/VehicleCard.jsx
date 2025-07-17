@@ -216,8 +216,8 @@ export default function VehicleCard({
                         </div>
                         
                         {isTourMode ? (
-                            <div className='flex flex-col items-end gap-2'>
-                                <div className='flex gap-2'>
+                            <div className='flex flex-col items-end gap-2 w-1/2'>
+                                <div className='flex gap-2 w-full'>
                                     <Tag title={`${rating} (${reviews})`} icon={star} />
                                     <Tag
                                         title={available ? "Available" : "Not Available"}
