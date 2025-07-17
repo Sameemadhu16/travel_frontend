@@ -1,22 +1,41 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTourContext } from '../../../context/TourContext';
+import { useContext } from 'react';
+import FormContext from '../../../context/InitialValues';
 import jsPDF from 'jspdf';
 
 export default function BookingSummary() {
     const navigate = useNavigate();
-    const { 
+    const { formData, setFormData } = useContext(FormContext);
+    
+    const {
         bookingSummary, 
         travelDetails, 
         selectedItems, 
         contactInfo,
         tourPreferences,
         itinerary,
-        agreedToTerms, 
-        setAgreedToTerms,
-        isTourComplete,
-        isTourCompleteCheck 
-    } = useTourContext();
+        agreedToTerms
+    } = formData;
+
+    const setAgreedToTerms = (value) => {
+        setFormData(prev => ({
+            ...prev,
+            agreedToTerms: value
+        }));
+    };
+
+    const isTourComplete = () => {
+        // Check if all required fields are filled
+        return (
+            travelDetails?.destination &&
+            travelDetails?.duration &&
+            travelDetails?.startDate &&
+            contactInfo?.fullName &&
+            contactInfo?.email &&
+            contactInfo?.phone &&
+            selectedItems?.guides?.length > 0
+        );
+    };
 
     const handleCompleteRequest = () => {
         if (agreedToTerms && isTourComplete()) {
@@ -30,9 +49,9 @@ export default function BookingSummary() {
 
     // Calculate costs for individual guide requests
     const calculateIndividualGuideCosts = () => {
-        if (!selectedItems.guides || selectedItems.guides.length === 0) return [];
+        if (!selectedItems?.guides || selectedItems.guides.length === 0) return [];
         
-        const duration = travelDetails.duration ? 
+        const duration = travelDetails?.duration ? 
             parseInt(travelDetails.duration.match(/(\d+)/)?.[1] || '1') : 1;
         const nights = Math.max(duration - 1, 1);
         
@@ -95,14 +114,14 @@ export default function BookingSummary() {
         doc.text('Personal Details', 20, 65);
         doc.setFontSize(12);
         doc.setTextColor(0, 0, 0);
-        doc.text(`Name: ${contactInfo.fullName || 'Not specified'}`, 20, 80);
-        doc.text(`Email: ${contactInfo.email || 'Not specified'}`, 20, 95);
-        doc.text(`Phone: ${contactInfo.phone || 'Not specified'}`, 20, 110);
-        doc.text(`Country: ${contactInfo.country || 'Not specified'}`, 20, 125);
-        if (contactInfo.nicNumber) {
+        doc.text(`Name: ${contactInfo?.fullName || 'Not specified'}`, 20, 80);
+        doc.text(`Email: ${contactInfo?.email || 'Not specified'}`, 20, 95);
+        doc.text(`Phone: ${contactInfo?.phone || 'Not specified'}`, 20, 110);
+        doc.text(`Country: ${contactInfo?.country || 'Not specified'}`, 20, 125);
+        if (contactInfo?.nicNumber) {
             doc.text(`NIC Number: ${contactInfo.nicNumber}`, 20, 140);
         }
-        if (contactInfo.specialRequests) {
+        if (contactInfo?.specialRequests) {
             doc.text(`Special Requests: ${contactInfo.specialRequests}`, 20, 155);
         }
         
@@ -112,12 +131,12 @@ export default function BookingSummary() {
         doc.text('Trip Details', 20, 180);
         doc.setFontSize(12);
         doc.setTextColor(0, 0, 0);
-        doc.text(`Destination: ${travelDetails.destination || 'Not specified'}`, 20, 195);
-        doc.text(`Duration: ${travelDetails.duration || 'Not specified'}`, 20, 210);
-        doc.text(`Start Date: ${travelDetails.startDate || 'Not specified'}`, 20, 225);
-        doc.text(`Pickup Location: ${travelDetails.location || 'Not specified'}`, 20, 240);
-        doc.text(`Pickup Time: ${travelDetails.time || 'Not specified'}`, 20, 255);
-        doc.text(`Travelers: ${travelDetails.adults} Adults${travelDetails.children > 0 ? `, ${travelDetails.children} Children` : ''}`, 20, 270);
+        doc.text(`Destination: ${travelDetails?.destination || 'Not specified'}`, 20, 195);
+        doc.text(`Duration: ${travelDetails?.duration || 'Not specified'}`, 20, 210);
+        doc.text(`Start Date: ${travelDetails?.startDate || 'Not specified'}`, 20, 225);
+        doc.text(`Pickup Location: ${travelDetails?.location || 'Not specified'}`, 20, 240);
+        doc.text(`Pickup Time: ${travelDetails?.time || 'Not specified'}`, 20, 255);
+        doc.text(`Travelers: ${travelDetails?.adults || 0} Adults${travelDetails?.children > 0 ? `, ${travelDetails.children} Children` : ''}`, 20, 270);
         
         // Add new page for guide options
         doc.addPage();
@@ -187,7 +206,7 @@ export default function BookingSummary() {
         doc.setTextColor(0, 0, 0);
         
         let yPos = 45;
-        if (selectedItems.hotels && selectedItems.hotels.length > 0) {
+        if (selectedItems?.hotels && selectedItems.hotels.length > 0) {
             selectedItems.hotels.forEach((hotel, index) => {
                 doc.text(`${index + 1}. ${hotel.name} - ${hotel.location}`, 20, yPos);
                 yPos += 12;
@@ -196,7 +215,7 @@ export default function BookingSummary() {
             });
         }
         
-        if (selectedItems.rooms && selectedItems.rooms.length > 0) {
+        if (selectedItems?.rooms && selectedItems.rooms.length > 0) {
             selectedItems.rooms.forEach((room, index) => {
                 doc.text(`Room ${index + 1}: ${room.roomType} - ${room.bedType}`, 20, yPos);
                 yPos += 12;
@@ -205,8 +224,8 @@ export default function BookingSummary() {
             });
         }
         
-        if ((!selectedItems.hotels || selectedItems.hotels.length === 0) && 
-            (!selectedItems.rooms || selectedItems.rooms.length === 0)) {
+        if ((!selectedItems?.hotels || selectedItems.hotels.length === 0) && 
+            (!selectedItems?.rooms || selectedItems.rooms.length === 0)) {
             doc.text('No accommodations selected', 20, yPos);
             yPos += 15;
         }
@@ -220,7 +239,7 @@ export default function BookingSummary() {
         doc.setTextColor(0, 0, 0);
         yPos += 15;
         
-        if (selectedItems.selectedVehicle) {
+        if (selectedItems?.selectedVehicle) {
             const vehicle = selectedItems.selectedVehicle;
             doc.text(`Vehicle: ${vehicle.name}`, 20, yPos);
             yPos += 12;
@@ -246,7 +265,7 @@ export default function BookingSummary() {
         doc.text('Prices are subject to change. Contact us: +94 11 234 5678 | support@travel.lk', 20, 290);
         
         // Save the PDF
-        doc.save(`tour-request-${contactInfo.fullName || 'draft'}-${new Date().toISOString().split('T')[0]}.pdf`);
+        doc.save(`tour-request-${contactInfo?.fullName || 'draft'}-${new Date().toISOString().split('T')[0]}.pdf`);
     };
 
     return (
@@ -407,10 +426,10 @@ export default function BookingSummary() {
 
             <div className="space-y-3">
                 <button 
-                    disabled={!agreedToTerms || !isTourCompleteCheck()}
+                    disabled={!agreedToTerms || !isTourComplete()}
                     onClick={handleCompleteRequest}
                     className={`w-full py-3 px-4 rounded-lg font-semibold transition ${
-                        agreedToTerms && isTourCompleteCheck()
+                        agreedToTerms && isTourComplete()
                             ? 'bg-brand-primary text-white hover:bg-warning' 
                             : 'bg-border-light text-content-disabled cursor-not-allowed'
                     }`}

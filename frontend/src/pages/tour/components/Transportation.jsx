@@ -1,11 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTourContext } from '../../../context/TourContext';
 import { useNavigate } from 'react-router-dom';
+import FormContext from '../../../context/InitialValues';
 
 export default function Transportation() {
     const navigate = useNavigate();
-    const { selectedItems, travelDetails } = useTourContext();
-    
+    const { formData, setFormData } = useContext(FormContext);
+
+    const travelDetails = formData.travelDetails;    
+    const selectedItems = formData.selectedItems;
     // Get selected vehicles and transportation
     const getTransportationDetails = () => {
         const transportation = [];

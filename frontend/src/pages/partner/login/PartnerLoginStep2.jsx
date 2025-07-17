@@ -44,6 +44,7 @@ export default function PartnerLoginStep2() {
                         token: user.accessToken,
                         }),
                     );
+                    {localStorage.removeItem('formData')}
                     navigateTo('/home');
                     showToastMessage('success', 'Welcome back! You’ve logged in successfully.');
                 }else if (user && !user.emailVerified) {

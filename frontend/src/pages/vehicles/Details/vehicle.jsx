@@ -18,7 +18,7 @@ export default function Vehicle() {
     const { formData, setFormData } = useContext(FormContext);
     console.log(formData)
     
-    const [driverOption, setDriverOption] = useState('without'); // 'with' or 'without'
+    const [driverOption, setDriverOption] = useState(null); // 'with' or 'without'
     
     const isVehicleSelected = formData.selectedItems?.selectedVehicle?.id === id;
     
