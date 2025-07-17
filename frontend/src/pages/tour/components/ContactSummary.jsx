@@ -1,10 +1,12 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTourContext } from '../../../context/TourContext';
 import { useNavigate } from 'react-router-dom';
+import FormContext from '../../../context/InitialValues';
 
 export default function ContactSummary() {
     const navigate = useNavigate();
-    const { contactInfo } = useTourContext();
+    const { formData } = useContext(FormContext);
+    const contactInfo = formData.contactInfo;
 
     // Handle edit button click
     const handleEdit = () => {

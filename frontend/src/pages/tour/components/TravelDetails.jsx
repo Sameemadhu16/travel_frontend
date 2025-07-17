@@ -1,53 +1,38 @@
-import React, { useState } from 'react';
-import { useTourContext } from '../../../context/TourContext';
+import { useState, useContext, useEffect } from 'react';
+import FormContext from '../../../context/InitialValues';
 
-export default function TravelDetails() {
-    const { 
-        travelDetails, 
-        itinerary,
-        updateTravelDetails,
-        updateItinerary,
-        addItineraryDay,
-        removeItineraryDay,
-        addItineraryActivity,
-        removeItineraryActivity,
-        updateItineraryActivity,
-        errors: contextErrors,
-        touched: contextTouched,
-        setFieldError,
-        clearFieldError,
-        setFieldTouched
-    } = useTourContext();
+export default function TravelDetails({setValid}) {
+    const { formData, setFormData } = useContext(FormContext);
+    const [errors, setErrors] = useState({});
+    const [touched, setTouched] = useState({});
+    const { travelDetails, itinerary } = formData;
 
-    const [localErrors, setLocalErrors] = useState({});
-    const [localTouched, setLocalTouched] = useState({});
+    const setFieldTouched = (field) => {
+        setTouched(prev => ({ ...prev, [field]: true }));
+    };
 
-    // Use context errors and touched, fallback to local state
-    const errors = { ...localErrors, ...contextErrors };
-    const touched = { ...localTouched, ...contextTouched };
+    const setFieldError = (field, error) => {
+        setErrors(prev => ({ ...prev, [field]: error }));
+    };
+
+    useEffect(() => {
+        const valid = isFormValid();
+        setValid(valid);
+    }, [formData.travelDetails, formData.itinerary, errors]);
 
     const validateField = (name, value) => {
         let error = '';
         
         switch (name) {
             case 'destination':
-                if (!value) {
-                    error = 'Please select a destination package';
-                }
+                if (!value) error = 'Please select a destination package';
                 break;
-                
             case 'duration':
-                if (!value) {
-                    error = 'Please select trip duration';
-                }
+                if (!value) error = 'Please select trip duration';
                 break;
-
             case 'travelStyle':
-                if (!value) {
-                    error = 'Please select your preferred travel style';
-                }
+                if (!value) error = 'Please select your preferred travel style';
                 break;
-                
             case 'startDate':
                 if (!value) {
                     error = 'Start date is required';
@@ -60,7 +45,6 @@ export default function TravelDetails() {
                     }
                 }
                 break;
-                
             case 'location':
                 if (!value.trim()) {
                     error = 'Pickup location is required';
@@ -68,19 +52,13 @@ export default function TravelDetails() {
                     error = 'Location must be at least 3 characters';
                 }
                 break;
-                
             case 'time':
-                if (!value) {
-                    error = 'Pickup time is required';
-                }
-                break;                case 'adults':
-                if (!value || value < 1) {
-                    error = 'At least 1 adult is required';
-                }
+                if (!value) error = 'Pickup time is required';
                 break;
-
+            case 'adults':
+                if (!value || value < 1) error = 'At least 1 adult is required';
+                break;
             case 'groupType':
-                // Optional field, no validation required
                 break;
         }
         
@@ -105,6 +83,61 @@ export default function TravelDetails() {
         return hasError ? 'Please complete all itinerary activities' : '';
     };
 
+    const updateTravelDetails = (updates) => {
+        setFormData(prev => ({
+            ...prev,
+            travelDetails: {
+                ...prev.travelDetails,
+                ...updates
+            }
+        }));
+    };
+
+    const updateItinerary = (newItinerary) => {
+        setFormData(prev => ({
+            ...prev,
+            itinerary: newItinerary
+        }));
+    };
+
+    const addItineraryDay = () => {
+        const newDay = { 
+            day: itinerary.length + 1, 
+            activities: [{ title: '', time: '', description: '' }] 
+        };
+        updateItinerary([...itinerary, newDay]);
+    };
+
+    const addItineraryActivity = (dayIndex) => {
+        const newItinerary = [...itinerary];
+        newItinerary[dayIndex].activities.push({ title: '', time: '', description: '' });
+        updateItinerary(newItinerary);
+    };
+
+    const updateItineraryActivity = (dayIndex, activityIndex, field, value) => {
+        const newItinerary = [...itinerary];
+        newItinerary[dayIndex].activities[activityIndex][field] = value;
+        updateItinerary(newItinerary);
+    };
+
+    const removeItineraryDay = (dayIndex) => {
+        const newItinerary = itinerary.filter((_, index) => index !== dayIndex);
+        // Update day numbers after removal
+        const updatedItinerary = newItinerary.map((day, index) => ({
+            ...day,
+            day: index + 1
+        }));
+        updateItinerary(updatedItinerary);
+    };
+
+    const removeItineraryActivity = (dayIndex, activityIndex) => {
+        const newItinerary = [...itinerary];
+        newItinerary[dayIndex].activities = newItinerary[dayIndex].activities.filter(
+            (_, index) => index !== activityIndex
+        );
+        updateItinerary(newItinerary);
+    };
+
     const handleInputChange = (e) => {
         const { name, value } = e.target;
         updateTravelDetails({ [name]: value });
@@ -118,8 +151,7 @@ export default function TravelDetails() {
 
     const handleBlur = (e) => {
         const { name, value } = e.target;
-        setFieldTouched(name, true);
-
+        setFieldTouched(name);
         const error = validateField(name, value);
         setFieldError(name, error);
     };
@@ -134,26 +166,6 @@ export default function TravelDetails() {
         const itineraryError = validateItinerary();
         
         return !hasFieldErrors && !itineraryError;
-    };
-
-    const addDay = () => {
-        addItineraryDay();
-    };
-
-    const addActivity = (dayIndex) => {
-        addItineraryActivity(dayIndex);
-    };
-
-    const updateActivity = (dayIndex, activityIndex, field, value) => {
-        updateItineraryActivity(dayIndex, activityIndex, field, value);
-    };
-
-    const removeDay = (dayIndex) => {
-        removeItineraryDay(dayIndex);
-    };
-
-    const removeActivity = (dayIndex, activityIndex) => {
-        removeItineraryActivity(dayIndex, activityIndex);
     };
 
     return (
@@ -174,7 +186,7 @@ export default function TravelDetails() {
                     </label>
                     <select 
                         name="destination"
-                        value={travelDetails.destination}
+                        value={travelDetails.destination || ''}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition-all ${
@@ -184,8 +196,6 @@ export default function TravelDetails() {
                         required
                     >
                         <option value="">Select Destination Package</option>
-                        
-                        {/* Day Trip Options (1 day) */}
                         <optgroup label="Day Trips (1 Day)">
                             <option value="colombo-city">Colombo City Tour</option>
                             <option value="kandy-day">Kandy Day Trip</option>
@@ -193,8 +203,6 @@ export default function TravelDetails() {
                             <option value="pinnawala-kandy">Pinnawala Elephant Orphanage & Kandy</option>
                             <option value="bentota-day">Bentota Beach Day Trip</option>
                         </optgroup>
-
-                        {/* Short Tours (2-3 days) */}
                         <optgroup label="Short Getaways (2-3 Days)">
                             <option value="kandy-nuwara">Kandy & Nuwara Eliya</option>
                             <option value="southern-beaches">Southern Beaches (Galle, Mirissa, Unawatuna)</option>
@@ -203,8 +211,6 @@ export default function TravelDetails() {
                             <option value="yala-safari">Yala National Park Safari</option>
                             <option value="negombo-colombo">Negombo & Colombo</option>
                         </optgroup>
-
-                        {/* Medium Tours (4-7 days) */}
                         <optgroup label="Classic Tours (4-7 Days)">
                             <option value="cultural-triangle">Cultural Triangle (Anuradhapura, Polonnaruwa, Sigiriya)</option>
                             <option value="hill-country">Hill Country Explorer (Kandy, Nuwara Eliya, Ella)</option>
@@ -214,8 +220,6 @@ export default function TravelDetails() {
                             <option value="beaches-culture">Beaches & Culture Combo</option>
                             <option value="ancient-kingdoms">Ancient Kingdoms Tour</option>
                         </optgroup>
-
-                        {/* Extended Tours (8-14 days) */}
                         <optgroup label="Extended Tours (8-14 Days)">
                             <option value="grand-tour">Grand Sri Lanka Tour</option>
                             <option value="complete-island">Complete Island Experience</option>
@@ -225,8 +229,6 @@ export default function TravelDetails() {
                             <option value="ayurveda-wellness">Ayurveda & Wellness Journey</option>
                             <option value="adventure-explorer">Adventure Explorer Tour</option>
                         </optgroup>
-
-                        {/* Luxury Tours (10+ days) */}
                         <optgroup label="Luxury & Special Interest (10+ Days)">
                             <option value="luxury-sri-lanka">Luxury Sri Lanka Experience</option>
                             <option value="honeymoon-special">Honeymoon Special Tour</option>
@@ -236,8 +238,6 @@ export default function TravelDetails() {
                             <option value="spiritual-tour">Spiritual & Meditation Tour</option>
                             <option value="eco-adventure">Eco-Adventure & Conservation Tour</option>
                         </optgroup>
-
-                        {/* Custom Options */}
                         <optgroup label="Custom Options">
                             <option value="custom-tour">Custom Itinerary (Tell us your preferences)</option>
                             <option value="business-travel">Business Travel Package</option>
@@ -246,7 +246,6 @@ export default function TravelDetails() {
                     </select>
                     {errors.destination && <p className="text-red-500 text-xs mt-1">{errors.destination}</p>}
                     
-                    {/* Destination recommendations based on duration */}
                     {travelDetails.duration && (
                         <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
                             <span className="font-medium text-blue-800">💡 Recommended for {travelDetails.duration}:</span>
@@ -276,7 +275,7 @@ export default function TravelDetails() {
                     </label>
                     <select 
                         name="duration"
-                        value={travelDetails.duration}
+                        value={travelDetails.duration || ''}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition-all ${
@@ -286,38 +285,25 @@ export default function TravelDetails() {
                         required
                     >
                         <option value="">Select Duration</option>
-                        
-                        {/* Day Trips */}
                         <option value="1-day">1 Day (Day Trip)</option>
-                        
-                        {/* Short Trips */}
                         <option value="2-days">2 Days / 1 Night</option>
                         <option value="3-days">3 Days / 2 Nights</option>
-                        
-                        {/* Medium Trips */}
                         <option value="4-days">4 Days / 3 Nights</option>
                         <option value="5-days">5 Days / 4 Nights</option>
                         <option value="6-days">6 Days / 5 Nights</option>
                         <option value="7-days">7 Days / 6 Nights (1 Week)</option>
-                        
-                        {/* Extended Trips */}
                         <option value="8-days">8 Days / 7 Nights</option>
                         <option value="9-days">9 Days / 8 Nights</option>
                         <option value="10-days">10 Days / 9 Nights</option>
                         <option value="12-days">12 Days / 11 Nights</option>
                         <option value="14-days">14 Days / 13 Nights (2 Weeks)</option>
-                        
-                        {/* Long Tours */}
                         <option value="16-days">16 Days / 15 Nights</option>
                         <option value="18-days">18 Days / 17 Nights</option>
                         <option value="21-days">21 Days / 20 Nights (3 Weeks)</option>
-                        
-                        {/* Custom */}
                         <option value="custom">Custom Duration (Contact us)</option>
                     </select>
                     {errors.duration && <p className="text-red-500 text-xs mt-1">{errors.duration}</p>}
                     
-                    {/* Duration information */}
                     {travelDetails.duration && (
                         <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs">
                             <span className="font-medium text-green-800">ℹ️ What's included in {travelDetails.duration}:</span>
@@ -342,7 +328,6 @@ export default function TravelDetails() {
                     )}
                 </div>
                 
-                {/* Travel Style/Budget */}
                 <div>
                     <label className="block text-sm font-semibold mb-1">
                         Travel Style <span className="text-red-500">*</span>
@@ -368,7 +353,6 @@ export default function TravelDetails() {
                     {errors.travelStyle && <p className="text-red-500 text-xs mt-1">{errors.travelStyle}</p>}
                 </div>
 
-                {/* Group Type */}
                 <div>
                     <label className="block text-sm font-semibold mb-1">
                         Group Type
@@ -398,7 +382,7 @@ export default function TravelDetails() {
                     <input 
                         type="date" 
                         name="startDate"
-                        value={travelDetails.startDate}
+                        value={travelDetails.startDate || ''}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         min={new Date().toISOString().split('T')[0]}
@@ -417,7 +401,7 @@ export default function TravelDetails() {
                         <div className="flex items-center gap-2">
                             <button 
                                 type="button"
-                                onClick={() => updateTravelDetails({ adults: Math.max(1, travelDetails.adults - 1) })}
+                                onClick={() => updateTravelDetails({ adults: Math.max(1, (travelDetails.adults || 1) - 1) })}
                                 className="bg-surface-secondary hover:bg-surface-tertiary px-3 py-2 rounded text-sm font-semibold"
                             >
                                 -
@@ -426,13 +410,13 @@ export default function TravelDetails() {
                                 type="number" 
                                 min="1" 
                                 name="adults"
-                                value={travelDetails.adults}
+                                value={travelDetails.adults || 1}
                                 onChange={handleInputChange}
                                 className="w-16 text-center border border-border-light rounded px-2 py-2 text-sm focus:outline-none focus:border-brand-primary" 
                             />
                             <button 
                                 type="button"
-                                onClick={() => updateTravelDetails({ adults: travelDetails.adults + 1 })}
+                                onClick={() => updateTravelDetails({ adults: (travelDetails.adults || 1) + 1 })}
                                 className="bg-surface-secondary hover:bg-surface-tertiary px-3 py-2 rounded text-sm font-semibold"
                             >
                                 +
@@ -444,7 +428,7 @@ export default function TravelDetails() {
                         <div className="flex items-center gap-2">
                             <button 
                                 type="button"
-                                onClick={() => updateTravelDetails({ children: Math.max(0, travelDetails.children - 1) })}
+                                onClick={() => updateTravelDetails({ children: Math.max(0, (travelDetails.children || 0) - 1 )})}
                                 className="bg-surface-secondary hover:bg-surface-tertiary px-3 py-2 rounded text-sm font-semibold"
                             >
                                 -
@@ -453,13 +437,13 @@ export default function TravelDetails() {
                                 type="number" 
                                 min="0" 
                                 name="children"
-                                value={travelDetails.children}
+                                value={travelDetails.children || 0}
                                 onChange={handleInputChange}
                                 className="w-16 text-center border border-border-light rounded px-2 py-2 text-sm focus:outline-none focus:border-brand-primary" 
                             />
                             <button 
                                 type="button"
-                                onClick={() => updateTravelDetails({ children: travelDetails.children + 1 })}
+                                onClick={() => updateTravelDetails({ children: (travelDetails.children || 0) + 1 })}
                                 className="bg-surface-secondary hover:bg-surface-tertiary px-3 py-2 rounded text-sm font-semibold"
                             >
                                 +
@@ -474,7 +458,7 @@ export default function TravelDetails() {
                     <input
                         type="text"
                         name="location"
-                        value={travelDetails.location}
+                        value={travelDetails.location || ''}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         placeholder="Enter pickup location (e.g., Hotel name, Address)"
@@ -493,7 +477,7 @@ export default function TravelDetails() {
                     <input
                         type="time"
                         name="time"
-                        value={travelDetails.time}
+                        value={travelDetails.time || ''}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition-all ${
@@ -511,7 +495,7 @@ export default function TravelDetails() {
                 </span>
                 <button 
                     type="button" 
-                    onClick={addDay}
+                    onClick={addItineraryDay}
                     className="bg-brand-primary text-white px-3 py-1 rounded text-xs font-semibold hover:bg-warning transition"
                 >
                     Add Day +
@@ -524,7 +508,7 @@ export default function TravelDetails() {
                         <div className="flex gap-2">
                             <button 
                                 type="button" 
-                                onClick={() => addActivity(dayIndex)}
+                                onClick={() => addItineraryActivity(dayIndex)}
                                 className="bg-brand-primary text-white px-2 py-1 rounded text-xs font-semibold hover:bg-warning transition"
                             >
                                 Add Activity +
@@ -532,7 +516,7 @@ export default function TravelDetails() {
                             {itinerary.length > 1 && (
                                 <button 
                                     type="button" 
-                                    onClick={() => removeDay(dayIndex)}
+                                    onClick={() => removeItineraryDay(dayIndex)}
                                     className="bg-red-500 text-white px-2 py-1 rounded text-xs font-semibold hover:bg-red-600 transition"
                                 >
                                     Remove Day
@@ -549,7 +533,7 @@ export default function TravelDetails() {
                                         className="w-full border border-border-light rounded px-3 py-2 text-sm focus:outline-none focus:border-brand-primary" 
                                         placeholder="Enter a title"
                                         value={activity.title}
-                                        onChange={(e) => updateActivity(dayIndex, activityIndex, 'title', e.target.value)}
+                                        onChange={(e) => updateItineraryActivity(dayIndex, activityIndex, 'title', e.target.value)}
                                     />
                                 </div>
                                 <div>
@@ -558,7 +542,7 @@ export default function TravelDetails() {
                                         type="time" 
                                         className="w-full border border-border-light rounded px-3 py-2 text-sm focus:outline-none focus:border-brand-primary"
                                         value={activity.time}
-                                        onChange={(e) => updateActivity(dayIndex, activityIndex, 'time', e.target.value)}
+                                        onChange={(e) => updateItineraryActivity(dayIndex, activityIndex, 'time', e.target.value)}
                                     />
                                 </div>
                             </div>
@@ -570,12 +554,12 @@ export default function TravelDetails() {
                                         placeholder="Add a description"
                                         rows="2"
                                         value={activity.description}
-                                        onChange={(e) => updateActivity(dayIndex, activityIndex, 'description', e.target.value)}
+                                        onChange={(e) => updateItineraryActivity(dayIndex, activityIndex, 'description', e.target.value)}
                                     />
                                     {day.activities.length > 1 && (
                                         <button 
                                             type="button" 
-                                            onClick={() => removeActivity(dayIndex, activityIndex)}
+                                            onClick={() => removeItineraryActivity(dayIndex, activityIndex)}
                                             className="bg-danger text-white px-2 py-1 rounded text-xs font-semibold hover:bg-red-600 transition self-end"
                                         >
                                             ×
@@ -588,7 +572,6 @@ export default function TravelDetails() {
                 </div>
             ))}
             
-            {/* Form validation status */}
             <div className="mt-4 p-3 rounded-lg bg-gray-50">
                 <div className="flex items-center gap-2">
                     {isFormValid() ? (

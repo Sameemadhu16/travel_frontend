@@ -1,24 +1,47 @@
-import React from 'react';
-import { useTourContext } from '../../context/TourContext';
 import Main from '../../components/Main';
 import StepIndicator from './components/StepIndicator';
 import DestinationDetails from './components/DestinationDetails';
-import TourPreferencesSummary from './components/TourPreferencesSummary';
 import ContactSummary from './components/ContactSummary';
 import SelectedTourGuide from './components/SelectedTourGuide';
 import HotelBookings from './components/HotelBookings';
 import Transportation from './components/Transportation';
 import ItineraryOverview from './components/ItineraryOverview';
 import BookingSummary from './components/BookingSummary';
+import { useContext } from 'react';
+import FormContext from '../../context/InitialValues';
+import { createTripRequest } from './service';
+import { useSelector } from 'react-redux'
+
+const tripData = {
+  tripCode: "TRIP2025001",
+  user: { id: 1 },
+  pickupLocation: "Colombo",
+  tripStartDate: "2025-07-10",
+  tripEndDate: "2025-07-15",
+  startTime: "08:00:00",
+  numberOfAdults: 2,
+  numberOfKids: 1,
+  estimateDuration: "5 days",
+  distanceKm: 500,
+  tripStatus: "pending",
+  selectedVehicleAgency: { id: 1 },
+  selectedVehicle: { 
+    id: 202,
+    isVerified: false
+  },
+  selectedHotel: { id: 1002 },
+  selectedRooms: [
+    { id: 2 }
+  ],
+  basePrice: 1000.00,
+  totalFare: 1200.00
+};
 
 export default function CompleteRequest() {
-  const { 
-    travelDetails, 
-    selectedItems, 
-    bookingSummary,
-    isTourComplete 
-  } = useTourContext();
-
+    const { formData, setFormData } = useContext(FormContext);
+    const {user} = useSelector((state) => state.auth);
+    const id = user.data.id;
+    const tripReq = createTripRequest(formData, id);
   return (
     <Main>
       <div className="max-w-7xl mx-auto py-8 px-4">
@@ -34,7 +57,6 @@ export default function CompleteRequest() {
             {/* Left Column - Tour Details */}
             <div className="flex-1 space-y-6">
               <DestinationDetails />
-              <TourPreferencesSummary />
               <ContactSummary />
               <SelectedTourGuide />
               <HotelBookings />
@@ -44,7 +66,7 @@ export default function CompleteRequest() {
             
             {/* Right Column - Booking Summary */}
             <div className="w-80">
-              <BookingSummary />
+              <BookingSummary tripData={tripReq}/>
             </div>
           </div>
         </div>

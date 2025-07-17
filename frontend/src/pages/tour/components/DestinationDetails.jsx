@@ -1,14 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTourContext } from '../../../context/TourContext';
 import { useNavigate } from 'react-router-dom';
+import FormContext from '../../../context/InitialValues';
 
 export default function DestinationDetails() {
     const navigate = useNavigate();
-    const { 
-        travelDetails, 
-        itinerary,
-        tourPreferences 
-    } = useTourContext();
+    const { formData, setFormData } = useContext(FormContext);
+    const travelDetails = formData.travelDetails;
+    const itinerary = formData.itinerary;
+    const tourPreferences = formData.tourPreferences;
 
     // Format date for display
     const formatDate = (dateString) => {

@@ -1,95 +1,68 @@
-import React, { useState } from 'react';
-import { useTourContext } from '../../../context/TourContext';
+import { useContext, useEffect, useState } from 'react';
+import FormContext from '../../../context/InitialValues';
 
-export default function ContactInformation() {
-    const { 
-        contactInfo, 
-        updateContactInfo, 
-        errors: contextErrors, 
-        touched: contextTouched,
-        setFieldError,
-        clearFieldError,
-        setFieldTouched
-    } = useTourContext();
-
+export default function ContactInformation({setValid}) {
+    const { formData, setFormData } = useContext(FormContext);
+    // Get contactInfo from formData as per initialTripFormData structure
+    const contactInfo = formData.contactInfo;
     const [localErrors, setLocalErrors] = useState({});
     const [localTouched, setLocalTouched] = useState({});
 
-    // Use context errors and touched, fallback to local state
-    const errors = { ...localErrors, ...contextErrors };
-    const touched = { ...localTouched, ...contextTouched };
+    useEffect(() => {
+        const valid = isFormValid();
+        setValid(valid);
+    }, [formData.travelDetails, formData.itinerary]);
+
 
     const validateField = (name, value) => {
         let error = '';
-        
         switch (name) {
             case 'fullName':
-                if (!value.trim()) {
-                    error = 'Full name is required';
-                } else if (value.trim().length < 2) {
-                    error = 'Name must be at least 2 characters';
-                } else if (!/^[a-zA-Z\s]+$/.test(value)) {
-                    error = 'Name can only contain letters and spaces';
-                }
+                if (!value.trim()) error = 'Full name is required';
                 break;
-                
             case 'email':
-                if (!value.trim()) {
-                    error = 'Email is required';
-                } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                    error = 'Please enter a valid email address';
-                }
+                if (!value.trim()) error = 'Email is required';
+                else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) error = 'Please enter a valid email address';
                 break;
-                
             case 'phone':
-                if (!value.trim()) {
-                    error = 'Phone number is required';
-                } else if (!/^\+?[\d\s-()]{10,15}$/.test(value.replace(/\s/g, ''))) {
-                    error = 'Please enter a valid phone number';
-                }
+                if (!value.trim()) error = 'Phone number is required';
+                else if (!/^\+?[\d\s-()]{10,15}$/.test(value.replace(/\s/g, ''))) error = 'Please enter a valid phone number';
                 break;
-                
             case 'country':
-                if (!value) {
-                    error = 'Please select your country';
-                }
+                if (!value) error = 'Please select your country';
                 break;
-                
             case 'nicNumber':
-                if (!value.trim()) {
-                    error = 'NIC number is required';
-                } else if (!/^(\d{9}[vVxX]|\d{12})$/.test(value.replace(/\s/g, ''))) {
-                    error = 'Please enter a valid NIC number (e.g., 123456789V or 199812345678)';
-                }
+                if (!value.trim()) error = 'NIC number is required';
+                else if (!/^(\d{9}[vVxX]|\d{12})$/.test(value.replace(/\s/g, ''))) error = 'Please enter a valid NIC number (e.g., 123456789V or 199812345678)';
                 break;
-                
             case 'optionalContact':
-                if (value && !/^\+?[\d\s-()]{10,15}$/.test(value.replace(/\s/g, ''))) {
-                    error = 'Please enter a valid phone number';
-                }
+                if (value && !/^\+?[\d\s-()]{10,15}$/.test(value.replace(/\s/g, ''))) error = 'Please enter a valid phone number';
+                break;
+            default:
                 break;
         }
-        
         return error;
     };
 
     const handleInputChange = (e) => {
         const { name, value } = e.target;
-        updateContactInfo({ [name]: value });
-
-        // Validate field on change if it has been touched
-        if (touched[name]) {
+        // Update contactInfo in context
+        setFormData(prev => ({
+            ...prev,
+            contactInfo: { ...prev.contactInfo, [name]: value }
+        }));
+        // Validation
+        if (localTouched[name]) {
             const error = validateField(name, value);
-            setFieldError(name, error);
+            setLocalErrors(prev => ({ ...prev, [name]: error }));
         }
     };
 
     const handleBlur = (e) => {
         const { name, value } = e.target;
-        setFieldTouched(name, true);
-
+        setLocalTouched(prev => ({ ...prev, [name]: true }));
         const error = validateField(name, value);
-        setFieldError(name, error);
+        setLocalErrors(prev => ({ ...prev, [name]: error }));
     };
 
     const isFormValid = () => {
@@ -122,13 +95,13 @@ export default function ContactInformation() {
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
-                            errors.fullName ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
+                            localErrors.fullName ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
                             'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
                         }`}
                         placeholder="John Doe" 
                         required
                     />
-                    {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
+                    {localErrors.fullName && <p className="text-red-500 text-xs mt-1">{localErrors.fullName}</p>}
                 </div>
                 <div>
                     <label className="block text-sm font-semibold mb-1">
@@ -141,13 +114,13 @@ export default function ContactInformation() {
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
-                            errors.email ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
+                            localErrors.email ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
                             'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
                         }`}
                         placeholder="john.doe@example.com" 
                         required
                     />
-                    {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email}</p>}
+                    {localErrors.email && <p className="text-red-500 text-xs mt-1">{localErrors.email}</p>}
                 </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -162,13 +135,13 @@ export default function ContactInformation() {
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
-                            errors.phone ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
+                            localErrors.phone ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
                             'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
                         }`}
                         placeholder="+94 71 234 5678" 
                         required
                     />
-                    {errors.phone && <p className="text-red-500 text-xs mt-1">{errors.phone}</p>}
+                    {localErrors.phone && <p className="text-red-500 text-xs mt-1">{localErrors.phone}</p>}
                 </div>
                 <div>
                     <label className="block text-sm font-semibold mb-1">
@@ -180,7 +153,7 @@ export default function ContactInformation() {
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all bg-white ${
-                            errors.country ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
+                            localErrors.country ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
                             'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
                         }`}
                         required
@@ -280,7 +253,7 @@ export default function ContactInformation() {
                             <option value="other">🌍 Other</option>
                         </optgroup>
                     </select>
-                    {errors.country && <p className="text-red-500 text-xs mt-1">{errors.country}</p>}
+                    {localErrors.country && <p className="text-red-500 text-xs mt-1">{localErrors.country}</p>}
                 </div>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
@@ -295,14 +268,14 @@ export default function ContactInformation() {
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
-                            errors.nicNumber ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
+                            localErrors.nicNumber ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
                             'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
                         }`}
                         placeholder="123456789V or 199812345678" 
                         required
                     />
-                    {errors.nicNumber ? (
-                        <p className="text-red-500 text-xs mt-1">{errors.nicNumber}</p>
+                    {localErrors.nicNumber ? (
+                        <p className="text-red-500 text-xs mt-1">{localErrors.nicNumber}</p>
                     ) : (
                         <p className="text-xs text-gray-500 mt-1">Enter your National Identity Card number</p>
                     )}
@@ -319,13 +292,13 @@ export default function ContactInformation() {
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
-                            errors.optionalContact ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
+                            localErrors.optionalContact ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
                             'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
                         }`}
                         placeholder="+94 77 987 6543" 
                     />
-                    {errors.optionalContact ? (
-                        <p className="text-red-500 text-xs mt-1">{errors.optionalContact}</p>
+                    {localErrors.optionalContact ? (
+                        <p className="text-red-500 text-xs mt-1">{localErrors.optionalContact}</p>
                     ) : (
                         <p className="text-xs text-gray-500 mt-1">Alternative contact for emergencies</p>
                     )}

@@ -13,14 +13,12 @@ import {
     vehiclePropertyTypes,
     vehicleFilterOptions
 } from '../../../core/constant';
-import { handleSelect } from '../../../core/service';
 import CustomSelector from '../../../components/CustomSelector';
-import { hotelList } from '../../../core/Lists/hotels';
 import CheckboxGroup from '../../hotels/components/CheckboxGroup';
-import { useMemo, useState } from 'react';
+import { useContext, useMemo, useState } from 'react';
 import VehicleCard from '../components/VehicleCard.jsx';
 import { vehicleList } from '../../../core/Lists/vehicles';
-import { useTourContext } from '../../../context/TourContext';
+import FormContext from '../../../context/InitialValues.js';
 
 const breadcrumbItems = [
     { label: "Home", path: "/home" },
@@ -31,11 +29,10 @@ const breadcrumbItems = [
 export default function SearchVehicles() {
     const location = useLocation();
     const navigate = useNavigate();
+    const { formData } = useContext(FormContext);
+
+    const travelDetails = formData.travelDetails;
     const isTourSelectVehicle = location.pathname === '/tour/select-vehicle';
-    
-    // Use TourContext if in tour flow
-    const tourContext = isTourSelectVehicle ? useTourContext() : null;
-    const { selectedItems, travelDetails } = tourContext || {};
 
     const [selectedPropertyTypes, setSelectedPropertyTypes] = useState([]);
     const [selectedFacilities, setSelectedFacilities] = useState([]);
@@ -80,11 +77,10 @@ export default function SearchVehicles() {
                         about={vehicle.about}
                         available={vehicle.available}
                         isTourMode={isTourSelectVehicle}
-                        selectedVehicle={selectedItems?.selectedVehicle}
                     />
                 </div>
             ));
-        }, [filteredVehicles, isTourSelectVehicle, selectedItems?.selectedVehicle]);
+        }, [filteredVehicles, isTourSelectVehicle]);
 
     const handleNext = () => {
         navigate('/tour/complete-request');
@@ -116,24 +112,6 @@ export default function SearchVehicles() {
                                         placeholder="Recommended"
                                         onChange={handleSelect}
                                     />
-                                </div>
-                            )}
-                            {isTourSelectVehicle && (
-                                <div className='flex gap-4'>
-                                    {selectedItems?.selectedVehicle && (
-                                        <span className="px-4 py-2 bg-brand-primary/10 text-brand-primary rounded-lg font-medium">
-                                            Vehicle selected: {selectedItems.selectedVehicle.name}
-                                        </span>
-                                    )}
-                                    <button 
-                                        onClick={handleNext}
-                                        className="px-6 py-2 rounded bg-brand-primary text-white font-semibold flex items-center gap-2 hover:bg-warning transition"
-                                    >
-                                        {selectedItems?.selectedVehicle ? 'Continue' : 'Skip & Next'}
-                                        <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
-                                        </svg>
-                                    </button>
                                 </div>
                             )}
                         </div>

@@ -8,28 +8,28 @@ import { roomList } from '../../../core/Lists/rooms';
 import RoomCard from './components/RoomCard';
 import FormatText from '../../../components/FormatText';
 import Border from '../../../components/Border';
-import { useTourContext } from '../../../context/TourContext';
+import { useContext } from 'react';
+import FormContext from '../../../context/InitialValues';
 
 export default function Hotel() {
-    const [hotel,setHotel] = useState({});
-    const [rooms,setRooms]= useState([]);
-    const {id} = useParams();
+    const [hotel, setHotel] = useState({});
+    const [rooms, setRooms] = useState([]);
+    const { id } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
     const isTourSelectHotel = location.pathname.includes('/tour/select-hotel');
     
-    // Use TourContext if in tour flow
-    const tourContext = isTourSelectHotel ? useTourContext() : null;
-    const { selectedItems, addSelectedHotel, removeSelectedHotel } = tourContext || {};
+    // Use FormContext
+    const { formData } = useContext(FormContext);
+    const selectedItems = formData.selectedItems || {};
+    const isHotelSelected = selectedItems.hotels?.some(h => h.id.toString() === id) || false;
     
-    const isHotelSelected = selectedItems?.hotels?.some(h => h.id.toString() === id) || false;
-    
-    useEffect(()=>{
+    useEffect(() => {
         const matchHotel = hotelList.find((hotel) => hotel.id.toString() === id);
-        const matchRooms = roomList.filter((room)=>room.hotelId.toString() === id);
+        const matchRooms = roomList.filter((room) => room.hotelId.toString() === id);
         setHotel(matchHotel);
         setRooms(matchRooms);
-    },[id]);
+    }, [id]);
 
     const breadcrumbItems = [
         { label: "Home", path: "/home" },
@@ -37,35 +37,20 @@ export default function Hotel() {
         { label: hotel.name || "Hotel", path: isTourSelectHotel ? `/tour/select-hotel/${id}` : `/hotel/${id}` },
     ];
 
-    const handleHotelSelection = () => {
-        if (!tourContext) return;
-        
-        const hotelData = {
-            id: parseInt(id),
-            name: hotel.name,
-            location: hotel.location,
-            rating: hotel.rating,
-            pricePerNight: hotel.pricePerNight,
-            images: hotel.images,
-            amenities: hotel.amenities,
-            type: hotel.type,
-            roomLeft: hotel.leftRooms,
-            reviews: hotel.reviews
-        };
-        
-        if (isHotelSelected) {
-            removeSelectedHotel(parseInt(id));
-        } else {
-            addSelectedHotel(hotelData);
-        }
-    };
-
     const handleContinue = () => {
+        if (!isTourSelectHotel) return;
+        
+        // Validate that at least one room is selected if hotel is selected
+        if (isHotelSelected && (!selectedItems.rooms || selectedItems.rooms.length === 0)) {
+            alert('Please select at least one room before continuing');
+            return;
+        }
+        
         navigate('/tour/select-vehicle');
     };
 
-    const roomsList = useMemo(()=>{
-        return rooms.map((room)=>(
+    const roomsList = useMemo(() => {
+        return rooms.map((room) => (
             <div 
                 key={room.id}
                 className='w-full md:w-1/2'
@@ -73,13 +58,14 @@ export default function Hotel() {
                 <RoomCard
                     room={room}
                     isTourMode={isTourSelectHotel}
+                    hotel={hotel}
                 />
             </div>
-        ))
-    },[rooms, isTourSelectHotel]);
+        ));
+    }, [rooms, isTourSelectHotel, selectedItems.rooms]);
 
-    const amenityList = useMemo(()=>{
-        return hotel.amenities && hotel.amenities.map((amenity,index)=>(
+    const amenityList = useMemo(() => {
+        return hotel.amenities && hotel.amenities.map((amenity, index) => (
             <Title
                 key={index}
                 title={amenity || ''}
@@ -87,8 +73,8 @@ export default function Hotel() {
                 color='text-content-tertiary'
                 font='font-[400]'
             />
-        ))
-    },[hotel.amenities])
+        ));
+    }, [hotel.amenities]);
 
     return (
         <Main>
@@ -166,25 +152,6 @@ export default function Hotel() {
                             </span>
                         </div>
                         <div className='flex gap-2'>
-                            <button
-                                onClick={handleHotelSelection}
-                                className={`px-6 py-2 rounded-lg font-semibold transition ${
-                                    isHotelSelected 
-                                        ? 'bg-brand-primary text-white border-2 border-brand-primary' 
-                                        : 'bg-white text-brand-primary border-2 border-brand-primary hover:bg-brand-primary hover:text-white'
-                                }`}
-                            >
-                                {isHotelSelected ? (
-                                    <>
-                                        <svg className="w-4 h-4 inline mr-1" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                                        </svg>
-                                        Selected
-                                    </>
-                                ) : (
-                                    'Select This Hotel'
-                                )}
-                            </button>
                             <button
                                 onClick={handleContinue}
                                 className="px-6 py-2 rounded-lg bg-surface-secondary text-content-primary font-semibold hover:bg-surface-tertiary transition"

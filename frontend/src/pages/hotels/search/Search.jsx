@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import cover from '../../../assets/images/cover.png'
 import CustomSelector from '../../../components/CustomSelector'
@@ -10,7 +10,7 @@ import { hotelList } from '../../../core/Lists/hotels'
 import HotelCard from '../components/HotelCard'
 import CheckboxGroup from '../components/CheckboxGroup'
 import Breadcrumb from '../../../components/Breadcrumb'
-import { useTourContext } from '../../../context/TourContext'
+import FormContext from '../../../context/InitialValues'
 
 const breadcrumbItems = [
     { label: "Home", path: "/home" },
@@ -21,15 +21,12 @@ export default function Search() {
     const location = useLocation();
     const navigate = useNavigate();
     const isTourSelectHotel = location.pathname === '/tour/select-hotel';
-    
-    // Use TourContext if in tour flow
-    const tourContext = isTourSelectHotel ? useTourContext() : null;
-    const { selectedItems, travelDetails } = tourContext || {};
-
     const [selectedPropertyTypes, setSelectedPropertyTypes] = useState([]);
     const [selectedMeals, setSelectedMeals] = useState([]);
     const [selectedFacilities, setSelectedFacilities] = useState([]);
     const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
+    const { formData } = useContext(FormContext);
+    const travelDetails = formData.travelDetails;
 
     const handleSkip = () => {
         navigate('/tour/select-vehicle');
@@ -39,17 +36,16 @@ export default function Search() {
         navigate('/tour/select-vehicle');
     };
 
-    // Filter hotels based on travel details if available
     const filteredHotels = useMemo(() => {
         if (!isTourSelectHotel || !travelDetails?.destination) {
             return hotelList;
         }
-        
-        // Filter hotels by destination/location
-        return hotelList.filter(hotel => 
-            hotel.location?.toLowerCase().includes(travelDetails.destination.toLowerCase()) ||
-            hotel.city?.toLowerCase().includes(travelDetails.destination.toLowerCase())
+        const dest = travelDetails.destination.trim().toLowerCase();
+        const filtered = hotelList.filter(hotel => 
+            hotel.location?.toLowerCase().includes(dest) ||
+            hotel.city?.toLowerCase().includes(dest)
         );
+        return filtered.length > 0 ? filtered : hotelList;
     }, [isTourSelectHotel, travelDetails?.destination]);
 
     const hotelsContainer = useMemo(()=>{
@@ -67,11 +63,11 @@ export default function Search() {
                     roomLeft={hotel.leftRooms}
                     reviews={hotel.reviews}
                     isTourMode={isTourSelectHotel}
-                    selectedHotels={selectedItems?.hotels || []}
+                    selectedHotels={[]}
                 />
             </div>
         ))
-    },[filteredHotels, isTourSelectHotel, selectedItems?.hotels]);
+    },[filteredHotels, isTourSelectHotel]);
 
     const handleSelect = (value) => {
         console.log('Selected:', value);
@@ -103,16 +99,11 @@ export default function Search() {
                             )}
                             {isTourSelectHotel && (
                                 <div className='flex gap-4'>
-                                    {selectedItems?.hotels && selectedItems.hotels.length > 0 && (
-                                        <span className="px-4 py-2 bg-brand-primary/10 text-brand-primary rounded-lg font-medium">
-                                            {selectedItems.hotels.length} hotel{selectedItems.hotels.length > 1 ? 's' : ''} selected
-                                        </span>
-                                    )}
                                     <button 
                                         onClick={handleNext}
                                         className="px-6 py-2 rounded bg-brand-primary text-white font-semibold flex items-center gap-2 hover:bg-warning transition"
                                     >
-                                        {selectedItems?.hotels && selectedItems.hotels.length > 0 ? 'Continue' : 'Skip & Next'}
+                                        Skip & Next
                                         <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                                             <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                                         </svg>
