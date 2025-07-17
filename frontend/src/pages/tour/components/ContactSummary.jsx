@@ -5,8 +5,8 @@ import FormContext from '../../../context/InitialValues';
 
 export default function ContactSummary() {
     const navigate = useNavigate();
-    const { formData, setFormData } = useContext(FormContext);
-    const contactInfo = formData.travelDetails;
+    const { formData } = useContext(FormContext);
+    const contactInfo = formData.contactInfo;
 
     // Handle edit button click
     const handleEdit = () => {

@@ -18,12 +18,12 @@ export default function Transportation() {
             selectedItems.vehicles.forEach(vehicle => {
                 transportation.push({
                     id: vehicle.id,
-                    name: vehicle.name || vehicle.model,
-                    type: vehicle.type || vehicle.category,
-                    capacity: vehicle.capacity || vehicle.seats,
-                    price: vehicle.price || vehicle.pricePerDay || 15000,
-                    features: vehicle.features || [],
-                    driver: vehicle.driverIncluded !== false,
+                    name: vehicle.name ,
+                    type: vehicle.type,
+                    capacity: vehicle.capacity,
+                    price: vehicle.price ,
+                    features: vehicle.features ,
+                    driver: vehicle.driverIncluded ,
                     fuelType: vehicle.fuelType,
                     image: vehicle.image
                 });
@@ -31,24 +31,29 @@ export default function Transportation() {
         }
         
         // Add selected vehicle (single selection)
-        if (selectedItems.selectedVehicle) {
+        if (
+            selectedItems.selectedVehicle &&
+            Object.keys(selectedItems.selectedVehicle).length > 0 &&
+            selectedItems.selectedVehicle.id &&
+            selectedItems.selectedVehicle.pricePerDay
+        ) {
             const vehicle = selectedItems.selectedVehicle;
             transportation.push({
                 id: vehicle.id,
-                name: vehicle.name || vehicle.model,
-                type: vehicle.type || vehicle.category,
-                capacity: vehicle.capacity || vehicle.seats,
-                price: vehicle.price || vehicle.pricePerDay || 15000,
-                features: vehicle.features || [],
-                driver: vehicle.driverIncluded !== false,
+                name: vehicle.name ,
+                type: vehicle.type ,
+                capacity: vehicle.capacity ,
+                price: vehicle.pricePerDay,
+                features: vehicle.features,
+                driver: vehicle.driverIncluded ,
                 fuelType: vehicle.fuelType,
-                image: vehicle.image
+                image: vehicle.image,
             });
+            // console.log(vehicle)
         }
         
         return transportation;
     };
-
     // Calculate total days based on duration
     const calculateDays = () => {
         if (travelDetails.duration) {
@@ -123,7 +128,7 @@ export default function Transportation() {
                                         LKR {(vehicle.price * totalDays).toLocaleString()}
                                     </p>
                                     <p className="text-sm text-content-secondary">
-                                        LKR {vehicle.price.toLocaleString()} per day × {totalDays} days
+                                        LKR {vehicle.price && vehicle.price.toLocaleString()} per day × {totalDays} days
                                     </p>
                                 </div>
                             </div>

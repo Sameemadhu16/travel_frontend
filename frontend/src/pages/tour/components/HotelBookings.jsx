@@ -8,6 +8,7 @@ export default function HotelBookings() {
     const { formData, setFormData } = useContext(FormContext);
 
     const selectedItems = formData.selectedItems;
+    const travelDetails = formData.travelDetails;
     
     // Combine hotels and rooms into a single bookings array
     const getHotelBookings = () => {

@@ -11,7 +11,6 @@ export default function SelectGuide() {
     const { formData, setFormData } = useContext(FormContext);
     const MAX_GUIDES = 5;
     const MIN_GUIDES = 1;
-console.log(formData)
     const selectedGuides = formData.selectedItems?.guides || [];
     const errors = formData.errors || {};
     

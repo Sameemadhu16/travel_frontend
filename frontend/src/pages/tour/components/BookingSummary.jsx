@@ -2,8 +2,9 @@ import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
 import FormContext from '../../../context/InitialValues';
 import jsPDF from 'jspdf';
+import { postRequest }  from '../../../core/service'
 
-export default function BookingSummary() {
+export default function BookingSummary({tripData}) {
     const navigate = useNavigate();
     const { formData, setFormData } = useContext(FormContext);
     
@@ -36,10 +37,16 @@ export default function BookingSummary() {
             selectedItems?.guides?.length > 0
         );
     };
-
-    const handleCompleteRequest = () => {
+console.log(tripData)
+    const handleCompleteRequest = async() => {
         if (agreedToTerms && isTourComplete()) {
-            navigate('/tour/request-sent');
+            try{
+                const res = await postRequest('/api/trips', tripData)
+                console.log(res)
+            }catch(e){
+                console.log(e);
+            }
+            //navigate('/tour/request-sent');
         }
     };
 

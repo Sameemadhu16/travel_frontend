@@ -5,6 +5,7 @@ import FormContext from '../../../context/InitialValues';
 
 export default function SelectedTourGuide() {
     const { formData, setFormData } = useContext(FormContext);
+    const navigate = useNavigate();
 
     const selectedItems = formData.selectedItems;
     const guides = selectedItems.guides || [];

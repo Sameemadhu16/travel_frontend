@@ -16,8 +16,6 @@ export default function Vehicle() {
     const navigate = useNavigate();
     const isTourSelectVehicle = location.pathname.includes('/tour/select-vehicle');
     const { formData, setFormData } = useContext(FormContext);
-    console.log(formData)
-    
     const [driverOption, setDriverOption] = useState(null); // 'with' or 'without'
     
     const isVehicleSelected = formData.selectedItems?.selectedVehicle?.id === id;
@@ -81,8 +79,19 @@ export default function Vehicle() {
     };
 
     const handleContinue = () => {
+        setFormData(prev => ({
+            ...prev,
+            selectedItems: {
+                selectedVehicle: {},
+                guides: formData.selectedItems.guides,
+                hotels: formData.selectedItems.hotels,
+                rooms: formData.selectedItems.rooms,
+                vehicles: [],
+            }
+        }));
         navigate('/tour/complete-request');
     };
+
 
     return (
         <Main>
