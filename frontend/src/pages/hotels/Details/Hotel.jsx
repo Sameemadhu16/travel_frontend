@@ -20,9 +20,8 @@ export default function Hotel() {
     const isTourSelectHotel = location.pathname.includes('/tour/select-hotel');
     
     // Use FormContext
-    const { formData, setFormData } = useContext(FormContext);
+    const { formData } = useContext(FormContext);
     const selectedItems = formData.selectedItems || {};
-    console.log(formData)
     const isHotelSelected = selectedItems.hotels?.some(h => h.id.toString() === id) || false;
     
     useEffect(() => {
@@ -59,7 +58,7 @@ export default function Hotel() {
                 <RoomCard
                     room={room}
                     isTourMode={isTourSelectHotel}
-                    isSelected={selectedItems.rooms?.some(r => r.id === room.id) || false}
+                    hotel={hotel}
                 />
             </div>
         ));

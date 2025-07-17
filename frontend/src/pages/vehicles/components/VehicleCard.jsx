@@ -8,9 +8,10 @@ import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
 import { handleNavigate } from '../../../core/constant';
 import { useTourContext } from '../../../context/TourContext';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 // Add icon imports for amenities
 import { FaSnowflake, FaBluetooth, FaCarBattery, FaMapMarkedAlt, FaCamera, FaMusic, FaCogs, FaChair, FaPlug, FaSun, FaRoad, FaGasPump, FaUser, FaCar } from "react-icons/fa";
+import FormContext from '../../../context/InitialValues';
 
 const amenityIconMap = {
     "Air Conditioning": <FaSnowflake className="inline mr-1" />,
@@ -56,9 +57,7 @@ export default function VehicleCard({
     available,
 }) {
     const location = useLocation();
-    const tourContext = isTourMode ? useTourContext() : null;
-    const { setSelectedVehicle } = tourContext || {};
-    
+    const { formData, setFormData } = useContext(FormContext);
     const [showDriverOptions, setShowDriverOptions] = useState(false);
     const [driverOption, setDriverOption] = useState('without'); // 'with' or 'without'
     
