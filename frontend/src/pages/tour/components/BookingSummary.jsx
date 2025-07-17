@@ -37,7 +37,6 @@ export default function BookingSummary({tripData}) {
             selectedItems?.guides?.length > 0
         );
     };
-console.log(tripData)
     const handleCompleteRequest = async() => {
         if (agreedToTerms && isTourComplete()) {
             try{

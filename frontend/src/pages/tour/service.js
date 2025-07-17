@@ -1,61 +1,46 @@
-export const convertFormDataToTripRequest = (formData) => {
+export function createTripRequest(formData, userId) {
     const {
         travelDetails,
-        selectedItems,
-        contactInfo,
         itinerary,
-        userId // you must include this in formData or pass it separately
+        tourPreferences,
+        contactInfo,
+        selectedItems,
+        bookingSummary,
     } = formData;
-    // Parse duration
-    const durationMatch = travelDetails?.duration?.match(/(\d+)/);
-    const durationDays = durationMatch ? parseInt(durationMatch[1]) : 1;
 
-    const startDate = new Date(travelDetails.startDate);
-    const endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + durationDays - 1);
-
-    // Calculate base price
-    const guidePrices = (selectedItems?.guides || []).map(g => g.pricePerDay).filter(Boolean);
-    const roomPrices = (selectedItems?.rooms || []).map(r => r.pricePerNight).filter(Boolean);
-    const vehiclePrice = selectedItems?.selectedVehicle?.pricePerDay || 0;
-
-    const totalDailyPrices = [...guidePrices, ...roomPrices];
-    if (vehiclePrice) totalDailyPrices.push(vehiclePrice);
-
-    const basePrice = totalDailyPrices.reduce((sum, price) => sum + price, 0) * durationDays;
-    const totalFare = basePrice * 1.13;
-
-    // Build Trip object compatible with your Java model
-    const tripRequest = {
-        pickupLocation: travelDetails?.location || '',
-        tripStartDate: startDate.toISOString().split('T')[0],        // expects "yyyy-MM-dd"
-        tripEndDate: endDate.toISOString().split('T')[0],
-        startTime: travelDetails?.time ? `${travelDetails.time}:00` : "00:00:00", // ensure "HH:mm:ss"
-        placesToBeVisit: Array.isArray(itinerary)
-            ? itinerary.flatMap(day => day.activities || [])
-                .map(activity => activity.placeId)
-                .filter(Boolean)
-            : [],
-        numberOfAdults: travelDetails?.adults || 0,
-        numberOfKids: travelDetails?.children || 0,
-        estimateDuration: travelDetails?.duration || '',
-        distanceKm: 0, // optional: calculate if needed
-        tripStatus: "pending",
-        selectedVehicle: selectedItems?.selectedVehicle
-            ? { id: selectedItems.selectedVehicle.id }
+    return {
+            tripCode: generateTripCode(), // You can implement a generator
+            user: { id: userId },
+            pickupLocation: travelDetails.pickupLocation || "",
+            tripStartDate: travelDetails.startDate || "",
+            tripEndDate: travelDetails.endDate || "",
+            startTime: travelDetails.startTime || "08:00:00", // default fallback
+            placesToBeVisit: [],
+            numberOfAdults: travelDetails.numberOfAdults || 0,
+            numberOfKids: travelDetails.numberOfKids || 0,
+            estimateDuration: travelDetails.duration || "",
+            distanceKm: travelDetails.distanceKm || 0,
+            tripStatus: "pending",
+            selectedVehicleAgency: selectedItems.selectedVehicle?.agency
+            ? { id: selectedItems.selectedVehicle.agency.id }
             : null,
-        selectedHotel: selectedItems?.hotels?.[0]
+            selectedVehicle: selectedItems.selectedVehicle
+            ? {
+                id: selectedItems.selectedVehicle.id,
+                isVerified: selectedItems.selectedVehicle.isVerified ?? false,
+                }
+            : null,
+            selectedHotel: selectedItems.hotels.length > 0
             ? { id: selectedItems.hotels[0].id }
             : null,
-        selectedRooms: (selectedItems?.rooms || []).map(room => ({ id: room.id })),
-        basePrice: basePrice.toFixed(2),     // if API accepts as string
-        totalFare: totalFare.toFixed(2),
-        user: {
-            id: userId || null,
-            email: contactInfo?.email || '',
-            phone: contactInfo?.phone || ''
-        }
-    };
+            selectedRooms: selectedItems.rooms.map(room => ({ id: room.id })),
+            basePrice: bookingSummary?.basePrice ?? 0,
+            totalFare: bookingSummary?.totalCost ?? 0
+        };
+    }
 
-    return tripRequest;
-};
+    // Example generator (simple)
+    function generateTripCode() {
+        const now = new Date();
+        return `TRIP${now.getFullYear()}${Math.floor(Math.random() * 10000)}`;
+    }

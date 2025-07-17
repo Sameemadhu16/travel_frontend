@@ -9,7 +9,8 @@ import ItineraryOverview from './components/ItineraryOverview';
 import BookingSummary from './components/BookingSummary';
 import { useContext } from 'react';
 import FormContext from '../../context/InitialValues';
-import { convertFormDataToTripRequest } from './service';
+import { createTripRequest } from './service';
+import { useSelector } from 'react-redux'
 
 const tripData = {
   tripCode: "TRIP2025001",
@@ -18,7 +19,6 @@ const tripData = {
   tripStartDate: "2025-07-10",
   tripEndDate: "2025-07-15",
   startTime: "08:00:00",
-  placesToBeVisit: [101, 102, 103],
   numberOfAdults: 2,
   numberOfKids: 1,
   estimateDuration: "5 days",
@@ -37,9 +37,11 @@ const tripData = {
   totalFare: 1200.00
 };
 
-
 export default function CompleteRequest() {
     const { formData, setFormData } = useContext(FormContext);
+    const {user} = useSelector((state) => state.auth);
+    const id = user.data.id;
+    const tripReq = createTripRequest(formData, id);
   return (
     <Main>
       <div className="max-w-7xl mx-auto py-8 px-4">
@@ -64,7 +66,7 @@ export default function CompleteRequest() {
             
             {/* Right Column - Booking Summary */}
             <div className="w-80">
-              <BookingSummary tripData={tripData}/>
+              <BookingSummary tripData={tripReq}/>
             </div>
           </div>
         </div>

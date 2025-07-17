@@ -9,7 +9,6 @@ export default function DestinationDetails() {
     const travelDetails = formData.travelDetails;
     const itinerary = formData.itinerary;
     const tourPreferences = formData.tourPreferences;
-    console.log(formData)
 
     // Format date for display
     const formatDate = (dateString) => {
