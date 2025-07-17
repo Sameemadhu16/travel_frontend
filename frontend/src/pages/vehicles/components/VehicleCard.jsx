@@ -7,9 +7,8 @@ import Tag from '../../hotels/components/Tag';
 import PropTypes from 'prop-types';
 import { useLocation } from 'react-router-dom';
 import { handleNavigate } from '../../../core/constant';
-import { useContext, useState } from 'react';
+import { useState } from 'react';
 import { FaSnowflake, FaBluetooth, FaCarBattery, FaMapMarkedAlt, FaCamera, FaMusic, FaCogs, FaChair, FaPlug, FaSun, FaRoad, FaGasPump, FaUser, FaCar } from "react-icons/fa";
-import FormContext from '../../../context/InitialValues';
 
 const amenityIconMap = {
     "Air Conditioning": <FaSnowflake className="inline mr-1" />,
@@ -55,7 +54,6 @@ export default function VehicleCard({
     available,
 }) {
     const location = useLocation();
-    const { formData, setFormData } = useContext(FormContext);
     const [showDriverOptions, setShowDriverOptions] = useState(false);
     const [driverOption, setDriverOption] = useState('without'); // 'with' or 'without'
     
@@ -82,43 +80,7 @@ export default function VehicleCard({
         // toggle favorite logic here
     };
 
-    const handleVehicleSelection = (e) => {
-        e.stopPropagation();
-        if (!tourContext) return;
-        
-        if (isSelected) {
-            setSelectedVehicle(null);
-            setShowDriverOptions(false);
-        } else {
-            setShowDriverOptions(true);
-        }
-    };
-
     const handleDriverOptionSelect = (option) => {
-        const vehicleData = {
-            id,
-            name,
-            brand,
-            model,
-            type,
-            pricePerDay: option === 'with' ? priceWithDriver : priceWithoutDriver,
-            basePrice: pricePerDay,
-            driverIncluded: option === 'with',
-            driverFee: option === 'with' ? driverFee : 0,
-            images,
-            amenities,
-            seats,
-            transmission,
-            fuelType,
-            rating,
-            reviews,
-            rentalAgency,
-            location: vehicleLocation,
-            about,
-            available
-        };
-        
-        setSelectedVehicle(vehicleData);
         setDriverOption(option);
         setShowDriverOptions(false);
     };

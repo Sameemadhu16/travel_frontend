@@ -16,6 +16,7 @@ export default function Vehicle() {
     const navigate = useNavigate();
     const isTourSelectVehicle = location.pathname.includes('/tour/select-vehicle');
     const { formData, setFormData } = useContext(FormContext);
+    console.log(formData)
     
     const [driverOption, setDriverOption] = useState('without'); // 'with' or 'without'
     
