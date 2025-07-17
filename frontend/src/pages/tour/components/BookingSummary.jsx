@@ -41,11 +41,11 @@ export default function BookingSummary({tripData}) {
         if (agreedToTerms && isTourComplete()) {
             try{
                 const res = await postRequest('/api/trips', tripData)
+                navigate('/tour/request-sent');
                 console.log(res)
             }catch(e){
                 console.log(e);
             }
-            //navigate('/tour/request-sent');
         }
     };
 
