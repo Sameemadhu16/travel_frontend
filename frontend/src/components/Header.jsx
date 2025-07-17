@@ -2,7 +2,7 @@ import Main from './Main';
 import Title from '../components/Title';
 import room from '../assets/rooms/room1.png';
 import Navigate from './Navigate';
-import logo from '../../public/logo1.png'
+import logo from '../assets/logo/logo1.png'
 import { useDispatch, useSelector } from 'react-redux';
 import { checkTokenExpiration } from '../core/authChecker';
 import { resetAuth } from '../redux/slices/authSlice';
@@ -39,9 +39,9 @@ export default function Header() {
     }, [showProfileMenu]);
 
     return (
-            <div className='px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 2xl:px-60'>
+            <div className='px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 2xl:px-60 '>
                 <div className='flex justify-between items-center w-full'>
-                    <div className='h-10 w-20 rounded-[4px] overflow-hidden'>
+                    <div className='h-[80px] w-40 rounded-[4px] overflow-hidden'>
                         <img src={logo} alt="" className='h-full w-full object-cover' />
                     </div>
                     {token && !isExpired && (
