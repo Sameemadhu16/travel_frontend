@@ -52,7 +52,6 @@ export default function CreateTour() {
                 {/* <Stepper /> */}
                 <form className="flex flex-col gap-8 mt-6" onSubmit={handleNext}>
                     <TravelDetails />
-                    <TourPreferences />
                     <ContactInformation />
                     <div className="flex justify-between mt-4">
                         <button 
