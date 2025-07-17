@@ -39,17 +39,16 @@ export default function Search() {
         navigate('/tour/select-vehicle');
     };
 
-    // Filter hotels based on travel details if available
     const filteredHotels = useMemo(() => {
         if (!isTourSelectHotel || !travelDetails?.destination) {
             return hotelList;
         }
-        
-        // Filter hotels by destination/location
-        return hotelList.filter(hotel => 
-            hotel.location?.toLowerCase().includes(travelDetails.destination.toLowerCase()) ||
-            hotel.city?.toLowerCase().includes(travelDetails.destination.toLowerCase())
+        const dest = travelDetails.destination.trim().toLowerCase();
+        const filtered = hotelList.filter(hotel => 
+            hotel.location?.toLowerCase().includes(dest) ||
+            hotel.city?.toLowerCase().includes(dest)
         );
+        return filtered.length > 0 ? filtered : hotelList;
     }, [isTourSelectHotel, travelDetails?.destination]);
 
     const hotelsContainer = useMemo(()=>{
