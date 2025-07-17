@@ -7,7 +7,6 @@ import Tag from './Tag';
 import PropTypes from 'prop-types';
 import { handleNavigate } from '../../../core/constant';
 import { useLocation } from 'react-router-dom';
-import { useTourContext } from '../../../context/TourContext';
 
 export default function HotelCard({
     id,

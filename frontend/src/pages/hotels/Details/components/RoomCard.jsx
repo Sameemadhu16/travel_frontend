@@ -11,7 +11,6 @@ export default function RoomCard({ room, isTourMode = false, hotel = {} }) {
     const location = useLocation();
     const isTourSelectHotel = location.pathname.includes('/tour/select-hotel');
     const { formData, setFormData } = useContext(FormContext);
-
     const selectedRoomId = formData.selectedItems?.rooms?.[0]?.id;
     const selectedHotelId = formData.selectedItems?.hotels?.[0]?.id;
 

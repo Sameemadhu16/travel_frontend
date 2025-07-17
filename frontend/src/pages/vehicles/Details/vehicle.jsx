@@ -1,12 +1,13 @@
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { vehicleList } from '../../../core/Lists/vehicles';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import Main from '../../../components/Main';
 import Title from '../../../components/Title';
 import Breadcrumb from '../../../components/Breadcrumb';
 import FormatText from '../../../components/FormatText';
 import PrimaryButton from '../../../components/PrimaryButton';
 import { FaCar, FaUsers, FaCogs, FaGasPump, FaUser } from 'react-icons/fa';
+import FormContext from '../../../context/InitialValues';
 
 export default function Vehicle() {
     const [vehicle, setVehicle] = useState({});
@@ -14,10 +15,11 @@ export default function Vehicle() {
     const location = useLocation();
     const navigate = useNavigate();
     const isTourSelectVehicle = location.pathname.includes('/tour/select-vehicle');
+    const { formData, setFormData } = useContext(FormContext);
     
     const [driverOption, setDriverOption] = useState('without'); // 'with' or 'without'
     
-    const isVehicleSelected = selectedItems?.selectedVehicle?.id === id;
+    const isVehicleSelected = formData.selectedItems?.selectedVehicle?.id === id;
     
     // Calculate prices with/without driver
     const driverFee = vehicle.pricePerDay ? Math.round(vehicle.pricePerDay * 0.3) : 0; // 30% of vehicle price for driver
@@ -36,10 +38,9 @@ export default function Vehicle() {
     ];
 
     const handleReserve = () => {
-        if (isTourSelectVehicle && tourContext) {
-            // Tour booking flow - add to context
+        if (isTourSelectVehicle) {
             const vehicleData = {
-                id,
+                id: parseInt(id),
                 name: vehicle.name,
                 brand: vehicle.brand,
                 model: vehicle.model,
@@ -61,7 +62,15 @@ export default function Vehicle() {
                 available: vehicle.available
             };
             
-            setSelectedVehicle(vehicleData);
+            // Update context with selected vehicle
+            setFormData(prev => ({
+                ...prev,
+                selectedItems: {
+                    ...prev.selectedItems,
+                    selectedVehicle: vehicleData
+                }
+            }));
+            
             navigate('/tour/complete-request');
         } else {
             // Regular vehicle booking flow
