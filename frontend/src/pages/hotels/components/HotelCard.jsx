@@ -25,38 +25,11 @@ export default function HotelCard({
     selectedHotels = [],
 }) {
     const currentLocation = useLocation();
-    const tourContext = isTourMode ? useTourContext() : null;
-    const { addSelectedHotel, removeSelectedHotel } = tourContext || {};
-    
     const isSelected = selectedHotels.some(hotel => hotel.id === id);
 
     const handleFavoriteClick = (e) => {
         e.stopPropagation();
         // toggle favorite logic here
-    };
-
-    const handleTourSelection = (e) => {
-        e.stopPropagation();
-        if (!tourContext) return;
-        
-        const hotelData = {
-            id,
-            name,
-            location,
-            rating,
-            pricePerNight,
-            images,
-            amenities,
-            type,
-            roomLeft,
-            reviews
-        };
-        
-        if (isSelected) {
-            removeSelectedHotel(id);
-        } else {
-            addSelectedHotel(hotelData);
-        }
     };
 
     const handleCardClick = () => {

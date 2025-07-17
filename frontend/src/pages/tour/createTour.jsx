@@ -3,15 +3,13 @@ import { useNavigate } from 'react-router-dom';
 import TravelDetails from './components/TravelDetails';
 import ContactInformation from './components/ContactInformation';
 import Main from '../../components/Main';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import FormContext from '../../context/InitialValues';
 
 export default function CreateTour() {
     const navigate = useNavigate();
     const [validateContactInfo, setValidateContactInfo] = useState(false);
     const [validateTravelDetails, setValidateTravelDetails] = useState(false);
-        const { formData, setFormData } = useContext(FormContext);
-console.log(formData)
 
     const handleBack = () => {
         navigate('/');

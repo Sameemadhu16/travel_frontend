@@ -89,9 +89,9 @@ export default function AppRoutes() {
                                 {localStorage.removeItem('formData')}
                                 <FormProvider initialValues={initialTripFormData.formData}>
                                     <Routes>
-                                        <Route path="create-tour" element={<CreateTour/>}/>
-                                        <Route path="select-guide" element={<SelectGuide/>}/>
-                                        <Route path="select-hotel" element={<Search />} />
+                                        <Route path="/create-tour" element={<CreateTour/>}/>
+                                        <Route path="/select-guide" element={<SelectGuide/>}/>
+                                        <Route path="/select-hotel" element={<Search />} />
                                         <Route path="select-hotel/:id" element={<Hotel />} />
                                         <Route path="select-vehicle" element={<SearchVehicles/>}/>
                                         <Route path="select-vehicle/:id" element={<Vehicle/>} />
