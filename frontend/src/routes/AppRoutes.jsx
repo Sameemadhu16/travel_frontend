@@ -17,7 +17,7 @@ import ForgotUsername from '../pages/partner/forgot_details/ForgotUsername';
 import ChangePassword from '../pages/partner/forgot_details/ChangePassword';
 import { FormProvider } from '../context/FormContext';
 import { TourProvider } from '../context/TourContext';
-import { loginPartnerAccountForm, registerPartnerAccountForm } from '../context/InitialValues';
+import { initialTripFormData, loginPartnerAccountForm, registerPartnerAccountForm } from '../context/InitialValues';
 import ChatBot from '../pages/chatBot/ChatBot';
 import TravelerRegister from '../pages/TravelerRegister';
 import ChooseProperty from '../pages/partner/register/ChooseProperty';
@@ -85,19 +85,22 @@ export default function AppRoutes() {
                     <Route 
                         path="/tour/*"
                         element={
-                            <TourProvider>
-                                <Routes>
-                                    <Route path="create-tour" element={<CreateTour/>}/>
-                                    <Route path="select-guide" element={<SelectGuide/>}/>
-                                    <Route path="select-hotel" element={<Search />} />
-                                    <Route path="select-hotel/:id" element={<Hotel />} />
-                                    <Route path="select-vehicle" element={<SearchVehicles/>}/>
-                                    <Route path="select-vehicle/:id" element={<Vehicle/>} />
-                                    <Route path="complete-request" element={<CompleteRequest/>}/>
-                                    <Route path="request-sent" element={<RequestSent />} />
-                                    <Route path="payment" element={<Payment/>} />
-                                </Routes>
-                            </TourProvider>
+                            <>
+                                {localStorage.removeItem('formData')}
+                                <FormProvider initialValues={initialTripFormData.formData}>
+                                    <Routes>
+                                        <Route path="create-tour" element={<CreateTour/>}/>
+                                        <Route path="select-guide" element={<SelectGuide/>}/>
+                                        <Route path="select-hotel" element={<Search />} />
+                                        <Route path="select-hotel/:id" element={<Hotel />} />
+                                        <Route path="select-vehicle" element={<SearchVehicles/>}/>
+                                        <Route path="select-vehicle/:id" element={<Vehicle/>} />
+                                        <Route path="complete-request" element={<CompleteRequest/>}/>
+                                        <Route path="request-sent" element={<RequestSent />} />
+                                        <Route path="payment" element={<Payment/>} />
+                                    </Routes>
+                                </FormProvider>
+                            </>
                         }
                     />
                     <Route path='/hotel/:id' element={<Hotel/>}/>

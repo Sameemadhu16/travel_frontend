@@ -3,6 +3,67 @@ import { createContext } from "react";
 const INITIAL_STRING = '';
 const INITIAL_NUMBER = 0;
 
+const initialTripFormData = {
+    formData: {
+        travelDetails: {
+            destination: INITIAL_STRING,
+            duration: INITIAL_STRING,
+            travelStyle: INITIAL_STRING,
+            groupType: INITIAL_STRING,
+            startDate: INITIAL_STRING,
+            location: INITIAL_STRING,
+            time: INITIAL_STRING,
+            adults: 1,
+            children: 0
+        },
+        itinerary: [
+            { day: 1, activities: [{ title: INITIAL_STRING, time: INITIAL_STRING, description: INITIAL_STRING }] }
+        ],
+        tourPreferences: {
+            interests: [],
+            accommodation: INITIAL_STRING,
+            travelStyle: INITIAL_STRING,
+            budgetRange: INITIAL_STRING,
+            activityLevel: INITIAL_STRING,
+            diningPreference: INITIAL_STRING
+        },
+        contactInfo: {
+            fullName: INITIAL_STRING,
+            email: INITIAL_STRING,
+            phone: INITIAL_STRING,
+            country: INITIAL_STRING,
+            nicNumber: INITIAL_STRING,
+            optionalContact: INITIAL_STRING,
+            specialRequests: INITIAL_STRING,
+            ageGroup: INITIAL_STRING,
+            occupation: INITIAL_STRING,
+            travelExperience: INITIAL_STRING,
+            referralSource: INITIAL_STRING
+        },
+        selectedItems: {
+            guides: [],
+            hotels: [],
+            rooms: [],
+            vehicles: [],
+            selectedVehicle: null
+        },
+        bookingSummary: {
+            totalCost: INITIAL_NUMBER,
+            guidesCost: INITIAL_NUMBER,
+            hotelsCost: INITIAL_NUMBER,
+            vehiclesCost: INITIAL_NUMBER,
+            serviceFee: INITIAL_NUMBER,
+            taxes: INITIAL_NUMBER
+        },
+        errors: {},
+        touched: {},
+        currentStep: 1,
+        isLoading: false,
+        agreedToTerms: false
+    },
+    setFormData: () => {}
+};
+
 const registerPartnerAccountForm = {
     formData: {
         email: INITIAL_STRING,
@@ -24,4 +85,4 @@ const loginPartnerAccountForm = {
 const FormContext = createContext();
 
 export default FormContext;
-export { registerPartnerAccountForm, loginPartnerAccountForm }; 
+export { registerPartnerAccountForm, loginPartnerAccountForm, initialTripFormData };

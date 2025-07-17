@@ -34,7 +34,6 @@ export default function PartnerLoginStep2() {
                 const user = await handleFirebaseLogin(formData.email, formData.password);
                 if (user && user.emailVerified) {
                     const userData = await getRequest(`/api/users/public/${user.uid}`);
-                    console.log(userData);
                     dispatch(
                         registerSuccess({
                         user: {

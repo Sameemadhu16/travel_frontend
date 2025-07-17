@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
-import FormContext, { registerPartnerAccountForm } from "./InitialValues";
+import FormContext from "./InitialValues";
 import PropTypes from 'prop-types';
-import { useLocation } from "react-router-dom";
 
 export const FormProvider = ({ children, initialValues = {} }) => {
 

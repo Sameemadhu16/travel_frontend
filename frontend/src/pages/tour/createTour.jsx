@@ -1,25 +1,17 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useTourContext } from '../../context/TourContext';
 
 import TravelDetails from './components/TravelDetails';
-import TourPreferences from './components/TourPreferences';
 import ContactInformation from './components/ContactInformation';
 import Main from '../../components/Main';
+import { useContext, useEffect, useState } from 'react';
+import FormContext from '../../context/InitialValues';
 
 export default function CreateTour() {
     const navigate = useNavigate();
-    const { 
-        travelDetails,
-        tourPreferences,
-        contactInfo,
-        errors,
-        validateTravelDetails, 
-        validateTourPreferences, 
-        validateContactInfo,
-        nextStep,
-        currentStep 
-    } = useTourContext();
+    const [validateContactInfo, setValidateContactInfo] = useState(false);
+    const [validateTravelDetails, setValidateTravelDetails] = useState(false);
+        const { formData, setFormData } = useContext(FormContext);
+console.log(formData)
 
     const handleBack = () => {
         navigate('/');
@@ -27,21 +19,7 @@ export default function CreateTour() {
 
     const handleNext = (e) => {
         e.preventDefault();
-        
-        // Validate all sections before proceeding
-        const isTravelValid = validateTravelDetails();
-        const isPreferencesValid = validateTourPreferences();
-        const isContactValid = validateContactInfo();
-        
-        if (isTravelValid && isPreferencesValid && isContactValid) {
-            nextStep(); // Update context step
-            navigate('/tour/select-guide');
-        } else {
-            // Show which section has errors
-            if (!isTravelValid) console.error('Travel details validation failed');
-            if (!isPreferencesValid) console.error('Tour preferences validation failed');
-            if (!isContactValid) console.error('Contact information validation failed');
-        }
+        navigate('/tour/select-guide');
     };
 
     return (
@@ -51,8 +29,8 @@ export default function CreateTour() {
                 <h2 className="text-2xl font-bold mb-2 text-content-primary">Create a new tour</h2>
                 {/* <Stepper /> */}
                 <form className="flex flex-col gap-8 mt-6" onSubmit={handleNext}>
-                    <TravelDetails />
-                    <ContactInformation />
+                    <TravelDetails setValid={setValidateTravelDetails}/>
+                    <ContactInformation setValid={setValidateContactInfo}/>
                     <div className="flex justify-between mt-4">
                         <button 
                             type="button" 
