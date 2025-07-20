@@ -20,6 +20,7 @@ function SidebarLink({ to, icon: Icon, label, isActive }) {
 export default function HotelSidebar({ activePage }) {
   const navigationItems = [
     { to: '/hotel/dashboard', id: 'dashboard', icon: FaHome, label: 'Dashboard' },
+    { to: '/hotel/listings', id: 'listings', icon: FaBed, label: 'Hotel Listings' },
     { to: '/hotel/rooms', id: 'rooms', icon: FaBed, label: 'Rooms' },
     { to: '/hotel/bookings', id: 'bookings', icon: FaCalendarAlt, label: 'Bookings' },
     { to: '/hotel/guests', id: 'guests', icon: FaUsers, label: 'Guests' },

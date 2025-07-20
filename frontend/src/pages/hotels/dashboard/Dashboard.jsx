@@ -111,7 +111,7 @@ export default function HotelDashboard() {
   ];
 
   return (
-    <AdminLayout>
+    <HotelLayout>
       <div className="p-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold mb-2">Hotel Dashboard</h1>
@@ -235,6 +235,6 @@ export default function HotelDashboard() {
           </div>
         </div>
       </div>
-    </AdminLayout>
+    </HotelLayout>
   );
 }

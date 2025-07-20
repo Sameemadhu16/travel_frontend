@@ -35,6 +35,8 @@ import Settings from '../pages/partner/settings/Settings'
 import HelpCenter from '../pages/partner/help/HelpCenter'
 import Dashboard from '../pages/partner/dashboard/Dashboard'
 import HotelDashboard from '../pages/hotels/dashboard/Dashboard'
+import HotelListings from '../pages/hotels/listings/HotelListings'
+import HotelDetails from '../pages/hotels/details/HotelDetails'
 
 export default function AppRoutes() {
     return (
@@ -45,20 +47,32 @@ export default function AppRoutes() {
             <Route path="/vehicle-search" element={<SearchVehicles />} />
             <Route path="/hotel/:id" element={<Hotel />} />
 
-            {/* hotels*/}
+            {/* Admin Routes */}
+            <Route path="/admin">
+              <Route path="dashboard" element={<AdminDashboard />} />
+              <Route path="users" element={<Users />} />
+              <Route path="admin-listings" element={<Listings />} />
+              <Route path="reviews" element={<Reviews />} />
+              <Route path="reports" element={<Reports />} />
+              <Route path="notifications" element={<Notifications />} />
+              <Route path="payments" element={<Payments />} />
+              <Route path="bookings" element={<Bookings />} />
+              <Route path="settings" element={<AdminSettings />} />
+            </Route>
+
+            {/* Hotel Management Routes */}
             <Route path="/hotel-registration" element={<HotelRegistration />} />
-            <Route path="/hotel/dashboard" element={<HotelDashboard />} />
+            <Route path="/hotel">
+              <Route path="dashboard" element={<HotelDashboard />} />
+              <Route path="listings" element={<HotelListings />} />
+              <Route path="branch/:id" element={<HotelDetails />} />
+            </Route>
 
             {/* rooms */}
             <Route path="/rooms-add" element={<RoomsAdd />} />
 
             {/* partner */}
             <Route path="/partner-details" element={<Details />} />
-
-            {/* admin */}
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/bookings" element={<Bookings />} />
-            <Route path="/admin/users" element={<Users />} />
             <Route path="/admin/listings" element={<Listings />} />
             <Route path="/admin/reviews" element={<Reviews />} />
             <Route path="/admin/reports" element={<Reports />} />
