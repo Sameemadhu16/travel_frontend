@@ -27,6 +27,12 @@ import VehicleRegistration from '../pages/vehicles/auth/VehicleRegistration';
 import VehicleAgencyRegistration from '../pages/vehicles/auth/VehicleAgencyRegistration';
 import CreateTour from '../pages/tour/createTour';
 import SelectGuide from '../pages/tour/selectGuide';
+import TourRequest from '../pages/guide/TourRequest';
+import AcceptedTours from '../pages/guide/AcceptedTours';
+import ConfirmedTours from '../pages/guide/ConfirmedTours';
+import ActiveTour from '../pages/guide/ActiveTour';
+import GuideProfile from '../pages/guide/GuideProfile';
+import GuideComplaints from '../pages/guide/GuideComplaints';
 import CompleteRequest from '../pages/tour/completeRequest';
 import RequestSent from '../pages/tour/requestSent';
 import Payment from '../pages/tour/payment';
@@ -79,6 +85,67 @@ export default function AppRoutes() {
                         }
                     />
 
+
+<Routes>
+   
+   
+
+    {/* Guide-related routes */}
+    <Route path='/guide-profile' element={<GuideProfile />}/>
+    <Route path='/guide-complaints' element={<GuideComplaints />}/>
+    <Route path='/guide-tour-request' element={<TourRequest />} />
+    <Route path='/guide-accepted-tours' element={<AcceptedTours />} />
+    <Route path='/guide-confirmed-tours' element={<ConfirmedTours />} />
+    <Route path='/guide-active-tour' element={<ActiveTour />} />
+
+    {/* Conditional routes based on authentication */}
+    {checkTokenExpiration() ? (
+        <>
+            {/* Authenticated routes */}
+            <Route path='/' element={<Home/>}/>
+            <Route path='/hotels' element={<Search/>}/>
+            <Route path='/hotel-registration' element={<HotelRegistration/>}/>
+            <Route path='/add-rooms' element={<RoomsAdd/>}/>
+            <Route path='/partner-details' element={<Details/>}/>
+            <Route path='/vehicles' element={<SearchVehicles/>}/>
+            <Route path='/vehicle/:id' element={<Vehicle/>}/>
+            <Route path='/vehicle-registration' element={<VehicleRegistration/>}/>
+            <Route path='/vehicle-agency-registration' element={<VehicleAgencyRegistration/>}/>
+        </>
+    ) : (
+        <>
+            {/* Unauthenticated routes */}
+            <Route 
+                path="/partner-login/*"
+                element={
+                    <FormProvider initialValues={loginPartnerAccountForm.formData}>
+                        <Routes>
+                            <Route index element={<Navigate to="step-1" replace />} />
+                            <Route path='step-1' element={<PartnerLoginStep1/>}/>
+                            <Route path='step-2' element={<PartnerLoginStep2/>}/>
+                        </Routes>
+                    </FormProvider>
+                }
+            />
+            <Route 
+                path="/partner-register/*"
+                element={
+                    <FormProvider initialValues={registerPartnerAccountForm.formData}>
+                        <Routes>
+                            <Route index element={<Navigate to="step-1" replace />} />
+                            <Route path='step-1' element={<PartnerRegisterStep1/>}/>
+                            <Route path='step-2' element={<PartnerRegisterStep2/>}/>
+                            <Route path='choose-property' element={<ChooseProperty/>}/>
+                        </Routes>
+                    </FormProvider>
+                }
+            />
+            <Route path='/traveler-register' element={<TravelerRegister/>}/>
+            <Route path='/' element={<Welcome/>}/>
+            <Route path="*" element={<Navigate to="/partner-login/step-1" replace />} />
+        </>
+    )}
+
                     {/* Tour routes wrapped with TourProvider */}
                     <Route 
                         path="/tour/*"
@@ -104,25 +171,3 @@ export default function AppRoutes() {
                     <Route path='/hotel/:id' element={<Hotel/>}/>
                     <Route path="/destination/:id" element={<DestinationPage />} />
                 </>
-            ) : (
-                <>
-                    <Route 
-                        path="/partner-login/*"
-                        element={
-                            <FormProvider initialValues={loginPartnerAccountForm.formData}>
-                                <Routes>
-                                    <Route index element={<Navigate to="step-1" replace />} />
-                                    <Route path='step-1' element={<PartnerLoginStep1/>}/>
-                                    <Route path='step-2' element={<PartnerLoginStep2/>}/>
-                                </Routes>
-                            </FormProvider>
-                        }
-                    />
-                    <Route path='/traveler-register' element={<TravelerRegister/>}/>
-                    <Route path='/' element={<Welcome/>}/>
-                    <Route path="*" element={<Navigate to="/partner-login/step-1" replace />} />
-                </>
-            )}
-        </Routes>
-    );
-}
