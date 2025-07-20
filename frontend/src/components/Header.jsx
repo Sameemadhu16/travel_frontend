@@ -1,53 +1,115 @@
-import Main from './Main'
-import Title from '../components/Title'
-import room from '../assets/rooms/room1.png'
-import ReserveOptions from './ReserveOptions'
-import Navigate from './Navigate'
+import Title from '../components/Title';
+import room from '../assets/rooms/room1.png';
+import Navigate from './Navigate';
+import logo from '../assets/logo/logo1.png'
+import { useDispatch, useSelector } from 'react-redux';
+import { checkTokenExpiration } from '../core/authChecker';
+import { resetAuth } from '../redux/slices/authSlice';
+import { useState, useRef, useEffect } from 'react';
 
 export default function Header() {
+    const { user, token } = useSelector((state) => state.auth);
+    const isExpired = checkTokenExpiration(token);
+    const dispatch = useDispatch();
+    const [showProfileMenu, setShowProfileMenu] = useState(false);
+    const menuRef = useRef(null);
+
+    // Close menu on outside click
+    useEffect(() => {
+        function handleClickOutside(event) {
+            if (menuRef.current && !menuRef.current.contains(event.target)) {
+                setShowProfileMenu(false);
+            }
+        }
+        if (showProfileMenu) {
+            document.addEventListener("mousedown", handleClickOutside);
+            // Add blur to main content
+            const mainContent = document.getElementById('main-content-blur');
+            if (mainContent) mainContent.classList.add('blur-sm');
+        } else {
+            const mainContent = document.getElementById('main-content-blur');
+            if (mainContent) mainContent.classList.remove('blur-sm');
+        }
+        return () => {
+            document.removeEventListener("mousedown", handleClickOutside);
+            const mainContent = document.getElementById('main-content-blur');
+            if (mainContent) mainContent.classList.remove('blur-sm');
+        };
+    }, [showProfileMenu]);
+
     return (
-        <Main>
-            <div className='flex justify-between items-center mt-2'>
-                <div>
-                    <Title
-                        title='travel.lk'
-                        size='text-[28px]'
-                        font='font-[600]'
-                    />
-                </div>
-                <div className='flex gap-1 items-center'>
-                    <Navigate 
-                        path={'/partner-details'} 
-                        className='p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'
-                    >
-                        <Title
-                            title='List your property'
-                            size='text-[16px]'
-                            font='font-[500]'
-                        />
-                    </Navigate>
-                    <div className='flex items-center gap-2 p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
-                        <div className='h-[40px] w-[40px] border-2 border-brand-primary rounded-full overflow-hidden'>
-                            <img src={room} alt="room" className='h-full w-full object-cover'/>
-                        </div>
-                        <div className='flex flex-col'>
-                            <Title
-                                title='Sachith'
-                                size='text-[16px]'
-                                font='font-[600]'
-                            />
-                            <Title
-                                title='Level 1'
-                                size='text-[14px]'
-                                font='font-[300]'
-                            />
-                        </div>
+            <div className='sticky top-0 left-0 right-0 z-50 bg-white shadow-md px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 2xl:px-60 '>
+                <div className='flex justify-between items-center w-full'>
+                    <div className='h-[80px] w-40 rounded-[4px] overflow-hidden'>
+                        <img src={logo} alt="" className='h-full w-full object-cover' />
                     </div>
-                </div>
+                    {token && !isExpired && (
+                        <div className='flex gap-1 items-center'>
+                            <Navigate
+                                path={'/partner-details'}
+                                className='p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'
+                            >
+                                <Title
+                                    title='List your property'
+                                    size='text-[16px]'
+                                    font='font-[500]'
+                                />
+                            </Navigate>
+                            <div className='flex items-center w-[300px] gap-2 p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
+                                <div onClick={() => setShowProfileMenu((v) => !v)} className='h-[40px] w-[40px] border-2 border-brand-primary rounded-full overflow-hidden'>
+                                    <img src={room} alt="room" className='h-full w-full object-cover' />
+                                </div>
+                                <div className='flex flex-col overflow-hidden' onClick={() => setShowProfileMenu((v) => !v)}>
+                                    <Title
+                                        title={user?.data?.email}
+                                        size='text-[16px]'
+                                        font='font-[600]'
+                                    />
+                                    <Title
+                                        title='Level 1'
+                                        size='text-[14px]'
+                                        font='font-[300]'
+                                    />
+                                </div>
+                                {showProfileMenu && (
+                                    <div
+                                        ref={menuRef}
+                                        className="absolute top-14 right-0 w-56 bg-white rounded-xl shadow-xl border z-50 animate-fade-in"
+                                    >
+                                        <ul className="py-2">
+                                            <li>
+                                                <a href="/settings/general" className="block px-5 py-3 text-sm font-semibold text-brand-primary bg-brand-accent hover:bg-brand-secondary rounded-t-xl">
+                                                    General Settings
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/settings/profile" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
+                                                    Profile Settings
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/bookings" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
+                                                    Bookings
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/payments" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent rounded-b-xl">
+                                                    Payments
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a href="/partner-register/step-1" onClick={() => dispatch(resetAuth())} className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent rounded-b-xl">
+                                                    Log Out
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    )
+                    }
+                </div>  
             </div>
-            <div>
-                <ReserveOptions/>
-            </div>
-        </Main>
-    )
+    );
 }

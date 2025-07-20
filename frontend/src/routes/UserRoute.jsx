@@ -1,5 +1,5 @@
 import { Route, Routes } from 'react-router-dom'
-import Home from '../pages/home/home'
+import Home from '../pages/ome/Home'
 
 export default function UserRoute() {
     return (

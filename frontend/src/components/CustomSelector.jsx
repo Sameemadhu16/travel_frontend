@@ -36,7 +36,7 @@ export default function CustomSelector({
                     } focus:border-brand-primary focus:outline-none`}
             >
                 <option className='cursor-pointer' value="" disabled>
-                {placeholder}
+                    {placeholder}
                 </option>
                 {options.map((option) => (
                 <option key={option.id} value={option.value}>

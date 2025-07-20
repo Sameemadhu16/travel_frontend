@@ -8,20 +8,27 @@ import { provinces, districts, cities } from "../../../core/Lists/location";
 import { amenities, propertyTypes } from "../../../core/constant";
 import InputArea from "../../../components/InputArea";
 import PrimaryButton from "../../../components/PrimaryButton";
-import { handleSelect } from "../../../core/service";
+import { handleSelect, postRequest } from "../../../core/service";
 import Checkbox from "../../../components/CheckBox";
 import { formValidator } from "../../../core/validation";
+import { showToastMessage } from "../../../utils/toastHelper";
+import { navigateTo } from "../../../core/navigateHelper";
+import Spinner from '../../../components/Spinner'
+import Breadcrumb from "../../../components/Breadcrumb";
+
+const breadcrumbItems = [
+    { label: "Property Choose", path: "/choose-property" },
+    { label: "Hotel Register", path: "/hotel-registration" },
+];
 
 export default function HotelRegistration() {
     const [licenseImage, setLicenseImage] = useState([]);
     const [hotelImages, setHotelImages] = useState([]);
     const [licenseError,setLicenseError] = useState('');
     const [hotelImagesError,setHotelImagesError] = useState('');
+    const [loading, setLoading] = useState(false);
     const [formData, setFormData] = useState({
         hotelName: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
         street: '',
         city: '',
         district: '',
@@ -59,21 +66,48 @@ export default function HotelRegistration() {
     }, []);
 
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        setLicenseError('')
-        setHotelImagesError('')
-        const submissionData = {
-            ...formData,
-            licensePhoto: licenseImage,
-            images: hotelImages
-        };
+    const handleSubmit = useCallback( async (e) => {
+        try {
+            e.preventDefault();
+            setLoading(true);
+            const submissionData = {
+                ...formData,
+                licensePhoto: licenseImage,
+                images: hotelImages
+            };
 
-        const validator = formValidator(formData);
-        setError(validator);
-        console.log(validator);
-        console.log(submissionData)
-    };
+            const customValidations = {
+                licensePhoto: {
+                    exactLength: 1,
+                    message: '*Please add one Business license photo'
+                },
+                images: {
+                    exactLength: 5,
+                    message: '*Exactly 5 images required'
+                }
+            };
+
+            const validator = formValidator(submissionData,[],customValidations);
+            setError(validator);
+            
+            const hasValidationErrors = validator !== null || hotelImagesError.length > 0 || licenseError.length > 0;
+
+            if (hasValidationErrors) {
+                showToastMessage('error', 'Please correct the highlighted errors before submitting.');
+                setLoading(false);
+                return;
+            }
+            // Call your API
+            await postRequest("/api/hotels/register", submissionData);
+            showToastMessage('success', 'Hotel registered successfully!');
+            navigateTo('/partner-details');
+
+        } catch (error) {
+                console.error( error);
+            }finally {
+                setLoading(false);
+            }
+        }, [formData, licenseImage, hotelImages, hotelImagesError.length, licenseError.length]);
 
     const amenityList = useMemo(()=>{
         return amenities.map((amenity) => {
@@ -99,6 +133,9 @@ export default function HotelRegistration() {
 
     return (
         <Main>
+            <Breadcrumb
+                items={breadcrumbItems} 
+            />
             <form onSubmit={handleSubmit} className="flex w-full flex-col items-center">
                 <Title title="Hotel Registration" size="text-[48px]" font="font-[600]" />
 
@@ -115,43 +152,6 @@ export default function HotelRegistration() {
                                 onChange={e => handleSelect(setFormData, 'hotelName', e.target.value)}
                                 placeholder=''
                                 error={error?.errors?.hotelName}
-                            />
-                        </div>
-                        <div className="w-1/2">
-                            <InputField
-                                label='Email'
-                                type='text'
-                                name='email'
-                                value={formData.email}
-                                onChange={e => handleSelect(setFormData, 'email', e.target.value)}
-                                placeholder=''
-                                error={error?.errors?.email}
-                            />
-                        </div>
-                    </div>
-                    <div className="flex w-full gap-2">
-                        <div className="w-1/2">
-                            <InputField
-                                label='Password'
-                                type='password'
-                                name='password'
-                                value={formData.password}
-                                onChange={e => handleSelect(setFormData, 'password', e.target.value)}
-                                placeholder=''
-                                error={error?.errors?.password}
-                                icon={true}
-                            />
-                        </div>
-                        <div className="w-1/2">
-                            <InputField
-                                label='Confirm Password'
-                                type='password'
-                                name='confirmPassword'
-                                value={formData.confirmPassword}
-                                onChange={e => handleSelect(setFormData, 'confirmPassword', e.target.value)}
-                                placeholder=''
-                                error={error?.errors?.confirmPassword}
-                                icon={true}
                             />
                         </div>
                     </div>
@@ -223,7 +223,8 @@ export default function HotelRegistration() {
                             label={'Business Registration License Photo'}
                             images={licenseImage}
                             setImages={setLicenseImage}
-                            error={licenseError}
+                            error={error?.errors?.licensePhoto || licenseError}
+                            setError={setLicenseError}
                         />
                     </div>
                 </div>
@@ -263,11 +264,12 @@ export default function HotelRegistration() {
                     }
                     <div className="w-1/2 mt-2">
                         <ImageUploader
-                            label={'Hotel Images'}
+                            label={'Hotel Images (*need to add 5 images)'}
                             images={hotelImages}
                             setImages={setHotelImages}
                             multiple={true}
-                            error={hotelImagesError}
+                            error={error?.errors?.images || hotelImagesError}
+                            setError={setHotelImagesError}
                         />
                     </div>
                 </div>
@@ -277,6 +279,11 @@ export default function HotelRegistration() {
                     </div>
                 </div>
             </form>
+            {
+                loading && (
+                    <Spinner/>
+                )
+            }
         </Main>
     );
 }

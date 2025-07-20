@@ -3,14 +3,14 @@ import PropTypes from 'prop-types'
 
 export default function Tag({
     title,
-    icon = '',
+    Icon = '',
     textColor = 'text-blue-600',
     color = 'bg-blue-100'
 }) {
     return (
         <div className={`${color} w-full py-2 flex items-center justify-center rounded-[32px]`}>
             <div className='flex gap-2'>
-                <img src={icon} alt="family" />
+                {Icon && <Icon />}
                 <Title 
                     title={title}
                     size='text-[14px]'
@@ -23,7 +23,7 @@ export default function Tag({
 
 Tag.propTypes = {
     title: PropTypes.string.isRequired,
-    icon: PropTypes.string,
+    icon: PropTypes.elementType,
     textColor: PropTypes.string,
     color: PropTypes.string,
 };

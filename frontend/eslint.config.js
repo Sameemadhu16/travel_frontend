@@ -33,7 +33,7 @@ export default [
 
       'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
       'no-underscore-dangle': ['error', { allowAfterThis: true }],
-      'max-len': ['error', { code: 400 }],
+      'max-len': ['error', { code: 1000 }],
     },
   },
 ];
