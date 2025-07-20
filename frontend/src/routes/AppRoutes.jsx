@@ -86,88 +86,76 @@ export default function AppRoutes() {
                     />
 
 
-<Routes>
-   
-   
-
-    {/* Guide-related routes */}
-    <Route path='/guide-profile' element={<GuideProfile />}/>
-    <Route path='/guide-complaints' element={<GuideComplaints />}/>
-    <Route path='/guide-tour-request' element={<TourRequest />} />
-    <Route path='/guide-accepted-tours' element={<AcceptedTours />} />
-    <Route path='/guide-confirmed-tours' element={<ConfirmedTours />} />
-    <Route path='/guide-active-tour' element={<ActiveTour />} />
-
-    {/* Conditional routes based on authentication */}
-    {checkTokenExpiration() ? (
-        <>
-            {/* Authenticated routes */}
-            <Route path='/' element={<Home/>}/>
-            <Route path='/hotels' element={<Search/>}/>
-            <Route path='/hotel-registration' element={<HotelRegistration/>}/>
-            <Route path='/add-rooms' element={<RoomsAdd/>}/>
-            <Route path='/partner-details' element={<Details/>}/>
-            <Route path='/vehicles' element={<SearchVehicles/>}/>
-            <Route path='/vehicle/:id' element={<Vehicle/>}/>
-            <Route path='/vehicle-registration' element={<VehicleRegistration/>}/>
-            <Route path='/vehicle-agency-registration' element={<VehicleAgencyRegistration/>}/>
-        </>
-    ) : (
-        <>
-            {/* Unauthenticated routes */}
-            <Route 
-                path="/partner-login/*"
-                element={
-                    <FormProvider initialValues={loginPartnerAccountForm.formData}>
-                        <Routes>
-                            <Route index element={<Navigate to="step-1" replace />} />
-                            <Route path='step-1' element={<PartnerLoginStep1/>}/>
-                            <Route path='step-2' element={<PartnerLoginStep2/>}/>
-                        </Routes>
-                    </FormProvider>
-                }
-            />
-            <Route 
-                path="/partner-register/*"
-                element={
-                    <FormProvider initialValues={registerPartnerAccountForm.formData}>
-                        <Routes>
-                            <Route index element={<Navigate to="step-1" replace />} />
-                            <Route path='step-1' element={<PartnerRegisterStep1/>}/>
-                            <Route path='step-2' element={<PartnerRegisterStep2/>}/>
-                            <Route path='choose-property' element={<ChooseProperty/>}/>
-                        </Routes>
-                    </FormProvider>
-                }
-            />
-            <Route path='/traveler-register' element={<TravelerRegister/>}/>
-            <Route path='/' element={<Welcome/>}/>
-            <Route path="*" element={<Navigate to="/partner-login/step-1" replace />} />
-        </>
-    )}
+                    {/* Guide-related routes */}
+                    <Route path='/guide-profile' element={<GuideProfile />}/>
+                    <Route path='/guide-complaints' element={<GuideComplaints />}/>
+                    <Route path='/guide-tour-request' element={<TourRequest />} />
+                    <Route path='/guide-accepted-tours' element={<AcceptedTours />} />
+                    <Route path='/guide-confirmed-tours' element={<ConfirmedTours />} />
+                    <Route path='/guide-active-tour' element={<ActiveTour />} />
 
                     {/* Tour routes wrapped with TourProvider */}
                     <Route 
                         path="/tour/*"
                         element={
-                            <>
-                                {localStorage.removeItem('formData')}
-                                <FormProvider initialValues={initialTripFormData.formData}>
-                                    <Routes>
-                                        <Route path="/create-tour" element={<CreateTour/>}/>
-                                        <Route path="/select-guide" element={<SelectGuide/>}/>
-                                        <Route path="/select-hotel" element={<Search />} />
-                                        <Route path="/select-hotel/:id" element={<Hotel />} />
-                                        <Route path="/select-vehicle" element={<SearchVehicles/>}/>
-                                        <Route path="/select-vehicle/:id" element={<Vehicle/>} />
-                                        <Route path="complete-request" element={<CompleteRequest/>}/>
-                                        <Route path="request-sent" element={<RequestSent />} />
-                                        <Route path="payment" element={<Payment/>} />
-                                    </Routes>
-                                </FormProvider>
-                            </>
+                            <FormProvider initialValues={initialTripFormData.formData}>
+                                <Routes>
+                                    <Route path="create-tour" element={<CreateTour/>}/>
+                                    <Route path="select-guide" element={<SelectGuide/>}/>
+                                    <Route path="select-hotel" element={<Search />} />
+                                    <Route path="select-hotel/:id" element={<Hotel />} />
+                                    <Route path="select-vehicle" element={<SearchVehicles/>}/>
+                                    <Route path="select-vehicle/:id" element={<Vehicle/>} />
+                                    <Route path="complete-request" element={<CompleteRequest/>}/>
+                                    <Route path="request-sent" element={<RequestSent />} />
+                                    <Route path="payment" element={<Payment/>} />
+                                </Routes>
+                            </FormProvider>
                         }
                     />
-                    <Route path='/hotel/:id' element={<Hotel/>}/>
-                    <Route path="/destination/:id" element={<DestinationPage />} />
                 </>
+            ) : (
+                <>
+                    {/* Routes for unauthenticated users */}
+                    <Route path='/welcome' element={<Welcome/>}/>
+                    
+                    {/* Partner login routes */}
+                    <Route 
+                        path="/partner-login/*"
+                        element={
+                            <FormProvider initialValues={loginPartnerAccountForm.formData}>
+                                <Routes>
+                                    <Route index element={<Navigate to="step-1" replace />} />
+                                    <Route path='step-1' element={<PartnerLoginStep1/>}/>
+                                    <Route path='step-2' element={<PartnerLoginStep2/>}/>
+                                </Routes>
+                            </FormProvider>
+                        }
+                    />
+
+                    {/* Partner registration routes for unauthenticated users */}
+                    <Route 
+                        path="/partner-register/*"
+                        element={
+                            <FormProvider initialValues={registerPartnerAccountForm.formData}>
+                                <Routes>
+                                    <Route index element={<Navigate to="step-1" replace />} />
+                                    <Route path='step-1' element={<PartnerRegisterStep1/>}/>
+                                    <Route path='step-2' element={<PartnerRegisterStep2/>}/>
+                                    <Route path='choose-property' element={<ChooseProperty/>}/>
+                                </Routes>
+                            </FormProvider>
+                        }
+                    />
+
+                    {/* Redirect unknown routes to login for unauthenticated users */}
+                    <Route path="*" element={<Navigate to="/partner-login/step-1" replace />} />
+                </>
+            )}
+
+            {/* Public routes available to all users */}
+            <Route path='/hotel/:id' element={<Hotel/>}/>
+            <Route path="/destination/:id" element={<DestinationPage />} />
+        </Routes>
+    );
+}
