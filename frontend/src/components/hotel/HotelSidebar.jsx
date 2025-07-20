@@ -1,4 +1,4 @@
-import { FaHome, FaBed, FaCalendarAlt, FaUsers, FaBroom, FaStar, FaChartBar, FaCog } from 'react-icons/fa';
+import { FaHome, FaBed, FaCalendarAlt, FaUsers, FaMoneyBillWave, FaStar, FaChartBar, FaCog } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 
 function SidebarLink({ to, icon: Icon, label, isActive }) {
@@ -24,7 +24,7 @@ export default function HotelSidebar({ activePage }) {
     { to: '/hotel/rooms', id: 'rooms', icon: FaBed, label: 'Rooms' },
     { to: '/hotel/bookings', id: 'bookings', icon: FaCalendarAlt, label: 'Bookings' },
     { to: '/hotel/calendar', id: 'calendar', icon: FaCalendarAlt, label: 'Calendar' },
-    { to: '/hotel/housekeeping', id: 'housekeeping', icon: FaBroom, label: 'Housekeeping' },
+    { to: '/hotel/payments', id: 'payments', icon: FaMoneyBillWave, label: 'Payments' },
     { to: '/hotel/reviews', id: 'reviews', icon: FaStar, label: 'Reviews' },
     { to: '/hotel/reports', id: 'reports', icon: FaChartBar, label: 'Reports' },
     { to: '/hotel/settings', id: 'settings', icon: FaCog, label: 'Settings' }

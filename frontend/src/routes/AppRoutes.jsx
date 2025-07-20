@@ -43,6 +43,7 @@ import HotelReviews from '../pages/hotels/reviews/HotelReviews'
 import HotelReports from '../pages/hotels/reports/HotelReports'
 import HotelSettings from '../pages/hotels/settings/HotelSettings'
 import HotelCalendar from '../pages/hotels/calendar/HotelCalendar'
+import PaymentsPage from '../pages/hotels/payments/PaymentsPage'
 
 export default function AppRoutes() {
     return (
@@ -74,6 +75,7 @@ export default function AppRoutes() {
               <Route path="rooms" element={<RoomTypes />} />
               <Route path="bookings" element={<BookingsPage />} />
               <Route path="calendar" element={<HotelCalendar />} />
+              <Route path="payments" element={<PaymentsPage />} />
               <Route path="reviews" element={<HotelReviews />} />
               <Route path="reports" element={<HotelReports />} />
               <Route path="settings" element={<HotelSettings />} />
