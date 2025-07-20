@@ -23,7 +23,7 @@ export default function HotelSidebar({ activePage }) {
     { to: '/hotel/listings', id: 'listings', icon: FaBed, label: 'Hotel Listings' },
     { to: '/hotel/rooms', id: 'rooms', icon: FaBed, label: 'Rooms' },
     { to: '/hotel/bookings', id: 'bookings', icon: FaCalendarAlt, label: 'Bookings' },
-    { to: '/hotel/guests', id: 'guests', icon: FaUsers, label: 'Guests' },
+    { to: '/hotel/calendar', id: 'calendar', icon: FaCalendarAlt, label: 'Calendar' },
     { to: '/hotel/housekeeping', id: 'housekeeping', icon: FaBroom, label: 'Housekeeping' },
     { to: '/hotel/reviews', id: 'reviews', icon: FaStar, label: 'Reviews' },
     { to: '/hotel/reports', id: 'reports', icon: FaChartBar, label: 'Reports' },

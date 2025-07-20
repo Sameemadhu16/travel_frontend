@@ -251,7 +251,11 @@ export default function BookingsPage() {
   };
 
   return (
-    <HotelLayout>
+    <HotelLayout 
+      activePage="bookings"
+      pageTitle="Bookings"
+      pageSubtitle="Manage your hotel bookings and reservations"
+    >
       <div className="p-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold mb-2">Bookings</h1>
