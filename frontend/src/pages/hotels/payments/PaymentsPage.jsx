@@ -8,6 +8,7 @@ import {
   FaReceipt
 } from 'react-icons/fa';
 import HotelLayout from '../../../components/hotel/HotelLayout';
+import PaymentDetailsModal from '../../../components/hotel/PaymentDetailsModal';
 
 function StatusBadge({ status }) {
   const statusColors = {
@@ -98,7 +99,7 @@ function FilterSection({ filters, setFilters, branches }) {
   );
 }
 
-function PaymentCard({ payment }) {
+function PaymentCard({ payment, onViewDetails }) {
   return (
     <div className="bg-white rounded-xl shadow p-6">
       <div className="flex justify-between items-start mb-4">
@@ -155,7 +156,10 @@ function PaymentCard({ payment }) {
             <p className="text-sm text-gray-500">Stay Duration: {payment.duration}</p>
           </div>
           <div className="flex gap-2">
-            <button className="px-4 py-2 text-brand-primary hover:bg-brand-primary/10 rounded-lg">
+            <button 
+              onClick={() => onViewDetails(payment)}
+              className="px-4 py-2 text-brand-primary hover:bg-brand-primary/10 rounded-lg"
+            >
               View Details
             </button>
             {payment.status === 'Pending' && (
@@ -171,6 +175,7 @@ function PaymentCard({ payment }) {
 }
 
 export default function PaymentsPage() {
+  const [selectedPayment, setSelectedPayment] = useState(null);
   const branches = [
     "Cinnamon Grand Colombo",
     "Cinnamon Red Colombo",
@@ -281,9 +286,21 @@ export default function PaymentsPage() {
         {/* Payments List */}
         <div className="space-y-6">
           {payments.map((payment, index) => (
-            <PaymentCard key={index} payment={payment} />
+            <PaymentCard 
+              key={index} 
+              payment={payment} 
+              onViewDetails={setSelectedPayment}
+            />
           ))}
         </div>
+
+        {/* Payment Details Modal */}
+        {selectedPayment && (
+          <PaymentDetailsModal
+            payment={selectedPayment}
+            onClose={() => setSelectedPayment(null)}
+          />
+        )}
 
         {/* Pagination */}
         <div className="mt-6 flex justify-center">
