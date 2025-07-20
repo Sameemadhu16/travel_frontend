@@ -1,4 +1,4 @@
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { hotelList } from '../../../core/Lists/hotels';
 import { useEffect, useMemo, useState } from 'react';
 import Main from '../../../components/Main';
@@ -8,40 +8,64 @@ import { roomList } from '../../../core/Lists/rooms';
 import RoomCard from './components/RoomCard';
 import FormatText from '../../../components/FormatText';
 import Border from '../../../components/Border';
+import { useContext } from 'react';
+import FormContext from '../../../context/InitialValues';
 
 export default function Hotel() {
-    const [hotel,setHotel] = useState({});
-    const [rooms,setRooms]= useState([]);
-    const {id} = useParams();
+    const [hotel, setHotel] = useState({});
+    const [rooms, setRooms] = useState([]);
+    const { id } = useParams();
+    const location = useLocation();
+    const navigate = useNavigate();
+    const isTourSelectHotel = location.pathname.includes('/tour/select-hotel');
     
-    useEffect(()=>{
+    // Use FormContext
+    const { formData } = useContext(FormContext);
+    const selectedItems = formData.selectedItems || {};
+    const isHotelSelected = selectedItems.hotels?.some(h => h.id.toString() === id) || false;
+    
+    useEffect(() => {
         const matchHotel = hotelList.find((hotel) => hotel.id.toString() === id);
-        const matchRooms = roomList.filter((room)=>room.hotelId.toString() === id);
+        const matchRooms = roomList.filter((room) => room.hotelId.toString() === id);
         setHotel(matchHotel);
         setRooms(matchRooms);
-    },[id]);
+    }, [id]);
 
     const breadcrumbItems = [
         { label: "Home", path: "/home" },
-        { label: "Hotels", path: "/hotels-search" },
-        { label: hotel.name || "Hotel", path: `/hotel/${id}` },
+        { label: "Hotels", path: isTourSelectHotel ? "/tour/select-hotel" : "/hotels-search" },
+        { label: hotel.name || "Hotel", path: isTourSelectHotel ? `/tour/select-hotel/${id}` : `/hotel/${id}` },
     ];
 
-    const roomsList = useMemo(()=>{
-        return rooms.map((room)=>(
+    const handleContinue = () => {
+        if (!isTourSelectHotel) return;
+        
+        // Validate that at least one room is selected if hotel is selected
+        if (isHotelSelected && (!selectedItems.rooms || selectedItems.rooms.length === 0)) {
+            alert('Please select at least one room before continuing');
+            return;
+        }
+        
+        navigate('/tour/select-vehicle');
+    };
+
+    const roomsList = useMemo(() => {
+        return rooms.map((room) => (
             <div 
                 key={room.id}
                 className='w-full md:w-1/2'
             >
                 <RoomCard
                     room={room}
+                    isTourMode={isTourSelectHotel}
+                    hotel={hotel}
                 />
             </div>
-        ))
-    },[rooms]);
+        ));
+    }, [rooms, isTourSelectHotel, selectedItems.rooms]);
 
-    const amenityList = useMemo(()=>{
-        return hotel.amenities && hotel.amenities.map((amenity,index)=>(
+    const amenityList = useMemo(() => {
+        return hotel.amenities && hotel.amenities.map((amenity, index) => (
             <Title
                 key={index}
                 title={amenity || ''}
@@ -49,8 +73,8 @@ export default function Hotel() {
                 color='text-content-tertiary'
                 font='font-[400]'
             />
-        ))
-    },[hotel.amenities])
+        ));
+    }, [hotel.amenities]);
 
     return (
         <Main>
@@ -109,13 +133,34 @@ export default function Hotel() {
                 </div>
             </div>
             <div className='flex gap-2 mt-5'>
-                <Title
-                    title={hotel.name || ''}
-                />
-                <Title
-                    title={hotel.location || ''}
-                    color='text-brand-primary'
-                />
+                <div className='flex-1'>
+                    <Title
+                        title={hotel.name || ''}
+                    />
+                    <Title
+                        title={hotel.location || ''}
+                        color='text-brand-primary'
+                    />
+                </div>
+                
+                {isTourSelectHotel && (
+                    <div className='flex flex-col gap-2'>
+                        <div className='flex items-center gap-2 text-sm text-content-secondary'>
+                            <span>Starting from</span>
+                            <span className='text-lg font-bold text-brand-primary'>
+                                LKR {hotel.pricePerNight?.toLocaleString()} / night
+                            </span>
+                        </div>
+                        <div className='flex gap-2'>
+                            <button
+                                onClick={handleContinue}
+                                className="px-6 py-2 rounded-lg bg-surface-secondary text-content-primary font-semibold hover:bg-surface-tertiary transition"
+                            >
+                                Continue to Vehicles
+                            </button>
+                        </div>
+                    </div>
+                )}
             </div>
             <div className='flex gap-2'>
                 { amenityList }

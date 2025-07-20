@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react'
+import { useContext, useMemo, useState } from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import cover from '../../../assets/images/cover.png'
 import CustomSelector from '../../../components/CustomSelector'
@@ -10,6 +10,7 @@ import { hotelList } from '../../../core/Lists/hotels'
 import HotelCard from '../components/HotelCard'
 import CheckboxGroup from '../components/CheckboxGroup'
 import Breadcrumb from '../../../components/Breadcrumb'
+import FormContext from '../../../context/InitialValues'
 
 const breadcrumbItems = [
     { label: "Home", path: "/home" },
@@ -20,11 +21,12 @@ export default function Search() {
     const location = useLocation();
     const navigate = useNavigate();
     const isTourSelectHotel = location.pathname === '/tour/select-hotel';
-
     const [selectedPropertyTypes, setSelectedPropertyTypes] = useState([]);
     const [selectedMeals, setSelectedMeals] = useState([]);
     const [selectedFacilities, setSelectedFacilities] = useState([]);
     const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
+    const { formData } = useContext(FormContext);
+    const travelDetails = formData.travelDetails;
 
     const handleSkip = () => {
         navigate('/tour/select-vehicle');
@@ -34,8 +36,20 @@ export default function Search() {
         navigate('/tour/select-vehicle');
     };
 
+    const filteredHotels = useMemo(() => {
+        if (!isTourSelectHotel || !travelDetails?.destination) {
+            return hotelList;
+        }
+        const dest = travelDetails.destination.trim().toLowerCase();
+        const filtered = hotelList.filter(hotel => 
+            hotel.location?.toLowerCase().includes(dest) ||
+            hotel.city?.toLowerCase().includes(dest)
+        );
+        return filtered.length > 0 ? filtered : hotelList;
+    }, [isTourSelectHotel, travelDetails?.destination]);
+
     const hotelsContainer = useMemo(()=>{
-        return hotelList.map((hotel,index)=>(
+        return filteredHotels.map((hotel,index)=>(
             <div key={index}>
                 <HotelCard
                     id={hotel.id}
@@ -48,10 +62,12 @@ export default function Search() {
                     type={hotel.type}
                     roomLeft={hotel.leftRooms}
                     reviews={hotel.reviews}
+                    isTourMode={isTourSelectHotel}
+                    selectedHotels={[]}
                 />
             </div>
         ))
-    },[]);
+    },[filteredHotels, isTourSelectHotel]);
 
     const handleSelect = (value) => {
         console.log('Selected:', value);
@@ -69,7 +85,7 @@ export default function Search() {
                     <div className='flex flex-1'>
                         <div className='w-full flex justify-between items-center'>
                             <Title 
-                                title={`Kandy: ${hotelList.length} matches`}
+                                title={`${travelDetails?.destination || 'Hotels'}: ${filteredHotels.length} matches`}
                                 size='text-[16px]'
                             />
                             {!isTourSelectHotel && (
@@ -83,7 +99,6 @@ export default function Search() {
                             )}
                             {isTourSelectHotel && (
                                 <div className='flex gap-4'>
-                                    
                                     <button 
                                         onClick={handleNext}
                                         className="px-6 py-2 rounded bg-brand-primary text-white font-semibold flex items-center gap-2 hover:bg-warning transition"

@@ -5,9 +5,10 @@ import heart from '../../../assets/icons/Heart.svg';
 import heartFill from '../../../assets/icons/Heart-fill.svg';
 import Tag from '../../hotels/components/Tag';
 import PropTypes from 'prop-types';
+import { useLocation } from 'react-router-dom';
 import { handleNavigate } from '../../../core/constant';
-// Add icon imports for amenities
-import { FaSnowflake, FaBluetooth, FaCarBattery, FaMapMarkedAlt, FaCamera, FaMusic, FaCogs, FaChair, FaPlug, FaSun, FaRoad, FaGasPump } from "react-icons/fa";
+import { useState } from 'react';
+import { FaSnowflake, FaBluetooth, FaCarBattery, FaMapMarkedAlt, FaCamera, FaMusic, FaCogs, FaChair, FaPlug, FaSun, FaRoad, FaGasPump, FaUser, FaCar } from "react-icons/fa";
 
 const amenityIconMap = {
     "Air Conditioning": <FaSnowflake className="inline mr-1" />,
@@ -46,17 +47,47 @@ export default function VehicleCard({
     isFavorite = false,
     availableCount,
     rentalAgency,
-    location,
+    location: vehicleLocation,
+    isTourMode = false,
+    selectedVehicle = null,
     about,
     available,
 }) {
+    const location = useLocation();
+    const [showDriverOptions, setShowDriverOptions] = useState(false);
+    const [driverOption, setDriverOption] = useState('without'); // 'with' or 'without'
+    
+    const isSelected = selectedVehicle?.id === id;
+    
+    // Calculate prices with/without driver
+    const driverFee = Math.round(pricePerDay * 0.3); // 30% of vehicle price for driver
+    const priceWithDriver = pricePerDay + driverFee;
+    const priceWithoutDriver = pricePerDay;
+    
+    const handleCardClick = () => {
+        // Check if current path includes tour/select-vehicle
+        if (location.pathname.includes('/tour/select-vehicle')) {
+            // Tour vehicle selection flow
+            handleNavigate(`/tour/select-vehicle/${id}`);
+        } else {
+            // Regular vehicle details flow
+            handleNavigate(`/vehicle/${id}`);
+        }
+    };
+
     const handleFavoriteClick = (e) => {
         e.stopPropagation();
         // toggle favorite logic here
     };
+
+    const handleDriverOptionSelect = (option) => {
+        setDriverOption(option);
+        setShowDriverOptions(false);
+    };
+    
     return (
         <div
-            onClick={() => handleNavigate(`/vehicle/${id}`)}
+            onClick={handleCardClick}
             className='border p-4 rounded-[8px] shadow-sm bg-white'
         >
             <div className='flex gap-4'>
@@ -98,9 +129,9 @@ export default function VehicleCard({
                                     {rentalAgency}
                                 </div>
                             )}
-                            {location && (
+                            {vehicleLocation && (
                                 <div className='text-xs text-gray-400'>
-                                    {location}
+                                    {vehicleLocation}
                                 </div>
                             )}
                         </div>
@@ -133,13 +164,21 @@ export default function VehicleCard({
                     <div className='flex justify-between items-center mt-4'>
                         <div>
                             <p className='text-sm text-gray-400'>Starting from</p>
-                            <p className='text-lg font-semibold text-brand-primary'>LKR {pricePerDay} / day</p>
+                            <p className='text-lg font-semibold text-brand-primary'>
+                                LKR {isSelected && driverOption === 'with' ? priceWithDriver.toLocaleString() : pricePerDay.toLocaleString()} / day
+                            </p>
+                            {isSelected && (
+                                <p className='text-xs text-content-secondary'>
+                                    {driverOption === 'with' ? 'With driver included' : 'Self-drive only'}
+                                </p>
+                            )}
                         </div>
+                        
                         <div className='flex gap-2 w-1/2 cursor-pointer'>
                             <Tag title={`${rating} (${reviews})`} icon={star} />
                             <Tag
                                 title={available ? "Available" : "Not Available"}
-                                color={available ? "bg-brand-primary" : "bg-danger"}
+                                color={available ? "bg-success" : "bg-danger"}
                                 textColor="text-white"
                                 icon={info}
                             />
@@ -171,4 +210,6 @@ VehicleCard.propTypes = {
     location: PropTypes.string,
     about: PropTypes.string,
     available: PropTypes.bool,
+    isTourMode: PropTypes.bool,
+    selectedVehicle: PropTypes.object,
 };

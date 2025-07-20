@@ -16,9 +16,7 @@
     "firebase": "^11.9.1",
     "framer-motion": "^12.16.0",
     "lucide-react": "^0.525.0",
-
     "jspdf": "^3.0.1",
-
     "myapp": "file:",
     "react": "^18.3.1",
     "react-datepicker": "^8.4.0",
@@ -29,6 +27,7 @@
     "react-scripts": "^5.0.1",
     "react-spinners": "^0.15.0",
     "react-toastify": "^11.0.5",
+    "redux-persist": "^6.0.0",
     "styled-components": "^6.1.13",
     "tailwind-scrollbar-hide": "^4.0.0"
   },

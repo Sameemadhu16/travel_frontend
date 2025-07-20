@@ -20,8 +20,11 @@ export default function HotelCard({
     roomLeft,
     reviews,
     isFavorite = true,
+    isTourMode = false,
+    selectedHotels = [],
 }) {
     const currentLocation = useLocation();
+    const isSelected = selectedHotels.some(hotel => hotel.id === id);
 
     const handleFavoriteClick = (e) => {
         e.stopPropagation();
@@ -83,15 +86,30 @@ export default function HotelCard({
                             <p className='text-sm text-gray-400'>Starting from</p>
                             <p className='text-lg font-semibold text-brand-primary'>LKR {pricePerNight} / night</p>
                         </div>
-                        <div className='flex gap-2 w-1/2'>
-                            <Tag title={`${rating} (${reviews})`} icon={star} />
-                            <Tag
-                                title={`Only ${roomLeft} left`}
-                                color='bg-brand-primary'
-                                textColor='text-white'
-                                icon={info}
-                            />
-                        </div>
+                        
+                        {isTourMode ? (
+                            <div className='flex flex-col items-end gap-2 w-1/2'>
+                                <div className='flex gap-2 w-full'>
+                                    <Tag title={`${rating} (${reviews})`} icon={star} />
+                                    <Tag
+                                        title={`Only ${roomLeft} left`}
+                                        color='bg-red-100'
+                                        textColor='text-red-600'
+                                        icon={info}
+                                    />
+                                </div>
+                            </div>
+                        ) : (
+                            <div className='flex gap-2 w-1/2'>
+                                <Tag title={`${rating} (${reviews})`} icon={star} />
+                                <Tag
+                                    title={`Only ${roomLeft} left`}
+                                    color='bg-brand-primary'
+                                    textColor='text-white'
+                                    icon={info}
+                                />
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -111,4 +129,6 @@ HotelCard.propTypes = {
     roomLeft: PropTypes.number.isRequired,
     reviews: PropTypes.number.isRequired,
     isFavorite: PropTypes.bool,
+    isTourMode: PropTypes.bool,
+    selectedHotels: PropTypes.array,
 };

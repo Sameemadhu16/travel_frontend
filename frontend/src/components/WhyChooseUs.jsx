@@ -21,8 +21,8 @@ const features = [
 
 export default function WhyChooseUs() {
     return (
-        <section className="py-16 bg-[#fdf6ee]">
-            <h2 className="text-3xl font-bold text-center mb-2 text-content-primary">Why Choose Ceylon Tours</h2>
+        <section className="mt-10">
+            <h2 className="text-3xl font-semibold mt-5 text-center mb-2 text-content-primary">Why Choose Ceylon Tours</h2>
             <p className="text-center text-content-secondary mb-10 text-lg">Experience Sri Lanka like never before</p>
             <div className="flex flex-col md:flex-row justify-center gap-12">
                 {features.map((f, i) => (

@@ -16,13 +16,13 @@ import ForgotPassword from '../pages/partner/forgot_details/ForgotPassword';
 import ForgotUsername from '../pages/partner/forgot_details/ForgotUsername';
 import ChangePassword from '../pages/partner/forgot_details/ChangePassword';
 import { FormProvider } from '../context/FormContext';
-import { loginPartnerAccountForm, registerPartnerAccountForm } from '../context/InitialValues';
+import { initialTripFormData, loginPartnerAccountForm, registerPartnerAccountForm } from '../context/InitialValues';
 import ChatBot from '../pages/chatBot/ChatBot';
 import TravelerRegister from '../pages/TravelerRegister';
 import ChooseProperty from '../pages/partner/register/ChooseProperty';
 import { useSelector } from 'react-redux';
 import { checkTokenExpiration } from '../core/authChecker';
-import Vehicle from '../pages/vehicles/Details/components/vehicle';
+import Vehicle from '../pages/vehicles/Details/vehicle';
 import VehicleRegistration from '../pages/vehicles/auth/VehicleRegistration';
 import VehicleAgencyRegistration from '../pages/vehicles/auth/VehicleAgencyRegistration';
 import CreateTour from '../pages/tour/createTour';
@@ -36,6 +36,7 @@ import GuideComplaints from '../pages/guide/GuideComplaints';
 import CompleteRequest from '../pages/tour/completeRequest';
 import RequestSent from '../pages/tour/requestSent';
 import Payment from '../pages/tour/payment';
+import DestinationPage from '../pages/destinations/DestinationPage';
 
 export default function AppRoutes() {
     const { token } = useSelector((state) => state.auth);
@@ -62,7 +63,6 @@ export default function AppRoutes() {
                     <Route path='/hotels-search' element={<Search/>}/>
                     {/* vehicles */}
                     <Route path='/vehicle-search' element={<SearchVehicles />} />
-                    <Route path='/vehicle/:id' element={<Vehicle />} />
                     <Route path='/vehicle-registration' element={<VehicleRegistration/>}/>
                     <Route path='/agency-registration' element={<VehicleAgencyRegistration/>} />
                     {/* rooms */}
@@ -72,6 +72,7 @@ export default function AppRoutes() {
                     <Route path='/partner-forgot-username' element={<ForgotUsername/>}/>
                     <Route path='/change-password' element={<ChangePassword/>}/>
                     {/* Auth-related routes */}
+
                     <Route
                         path="/partner-register/*"
                         element={
@@ -84,19 +85,10 @@ export default function AppRoutes() {
                         }
                     />
 
-<Routes>
-    {/* Common routes accessible to all */}
-    <Route path='/chat-bot' element={<ChatBot/>}/>
-    <Route path='/hotel/:id' element={<Hotel/>}/>
 
-    {/* Tour-related routes */}
-    <Route path='/tour/create-tour' element={<CreateTour/>}/>
-    <Route path='/tour/select-guide' element={<SelectGuide/>}/>
-    <Route path='/tour/select-hotel' element={<Search />} />
-    <Route path='/tour/select-hotel/:id' element={<Hotel />} />
-    <Route path='/tour/complete-request' element={<CompleteRequest/>}/>
-    <Route path='/tour/request-sent' element={<RequestSent />} />
-    <Route path='/tour/payment' element={<Payment/>} />
+<Routes>
+   
+   
 
     {/* Guide-related routes */}
     <Route path='/guide-profile' element={<GuideProfile />}/>
@@ -153,4 +145,29 @@ export default function AppRoutes() {
             <Route path="*" element={<Navigate to="/partner-login/step-1" replace />} />
         </>
     )}
-</Routes>
+
+                    {/* Tour routes wrapped with TourProvider */}
+                    <Route 
+                        path="/tour/*"
+                        element={
+                            <>
+                                {localStorage.removeItem('formData')}
+                                <FormProvider initialValues={initialTripFormData.formData}>
+                                    <Routes>
+                                        <Route path="/create-tour" element={<CreateTour/>}/>
+                                        <Route path="/select-guide" element={<SelectGuide/>}/>
+                                        <Route path="/select-hotel" element={<Search />} />
+                                        <Route path="/select-hotel/:id" element={<Hotel />} />
+                                        <Route path="/select-vehicle" element={<SearchVehicles/>}/>
+                                        <Route path="/select-vehicle/:id" element={<Vehicle/>} />
+                                        <Route path="complete-request" element={<CompleteRequest/>}/>
+                                        <Route path="request-sent" element={<RequestSent />} />
+                                        <Route path="payment" element={<Payment/>} />
+                                    </Routes>
+                                </FormProvider>
+                            </>
+                        }
+                    />
+                    <Route path='/hotel/:id' element={<Hotel/>}/>
+                    <Route path="/destination/:id" element={<DestinationPage />} />
+                </>

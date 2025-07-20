@@ -1,13 +1,15 @@
-import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import TravelDetails from './components/TravelDetails';
-import TourPreferences from './components/TourPreferences';
 import ContactInformation from './components/ContactInformation';
 import Main from '../../components/Main';
+import { useContext, useState } from 'react';
+import FormContext from '../../context/InitialValues';
 
 export default function CreateTour() {
     const navigate = useNavigate();
+    const [validateContactInfo, setValidateContactInfo] = useState(false);
+    const [validateTravelDetails, setValidateTravelDetails] = useState(false);
 
     const handleBack = () => {
         navigate('/');
@@ -20,16 +22,13 @@ export default function CreateTour() {
 
     return (
         <Main>
-            
-
             {/* Main Content */}
             <div className="max-w-4xl mx-auto py-8 px-2">
                 <h2 className="text-2xl font-bold mb-2 text-content-primary">Create a new tour</h2>
                 {/* <Stepper /> */}
                 <form className="flex flex-col gap-8 mt-6" onSubmit={handleNext}>
-                    <TravelDetails />
-                    <TourPreferences />
-                    <ContactInformation />
+                    <TravelDetails setValid={setValidateTravelDetails}/>
+                    <ContactInformation setValid={setValidateContactInfo}/>
                     <div className="flex justify-between mt-4">
                         <button 
                             type="button" 
