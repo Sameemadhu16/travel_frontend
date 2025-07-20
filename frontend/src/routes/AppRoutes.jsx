@@ -40,6 +40,7 @@ import HotelDetails from '../pages/hotels/details/HotelDetails'
 import RoomTypes from '../pages/hotels/rooms/RoomTypes'
 import BookingsPage from '../pages/hotels/bookings/BookingsPage'
 import HotelReviews from '../pages/hotels/reviews/HotelReviews'
+import HotelReports from '../pages/hotels/reports/HotelReports'
 
 export default function AppRoutes() {
     return (
@@ -71,6 +72,7 @@ export default function AppRoutes() {
               <Route path="rooms" element={<RoomTypes />} />
               <Route path="bookings" element={<BookingsPage />} />
               <Route path="reviews" element={<HotelReviews />} />
+              <Route path="reports" element={<HotelReports />} />
               <Route path="branch/:id" element={<HotelDetails />} />
             </Route>
 
