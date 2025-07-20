@@ -1,4 +1,3 @@
-import Main from './Main';
 import Title from '../components/Title';
 import room from '../assets/rooms/room1.png';
 import Navigate from './Navigate';
@@ -39,7 +38,7 @@ export default function Header() {
     }, [showProfileMenu]);
 
     return (
-            <div className='px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 2xl:px-60 '>
+            <div className='sticky top-0 left-0 right-0 z-50 bg-white shadow-md px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 2xl:px-60 '>
                 <div className='flex justify-between items-center w-full'>
                     <div className='h-[80px] w-40 rounded-[4px] overflow-hidden'>
                         <img src={logo} alt="" className='h-full w-full object-cover' />

@@ -32,7 +32,7 @@ const TourRequestCard = ({ traveler }) => {
                     <p className='font-medium'>{traveler.groupSize}</p>
                 </div>
             </div>
-            <div className="mt-4 flex flex-row justify-between items-end gap-2 items-center">
+            <div className="mt-4 flex flex-row justify-between gap-2 items-center">
                 <div>
                     <p className="text-orange-600 font-semibold">Daily Rate: Rs. {traveler.dailyRate}</p>
                     <p className="text-green-600 font-semibold">Total Earnings: Rs. {traveler.totalEarnings}</p>
@@ -58,7 +58,7 @@ const TourRequestCard = ({ traveler }) => {
                         <SecondaryButton
                             text="✕ Decline"
                             type={'button'}
-                            className={'text-base hover:text-red-600 text-red-500 hover:bg-orange-50 border-red-500 hover:bg-red-50'}
+                            className={'text-base hover:text-red-600 text-red-500 border-red-500 hover:bg-red-50'}
                         />
                     </div>
                 </div>

@@ -1,64 +1,43 @@
-// import { useState } from 'react';
-import {
-  Home,
-  ClipboardList,
-  Briefcase,
-  CalendarCheck2,
-  BookOpen,
-  CalendarDays,
-  MessageCircle,
-  AlertCircle,
-  Star,
-  DollarSign,
-  Settings,
-  LogOut,
-} from 'lucide-react';
+import { NavLink } from 'react-router-dom';
+import {Home, ClipboardList, Briefcase, CalendarCheck2, BookOpen, CalendarDays, MessageCircle, AlertCircle, Star, DollarSign, Settings, LogOut, Bell } from 'lucide-react';
 
 const menuItems = [
-  { label: 'Dashboard', icon: <Home size={18} /> },
-  { label: 'Tour Requests', icon: <ClipboardList size={18} />, active: true },
-  { label: 'Accepted Tours', icon: <Briefcase size={18} /> },
-  { label: 'Confirmed Tours', icon: <CalendarCheck2 size={18} /> },
-  { label: 'Active Tour', icon: <BookOpen size={18} /> },
-  { label: 'Tours History', icon: <CalendarDays size={18} /> },
-  { label: 'Availability Calendar', icon: <CalendarDays size={18} /> },
-  { label: 'Messages', icon: <MessageCircle size={18} /> },
-  { label: 'Special Inquiries', icon: <AlertCircle size={18} /> },
-  { label: 'Reviews', icon: <Star size={18} /> },
-  { label: 'Earnings & Payments', icon: <DollarSign size={18} /> },
-  { label: 'Settings', icon: <Settings size={18} /> },
+  { label: 'Dashboard', icon: <Home size={18} />, path: '/dashboard' },
+  { label: 'Tour Requests', icon: <ClipboardList size={18} />, path: '/guide-tour-request' },
+  { label: 'Accepted Tours', icon: <Briefcase size={18} />, path: '/guide-accepted-tours' },
+  { label: 'Confirmed Tours', icon: <CalendarCheck2 size={18} />, path: '/guide-confirmed-tours' },
+  { label: 'Active Tour', icon: <BookOpen size={18} />, path: '/guide-active-tour' },
+  { label: 'Tours History', icon: <CalendarDays size={18} />, path: '/tours-history' },
+  { label: 'Availability Calendar', icon: <CalendarDays size={18} />, path: '/availability-calendar' },
+  { label: 'Messages', icon: <MessageCircle size={18} />, path: '/messages' },
+  { label: 'Special Inquiries', icon: <AlertCircle size={18} />, path: '/guide-complaints' },
+  { label: 'Reviews', icon: <Star size={18} />, path: '/reviews' },
+  { label: 'Earnings & Payments', icon: <DollarSign size={18} />, path: '/earnings' },
+  { label: 'Notifications', icon: <Bell size={18} />, path: '/notifications' },
+  { label: 'Settings', icon: <Settings size={18} />, path: '/guide-profile' },
 ];
 
 export default function Sidebar() {
   return (
-    <div className="ml-2 mb-2 w-fit bg-white shadow-xl border rounded-3xl p-4 flex flex-col">
-      {/* <div className="flex items-center gap-3 p-4">
-        <img
-          src="https://randomuser.me/api/portraits/women/44.jpg"
-          alt="Profile"
-          className="w-12 h-12 rounded-full object-cover"
-        />
-        <div>
-          <h2 className="font-semibold text-sm">Sarah Johnson</h2>
-          <p className="text-xs text-green-600">SLTDA Verified ●</p>
-        </div>
-      </div> */}
-
-      <nav className="flex-1 mb-4 space-y-1">
+    <div className="ml-2 mb-2 mt-5 bg-white shadow-xl border border-orange-400 rounded-3xl p-4 flex flex-col w-52">
+      <nav className="flex-1 mb-4">
         {menuItems.map((item, index) => (
-          <div
+          <NavLink
             key={index}
-            className={`flex items-center gap-3 p-2 px-4 rounded-full cursor-pointer text-sm font-medium transition-all hover:bg-orange-100 ${
-              item.active ? 'bg-orange-500 text-white' : 'text-gray-700'
-            }`}
+            to={item.path}
+            className={({ isActive }) =>
+              `flex items-center gap-3 p-2 px-4 rounded-full cursor-pointer text-sm font-medium transition-all hover:bg-orange-100 hover:text-black ${
+                isActive ? 'bg-orange-500 text-white' : 'text-gray-700'
+              }`
+            }
           >
             {item.icon}
             {item.label}
-          </div>
+          </NavLink>
         ))}
       </nav>
 
-      <div className="p-4 border-t-2">
+      <div className="pl-4 pt-4 pb-2 border-t-2 border-orange-400">
         <div className="flex items-center gap-2 text-gray-600 hover:text-red-500 cursor-pointer">
           <LogOut size={18} />
           <span className="text-sm font-medium">Logout</span>
