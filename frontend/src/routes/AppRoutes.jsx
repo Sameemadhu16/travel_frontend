@@ -37,6 +37,7 @@ import Dashboard from '../pages/partner/dashboard/Dashboard'
 import HotelDashboard from '../pages/hotels/dashboard/Dashboard'
 import HotelListings from '../pages/hotels/listings/HotelListings'
 import HotelDetails from '../pages/hotels/details/HotelDetails'
+import RoomTypes from '../pages/hotels/rooms/RoomTypes'
 
 export default function AppRoutes() {
     return (
@@ -65,11 +66,9 @@ export default function AppRoutes() {
             <Route path="/hotel">
               <Route path="dashboard" element={<HotelDashboard />} />
               <Route path="listings" element={<HotelListings />} />
+              <Route path="rooms" element={<RoomTypes />} />
               <Route path="branch/:id" element={<HotelDetails />} />
             </Route>
-
-            {/* rooms */}
-            <Route path="/rooms-add" element={<RoomsAdd />} />
 
             {/* partner */}
             <Route path="/partner-details" element={<Details />} />
