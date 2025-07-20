@@ -44,7 +44,10 @@ import Listings from '../pages/admin/Listings';
 import Reviews from '../pages/admin/Reviews';
 import Reports from '../pages/admin/Reports';
 import Notifications from '../pages/admin/Notifications';
+import GuideRegister from '../pages/guide/auth/guideRegister';
+import GuidePending from '../pages/guide/auth/GuidePending';
 import Payments from '../pages/admin/Payments';
+import AdminGuideReview from '../pages/admin/GuideReview';
 
 export default function AppRoutes() {
     const { token } = useSelector((state) => state.auth);
@@ -94,6 +97,8 @@ export default function AppRoutes() {
                     {/* Protected routes for authenticated users */}
                     <Route path='/chat-bot' element={<ChatBot/>}/>
                     <Route path='/hotel-registration' element={<HotelRegistration/>}/>
+                    <Route path='/guide-registration' element={<GuideRegister/>}/>
+                    <Route path='/guide-pending' element={<GuidePending/>}/>
                     <Route path='/rooms-add' element={<RoomsAdd/>}/>
                     <Route path='/partner-details' element={<Details/>}/>
                     <Route path='/choose-property' element={<ChooseProperty/>}/>
@@ -115,6 +120,7 @@ export default function AppRoutes() {
                     <Route path='/admin/reports' element={<Reports/>}/>
                     <Route path='/admin/notifications' element={<Notifications/>}/>
                     <Route path='/admin/payments' element={<Payments/>}/>
+                    <Route path='/admin/guide-review' element={<AdminGuideReview/>}/>
 
                     {/* Partner registration routes for authenticated users */}
                     <Route
