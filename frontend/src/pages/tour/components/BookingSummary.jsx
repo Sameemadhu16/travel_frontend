@@ -46,6 +46,7 @@ export default function BookingSummary({tripData}) {
             }catch(e){
                 console.log(e);
             }
+            navigate('/tour/request-sent');
         }
     };
 
