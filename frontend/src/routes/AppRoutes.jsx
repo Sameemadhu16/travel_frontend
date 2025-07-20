@@ -34,6 +34,7 @@ import TripPlanner from '../pages/partner/trips/TripPlanner'
 import Settings from '../pages/partner/settings/Settings'
 import HelpCenter from '../pages/partner/help/HelpCenter'
 import Dashboard from '../pages/partner/dashboard/Dashboard'
+import HotelDashboard from '../pages/hotels/dashboard/Dashboard'
 
 export default function AppRoutes() {
     return (
@@ -46,6 +47,7 @@ export default function AppRoutes() {
 
             {/* hotels*/}
             <Route path="/hotel-registration" element={<HotelRegistration />} />
+            <Route path="/hotel/dashboard" element={<HotelDashboard />} />
 
             {/* rooms */}
             <Route path="/rooms-add" element={<RoomsAdd />} />
