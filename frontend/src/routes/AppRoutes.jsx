@@ -48,6 +48,10 @@ import GuideRegister from '../pages/guide/auth/guideRegister';
 import GuidePending from '../pages/guide/auth/GuidePending';
 import Payments from '../pages/admin/Payments';
 import AdminGuideReview from '../pages/admin/GuideReview';
+import AdminHotelReview from '../pages/admin/HotelReview';
+import AdminVehicleAgencyReview from '../pages/admin/VehicleAgencyReview';
+import VehicleAgencyPending from '../pages/vehicles/auth/VehicleAgencyPending';
+import HotelPending from '../pages/hotels/auth/HotelPending';
 
 export default function AppRoutes() {
     const { token } = useSelector((state) => state.auth);
@@ -97,8 +101,10 @@ export default function AppRoutes() {
                     {/* Protected routes for authenticated users */}
                     <Route path='/chat-bot' element={<ChatBot/>}/>
                     <Route path='/hotel-registration' element={<HotelRegistration/>}/>
+                    <Route path='/hotel-pending' element={<HotelPending/>}/>
                     <Route path='/guide-registration' element={<GuideRegister/>}/>
                     <Route path='/guide-pending' element={<GuidePending/>}/>
+                    <Route path='/vehicle-agency-pending' element={<VehicleAgencyPending/>}/>
                     <Route path='/rooms-add' element={<RoomsAdd/>}/>
                     <Route path='/partner-details' element={<Details/>}/>
                     <Route path='/choose-property' element={<ChooseProperty/>}/>
@@ -121,6 +127,8 @@ export default function AppRoutes() {
                     <Route path='/admin/notifications' element={<Notifications/>}/>
                     <Route path='/admin/payments' element={<Payments/>}/>
                     <Route path='/admin/guide-review' element={<AdminGuideReview/>}/>
+                    <Route path='/admin/hotel-review' element={<AdminHotelReview/>}/>
+                    <Route path='/admin/vehicle-agency-review' element={<AdminVehicleAgencyReview/>}/>
 
                     {/* Partner registration routes for authenticated users */}
                     <Route
