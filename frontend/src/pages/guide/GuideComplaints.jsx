@@ -4,6 +4,7 @@ import Card from './guideComponents/Card'
 import { Link } from 'react-router-dom'
 // import { FaCalendar, FaFilter } from 'react-icons/fa'
 import PrimaryButton from '../../components/PrimaryButton'
+import NavBar from './guideComponents/NavBar'
 
 const GuideComplaints = () => {
     // Data array for complaints
@@ -27,7 +28,7 @@ const GuideComplaints = () => {
         {
             id: 2,
             title: "Payment delay for October tours",
-            category: "Payment Issues", 
+            category: "Payment Issues",
             submittedDate: "Apr 4, 2025",
             status: "Pending",
             statusColor: "yellow",
@@ -41,7 +42,7 @@ const GuideComplaints = () => {
             id: 3,
             title: "Equipment malfunction during mountain tour",
             category: "Equipment Issues",
-            submittedDate: "Apr 4, 2025", 
+            submittedDate: "Apr 4, 2025",
             status: "Resolved",
             statusColor: "orange",
             statusIcon: Check,
@@ -62,7 +63,7 @@ const GuideComplaints = () => {
             yellow: "bg-yellow-200 text-yellow-800",
             green: "bg-green-200 text-green-800"
         }
-        
+
         return (
             <p className={`flex items-center gap-1 mt-1 px-2 py-1 ${colorClasses[statusColor]} text-xs rounded-full`}>
                 <StatusIcon className="w-4 h-4" />
@@ -72,77 +73,87 @@ const GuideComplaints = () => {
     }
 
     return (
-        <Main>
-            <div>
-                {/* Header */}
-                <div className="flex justify-between items-center">
-                    <div>
-                        <h1 className="text-2xl font-bold mb-1">Complaints</h1>
-                        <p className="text-gray-600 mb-6">Submit and track your complaints to administration</p>
-                    </div>
-                    <div className="flex items-center space-x-3">
-                        <PrimaryButton
-                            text="+ &nbsp; New Complaint"
-                            type={'button'}
-                            className={'text-base'}
-                        />
-                    </div>
+        <>
+            {/* <div className='mt-24'> */}
+            <div className='flex'>
+                <div className='sticky top-0 h-screen'>
+                    <NavBar />
                 </div>
-
-                <div>
-                    {complaintsData.map((complaint) => (
-                        <Card key={complaint.id}>
-                            <div>
-                                <div className='flex gap-5 items-center'>
-                                    <h3 className='font-bold'>{complaint.title}</h3>
-                                    {getStatusBadge(complaint.status, complaint.statusColor, complaint.statusIcon)}
+                <div className='flex-1'>
+                    <Main hasNavbar={true}>
+                        <div>
+                            {/* Header */}
+                            <div className="flex justify-between items-center">
+                                <div>
+                                    <h1 className="text-2xl font-bold mb-1">Complaints</h1>
+                                    <p className="text-gray-600 mb-6">Submit and track your complaints to administration</p>
                                 </div>
-                                <div className='text-sm text-gray-500'>
-                                    <p>Category: {complaint.category}</p>
-                                    <p>Submitted: {complaint.submittedDate}</p>
-                                </div>
-                                <div className='my-5 pb-5 border-b-2'>
-                                    <div>
-                                        <p>{complaint.description}</p>
-                                    </div>
-                                    {complaint.adminResponse && (
-                                        <div className='flex gap-2 items-start mt-3 bg-orange-200 p-4 rounded-lg border-l-4 border-orange-600'>
-                                            <div className='bg-orange-100 p-2 rounded-full'>
-                                                <User />
-                                            </div>
-                                            <div className='text-sm items-center'>
-                                                <div className='flex gap-2 mb-2 items-center'>
-                                                    <p className='text-md'>Admin Response</p>
-                                                    <p>{complaint.adminResponse.date}</p>
-                                                </div>
-                                                <div>
-                                                    <p>{complaint.adminResponse.message}</p>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    )}
-                                </div>
-                                <div className='flex justify-between items-center text-sm'>
-                                    <div className='flex gap-5'>
-                                        <div className='gap-1 flex items-center'>
-                                            <Paperclip className='w-4 h-4' />
-                                            <p>{complaint.attachments} attachment{complaint.attachments > 1 ? 's' : ''}</p>
-                                        </div>
-                                        <div className='gap-1 flex items-center'>
-                                            <TimerReset className='w-4 h-4' />
-                                            <p>{complaint.timeAgo}</p>
-                                        </div>
-                                    </div>
-                                    <div className='text-orange-600 hover:text-orange-800'>
-                                        <Link to={'/guide-earnings'}>View details</Link>
-                                    </div>
+                                <div className="flex items-center space-x-3">
+                                    <PrimaryButton
+                                        text="+ &nbsp; New Complaint"
+                                        type={'button'}
+                                        className={'text-base'}
+                                    />
                                 </div>
                             </div>
-                        </Card>
-                    ))}
+
+                            <div>
+                                {complaintsData.map((complaint) => (
+                                    <Card key={complaint.id}>
+                                        <div>
+                                            <div className='flex gap-5 items-center'>
+                                                <h3 className='font-bold'>{complaint.title}</h3>
+                                                {getStatusBadge(complaint.status, complaint.statusColor, complaint.statusIcon)}
+                                            </div>
+                                            <div className='text-sm text-gray-500'>
+                                                <p>Category: {complaint.category}</p>
+                                                <p>Submitted: {complaint.submittedDate}</p>
+                                            </div>
+                                            <div className='my-5 pb-5 border-b-2'>
+                                                <div>
+                                                    <p>{complaint.description}</p>
+                                                </div>
+                                                {complaint.adminResponse && (
+                                                    <div className='flex gap-2 items-start mt-3 bg-orange-200 p-4 rounded-lg border-l-4 border-orange-600'>
+                                                        <div className='bg-orange-100 p-2 rounded-full'>
+                                                            <User />
+                                                        </div>
+                                                        <div className='text-sm items-center'>
+                                                            <div className='flex gap-2 mb-2 items-center'>
+                                                                <p className='text-md'>Admin Response</p>
+                                                                <p>{complaint.adminResponse.date}</p>
+                                                            </div>
+                                                            <div>
+                                                                <p>{complaint.adminResponse.message}</p>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <div className='flex justify-between items-center text-sm'>
+                                                <div className='flex gap-5'>
+                                                    <div className='gap-1 flex items-center'>
+                                                        <Paperclip className='w-4 h-4' />
+                                                        <p>{complaint.attachments} attachment{complaint.attachments > 1 ? 's' : ''}</p>
+                                                    </div>
+                                                    <div className='gap-1 flex items-center'>
+                                                        <TimerReset className='w-4 h-4' />
+                                                        <p>{complaint.timeAgo}</p>
+                                                    </div>
+                                                </div>
+                                                <div className='text-orange-600 hover:text-orange-800'>
+                                                    <Link to={'/guide-earnings'}>View details</Link>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </Card>
+                                ))}
+                            </div>
+                        </div>
+                    </Main>
                 </div>
             </div>
-        </Main>
+        </>
     )
 }
 
