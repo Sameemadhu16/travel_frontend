@@ -41,6 +41,7 @@ import Notifications from '../pages/guide/Notifications'
 import GuideReviews from '../pages/guide/Reviews';
 import GuideAvailability from '../pages/guide/GuideAvailability';
 import GuideDashboard from '../pages/guide/GuideDashboard';
+import GuideTourHistory from '../pages/guide/TourHistory';
 
 export default function AppRoutes() {
     const { token } = useSelector((state) => state.auth);
@@ -53,7 +54,7 @@ export default function AppRoutes() {
             <Route path='/home' element={<Home/>}/>
 
             {/* Conditional auth routes */}
-            {isAuthenticated ? (
+            {/* {isAuthenticated ? ( */}
                 <>
                     {/* Protected routes */}
                     <Route path='/hotel-registration' element={<HotelRegistration/>}/>
@@ -101,6 +102,7 @@ export default function AppRoutes() {
                     <Route path='/guide-notifications' element={<Notifications />} />
                     <Route path='/guide-reviews' element={<GuideReviews />} />
                     <Route path='/guide-availability' element={<GuideAvailability />} />
+                    <Route path='/guide-tour-history' element={<GuideTourHistory />} />
 
                     {/* Tour routes wrapped with TourProvider */}
                     <Route 
@@ -122,7 +124,7 @@ export default function AppRoutes() {
                         }
                     />
                 </>
-            ) : ( 
+            {/* ) : (  */}
                 <>
                     {/* Routes for unauthenticated users */}
                     <Route path='/welcome' element={<Welcome/>}/>
@@ -159,7 +161,7 @@ export default function AppRoutes() {
                     {/* Redirect unknown routes to login for unauthenticated users */}
                     <Route path="*" element={<Navigate to="/partner-login/step-1" replace />} />
                 </>
-            )}
+            {/* )} */}
 
             {/* Public routes available to all users */}
             <Route path='/hotel/:id' element={<Hotel/>}/>
