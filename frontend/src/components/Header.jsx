@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { checkTokenExpiration } from '../core/authChecker';
 import { resetAuth } from '../redux/slices/authSlice';
 import { useState, useRef, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 
 export default function Header() {
     const { user, token } = useSelector((state) => state.auth);
@@ -45,16 +46,20 @@ export default function Header() {
                     </div>
                     {token && !isExpired && (
                         <div className='flex gap-1 items-center'>
-                            <Navigate
-                                path={'/partner-details'}
-                                className='p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'
-                            >
-                                <Title
-                                    title='List your property'
-                                    size='text-[16px]'
-                                    font='font-[500]'
-                                />
-                            </Navigate>
+                            {
+                                user.data.role === 'traveler' && (
+                                    <Navigate
+                                        path={'/partner-details'}
+                                        className='p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'
+                                    >
+                                        <Title
+                                            title='List your property'
+                                            size='text-[16px]'
+                                            font='font-[500]'
+                                        />
+                                    </Navigate>
+                                )
+                            }
                             <div className='flex items-center w-[300px] gap-2 p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
                                 <div onClick={() => setShowProfileMenu((v) => !v)} className='h-[40px] w-[40px] border-2 border-brand-primary rounded-full overflow-hidden'>
                                     <img src={room} alt="room" className='h-full w-full object-cover' />
@@ -78,29 +83,29 @@ export default function Header() {
                                     >
                                         <ul className="py-2">
                                             <li>
-                                                <a href="/settings/general" className="block px-5 py-3 text-sm font-semibold text-brand-primary bg-brand-accent hover:bg-brand-secondary rounded-t-xl">
+                                                <Link to="/settings/general" className="block px-5 py-3 text-sm font-semibold text-brand-primary bg-brand-accent hover:bg-brand-secondary rounded-t-xl">
                                                     General Settings
-                                                </a>
+                                                </Link>
                                             </li>
                                             <li>
-                                                <a href="/settings/profile" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
+                                                <Link to="/settings/profile" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
                                                     Profile Settings
-                                                </a>
+                                                </Link>
                                             </li>
                                             <li>
-                                                <a href="/bookings" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
+                                                <Link to="/bookings" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
                                                     Bookings
-                                                </a>
+                                                </Link>
                                             </li>
                                             <li>
-                                                <a href="/payments" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent rounded-b-xl">
+                                                <Link to="/payments" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent rounded-b-xl">
                                                     Payments
-                                                </a>
+                                                </Link>
                                             </li>
                                             <li>
-                                                <a href="/partner-register/step-1" onClick={() => dispatch(resetAuth())} className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent rounded-b-xl">
+                                                <Link to="/" onClick={() => dispatch(resetAuth())} className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent rounded-b-xl">
                                                     Log Out
-                                                </a>
+                                                </Link>
                                             </li>
                                         </ul>
                                     </div>

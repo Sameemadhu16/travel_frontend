@@ -42,6 +42,7 @@ export default function CompleteRequest() {
     const {user} = useSelector((state) => state.auth);
     const id = user.data.id;
     const tripReq = createTripRequest(formData, id);
+    console.log(formData)
   return (
     <Main>
       <div className="max-w-7xl mx-auto py-8 px-4">
@@ -58,7 +59,7 @@ export default function CompleteRequest() {
             <div className="flex-1 space-y-6">
               <DestinationDetails />
               <ContactSummary />
-              <SelectedTourGuide />
+              <SelectedTourGuide guide={tripData.guide}/>
               <HotelBookings />
               <Transportation />
               <ItineraryOverview />
@@ -66,7 +67,7 @@ export default function CompleteRequest() {
             
             {/* Right Column - Booking Summary */}
             <div className="w-80">
-              <BookingSummary tripData={tripReq}/>
+              <BookingSummary tripData={tripData}/>
             </div>
           </div>
         </div>

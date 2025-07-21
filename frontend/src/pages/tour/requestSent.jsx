@@ -11,15 +11,6 @@ import NeedAssistance from './components/NeedAssistance';
 import FormContext from '../../context/InitialValues';
 
 export default function RequestSent() {
-  const { 
-    travelDetails, 
-    contactInfo, 
-    selectedItems, 
-    tourPreferences,
-    itinerary,
-    bookingSummary,
-    resetTour 
-  } = useTourContext();
 
   return (
     <Main>

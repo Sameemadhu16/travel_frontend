@@ -103,9 +103,9 @@ export default function AppRoutes() {
     return (
         <Routes>
             {/* Public routes available to all users */}
-            <Route path='/' element={<Home />} />
+            
             <Route path='/home' element={<Home />} />
-            <Route path='/traveler-register' element={<TravelerRegister />} />
+            <Route path='/' element={<TravelerRegister />} />
             <Route path="/destination/:id" element={<DestinationPage />} />
 
             {/* Partner login routes */}
