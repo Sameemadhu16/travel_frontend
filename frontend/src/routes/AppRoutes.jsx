@@ -102,8 +102,19 @@ export default function AppRoutes() {
 
     return (
         <Routes>
+
+            <Route path='/home' element={<Home/>}/>
+            <Route path='/' element={<TravelerRegister/>}/>
+            <Route 
+                path="/partner-login/*"
+                element={
+                    <FormProvider initialValues={loginPartnerAccountForm.formData}>
+                        <Routes>
+                            <Route index element={<Navigate to="step-1" replace />} />
+                            <Route path='step-1' element={<PartnerLoginStep1/>}/>
+                            <Route path='step-2' element={<PartnerLoginStep2/>}/>
+
             {/* Public routes available to all users */}
-            <Route path='/' element={<Home/>}/>
             <Route path='/home' element={<Home/>}/>
             <Route path='/traveler-register' element={<TravelerRegister/>}/>
             <Route path="/destination/:id" element={<DestinationPage />} />
@@ -124,6 +135,7 @@ export default function AppRoutes() {
                             <Route path="complete-request" element={<CompleteRequest/>}/>
                             <Route path="request-sent" element={<RequestSent />} />
                             <Route path="payment" element={<Payment/>} />
+
                         </Routes>
                     </FormProvider>
                 }
@@ -163,6 +175,7 @@ export default function AppRoutes() {
                     <Route path='/partner-forgot-password' element={<ForgotPassword/>}/>
                     <Route path='/partner-forgot-username' element={<ForgotUsername/>}/>
                     <Route path='/change-password' element={<ChangePassword/>}/>
+
 
                     {/* Admin routes */}
                     <Route path='/admin/dashboard' element={<AdminDashboard/>}/>
@@ -211,6 +224,7 @@ export default function AppRoutes() {
                     <Route path='/partner/help' element={<HelpCenter/>}/>
 
                     {/* Partner registration routes for authenticated users */}
+
                     <Route
                         path="/partner-register/*"
                         element={

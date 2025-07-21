@@ -1,15 +1,18 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { useTourContext } from '../../../context/TourContext';
+import FormContext from '../../../context/InitialValues';
 
 export default function RequestDetails() {
+    const {formData} = useContext(FormContext);
     const { 
         travelDetails, 
         contactInfo, 
         selectedItems, 
         tourPreferences,
         itinerary,
-        bookingSummary 
-    } = useTourContext();
+        bookingSummary,
+        resetTour 
+    } = formData;
 
     // Generate a unique request ID based on current data
     const generateRequestId = () => {
