@@ -37,6 +37,7 @@ import CompleteRequest from '../pages/tour/completeRequest';
 import RequestSent from '../pages/tour/requestSent';
 import Payment from '../pages/tour/payment';
 import DestinationPage from '../pages/destinations/DestinationPage';
+
 // Admin imports
 import AdminDashboard from '../pages/admin/Dashboard';
 import Users from '../pages/admin/Users';
@@ -44,14 +45,50 @@ import Listings from '../pages/admin/Listings';
 import Reviews from '../pages/admin/Reviews';
 import Reports from '../pages/admin/Reports';
 import Notifications from '../pages/admin/Notifications';
+import Payments from '../pages/admin/Payments';
+import Bookings from '../pages/admin/Bookings';
+import AdminSettings from '../pages/admin/Settings';
+
+// Guide Registration imports
 import GuideRegister from '../pages/guide/auth/guideRegister';
 import GuidePending from '../pages/guide/auth/GuidePending';
-import Payments from '../pages/admin/Payments';
 import AdminGuideReview from '../pages/admin/GuideReview';
 import AdminHotelReview from '../pages/admin/HotelReview';
 import AdminVehicleAgencyReview from '../pages/admin/VehicleAgencyReview';
 import VehicleAgencyPending from '../pages/vehicles/auth/VehicleAgencyPending';
 import HotelPending from '../pages/hotels/auth/HotelPending';
+
+// Partner Dashboard imports
+import Vehicles from '../pages/partner/vehicles/Vehicles';
+import AddVehicle from '../pages/partner/vehicles/AddVehicle';
+import BookingRequests from '../pages/partner/bookings/BookingRequests';
+import ActiveBookings from '../pages/partner/bookings/ActiveBookings';
+import BookingHistory from '../pages/partner/bookings/BookingHistory';
+import BookingDetails from '../pages/partner/bookings/BookingDetails';
+import PartnerConfirmedTours from '../pages/partner/tours/ConfirmedTours';
+import ActiveTourDashboard from '../pages/partner/tours/ActiveTourDashboard';
+import AvailabilityCalendar from '../pages/partner/calendar/AvailabilityCalendar';
+import Messages from '../pages/partner/messages/Messages';
+import SpecialInquiries from '../pages/partner/inquiries/SpecialInquiries';
+import PartnerReviews from '../pages/partner/reviews/Reviews';
+import EarningsAndPayments from '../pages/partner/earnings/EarningsAndPayments';
+import Analytics from '../pages/partner/analytics/Analytics';
+import TripPlanner from '../pages/partner/trips/TripPlanner';
+import Settings from '../pages/partner/settings/Settings';
+import HelpCenter from '../pages/partner/help/HelpCenter';
+import Dashboard from '../pages/partner/dashboard/Dashboard';
+
+// Hotel Dashboard imports
+import HotelDashboard from '../pages/hotels/dashboard/Dashboard';
+import HotelListings from '../pages/hotels/listings/HotelListings';
+import HotelDetails from '../pages/hotels/details/HotelDetails';
+import RoomTypes from '../pages/hotels/rooms/RoomTypes';
+import BookingsPage from '../pages/hotels/bookings/BookingsPage';
+import HotelReviews from '../pages/hotels/reviews/HotelReviews';
+import HotelReports from '../pages/hotels/reports/HotelReports';
+import HotelSettings from '../pages/hotels/settings/HotelSettings';
+import HotelCalendar from '../pages/hotels/calendar/HotelCalendar';
+import PaymentsPage from '../pages/hotels/payments/PaymentsPage';
 
 export default function AppRoutes() {
     const { token } = useSelector((state) => state.auth);
@@ -126,9 +163,43 @@ export default function AppRoutes() {
                     <Route path='/admin/reports' element={<Reports/>}/>
                     <Route path='/admin/notifications' element={<Notifications/>}/>
                     <Route path='/admin/payments' element={<Payments/>}/>
+                    <Route path='/admin/bookings' element={<Bookings/>}/>
+                    <Route path='/admin/settings' element={<AdminSettings/>}/>
                     <Route path='/admin/guide-review' element={<AdminGuideReview/>}/>
                     <Route path='/admin/hotel-review' element={<AdminHotelReview/>}/>
                     <Route path='/admin/vehicle-agency-review' element={<AdminVehicleAgencyReview/>}/>
+
+                    {/* Hotel Dashboard routes */}
+                    <Route path='/hotel/dashboard' element={<HotelDashboard/>}/>
+                    <Route path='/hotel/listings' element={<HotelListings/>}/>
+                    <Route path='/hotel/rooms' element={<RoomTypes/>}/>
+                    <Route path='/hotel/bookings' element={<BookingsPage/>}/>
+                    <Route path='/hotel/calendar' element={<HotelCalendar/>}/>
+                    <Route path='/hotel/payments' element={<PaymentsPage/>}/>
+                    <Route path='/hotel/reviews' element={<HotelReviews/>}/>
+                    <Route path='/hotel/reports' element={<HotelReports/>}/>
+                    <Route path='/hotel/settings' element={<HotelSettings/>}/>
+                    <Route path='/hotel/branch/:id' element={<HotelDetails/>}/>
+
+                    {/* Partner Dashboard routes */}
+                    <Route path='/partner/dashboard' element={<Dashboard/>}/>
+                    <Route path='/partner/vehicles' element={<Vehicles/>}/>
+                    <Route path='/partner/vehicles/add' element={<AddVehicle/>}/>
+                    <Route path='/partner/bookings/active' element={<ActiveBookings/>}/>
+                    <Route path='/partner/bookings/history' element={<BookingHistory/>}/>
+                    <Route path='/partner/bookings/details/:id' element={<BookingDetails/>}/>
+                    <Route path='/partner/booking-requests' element={<BookingRequests/>}/>
+                    <Route path='/partner/calendar' element={<AvailabilityCalendar/>}/>
+                    <Route path='/partner/messages' element={<Messages/>}/>
+                    <Route path='/partner/inquiries' element={<SpecialInquiries/>}/>
+                    <Route path='/partner/reviews' element={<PartnerReviews/>}/>
+                    <Route path='/partner/tours/confirmed' element={<PartnerConfirmedTours/>}/>
+                    <Route path='/partner/tours/active/:id' element={<ActiveTourDashboard/>}/>
+                    <Route path='/partner/earnings' element={<EarningsAndPayments/>}/>
+                    <Route path='/partner/analytics' element={<Analytics/>}/>
+                    <Route path='/partner/trip-planner' element={<TripPlanner/>}/>
+                    <Route path='/partner/settings' element={<Settings/>}/>
+                    <Route path='/partner/help' element={<HelpCenter/>}/>
 
                     {/* Partner registration routes for authenticated users */}
                     <Route

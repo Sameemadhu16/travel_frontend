@@ -3,14 +3,14 @@ import { Link } from 'react-router-dom';
 export default function AdminSidebar({ activePage }) {
   const menuItems = [
     { name: 'Dashboard', path: '/admin/dashboard' },
-    { name: 'Users', path: '/admin/users' },
     { name: 'Listings', path: '/admin/listings' },
     { name: 'Bookings', path: '/admin/bookings' },
-    { name: 'Reviews', path: '/admin/reviews' },
-    { name: 'Reports', path: '/admin/reports' },
+    { name: 'Calendar', path: '/admin/calendar' },
     { name: 'Notifications', path: '/admin/notifications' },
     { name: 'Payments', path: '/admin/payments' },
-    { name: 'Settings', path: '/admin/settings' }
+    { name: 'Reviews', path: '/admin/reviews' },
+    { name: 'Settings', path: '/admin/settings' },
+    { name: 'Help Center', path: '/admin/help' }
   ];
 
   return (
