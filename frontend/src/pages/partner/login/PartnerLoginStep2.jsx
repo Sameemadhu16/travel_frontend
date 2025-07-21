@@ -45,7 +45,15 @@ export default function PartnerLoginStep2() {
                         }),
                     );
                     {localStorage.removeItem('formData')}
-                    navigateTo('/home');
+                    if(userData.role === 'guide'){
+                        navigateTo('/guide-profile')
+                    }else if(userData.role === 'agency'){
+                        navigateTo('/partner/dashboard')
+                    }else if(userData.role === 'hotel'){
+                        navigateTo('/partner/hotel')
+                    }else{
+                        navigateTo('/home')
+                    };
                     showToastMessage('success', 'Welcome back! You’ve logged in successfully.');
                 }else if (user && !user.emailVerified) {
                     showToastMessage('warning', 'Your email is not verified. Please check your inbox or resend the verification email.');

@@ -108,6 +108,19 @@ export default function AppRoutes() {
             <Route path='/traveler-register' element={<TravelerRegister />} />
             <Route path="/destination/:id" element={<DestinationPage />} />
 
+            {/* Partner login routes */}
+            <Route
+                path="/partner-login/*"
+                element={
+                    <FormProvider initialValues={loginPartnerAccountForm.formData}>
+                        <Routes>
+                            <Route index element={<Navigate to="step-1" replace />} />
+                            <Route path='step-1' element={<PartnerLoginStep1 />} />
+                            <Route path='step-2' element={<PartnerLoginStep2 />} />
+                        </Routes>
+                    </FormProvider>
+                }
+            />
 
             {/* Tour routes with TourProvider - available to all users */}
             <Route
@@ -183,6 +196,7 @@ export default function AppRoutes() {
                     <Route path='/partner-forgot-username' element={<ForgotUsername />} />
                     <Route path='/change-password' element={<ChangePassword />} />
 
+
                     {/* Admin routes */}
                     <Route path='/admin/dashboard' element={<AdminDashboard />} />
                     <Route path='/admin/users' element={<Users />} />
@@ -230,6 +244,7 @@ export default function AppRoutes() {
                     <Route path='/partner/help' element={<HelpCenter />} />
 
                     {/* Partner registration routes for authenticated users */}
+
                     <Route
                         path="/partner-register/*"
                         element={
@@ -252,19 +267,7 @@ export default function AppRoutes() {
                     {/* Routes for unauthenticated users */}
                     <Route path='/welcome' element={<Welcome />} />
 
-                    {/* Partner login routes */}
-                    <Route
-                        path="/partner-login/*"
-                        element={
-                            <FormProvider initialValues={loginPartnerAccountForm.formData}>
-                                <Routes>
-                                    <Route index element={<Navigate to="step-1" replace />} />
-                                    <Route path='step-1' element={<PartnerLoginStep1 />} />
-                                    <Route path='step-2' element={<PartnerLoginStep2 />} />
-                                </Routes>
-                            </FormProvider>
-                        }
-                    />
+                    
 
                     {/* Partner registration routes for unauthenticated users */}
                     <Route
