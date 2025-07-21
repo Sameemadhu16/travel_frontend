@@ -54,7 +54,7 @@ export default function AppRoutes() {
             <Route path='/home' element={<Home/>}/>
 
             {/* Conditional auth routes */}
-            {/* {isAuthenticated ? ( */}
+            {isAuthenticated ? (
                 <>
                     {/* Protected routes */}
                     <Route path='/hotel-registration' element={<HotelRegistration/>}/>
@@ -124,7 +124,7 @@ export default function AppRoutes() {
                         }
                     />
                 </>
-            {/* ) : (  */}
+            ) : ( 
                 <>
                     {/* Routes for unauthenticated users */}
                     <Route path='/welcome' element={<Welcome/>}/>
@@ -161,7 +161,7 @@ export default function AppRoutes() {
                     {/* Redirect unknown routes to login for unauthenticated users */}
                     <Route path="*" element={<Navigate to="/partner-login/step-1" replace />} />
                 </>
-            {/* )} */}
+            )}
 
             {/* Public routes available to all users */}
             <Route path='/hotel/:id' element={<Hotel/>}/>
