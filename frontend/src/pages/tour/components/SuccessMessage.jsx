@@ -1,18 +1,11 @@
 import React, { useContext } from 'react';
-import { useTourContext } from '../../../context/TourContext';
 import FormContext from '../../../context/InitialValues';
 
 export default function SuccessMessage() {
-    const {formData} = useContext(FormContext);
-    const { 
-        travelDetails, 
-        contactInfo, 
-        selectedItems, 
-        tourPreferences,
-        itinerary,
-        bookingSummary,
-        resetTour 
-    } = formData;
+    const { formData, setFormData } = useContext(FormContext);
+    const contactInfo = formData.contactInfo || {};
+    const travelDetails = formData.travelDetails || {};
+    const selectedItems = formData.selectedItems || {};
 
     return (
         <div className="bg-brand-accent rounded-lg p-8 mb-6 text-center border border-green-200">
