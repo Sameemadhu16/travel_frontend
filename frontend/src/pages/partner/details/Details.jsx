@@ -111,7 +111,7 @@ export default function Details() {
                         />
                     </div>
                     <div className='flex items-center justify-center w-full md:w-1/2'>
-                        <div className='w-full md:w-3/4 z-50'>
+                        <div className='w-full md:w-3/4 z-10'>
                             <RegisterCard/>
                         </div>
                     </div>
