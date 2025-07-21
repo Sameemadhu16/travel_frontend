@@ -86,7 +86,7 @@ const GuideProfile = () => {
         <>
             {/* <div className='mt-24'> */}
             <div className='flex'>
-                <div className='sticky top-0 h-screen'>
+                <div className='sticky top-0 h-fit'>
                     <NavBar />
                 </div>
                 <div className='flex-1'>

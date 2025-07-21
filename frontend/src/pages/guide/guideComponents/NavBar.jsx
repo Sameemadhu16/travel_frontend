@@ -1,20 +1,20 @@
 import { NavLink } from 'react-router-dom';
-import {Home, ClipboardList, Briefcase, CalendarCheck2, BookOpen, CalendarDays, MessageCircle, AlertCircle, Star, DollarSign, Settings, LogOut, Bell } from 'lucide-react';
+import {Home, ClipboardList, Briefcase, CalendarCheck2, BookOpen, CalendarDays, MessageCircle, AlertCircle, Star, DollarSign, LogOut, Bell, User } from 'lucide-react';
 
 const menuItems = [
-  { label: 'Dashboard', icon: <Home size={18} />, path: '/dashboard' },
+  { label: 'Dashboard', icon: <Home size={18} />, path: '/guide-dashboard' },
   { label: 'Tour Requests', icon: <ClipboardList size={18} />, path: '/guide-tour-request' },
   { label: 'Accepted Tours', icon: <Briefcase size={18} />, path: '/guide-accepted-tours' },
   { label: 'Confirmed Tours', icon: <CalendarCheck2 size={18} />, path: '/guide-confirmed-tours' },
   { label: 'Active Tour', icon: <BookOpen size={18} />, path: '/guide-active-tour' },
   { label: 'Tours History', icon: <CalendarDays size={18} />, path: '/tours-history' },
-  { label: 'Availability Calendar', icon: <CalendarDays size={18} />, path: '/availability-calendar' },
+  { label: 'Availability Calendar', icon: <CalendarDays size={18} />, path: '/guide-availability' },
   { label: 'Messages', icon: <MessageCircle size={18} />, path: '/messages' },
-  { label: 'Special Inquiries', icon: <AlertCircle size={18} />, path: '/guide-complaints' },
-  { label: 'Reviews', icon: <Star size={18} />, path: '/reviews' },
+  { label: 'Inquiries', icon: <AlertCircle size={18} />, path: '/guide-complaints' },
+  { label: 'Reviews', icon: <Star size={18} />, path: '/guide-reviews' },
   { label: 'Earnings & Payments', icon: <DollarSign size={18} />, path: '/earnings' },
-  { label: 'Notifications', icon: <Bell size={18} />, path: '/notifications' },
-  { label: 'Settings', icon: <Settings size={18} />, path: '/guide-profile' },
+  { label: 'Notifications', icon: <Bell size={18} />, path: '/guide-notifications' },
+  { label: 'Profile', icon: <User size={18} />, path: '/guide-profile' },
 ];
 
 export default function Sidebar() {

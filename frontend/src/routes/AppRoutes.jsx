@@ -37,6 +37,10 @@ import CompleteRequest from '../pages/tour/completeRequest';
 import RequestSent from '../pages/tour/requestSent';
 import Payment from '../pages/tour/payment';
 import DestinationPage from '../pages/destinations/DestinationPage';
+import Notifications from '../pages/guide/Notifications'
+import GuideReviews from '../pages/guide/Reviews';
+import GuideAvailability from '../pages/guide/GuideAvailability';
+import GuideDashboard from '../pages/guide/GuideDashboard';
 
 export default function AppRoutes() {
     const { token } = useSelector((state) => state.auth);
@@ -87,12 +91,16 @@ export default function AppRoutes() {
 
 
                     {/* Guide-related routes */}
+                    <Route path='/guide-dashboard' element={<GuideDashboard />}/>
                     <Route path='/guide-profile' element={<GuideProfile />}/>
                     <Route path='/guide-complaints' element={<GuideComplaints />}/>
                     <Route path='/guide-tour-request' element={<TourRequest />} />
                     <Route path='/guide-accepted-tours' element={<AcceptedTours />} />
                     <Route path='/guide-confirmed-tours' element={<ConfirmedTours />} />
                     <Route path='/guide-active-tour' element={<ActiveTour />} />
+                    <Route path='/guide-notifications' element={<Notifications />} />
+                    <Route path='/guide-reviews' element={<GuideReviews />} />
+                    <Route path='/guide-availability' element={<GuideAvailability />} />
 
                     {/* Tour routes wrapped with TourProvider */}
                     <Route 
@@ -114,7 +122,7 @@ export default function AppRoutes() {
                         }
                     />
                 </>
-            ) : (
+            ) : ( 
                 <>
                     {/* Routes for unauthenticated users */}
                     <Route path='/welcome' element={<Welcome/>}/>
