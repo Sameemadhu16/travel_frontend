@@ -103,35 +103,57 @@ export default function AppRoutes() {
     return (
         <Routes>
             {/* Public routes available to all users */}
-            <Route path='/' element={<Home/>}/>
-            <Route path='/home' element={<Home/>}/>
-            <Route path='/traveler-register' element={<TravelerRegister/>}/>
+            <Route path='/' element={<Home />} />
+            <Route path='/home' element={<Home />} />
+            <Route path='/traveler-register' element={<TravelerRegister />} />
             <Route path="/destination/:id" element={<DestinationPage />} />
-            <Route path='/hotel/:id' element={<Hotel/>}/>
+
 
             {/* Tour routes with TourProvider - available to all users */}
-            <Route 
+            <Route
                 path="/tour/*"
                 element={
                     <FormProvider initialValues={initialTripFormData.formData}>
                         <Routes>
-                            <Route path="create-tour" element={<CreateTour/>}/>
-                            <Route path="select-guide" element={<SelectGuide/>}/>
+                            <Route path="create-tour" element={<CreateTour />} />
+                            <Route path="select-guide" element={<SelectGuide />} />
                             <Route path="select-hotel" element={<Search />} />
                             <Route path="select-hotel/:id" element={<Hotel />} />
-                            <Route path="select-vehicle" element={<SearchVehicles/>}/>
-                            <Route path="select-vehicle/:id" element={<Vehicle/>} />
-                            <Route path="complete-request" element={<CompleteRequest/>}/>
+                            <Route path="select-vehicle" element={<SearchVehicles />} />
+                            <Route path="select-vehicle/:id" element={<Vehicle />} />
+                            <Route path="complete-request" element={<CompleteRequest />} />
                             <Route path="request-sent" element={<RequestSent />} />
-                            <Route path="payment" element={<Payment/>} />
+                            <Route path="payment" element={<Payment />} />
                         </Routes>
                     </FormProvider>
                 }
             />
 
+            {/* Hotel and Vehicle search routes with FormProvider */}
+            <Route path='/hotels-search' element={
+                <FormProvider initialValues={initialTripFormData.formData}>
+                    <Search />
+                </FormProvider>
+            } />
+            <Route path='/vehicle-search' element={
+                <FormProvider initialValues={initialTripFormData.formData}>
+                    <SearchVehicles />
+                </FormProvider>
+            } />
+            <Route path='/vehicle/:id' element={
+                <FormProvider initialValues={initialTripFormData.formData}>
+                    <Vehicle />
+                </FormProvider>
+            } />
+            <Route path='/hotel/:id' element={
+                <FormProvider initialValues={initialTripFormData.formData}>
+                    <Hotel />
+                </FormProvider>
+            } />
+
             {/* Guide-related routes - available to all users */}
-            <Route path='/guide-profile' element={<GuideProfile />}/>
-            <Route path='/guide-complaints' element={<GuideComplaints />}/>
+            <Route path='/guide-profile' element={<GuideProfile />} />
+            <Route path='/guide-complaints' element={<GuideComplaints />} />
             <Route path='/guide-tour-request' element={<TourRequest />} />
             <Route path='/guide-accepted-tours' element={<AcceptedTours />} />
             <Route path='/guide-confirmed-tours' element={<ConfirmedTours />} />
@@ -145,70 +167,67 @@ export default function AppRoutes() {
             {isAuthenticated ? (
                 <>
                     {/* Protected routes for authenticated users */}
-                    <Route path='/chat-bot' element={<ChatBot/>}/>
-                    <Route path='/hotel-registration' element={<HotelRegistration/>}/>
-                    <Route path='/hotel-pending' element={<HotelPending/>}/>
-                    <Route path='/guide-registration' element={<GuideRegister/>}/>
-                    <Route path='/guide-pending' element={<GuidePending/>}/>
-                    <Route path='/vehicle-agency-pending' element={<VehicleAgencyPending/>}/>
-                    <Route path='/rooms-add' element={<RoomsAdd/>}/>
-                    <Route path='/partner-details' element={<Details/>}/>
-                    <Route path='/choose-property' element={<ChooseProperty/>}/>
-                    <Route path='/hotels-search' element={<Search/>}/>
-                    <Route path='/vehicle-search' element={<SearchVehicles/>}/>
-                    <Route path='/vehicle/:id' element={<Vehicle/>}/>
-                    <Route path='/vehicle-registration' element={<VehicleRegistration/>}/>
-                    <Route path='/agency-registration' element={<VehicleAgencyRegistration/>} />
-                    <Route path='/partner-details-forgot' element={<ForgotDetailsStep1/>}/>
-                    <Route path='/partner-forgot-password' element={<ForgotPassword/>}/>
-                    <Route path='/partner-forgot-username' element={<ForgotUsername/>}/>
-                    <Route path='/change-password' element={<ChangePassword/>}/>
+                    <Route path='/chat-bot' element={<ChatBot />} />
+                    <Route path='/hotel-registration' element={<HotelRegistration />} />
+                    <Route path='/hotel-pending' element={<HotelPending />} />
+                    <Route path='/guide-registration' element={<GuideRegister />} />
+                    <Route path='/guide-pending' element={<GuidePending />} />
+                    <Route path='/vehicle-agency-pending' element={<VehicleAgencyPending />} />
+                    <Route path='/rooms-add' element={<RoomsAdd />} />
+                    <Route path='/partner-details' element={<Details />} />
+                    <Route path='/choose-property' element={<ChooseProperty />} />
+                    <Route path='/vehicle-registration' element={<VehicleRegistration />} />
+                    <Route path='/agency-registration' element={<VehicleAgencyRegistration />} />
+                    <Route path='/partner-details-forgot' element={<ForgotDetailsStep1 />} />
+                    <Route path='/partner-forgot-password' element={<ForgotPassword />} />
+                    <Route path='/partner-forgot-username' element={<ForgotUsername />} />
+                    <Route path='/change-password' element={<ChangePassword />} />
 
                     {/* Admin routes */}
-                    <Route path='/admin/dashboard' element={<AdminDashboard/>}/>
-                    <Route path='/admin/users' element={<Users/>}/>
-                    <Route path='/admin/listings' element={<Listings/>}/>
-                    <Route path='/admin/reviews' element={<Reviews/>}/>
-                    <Route path='/admin/reports' element={<Reports/>}/>
-                    <Route path='/admin/notifications' element={<Notifications/>}/>
-                    <Route path='/admin/payments' element={<Payments/>}/>
-                    <Route path='/admin/bookings' element={<Bookings/>}/>
-                    <Route path='/admin/settings' element={<AdminSettings/>}/>
-                    <Route path='/admin/guide-review' element={<AdminGuideReview/>}/>
-                    <Route path='/admin/hotel-review' element={<AdminHotelReview/>}/>
-                    <Route path='/admin/vehicle-agency-review' element={<AdminVehicleAgencyReview/>}/>
+                    <Route path='/admin/dashboard' element={<AdminDashboard />} />
+                    <Route path='/admin/users' element={<Users />} />
+                    <Route path='/admin/listings' element={<Listings />} />
+                    <Route path='/admin/reviews' element={<Reviews />} />
+                    <Route path='/admin/reports' element={<Reports />} />
+                    <Route path='/admin/notifications' element={<Notifications />} />
+                    <Route path='/admin/payments' element={<Payments />} />
+                    <Route path='/admin/bookings' element={<Bookings />} />
+                    <Route path='/admin/settings' element={<AdminSettings />} />
+                    <Route path='/admin/guide-review' element={<AdminGuideReview />} />
+                    <Route path='/admin/hotel-review' element={<AdminHotelReview />} />
+                    <Route path='/admin/vehicle-agency-review' element={<AdminVehicleAgencyReview />} />
 
                     {/* Hotel Dashboard routes */}
-                    <Route path='/hotel/dashboard' element={<HotelDashboard/>}/>
-                    <Route path='/hotel/listings' element={<HotelListings/>}/>
-                    <Route path='/hotel/rooms' element={<RoomTypes/>}/>
-                    <Route path='/hotel/bookings' element={<BookingsPage/>}/>
-                    <Route path='/hotel/calendar' element={<HotelCalendar/>}/>
-                    <Route path='/hotel/payments' element={<PaymentsPage/>}/>
-                    <Route path='/hotel/reviews' element={<HotelReviews/>}/>
-                    <Route path='/hotel/reports' element={<HotelReports/>}/>
-                    <Route path='/hotel/settings' element={<HotelSettings/>}/>
-                    <Route path='/hotel/branch/:id' element={<HotelDetails/>}/>
+                    <Route path='/hotel/dashboard' element={<HotelDashboard />} />
+                    <Route path='/hotel/listings' element={<HotelListings />} />
+                    <Route path='/hotel/rooms' element={<RoomTypes />} />
+                    <Route path='/hotel/bookings' element={<BookingsPage />} />
+                    <Route path='/hotel/calendar' element={<HotelCalendar />} />
+                    <Route path='/hotel/payments' element={<PaymentsPage />} />
+                    <Route path='/hotel/reviews' element={<HotelReviews />} />
+                    <Route path='/hotel/reports' element={<HotelReports />} />
+                    <Route path='/hotel/settings' element={<HotelSettings />} />
+                    <Route path='/hotel/branch/:id' element={<HotelDetails />} />
 
                     {/* Partner Dashboard routes */}
-                    <Route path='/partner/dashboard' element={<Dashboard/>}/>
-                    <Route path='/partner/vehicles' element={<Vehicles/>}/>
-                    <Route path='/partner/vehicles/add' element={<AddVehicle/>}/>
-                    <Route path='/partner/bookings/active' element={<ActiveBookings/>}/>
-                    <Route path='/partner/bookings/history' element={<BookingHistory/>}/>
-                    <Route path='/partner/bookings/details/:id' element={<BookingDetails/>}/>
-                    <Route path='/partner/booking-requests' element={<BookingRequests/>}/>
-                    <Route path='/partner/calendar' element={<AvailabilityCalendar/>}/>
-                    <Route path='/partner/messages' element={<Messages/>}/>
-                    <Route path='/partner/inquiries' element={<SpecialInquiries/>}/>
-                    <Route path='/partner/reviews' element={<PartnerReviews/>}/>
-                    <Route path='/partner/tours/confirmed' element={<PartnerConfirmedTours/>}/>
-                    <Route path='/partner/tours/active/:id' element={<ActiveTourDashboard/>}/>
-                    <Route path='/partner/earnings' element={<EarningsAndPayments/>}/>
-                    <Route path='/partner/analytics' element={<Analytics/>}/>
-                    <Route path='/partner/trip-planner' element={<TripPlanner/>}/>
-                    <Route path='/partner/settings' element={<Settings/>}/>
-                    <Route path='/partner/help' element={<HelpCenter/>}/>
+                    <Route path='/partner/dashboard' element={<Dashboard />} />
+                    <Route path='/partner/vehicles' element={<Vehicles />} />
+                    <Route path='/partner/vehicles/add' element={<AddVehicle />} />
+                    <Route path='/partner/bookings/active' element={<ActiveBookings />} />
+                    <Route path='/partner/bookings/history' element={<BookingHistory />} />
+                    <Route path='/partner/bookings/details/:id' element={<BookingDetails />} />
+                    <Route path='/partner/booking-requests' element={<BookingRequests />} />
+                    <Route path='/partner/calendar' element={<AvailabilityCalendar />} />
+                    <Route path='/partner/messages' element={<Messages />} />
+                    <Route path='/partner/inquiries' element={<SpecialInquiries />} />
+                    <Route path='/partner/reviews' element={<PartnerReviews />} />
+                    <Route path='/partner/tours/confirmed' element={<PartnerConfirmedTours />} />
+                    <Route path='/partner/tours/active/:id' element={<ActiveTourDashboard />} />
+                    <Route path='/partner/earnings' element={<EarningsAndPayments />} />
+                    <Route path='/partner/analytics' element={<Analytics />} />
+                    <Route path='/partner/trip-planner' element={<TripPlanner />} />
+                    <Route path='/partner/settings' element={<Settings />} />
+                    <Route path='/partner/help' element={<HelpCenter />} />
 
                     {/* Partner registration routes for authenticated users */}
                     <Route
@@ -219,43 +238,44 @@ export default function AppRoutes() {
                                     <Route index element={<Navigate to="step-1" replace />} />
                                     <Route path="step-1" element={<PartnerRegisterStep1 />} />
                                     <Route path="step-2" element={<PartnerRegisterStep2 />} />
-                                    <Route path="choose-property" element={<ChooseProperty/>}/>
+                                    <Route path="choose-property" element={<ChooseProperty />} />
                                 </Routes>
                             </FormProvider>
                         }
                     />
 
-                    
+                    {/* Fallback for authenticated users */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
                 </>
-            ) : ( 
+            ) : (
                 <>
                     {/* Routes for unauthenticated users */}
-                    <Route path='/welcome' element={<Welcome/>}/>
-                    
+                    <Route path='/welcome' element={<Welcome />} />
+
                     {/* Partner login routes */}
-                    <Route 
+                    <Route
                         path="/partner-login/*"
                         element={
                             <FormProvider initialValues={loginPartnerAccountForm.formData}>
                                 <Routes>
                                     <Route index element={<Navigate to="step-1" replace />} />
-                                    <Route path='step-1' element={<PartnerLoginStep1/>}/>
-                                    <Route path='step-2' element={<PartnerLoginStep2/>}/>
+                                    <Route path='step-1' element={<PartnerLoginStep1 />} />
+                                    <Route path='step-2' element={<PartnerLoginStep2 />} />
                                 </Routes>
                             </FormProvider>
                         }
                     />
 
                     {/* Partner registration routes for unauthenticated users */}
-                    <Route 
+                    <Route
                         path="/partner-register/*"
                         element={
                             <FormProvider initialValues={registerPartnerAccountForm.formData}>
                                 <Routes>
                                     <Route index element={<Navigate to="step-1" replace />} />
-                                    <Route path='step-1' element={<PartnerRegisterStep1/>}/>
-                                    <Route path='step-2' element={<PartnerRegisterStep2/>}/>
-                                    <Route path='choose-property' element={<ChooseProperty/>}/>
+                                    <Route path='step-1' element={<PartnerRegisterStep1 />} />
+                                    <Route path='step-2' element={<PartnerRegisterStep2 />} />
+                                    <Route path='choose-property' element={<ChooseProperty />} />
                                 </Routes>
                             </FormProvider>
                         }
