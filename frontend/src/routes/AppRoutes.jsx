@@ -37,13 +37,12 @@ import CompleteRequest from '../pages/tour/completeRequest';
 import RequestSent from '../pages/tour/requestSent';
 import Payment from '../pages/tour/payment';
 import DestinationPage from '../pages/destinations/DestinationPage';
+import GuideNotifications from '../pages/guide/Notifications';
+import GuideReviews from '../pages/guide/Reviews';
+import GuideAvailability from '../pages/guide/GuideAvailability';
+import GuideDashboard from '../pages/guide/GuideDashboard';
 
 // Admin imports
-import AdminDashboard from '../pages/admin/Dashboard';
-import Users from '../pages/admin/Users';
-import Listings from '../pages/admin/Listings';
-import Reviews from '../pages/admin/Reviews';
-import Reports from '../pages/admin/Reports';
 import Notifications from '../pages/admin/Notifications';
 import Payments from '../pages/admin/Payments';
 import Bookings from '../pages/admin/Bookings';
@@ -131,6 +130,10 @@ export default function AppRoutes() {
             <Route path='/guide-accepted-tours' element={<AcceptedTours />} />
             <Route path='/guide-confirmed-tours' element={<ConfirmedTours />} />
             <Route path='/guide-active-tour' element={<ActiveTour />} />
+            <Route path='/guide-dashboard' element={<GuideDashboard />} />
+            <Route path='/guide-notifications' element={<GuideNotifications />} />
+            <Route path='/guide-reviews' element={<GuideReviews />} />
+            <Route path='/guide-availability' element={<GuideAvailability />} />
 
             {/* Authentication-based conditional routes */}
             {isAuthenticated ? (
@@ -215,8 +218,10 @@ export default function AppRoutes() {
                             </FormProvider>
                         }
                     />
+
+                    
                 </>
-            ) : (
+            ) : ( 
                 <>
                     {/* Routes for unauthenticated users */}
                     <Route path='/welcome' element={<Welcome/>}/>
