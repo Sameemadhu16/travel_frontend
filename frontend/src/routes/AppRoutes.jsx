@@ -43,6 +43,11 @@ import GuideAvailability from '../pages/guide/GuideAvailability';
 import GuideDashboard from '../pages/guide/GuideDashboard';
 
 // Admin imports
+import AdminDashboard from '../pages/admin/Dashboard';
+import Users from '../pages/admin/Users';
+import Listings from '../pages/admin/Listings';
+import Reviews from '../pages/admin/Reviews';
+import Reports from '../pages/admin/Reports';
 import Notifications from '../pages/admin/Notifications';
 import Payments from '../pages/admin/Payments';
 import Bookings from '../pages/admin/Bookings';
@@ -88,6 +93,7 @@ import HotelReports from '../pages/hotels/reports/HotelReports';
 import HotelSettings from '../pages/hotels/settings/HotelSettings';
 import HotelCalendar from '../pages/hotels/calendar/HotelCalendar';
 import PaymentsPage from '../pages/hotels/payments/PaymentsPage';
+// import { Users } from 'lucide-react';
 
 export default function AppRoutes() {
     const { token } = useSelector((state) => state.auth);
