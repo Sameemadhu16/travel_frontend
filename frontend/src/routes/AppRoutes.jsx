@@ -45,8 +45,20 @@ export default function AppRoutes() {
 
     return (
         <Routes>
-            <Route path='/' element={<Home/>}/>
             <Route path='/home' element={<Home/>}/>
+            <Route path='/' element={<TravelerRegister/>}/>
+            <Route 
+                path="/partner-login/*"
+                element={
+                    <FormProvider initialValues={loginPartnerAccountForm.formData}>
+                        <Routes>
+                            <Route index element={<Navigate to="step-1" replace />} />
+                            <Route path='step-1' element={<PartnerLoginStep1/>}/>
+                            <Route path='step-2' element={<PartnerLoginStep2/>}/>
+                        </Routes>
+                    </FormProvider>
+                }
+            />
 
             {/* Conditional auth routes */}
             {isAuthenticated ? (
@@ -72,7 +84,6 @@ export default function AppRoutes() {
                     <Route path='/partner-forgot-username' element={<ForgotUsername/>}/>
                     <Route path='/change-password' element={<ChangePassword/>}/>
                     {/* Auth-related routes */}
-
                     <Route
                         path="/partner-register/*"
                         element={

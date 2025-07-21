@@ -15,6 +15,7 @@ import { getFirebaseErrorMessage } from '../core/Firebase/validation';
 import Spinner from '../components/Spinner';
 import { useDispatch, useSelector } from 'react-redux';
 import { registerFailure, registerStart, registerSuccess } from '../redux/slices/authSlice';
+import Navigate from '../components/Navigate';
 
 export default function TravelerRegister() {
     const [formData, setFormData] = useState({
@@ -110,6 +111,21 @@ export default function TravelerRegister() {
                             text="Register"
                             type={'submit'}
                         />
+                        <div className='w-full items-center justify-center flex gap-2'>
+                            <Title 
+                                title="Already registered?"
+                                size="text-[14px]"
+                                font="font-[400]"
+                            />
+                            <Navigate path="/partner-login/step-1" className="hover:underline text-brand-primary">
+                                <Title 
+                                    title="Register"
+                                    size="text-[14px]"
+                                    font="font-[400]"
+                                    color="text-brand-primary"
+                                />   
+                            </Navigate>
+                        </div>
                         <Border />
                         <TermsAndPrivacy />
                     </div>

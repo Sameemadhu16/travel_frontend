@@ -12,6 +12,7 @@ import { navigateTo } from '../../../core/navigateHelper';
 import { formValidator } from '../../../core/validation';
 import TextLink from '../components/TextLink';
 import FormContext, { loginPartnerAccountForm } from '../../../context/InitialValues';
+import Navigate from '../../../components/Navigate';
 
 export default function PartnerLoginStep1() {
     const [error,setError]=useState({});
@@ -71,13 +72,23 @@ export default function PartnerLoginStep1() {
                                 title='Having trouble signing in?'
                                 path='/partner-details-forgot'
                             />
+                            <div className='w-full items-center justify-center flex gap-2'>
+                                <Title 
+                                    title="Not registered yet?"
+                                    size="text-[14px]"
+                                    font="font-[400]"
+                                />
+                                <Navigate path="/" className="hover:underline text-brand-primary">
+                                    <Title 
+                                        title="Login "
+                                        size="text-[14px]"
+                                        font="font-[400]"
+                                        color="text-brand-primary"
+                                    />   
+                                </Navigate>
+                            </div>
                             <Border/>
                             <AnyQuestion/>
-                            <SecondaryButton
-                                text="Create a Partner Account"
-                                type={'button'}
-                                onClick={() => navigateTo('/partner-register/step-1')}
-                            />
                             <Border/>
                         </div>
                     </form>
