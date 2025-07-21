@@ -110,7 +110,7 @@ export default function AppRoutes() {
             <Route path="/destination/:id" element={<DestinationPage />} />
 
             {/* Conditional auth routes */}
-            {/* {isAuthenticated ? ( */}
+            {isAuthenticated ? (
                 <>
                     {/* Protected routes for authenticated users */}
                     <Route path='/chat-bot' element={<ChatBot />} />
@@ -226,7 +226,7 @@ export default function AppRoutes() {
                         }
                     />
                 </>
-            {/* ) : (  */}
+            ) : ( 
                 <>
                     {/* Routes for unauthenticated users */}
                     <Route path='/welcome' element={<Welcome />} />
@@ -251,7 +251,7 @@ export default function AppRoutes() {
                     {/* Redirect unknown routes to login for unauthenticated users */}
                     <Route path="*" element={<Navigate to="/partner-login/step-1" replace />} />
                 </>
-            {/* )} */}
+            )}
 
             {/* Public routes available to all users */}
             <Route path='/hotel/:id' element={<Hotel/>}/>
