@@ -1,5 +1,6 @@
 import React from 'react';
-import { useTourContext } from '../../context/TourContext';
+import { useContext } from 'react';
+import FormContext from '../../context/InitialValues';
 import Main from '../../components/Main';
 import SuccessMessage from './components/SuccessMessage';
 import RequestDetails from './components/RequestDetails';
@@ -10,15 +11,7 @@ import FAQ from './components/FAQ';
 import NeedAssistance from './components/NeedAssistance';
 
 export default function RequestSent() {
-  const { 
-    travelDetails, 
-    contactInfo, 
-    selectedItems, 
-    tourPreferences,
-    itinerary,
-    bookingSummary,
-    resetTour 
-  } = useTourContext();
+  const { formData, setFormData } = useContext(FormContext);
 
   return (
     <Main>
