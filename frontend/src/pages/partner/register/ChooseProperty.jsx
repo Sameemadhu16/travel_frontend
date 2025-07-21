@@ -4,14 +4,13 @@ import Title from '../../../components/Title'
 import { IoIosBed } from 'react-icons/io'
 import { useMemo } from 'react';
 import PropertyCard from './components/PropertyCard';
-import { useSelector } from 'react-redux';
 
 const options = [
     {
         id: 1,
         name: 'Guide',
         icon: FaUser,
-        path: '/',
+        path: '/guide-registration',
         description: 'As a Guide, you can offer your local expertise to travelers, create custom tours, and earn money by sharing your knowledge.'
     },
     {
@@ -25,7 +24,7 @@ const options = [
         id: 3,
         name: 'Vehicle rentals',
         icon: FaCar,
-        path: '/vehicle-search',
+        path: '/agency-registration',
         description: 'As a Vehicle Owner, you can rent out your cars, bikes, or other vehicles to travelers when you\'re not using them.'
     },
 ];

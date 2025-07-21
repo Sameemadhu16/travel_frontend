@@ -69,9 +69,9 @@ export default function VehicleAgencyRegistration() {
                 return;
             }
             // Call your API
-            await postRequest("/api/vehicle-agency/register", submissionData);
-            showToastMessage('success', 'Vehicle agency registered successfully!');
-            navigateTo('/partner-details');
+            await postRequest("/api/vehicleAgencies/register", submissionData);
+            showToastMessage('success', 'Vehicle agency registration submitted successfully!');
+            navigateTo('/vehicle-agency-pending');
         } catch (error) {
             console.error(error);
         } finally {
@@ -84,6 +84,22 @@ export default function VehicleAgencyRegistration() {
             <Breadcrumb items={breadcrumbItems} />
             <form onSubmit={handleSubmit} className="flex w-full flex-col items-center">
                 <Title title="Vehicle Agency Registration" size="text-[48px]" font="font-[600]" />
+
+                {/* Admin Approval Notice */}
+                <div className="bg-brand-light border border-brand-secondary rounded-lg p-4 w-full max-w-4xl mb-6">
+                    <div className="flex items-start gap-3">
+                        <svg className="w-5 h-5 text-brand-primary mt-0.5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                            <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
+                        </svg>
+                        <div>
+                            <h4 className="font-semibold text-content-primary mb-1">Admin Approval Required</h4>
+                            <p className="text-sm text-content-secondary">
+                                Your vehicle agency registration will be reviewed by our admin team before approval. 
+                                Please ensure all information is accurate and all required documents are uploaded.
+                            </p>
+                        </div>
+                    </div>
+                </div>
 
                 {/* Agency Info */}
                 <div className="flex flex-col gap-2 w-full">
@@ -208,7 +224,7 @@ export default function VehicleAgencyRegistration() {
 
                 <div className="w-full flex">
                     <div className="w-1/4 mt-5">
-                        <PrimaryButton text="Register" type={'submit'} />
+                        <PrimaryButton text="Submit for Review" type={'submit'} />
                     </div>
                 </div>
             </form>
