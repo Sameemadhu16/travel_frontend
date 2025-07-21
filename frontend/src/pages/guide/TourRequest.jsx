@@ -2,6 +2,7 @@
 import Main from '../../components/Main';
 // import NavBar from './guideComponents/NavBar';
 import TourRequestCard from './guideComponents/TourRequestCard';
+import NavBar from './guideComponents/NavBar'
 
 const dummyRequests = [
   {
@@ -52,29 +53,40 @@ const dummyRequests = [
 
 const TourRequest = () => {
   return (
-    <Main>
-      <div className="">
-        <h1 className="text-2xl font-bold mb-1">Tour Requests</h1>
-        <p className="text-gray-600 mb-6">Manage your incoming tour requests and bookings</p>
-
-        {/* Filters */}
-        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
-          <input type="text" placeholder="Search by traveler name..." className="col-span-1 md:col-span-2 border border-gray-300 px-3 py-2 rounded" />
-          <input type="date" className="border border-gray-300 px-3 py-2 rounded" />
-          <select className="border border-gray-300 px-3 py-2 rounded">
-            <option>All Destinations</option>
-          </select>
-          <select className="border border-gray-300 px-3 py-2 rounded">
-            <option>All Status</option>
-          </select>
+    <>
+      {/* <div className='mt-24'> */}
+      <div className='flex'>
+        <div className='sticky top-0 h-screen'>
+          <NavBar />
         </div>
+        <div className='flex-1'>
+          <Main hasNavbar={true}>
+            <div className="">
+              <h1 className="text-2xl font-bold mb-1">Tour Requests</h1>
+              <p className="text-gray-600 mb-6">Manage your incoming tour requests and bookings</p>
 
-        {/* Cards */}
-        {dummyRequests.map((traveler, index) => (
-          <TourRequestCard traveler={traveler} key={index} />
-        ))}
+              {/* Filters */}
+              <div className="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
+                <input type="text" placeholder="Search by traveler name..." className="col-span-1 md:col-span-2 border border-gray-300 px-3 py-2 rounded" />
+                <input type="date" className="border border-gray-300 px-3 py-2 rounded" />
+                <select className="border border-gray-300 px-3 py-2 rounded">
+                  <option>All Destinations</option>
+                </select>
+                <select className="border border-gray-300 px-3 py-2 rounded">
+                  <option>All Status</option>
+                </select>
+              </div>
+
+              {/* Cards */}
+              {dummyRequests.map((traveler, index) => (
+                <TourRequestCard traveler={traveler} key={index} />
+              ))}
+            </div>
+          </Main>
+
+        </div>
       </div>
-    </Main>
+    </>
   );
 };
 
