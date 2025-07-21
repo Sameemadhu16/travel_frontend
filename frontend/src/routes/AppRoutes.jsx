@@ -41,6 +41,7 @@ import GuideNotifications from '../pages/guide/Notifications';
 import GuideReviews from '../pages/guide/Reviews';
 import GuideAvailability from '../pages/guide/GuideAvailability';
 import GuideDashboard from '../pages/guide/GuideDashboard';
+import GuideTourHistory from '../pages/guide/TourHistory';
 
 // Admin imports
 import AdminDashboard from '../pages/admin/Dashboard';
@@ -108,76 +109,8 @@ export default function AppRoutes() {
             <Route path='/' element={<TravelerRegister />} />
             <Route path="/destination/:id" element={<DestinationPage />} />
 
-            {/* Partner login routes */}
-            <Route
-                path="/partner-login/*"
-                element={
-                    <FormProvider initialValues={loginPartnerAccountForm.formData}>
-                        <Routes>
-                            <Route index element={<Navigate to="step-1" replace />} />
-                            <Route path='step-1' element={<PartnerLoginStep1 />} />
-                            <Route path='step-2' element={<PartnerLoginStep2 />} />
-                        </Routes>
-                    </FormProvider>
-                }
-            />
-
-            {/* Tour routes with TourProvider - available to all users */}
-            <Route
-                path="/tour/*"
-                element={
-                    <FormProvider initialValues={initialTripFormData.formData}>
-                        <Routes>
-                            <Route path="create-tour" element={<CreateTour />} />
-                            <Route path="select-guide" element={<SelectGuide />} />
-                            <Route path="select-hotel" element={<Search />} />
-                            <Route path="select-hotel/:id" element={<Hotel />} />
-                            <Route path="select-vehicle" element={<SearchVehicles />} />
-                            <Route path="select-vehicle/:id" element={<Vehicle />} />
-                            <Route path="complete-request" element={<CompleteRequest />} />
-                            <Route path="request-sent" element={<RequestSent />} />
-                            <Route path="payment" element={<Payment />} />
-                        </Routes>
-                    </FormProvider>
-                }
-            />
-
-            {/* Hotel and Vehicle search routes with FormProvider */}
-            <Route path='/hotels-search' element={
-                <FormProvider initialValues={initialTripFormData.formData}>
-                    <Search />
-                </FormProvider>
-            } />
-            <Route path='/vehicle-search' element={
-                <FormProvider initialValues={initialTripFormData.formData}>
-                    <SearchVehicles />
-                </FormProvider>
-            } />
-            <Route path='/vehicle/:id' element={
-                <FormProvider initialValues={initialTripFormData.formData}>
-                    <Vehicle />
-                </FormProvider>
-            } />
-            <Route path='/hotel/:id' element={
-                <FormProvider initialValues={initialTripFormData.formData}>
-                    <Hotel />
-                </FormProvider>
-            } />
-
-            {/* Guide-related routes - available to all users */}
-            <Route path='/guide-profile' element={<GuideProfile />} />
-            <Route path='/guide-complaints' element={<GuideComplaints />} />
-            <Route path='/guide-tour-request' element={<TourRequest />} />
-            <Route path='/guide-accepted-tours' element={<AcceptedTours />} />
-            <Route path='/guide-confirmed-tours' element={<ConfirmedTours />} />
-            <Route path='/guide-active-tour' element={<ActiveTour />} />
-            <Route path='/guide-dashboard' element={<GuideDashboard />} />
-            <Route path='/guide-notifications' element={<GuideNotifications />} />
-            <Route path='/guide-reviews' element={<GuideReviews />} />
-            <Route path='/guide-availability' element={<GuideAvailability />} />
-
-            {/* Authentication-based conditional routes */}
-            {isAuthenticated ? (
+            {/* Conditional auth routes */}
+            {/* {isAuthenticated ? ( */}
                 <>
                     {/* Protected routes for authenticated users */}
                     <Route path='/chat-bot' element={<ChatBot />} />
@@ -259,10 +192,41 @@ export default function AppRoutes() {
                         }
                     />
 
-                    {/* Fallback for authenticated users */}
-                    <Route path="*" element={<Navigate to="/" replace />} />
+
+                    {/* Guide-related routes */}
+                    <Route path='/guide-dashboard' element={<GuideDashboard />}/>
+                    <Route path='/guide-profile' element={<GuideProfile />}/>
+                    <Route path='/guide-complaints' element={<GuideComplaints />}/>
+                    <Route path='/guide-tour-request' element={<TourRequest />} />
+                    <Route path='/guide-accepted-tours' element={<AcceptedTours />} />
+                    <Route path='/guide-confirmed-tours' element={<ConfirmedTours />} />
+                    <Route path='/guide-active-tour' element={<ActiveTour />} />
+                    <Route path='/guide-notifications' element={<Notifications />} />
+                    <Route path='/guide-reviews' element={<GuideReviews />} />
+                    <Route path='/guide-availability' element={<GuideAvailability />} />
+                    <Route path='/guide-tour-history' element={<GuideTourHistory />} />
+
+                    {/* Tour routes wrapped with TourProvider */}
+                    <Route 
+                        path="/tour/*"
+                        element={
+                            <FormProvider initialValues={initialTripFormData.formData}>
+                                <Routes>
+                                    <Route path="create-tour" element={<CreateTour/>}/>
+                                    <Route path="select-guide" element={<SelectGuide/>}/>
+                                    <Route path="select-hotel" element={<Search />} />
+                                    <Route path="select-hotel/:id" element={<Hotel />} />
+                                    <Route path="select-vehicle" element={<SearchVehicles/>}/>
+                                    <Route path="select-vehicle/:id" element={<Vehicle/>} />
+                                    <Route path="complete-request" element={<CompleteRequest/>}/>
+                                    <Route path="request-sent" element={<RequestSent />} />
+                                    <Route path="payment" element={<Payment/>} />
+                                </Routes>
+                            </FormProvider>
+                        }
+                    />
                 </>
-            ) : (
+            {/* ) : (  */}
                 <>
                     {/* Routes for unauthenticated users */}
                     <Route path='/welcome' element={<Welcome />} />
@@ -287,7 +251,11 @@ export default function AppRoutes() {
                     {/* Redirect unknown routes to login for unauthenticated users */}
                     <Route path="*" element={<Navigate to="/partner-login/step-1" replace />} />
                 </>
-            )}
+            {/* )} */}
+
+            {/* Public routes available to all users */}
+            <Route path='/hotel/:id' element={<Hotel/>}/>
+            <Route path="/destination/:id" element={<DestinationPage />} />
         </Routes>
     );
 }
