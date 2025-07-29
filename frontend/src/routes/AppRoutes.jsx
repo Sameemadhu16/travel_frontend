@@ -41,6 +41,7 @@ import GuideNotifications from '../pages/guide/Notifications';
 import GuideReviews from '../pages/guide/Reviews';
 import GuideAvailability from '../pages/guide/GuideAvailability';
 import GuideDashboard from '../pages/guide/GuideDashboard';
+import GuideTourHistory from '../pages/guide/TourHistory';
 
 // Admin imports
 import AdminDashboard from '../pages/admin/Dashboard';
@@ -259,6 +260,39 @@ export default function AppRoutes() {
                         }
                     />
 
+
+                    {/* Guide-related routes */}
+                    <Route path='/guide-dashboard' element={<GuideDashboard />}/>
+                    <Route path='/guide-profile' element={<GuideProfile />}/>
+                    <Route path='/guide-complaints' element={<GuideComplaints />}/>
+                    <Route path='/guide-tour-request' element={<TourRequest />} />
+                    <Route path='/guide-accepted-tours' element={<AcceptedTours />} />
+                    <Route path='/guide-confirmed-tours' element={<ConfirmedTours />} />
+                    <Route path='/guide-active-tour' element={<ActiveTour />} />
+                    <Route path='/guide-notifications' element={<Notifications />} />
+                    <Route path='/guide-reviews' element={<GuideReviews />} />
+                    <Route path='/guide-availability' element={<GuideAvailability />} />
+                    <Route path='/guide-tour-history' element={<GuideTourHistory />} />
+
+                    {/* Tour routes wrapped with TourProvider */}
+                    <Route 
+                        path="/tour/*"
+                        element={
+                            <FormProvider initialValues={initialTripFormData.formData}>
+                                <Routes>
+                                    <Route path="create-tour" element={<CreateTour/>}/>
+                                    <Route path="select-guide" element={<SelectGuide/>}/>
+                                    <Route path="select-hotel" element={<Search />} />
+                                    <Route path="select-hotel/:id" element={<Hotel />} />
+                                    <Route path="select-vehicle" element={<SearchVehicles/>}/>
+                                    <Route path="select-vehicle/:id" element={<Vehicle/>} />
+                                    <Route path="complete-request" element={<CompleteRequest/>}/>
+                                    <Route path="request-sent" element={<RequestSent />} />
+                                    <Route path="payment" element={<Payment/>} />
+                                </Routes>
+                            </FormProvider>
+                        }
+                    />
                     {/* Fallback for authenticated users */}
                     <Route path="*" element={<Navigate to="/" replace />} />
                 </>
