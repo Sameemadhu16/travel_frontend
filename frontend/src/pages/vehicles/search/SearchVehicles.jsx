@@ -1,5 +1,3 @@
-import cover from '../../../assets/images/vehicle1.jpg'
-import SearchContainer from '../../../components/SearchContainer'
 import Main from '../../../components/Main';
 import Breadcrumb from '../../../components/Breadcrumb';
 import Title from '../../../components/Title';

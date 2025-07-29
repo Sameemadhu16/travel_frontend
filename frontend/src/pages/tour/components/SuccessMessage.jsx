@@ -1,8 +1,11 @@
-import React from 'react';
-import { useTourContext } from '../../../context/TourContext';
+import React, { useContext } from 'react';
+import FormContext from '../../../context/InitialValues';
 
 export default function SuccessMessage() {
-    const { contactInfo, travelDetails, selectedItems } = useTourContext();
+    const { formData, setFormData } = useContext(FormContext);
+    const contactInfo = formData.contactInfo || {};
+    const travelDetails = formData.travelDetails || {};
+    const selectedItems = formData.selectedItems || {};
 
     return (
         <div className="bg-brand-accent rounded-lg p-8 mb-6 text-center border border-green-200">
