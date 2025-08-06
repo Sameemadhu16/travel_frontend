@@ -10,21 +10,21 @@ const reserveOptions = [
         id: 1,
         name: 'Guide',
         icon: FaUser,
-        path: '/tour/select-guide',
+        path: '/bookings/guides',
         description: 'Find expert local guides'
     },
     {
         id: 2,
         name: 'Stays',
         icon: IoIosBed,
-        path: '/hotels-search',
+        path: '/bookings/hotels',
         description: 'Book hotels & accommodations'
     },
     {
         id: 3,
         name: 'Vehicle Rentals',
         icon: FaCar,
-        path: '/vehicle-search',
+        path: '/bookings/vehicles',
         description: 'Rent cars, bikes & more'
     },
 ];

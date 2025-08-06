@@ -43,6 +43,11 @@ import GuideAvailability from '../pages/guide/GuideAvailability';
 import GuideDashboard from '../pages/guide/GuideDashboard';
 import GuideTourHistory from '../pages/guide/TourHistory';
 
+// Booking pages
+import GuideBooking from '../pages/bookings/GuideBooking';
+import HotelBooking from '../pages/bookings/HotelBooking';
+import VehicleBooking from '../pages/bookings/VehicleBooking';
+
 // Admin imports
 import AdminDashboard from '../pages/admin/Dashboard';
 import Users from '../pages/admin/Users';
@@ -108,6 +113,11 @@ export default function AppRoutes() {
             <Route path='/home' element={<Home />} />
             <Route path='/traveler-register' element={<TravelerRegister />} />
             <Route path="/destination/:id" element={<DestinationPage />} />
+
+            {/* Independent Booking Pages */}
+            <Route path='/bookings/guides' element={<GuideBooking />} />
+            <Route path='/bookings/hotels' element={<HotelBooking />} />
+            <Route path='/bookings/vehicles' element={<VehicleBooking />} />
 
             {/* Partner login routes */}
             <Route
