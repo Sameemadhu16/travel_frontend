@@ -7,6 +7,7 @@ import { checkTokenExpiration } from '../core/authChecker';
 import { resetAuth } from '../redux/slices/authSlice';
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import ReserveOptions from './ReserveOptions';
 
 export default function Header() {
     const { user, token } = useSelector((state) => state.auth);
@@ -61,6 +62,7 @@ export default function Header() {
                                 )
                             }
                             <div className='flex items-center w-[300px] gap-2 p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
+                                <ReserveOptions />
                                 <div onClick={() => setShowProfileMenu((v) => !v)} className='h-[40px] w-[40px] border-2 border-brand-primary rounded-full overflow-hidden'>
                                     <img src={room} alt="room" className='h-full w-full object-cover' />
                                 </div>
