@@ -133,7 +133,7 @@ export default function TravelDetails({setValid}) {
         });
     };
 
-    const updateItinerary = (newItinerary) => {
+    const updateItinerary = useCallback((newItinerary) => {
         setFormData(prev => {
             const newFormData = {
                 ...prev,
@@ -145,7 +145,7 @@ export default function TravelDetails({setValid}) {
             
             return newFormData;
         });
-    };
+    }, [setFormData]);
 
     const addItineraryDay = () => {
         const newDay = { 
@@ -217,6 +217,40 @@ export default function TravelDetails({setValid}) {
         const { checked } = e.target;
         updateTravelDetails({ agreedToTerms: checked });
     };
+
+    // Auto-adjust itinerary days based on duration selection
+    useEffect(() => {
+        const duration = travelDetails.duration;
+        if (!duration || duration === 'custom') return;
+
+        // Extract number of days from duration string
+        const getDaysFromDuration = (duration) => {
+            const match = duration.match(/(\d+)-day/);
+            return match ? parseInt(match[1]) : 0;
+        };
+
+        const requiredDays = getDaysFromDuration(duration);
+        const currentDays = itinerary.length;
+        
+        if (requiredDays > 0 && requiredDays !== currentDays) {
+            // Create new itinerary array with the correct number of days
+            const newItinerary = [];
+            
+            for (let i = 0; i < requiredDays; i++) {
+                // Keep existing day data if available, otherwise create new day
+                const existingDay = itinerary[i];
+                newItinerary.push({
+                    day: i + 1,
+                    activities: existingDay?.activities?.length > 0 
+                        ? existingDay.activities 
+                        : [{ title: '', time: '', description: '', districtId: '', attractionId: '', customActivity: '' }]
+                });
+            }
+            
+            updateItinerary(newItinerary);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [travelDetails.duration, updateItinerary]); // Intentionally excluding itinerary to prevent infinite loops
 
     return (
         <section className="bg-white rounded-xl shadow p-6 border border-brand-accent border-l-4 border-l-brand-primary">
@@ -454,20 +488,31 @@ export default function TravelDetails({setValid}) {
             <div className="mb-2 flex items-center justify-between">
                 <span className="font-semibold text-brand-primary">
                     Itinerary <span className="text-red-500">*</span>
+                    {travelDetails.duration && travelDetails.duration !== 'custom' && (
+                        <span className="text-sm font-normal text-gray-600 ml-2">
+                            (Auto-managed based on {travelDetails.duration})
+                        </span>
+                    )}
                 </span>
-                <button 
-                    type="button" 
-                    onClick={addItineraryDay}
-                    className="bg-brand-primary text-white px-3 py-1 rounded text-xs font-semibold hover:bg-warning transition"
-                >
-                    Add Day +
-                </button>
+                {(!travelDetails.duration || travelDetails.duration === 'custom') && (
+                    <button 
+                        type="button" 
+                        onClick={addItineraryDay}
+                        className="bg-brand-primary text-white px-3 py-1 rounded text-xs font-semibold hover:bg-warning transition"
+                    >
+                        Add Day +
+                    </button>
+                )}
             </div>
             
             {/* Itinerary Guidelines */}
             <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
                 <p className="text-sm text-blue-800">
-                    <strong>Guidelines:</strong> Each day can have maximum 3 activities. All activities in the same day must be within the same province for practical travel planning.
+                    <strong>Guidelines:</strong> 
+                    {travelDetails.duration && travelDetails.duration !== 'custom' 
+                        ? ` Days are automatically set based on your selected duration (${travelDetails.duration}). Each day can have maximum 3 activities.`
+                        : ' Each day can have maximum 3 activities. All activities in the same day must be within the same province for practical travel planning.'
+                    }
                 </p>
             </div>
             {itinerary.map((day, dayIndex) => (
@@ -487,7 +532,7 @@ export default function TravelDetails({setValid}) {
                             >
                                 {day.activities.length >= 3 ? 'Max Activities (3)' : 'Add Activity +'}
                             </button>
-                            {itinerary.length > 1 && (
+                            {itinerary.length > 1 && (!travelDetails.duration || travelDetails.duration === 'custom') && (
                                 <button 
                                     type="button" 
                                     onClick={() => removeItineraryDay(dayIndex)}
