@@ -44,7 +44,6 @@ const VehicleCheckout = () => {
     });
 
     const [errors, setErrors] = useState({});
-    const [showLicenseUpload, setShowLicenseUpload] = useState(false);
 
     // Dummy vehicle data (in real app, fetch from API using id)
     const vehicle = {
@@ -119,9 +118,8 @@ const VehicleCheckout = () => {
         }
         
         if (currentStep === 2) {
-            // Customer must have license if no additional driver, or additional driver must have license
+            // Only validate license if NO additional driver is selected (self-driving)
             if (!formData.additionalDriver) {
-                // Customer is the main driver - license required
                 if (!formData.licenseNumber) newErrors.licenseNumber = 'Your driving license number is required since you will be the main driver';
                 if (!formData.licenseIssueDate) newErrors.licenseIssueDate = 'License issue date is required';
                 if (!formData.licenseExpiryDate) newErrors.licenseExpiryDate = 'License expiry date is required';
@@ -131,12 +129,6 @@ const VehicleCheckout = () => {
                 const expiryDate = new Date(formData.licenseExpiryDate);
                 if (expiryDate <= today) {
                     newErrors.licenseExpiryDate = 'License has expired. Please provide a valid license.';
-                }
-            } else {
-                // Additional driver is selected - they need license details (already validated in step 1)
-                // But we can add additional validation here if needed
-                if (!formData.additionalDriverDetails.licenseNumber) {
-                    newErrors.additionalDriverLicense = 'Additional driver license number is required';
                 }
             }
         }
@@ -155,8 +147,15 @@ const VehicleCheckout = () => {
 
     const handleNext = () => {
         if (validateStep(step)) {
-            if (step < 3) {
-                setStep(step + 1);
+            if (step === 1) {
+                // If additional driver is selected, skip license step (step 2) and go to payment (step 3)
+                if (formData.additionalDriver) {
+                    setStep(3);
+                } else {
+                    setStep(2); // Go to license step for self-driving
+                }
+            } else if (step === 2) {
+                setStep(3); // From license to payment
             } else {
                 // Process booking
                 handleBookingComplete();
@@ -170,33 +169,58 @@ const VehicleCheckout = () => {
         navigate(`/bookings/vehicle/${id}/confirmation`);
     };
 
-    const renderStepIndicator = () => (
-        <div className="flex items-center justify-center mb-8">
-            {[1, 2, 3].map((stepNumber) => (
-                <div key={stepNumber} className="flex items-center">
-                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
-                        step >= stepNumber 
-                            ? 'bg-blue-600 text-white' 
-                            : 'bg-gray-200 text-gray-600'
-                    }`}>
-                        {stepNumber}
+    const handlePrevious = () => {
+        if (step === 3) {
+            // If additional driver is selected, go back to step 1, otherwise go to step 2
+            if (formData.additionalDriver) {
+                setStep(1);
+            } else {
+                setStep(2);
+            }
+        } else if (step === 2) {
+            setStep(1);
+        }
+    };
+
+    const renderStepIndicator = () => {
+        // If additional driver is selected, only show steps 1 and 3 (Details and Payment)
+        const steps = formData.additionalDriver 
+            ? [
+                { number: 1, label: 'Details', actualStep: 1 },
+                { number: 3, label: 'Payment', actualStep: 3 }
+              ]
+            : [
+                { number: 1, label: 'Details', actualStep: 1 },
+                { number: 2, label: 'License', actualStep: 2 },
+                { number: 3, label: 'Payment', actualStep: 3 }
+              ];
+
+        return (
+            <div className="flex items-center justify-center mb-8">
+                {steps.map((stepInfo, index) => (
+                    <div key={stepInfo.number} className="flex items-center">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                            step >= stepInfo.actualStep 
+                                ? 'bg-blue-600 text-white' 
+                                : 'bg-gray-200 text-gray-600'
+                        }`}>
+                            {stepInfo.number}
+                        </div>
+                        <div className={`ml-2 text-sm font-medium ${
+                            step >= stepInfo.actualStep ? 'text-blue-600' : 'text-gray-400'
+                        }`}>
+                            {stepInfo.label}
+                        </div>
+                        {index < steps.length - 1 && (
+                            <div className={`w-12 h-0.5 mx-4 ${
+                                step > stepInfo.actualStep ? 'bg-blue-600' : 'bg-gray-200'
+                            }`} />
+                        )}
                     </div>
-                    <div className={`ml-2 text-sm font-medium ${
-                        step >= stepNumber ? 'text-blue-600' : 'text-gray-400'
-                    }`}>
-                        {stepNumber === 1 && 'Details'}
-                        {stepNumber === 2 && 'License'}
-                        {stepNumber === 3 && 'Payment'}
-                    </div>
-                    {stepNumber < 3 && (
-                        <div className={`w-12 h-0.5 mx-4 ${
-                            step > stepNumber ? 'bg-blue-600' : 'bg-gray-200'
-                        }`} />
-                    )}
-                </div>
-            ))}
-        </div>
-    );
+                ))}
+            </div>
+        );
+    };
 
     const renderCustomerDetails = () => (
         <div className="bg-white rounded-lg shadow-md p-6">
@@ -640,7 +664,7 @@ const VehicleCheckout = () => {
                             {/* Navigation Buttons */}
                             <div className="flex justify-between mt-6">
                                 <button
-                                    onClick={() => setStep(Math.max(1, step - 1))}
+                                    onClick={handlePrevious}
                                     disabled={step === 1}
                                     className={`px-6 py-2 rounded-lg ${
                                         step === 1
