@@ -9,6 +9,7 @@ const VehicleBooking = () => {
         pickupTime: '10:00',
         dropoffDate: '',
         dropoffTime: '10:00',
+        dropoffLocation: '',
         driverAge: '30-65',
         vehicleType: '',
         transmission: '',
@@ -16,11 +17,20 @@ const VehicleBooking = () => {
         fuelType: ''
     });
     const [sortBy, setSortBy] = useState('recommended');
+    const [differentDropoff, setDifferentDropoff] = useState(false);
     const [showLocationDropdown, setShowLocationDropdown] = useState(false);
+    const [showDropoffDropdown, setShowDropoffDropdown] = useState(false);
     const [locationSearchResults, setLocationSearchResults] = useState([]);
+    const [dropoffSearchResults, setDropoffSearchResults] = useState([]);
     const [selectedLocationIndex, setSelectedLocationIndex] = useState(-1);
+    const [selectedDropoffIndex, setSelectedDropoffIndex] = useState(-1);
+    const [showImportantInfo, setShowImportantInfo] = useState(false);
+    const [showEmailQuote, setShowEmailQuote] = useState(false);
+    const [selectedVehicleForInfo, setSelectedVehicleForInfo] = useState(null);
     const locationInputRef = useRef(null);
+    const dropoffInputRef = useRef(null);
     const dropdownRef = useRef(null);
+    const dropoffDropdownRef = useRef(null);
 
     // Dummy location data for search
     const locationData = [
@@ -128,14 +138,17 @@ const VehicleBooking = () => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
                 setShowLocationDropdown(false);
             }
+            if (dropoffDropdownRef.current && !dropoffDropdownRef.current.contains(event.target)) {
+                setShowDropoffDropdown(false);
+            }
         }
-        if (showLocationDropdown) {
+        if (showLocationDropdown || showDropoffDropdown) {
             document.addEventListener("mousedown", handleClickOutside);
         }
         return () => {
             document.removeEventListener("mousedown", handleClickOutside);
         };
-    }, [showLocationDropdown]);
+    }, [showLocationDropdown, showDropoffDropdown]);
 
     // Real-time search functionality
     const handleLocationSearch = (searchTerm) => {
@@ -221,6 +234,76 @@ const VehicleBooking = () => {
                 return '🏙️';
             default:
                 return '📍';
+        }
+    };
+
+    // Dropoff location search functions
+    const handleDropoffLocationSearch = (searchTerm) => {
+        setFilters(prev => ({ ...prev, dropoffLocation: searchTerm }));
+        
+        if (!searchTerm.trim()) {
+            setDropoffSearchResults(locationData.slice(0, 5));
+            setShowDropoffDropdown(true);
+            return;
+        }
+
+        const filtered = locationData.filter(location =>
+            location.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            location.city.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            location.type.toLowerCase().includes(searchTerm.toLowerCase())
+        );
+        
+        setDropoffSearchResults(filtered);
+        setSelectedDropoffIndex(-1);
+        
+        if (filtered.length === 0) {
+            setShowDropoffDropdown(false);
+        } else if (dropoffSearchResults.length > 0) {
+            setShowDropoffDropdown(true);
+        }
+    };
+
+    const handleDropoffLocationFocus = () => {
+        if (filters.dropoffLocation.trim() === '') {
+            setDropoffSearchResults(locationData.slice(0, 5));
+        } else if (dropoffSearchResults.length > 0) {
+            setShowDropoffDropdown(true);
+        }
+    };
+
+    const handleDropoffLocationSelect = (location) => {
+        setFilters(prev => ({ ...prev, dropoffLocation: location.name }));
+        setShowDropoffDropdown(false);
+        setDropoffSearchResults([]);
+        setSelectedDropoffIndex(-1);
+    };
+
+    const handleDropoffKeyDown = (e) => {
+        if (!showDropoffDropdown || dropoffSearchResults.length === 0) return;
+
+        switch (e.key) {
+            case 'ArrowDown':
+                e.preventDefault();
+                setSelectedDropoffIndex(prev => 
+                    prev < dropoffSearchResults.length - 1 ? prev + 1 : prev
+                );
+                break;
+            case 'ArrowUp':
+                e.preventDefault();
+                setSelectedDropoffIndex(prev => prev > 0 ? prev - 1 : -1);
+                break;
+            case 'Enter':
+                e.preventDefault();
+                if (selectedDropoffIndex >= 0) {
+                    handleDropoffLocationSelect(dropoffSearchResults[selectedDropoffIndex]);
+                }
+                break;
+            case 'Escape':
+                setShowDropoffDropdown(false);
+                setSelectedDropoffIndex(-1);
+                break;
+            default:
+                break;
         }
     };
 
@@ -373,7 +456,23 @@ const VehicleBooking = () => {
     };
 
     const handleBookVehicle = (vehicleId) => {
-        navigate(`/bookings/vehicle/${vehicleId}/confirm`);
+        navigate(`/bookings/vehicle/${vehicleId}/deal`);
+    };
+
+    const handleImportantInfo = (vehicle) => {
+        setSelectedVehicleForInfo(vehicle);
+        setShowImportantInfo(true);
+    };
+
+    const handleEmailQuote = (vehicle) => {
+        setSelectedVehicleForInfo(vehicle);
+        setShowEmailQuote(true);
+    };
+
+    const closeModals = () => {
+        setShowImportantInfo(false);
+        setShowEmailQuote(false);
+        setSelectedVehicleForInfo(null);
     };
 
     const filteredVehicles = vehicles.filter(vehicle => {
@@ -497,7 +596,12 @@ const VehicleBooking = () => {
                         {/* Additional Options */}
                         <div className="mt-4 flex items-center gap-6">
                             <label className="flex items-center">
-                                <input type="checkbox" className="mr-2" />
+                                <input 
+                                    type="checkbox" 
+                                    className="mr-2" 
+                                    checked={differentDropoff}
+                                    onChange={(e) => setDifferentDropoff(e.target.checked)}
+                                />
                                 <span className="text-gray-700">Drop car off at different location</span>
                             </label>
                             <label className="flex items-center">
@@ -505,6 +609,55 @@ const VehicleBooking = () => {
                                 <span className="text-gray-700">Driver aged 30 - 65?</span>
                             </label>
                         </div>
+
+                        {/* Conditional Drop-off Location Field */}
+                        {differentDropoff && (
+                            <div className="mt-4 p-4 bg-gray-50 rounded-lg border border-gray-200">
+                                <h4 className="text-sm font-medium text-gray-700 mb-3">Drop-off location</h4>
+                                <div className="relative" ref={dropoffDropdownRef}>
+                                    <input
+                                        ref={dropoffInputRef}
+                                        type="text"
+                                        placeholder="City, airport, station, region"
+                                        className="w-full p-3 border border-gray-300 rounded-lg text-gray-900"
+                                        value={filters.dropoffLocation}
+                                        onChange={(e) => handleDropoffLocationSearch(e.target.value)}
+                                        onFocus={handleDropoffLocationFocus}
+                                        onKeyDown={handleDropoffKeyDown}
+                                    />
+                                    
+                                    {/* Dropoff Location Dropdown */}
+                                    {showDropoffDropdown && dropoffSearchResults.length > 0 && (
+                                        <div className="absolute z-10 w-full mt-1 bg-white border border-gray-300 rounded-lg shadow-lg max-h-60 overflow-y-auto">
+                                            {filters.dropoffLocation.trim() === '' && (
+                                                <div className="px-4 py-2 text-sm font-medium text-gray-500 bg-gray-50 border-b">
+                                                    Popular locations
+                                                </div>
+                                            )}
+                                            {dropoffSearchResults.map((location, index) => (
+                                                <button
+                                                    key={location.id}
+                                                    className={`w-full px-4 py-3 text-left hover:bg-gray-50 border-b border-gray-100 last:border-0 transition-colors ${
+                                                        index === selectedDropoffIndex ? 'bg-blue-50 border-blue-200' : ''
+                                                    }`}
+                                                    onClick={() => handleDropoffLocationSelect(location)}
+                                                >
+                                                    <div className="flex items-center gap-3">
+                                                        <span className="text-lg">{getLocationIcon(location.type)}</span>
+                                                        <div>
+                                                            <div className="font-medium text-gray-900">{location.name}</div>
+                                                            <div className="text-sm text-gray-500">
+                                                                {location.type} • {location.distance}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </button>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
                     </div>
                 </div>
             </div>
@@ -742,10 +895,16 @@ const VehicleBooking = () => {
                                                     View deal
                                                 </button>
                                                 <div className="flex gap-2">
-                                                    <button className="flex-1 text-blue-600 text-sm border border-blue-600 py-2 px-2 rounded hover:bg-blue-50">
+                                                    <button 
+                                                        onClick={() => handleImportantInfo(vehicle)}
+                                                        className="flex-1 text-blue-600 text-sm border border-blue-600 py-2 px-2 rounded hover:bg-blue-50 transition-colors"
+                                                    >
                                                         Important info
                                                     </button>
-                                                    <button className="flex-1 text-blue-600 text-sm border border-blue-600 py-2 px-2 rounded hover:bg-blue-50">
+                                                    <button 
+                                                        onClick={() => handleEmailQuote(vehicle)}
+                                                        className="flex-1 text-blue-600 text-sm border border-blue-600 py-2 px-2 rounded hover:bg-blue-50 transition-colors"
+                                                    >
                                                         Email quote
                                                     </button>
                                                 </div>
@@ -758,6 +917,165 @@ const VehicleBooking = () => {
                     </div>
                 </div>
             </div>
+
+            {/* Important Info Modal */}
+            {showImportantInfo && selectedVehicleForInfo && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-xl font-bold text-gray-900">Important Information</h2>
+                                <button 
+                                    onClick={closeModals}
+                                    className="text-gray-400 hover:text-gray-600"
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <div className="space-y-4">
+                                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                                    <h3 className="font-semibold text-blue-900 mb-2">{selectedVehicleForInfo.name}</h3>
+                                    <p className="text-blue-800">{selectedVehicleForInfo.category} • {selectedVehicleForInfo.supplier}</p>
+                                </div>
+                                
+                                <div className="space-y-3">
+                                    <div>
+                                        <h4 className="font-semibold text-gray-900 mb-2">Rental Conditions</h4>
+                                        <ul className="space-y-1 text-gray-700">
+                                            <li>• Driver must be between 21-75 years old</li>
+                                            <li>• Valid driving license required (minimum 1 year)</li>
+                                            <li>• Credit card required for security deposit</li>
+                                            <li>• Fuel policy: Full to Full</li>
+                                        </ul>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 className="font-semibold text-gray-900 mb-2">What&apos;s Included</h4>
+                                        <ul className="space-y-1 text-gray-700">
+                                            {selectedVehicleForInfo.features.map((feature, index) => (
+                                                <li key={index}>• {feature}</li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 className="font-semibold text-gray-900 mb-2">Pick-up Information</h4>
+                                        <p className="text-gray-700">{selectedVehicleForInfo.pickupInfo}</p>
+                                        <p className="text-gray-600 text-sm">{selectedVehicleForInfo.distance}</p>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 className="font-semibold text-gray-900 mb-2">Cancellation Policy</h4>
+                                        <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                                            <p className="text-green-800">✓ Free cancellation up to 48 hours before pick-up</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <h4 className="font-semibold text-gray-900 mb-2">Additional Fees</h4>
+                                        <ul className="space-y-1 text-gray-700 text-sm">
+                                            <li>• Additional driver: LKR 1,500 per day</li>
+                                            <li>• Child seat: LKR 800 per day</li>
+                                            <li>• GPS navigation: LKR 600 per day</li>
+                                            <li>• Cross-border travel: Not allowed</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div className="mt-6 flex justify-end">
+                                <button 
+                                    onClick={closeModals}
+                                    className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg font-semibold transition-colors"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Email Quote Modal */}
+            {showEmailQuote && selectedVehicleForInfo && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-lg max-w-md w-full">
+                        <div className="p-6">
+                            <div className="flex justify-between items-center mb-4">
+                                <h2 className="text-xl font-bold text-gray-900">Email Quote</h2>
+                                <button 
+                                    onClick={closeModals}
+                                    className="text-gray-400 hover:text-gray-600"
+                                >
+                                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                </button>
+                            </div>
+                            
+                            <div className="space-y-4">
+                                <div className="bg-gray-50 rounded-lg p-4">
+                                    <h3 className="font-semibold text-gray-900 mb-2">{selectedVehicleForInfo.name}</h3>
+                                    <p className="text-gray-600">{selectedVehicleForInfo.category} • {selectedVehicleForInfo.supplier}</p>
+                                    <p className="text-xl font-bold text-blue-600 mt-2">
+                                        LKR {selectedVehicleForInfo.price.toLocaleString()}
+                                    </p>
+                                    <p className="text-sm text-gray-600">for {selectedVehicleForInfo.period}</p>
+                                </div>
+                                
+                                <form className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Email address
+                                        </label>
+                                        <input
+                                            type="email"
+                                            placeholder="Enter your email"
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                                            required
+                                        />
+                                    </div>
+                                    
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                            Additional message (optional)
+                                        </label>
+                                        <textarea
+                                            rows={3}
+                                            placeholder="Any special requests or questions?"
+                                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+                                        />
+                                    </div>
+                                    
+                                    <div className="flex gap-3">
+                                        <button
+                                            type="button"
+                                            onClick={closeModals}
+                                            className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                                        >
+                                            Cancel
+                                        </button>
+                                        <button
+                                            type="submit"
+                                            className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold transition-colors"
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                alert('Quote request sent successfully!');
+                                                closeModals();
+                                            }}
+                                        >
+                                            Send Quote
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
