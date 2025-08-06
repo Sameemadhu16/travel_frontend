@@ -54,8 +54,8 @@ const notifications = [
 function NotificationItem({ notification }) {
   const typeConfig = {
     system: {
-      icon: <FaCog className="text-blue-500" />,
-      bgColor: 'bg-blue-50'
+      icon: <FaCog className="text-orange-500" />,
+      bgColor: 'bg-orange-50'
     },
     user: {
       icon: <FaUser className="text-green-500" />,
@@ -85,7 +85,7 @@ function NotificationItem({ notification }) {
           </div>
         </div>
         <div className="flex gap-2">
-          <button className="text-blue-500 hover:text-blue-700">
+          <button className="text-orange-500 hover:text-orange-700">
             <FaEye />
           </button>
           <button className="text-red-500 hover:text-red-700">

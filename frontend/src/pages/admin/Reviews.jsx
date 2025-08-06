@@ -125,7 +125,7 @@ export default function Reviews() {
                 </td>
                 <td>{review.date}</td>
                 <td className="flex gap-2">
-                  <button className="text-blue-500"><FaEye /></button>
+                  <button className="text-orange-500"><FaEye /></button>
                   <button className="text-green-500"><FaEdit /></button>
                   <button className="text-red-500"><FaTrash /></button>
                 </td>

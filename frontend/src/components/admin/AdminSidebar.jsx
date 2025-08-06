@@ -18,20 +18,20 @@ const menuItems = [
 
 export default function AdminSidebar() {
   return (
-    <div className="ml-2 mb-2 mt-5 bg-white shadow-xl border border-blue-400 rounded-3xl p-4 flex flex-col w-52">
+    <div className="ml-2 mb-2 mt-5 bg-white shadow-xl border border-orange-400 rounded-3xl p-4 flex flex-col w-52">
       <div className="mb-4 px-4">
-        <h2 className="font-bold text-xl text-blue-600">Admin Panel</h2>
+        <h2 className="font-bold text-xl text-orange-600">Admin Panel</h2>
         <p className="text-xs text-gray-500">Travel.lk Management</p>
       </div>
       
       <nav className="flex-1 mb-4">
-        {menuItems.map((item, index) => (
+        {menuItems.map((item) => (
           <NavLink
-            key={index}
+            key={item.path}
             to={item.path}
             className={({ isActive }) =>
-              `flex items-center gap-3 p-2 px-4 rounded-full cursor-pointer text-sm font-medium transition-all hover:bg-blue-100 hover:text-black ${
-                isActive ? 'bg-blue-500 text-white' : 'text-gray-700'
+              `flex items-center gap-3 p-2 px-4 rounded-full cursor-pointer text-sm font-medium transition-all hover:bg-orange-100 hover:text-black ${
+                isActive ? 'bg-orange-500 text-white' : 'text-gray-700'
               }`
             }
           >
@@ -41,7 +41,7 @@ export default function AdminSidebar() {
         ))}
       </nav>
 
-      <div className="pl-4 pt-4 pb-2 border-t-2 border-blue-400">
+      <div className="pl-4 pt-4 pb-2 border-t-2 border-orange-400">
         <div className="flex items-center gap-2 text-gray-600 hover:text-red-500 cursor-pointer">
           <LogOut size={18} />
           <span className="text-sm font-medium">Logout</span>

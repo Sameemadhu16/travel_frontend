@@ -42,8 +42,8 @@ export default function AdminDashboard() {
                   <p className="text-3xl font-bold">2,847</p>
                   <p className="text-gray-400 text-xs">+12% from last month</p>
                 </div>
-                <div className="bg-blue-100 p-3 rounded-full">
-                  <FaUsers className="text-blue-500 text-xl" />
+                <div className="bg-orange-100 p-3 rounded-full">
+                  <FaUsers className="text-orange-500 text-xl" />
                 </div>
               </div>
             </AdminCard>
@@ -102,7 +102,7 @@ export default function AdminDashboard() {
                       <p className="text-gray-500 text-xs">Tour booking #TB-2024-089</p>
                       <p className="text-gray-400 text-xs">15 minutes ago</p>
                     </div>
-                    <span className="bg-blue-100 text-blue-600 text-xs px-2 py-1 rounded-full">Payment</span>
+                    <span className="bg-orange-100 text-orange-600 text-xs px-2 py-1 rounded-full">Payment</span>
                   </div>
                   
                   <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
@@ -126,8 +126,8 @@ export default function AdminDashboard() {
                   <h3 className="text-lg font-semibold">Quick Actions</h3>
                 </div>
                 <div className="space-y-3">
-                  <div className="flex items-center gap-3 p-3 bg-blue-50 rounded-lg hover:bg-blue-100 cursor-pointer transition-colors">
-                    <div className="bg-blue-500 p-2 rounded-full">
+                  <div className="flex items-center gap-3 p-3 bg-orange-50 rounded-lg hover:bg-orange-100 cursor-pointer transition-colors">
+                    <div className="bg-orange-500 p-2 rounded-full">
                       <FaUserPlus className="text-white text-sm" />
                     </div>
                     <div>
