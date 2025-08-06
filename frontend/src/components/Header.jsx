@@ -7,7 +7,7 @@ import { checkTokenExpiration } from '../core/authChecker';
 import { resetAuth } from '../redux/slices/authSlice';
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import ReserveOptions from './ReserveOptions';
+import ReserveDropdown from './ReserveDropdown';
 
 export default function Header() {
     const { user, token } = useSelector((state) => state.auth);
@@ -17,6 +17,7 @@ export default function Header() {
     const menuRef = useRef(null);
     const role = user?.data?.role || '';
     // Close menu on outside click
+    console.log('Role:', user);
     useEffect(() => {
         function handleClickOutside(event) {
             if (menuRef.current && !menuRef.current.contains(event.target)) {
@@ -42,27 +43,33 @@ export default function Header() {
     return (
             <div className='sticky top-0 left-0 right-0 z-50 bg-white  px-4 sm:px-6 md:px-10 lg:px-20 xl:px-40 2xl:px-60 '>
                 <div className='flex justify-between items-center w-full'>
-                    <div className='h-[80px] w-40 rounded-[4px] overflow-hidden'>
-                        <img src={logo} alt="" className='h-full w-full object-cover' />
-                    </div>
+                    <Navigate 
+                        path="/home"
+                        className='h-[80px] w-40 rounded-[4px] overflow-hidden cursor-pointer hover:opacity-90 transition-opacity'
+                    >
+                        <img src={logo} alt="Travel.lk" className='h-full w-full object-cover' />
+                    </Navigate>
+                    
                     {token && !isExpired && (
-                        <div className='flex gap-1 items-center'>
-                            {
-                                role === 'traveler' && (
-                                    <Navigate
-                                        path={'/partner-details'}
-                                        className='p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'
-                                    >
-                                        <Title
-                                            title='List your property'
-                                            size='text-[16px]'
-                                            font='font-[500]'
-                                        />
-                                    </Navigate>
-                                )
-                            }
-                            <div className='flex items-center w-[300px] gap-2 p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
-                                <ReserveOptions />
+                        <div className='flex gap-4 items-center'>
+                            {/* Show Reserve dropdown for traveler role */}
+                            {role === 'traveler' && (
+                                <ReserveDropdown />
+                            )}
+                            {/* Show List Property for traveler role */}
+                            {role === 'traveler' && (
+                                <Navigate
+                                    path={'/partner-details'}
+                                    className='p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'
+                                >
+                                    <Title
+                                        title='List your property'
+                                        size='text-[16px]'
+                                        font='font-[500]'
+                                    />
+                                </Navigate>
+                            )}
+                            <div className='flex items-center gap-2 p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
                                 <div onClick={() => setShowProfileMenu((v) => !v)} className='h-[40px] w-[40px] border-2 border-brand-primary rounded-full overflow-hidden'>
                                     <img src={room} alt="room" className='h-full w-full object-cover' />
                                 </div>
@@ -113,6 +120,13 @@ export default function Header() {
                                     </div>
                                 )}
                             </div>
+                            {/* Debug: Always show dropdown for testing
+                            {(!role || role === '' || role === 'traveler') && (
+                                <div className="bg-red-200 p-2 rounded">
+                                    <p className="text-xs">Debug: Role = {role || 'undefined'}</p>
+                                    <ReserveDropdown />
+                                </div>
+                            )} */}
                         </div>
                     )
                     }
