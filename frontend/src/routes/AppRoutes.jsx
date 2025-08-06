@@ -104,12 +104,80 @@ export default function AppRoutes() {
     return (
         <Routes>
             {/* Public routes available to all users */}
-            
+            <Route path='/' element={<Home />} />
             <Route path='/home' element={<Home />} />
-            <Route path='/' element={<TravelerRegister />} />
+            <Route path='/traveler-register' element={<TravelerRegister />} />
             <Route path="/destination/:id" element={<DestinationPage />} />
 
-            {/* Conditional auth routes */}
+            {/* Partner login routes */}
+            <Route
+                path="/partner-login/*"
+                element={
+                    <FormProvider initialValues={loginPartnerAccountForm.formData}>
+                        <Routes>
+                            <Route index element={<Navigate to="step-1" replace />} />
+                            <Route path='step-1' element={<PartnerLoginStep1 />} />
+                            <Route path='step-2' element={<PartnerLoginStep2 />} />
+                        </Routes>
+                    </FormProvider>
+                }
+            />
+
+            {/* Tour routes with TourProvider - available to all users */}
+            <Route
+                path="/tour/*"
+                element={
+                    <FormProvider initialValues={initialTripFormData.formData}>
+                        <Routes>
+                            <Route path="create-tour" element={<CreateTour />} />
+                            <Route path="select-guide" element={<SelectGuide />} />
+                            <Route path="select-hotel" element={<Search />} />
+                            <Route path="select-hotel/:id" element={<Hotel />} />
+                            <Route path="select-vehicle" element={<SearchVehicles />} />
+                            <Route path="select-vehicle/:id" element={<Vehicle />} />
+                            <Route path="complete-request" element={<CompleteRequest />} />
+                            <Route path="request-sent" element={<RequestSent />} />
+                            <Route path="payment" element={<Payment />} />
+                        </Routes>
+                    </FormProvider>
+                }
+            />
+
+            {/* Hotel and Vehicle search routes with FormProvider */}
+            <Route path='/hotels-search' element={
+                <FormProvider initialValues={initialTripFormData.formData}>
+                    <Search />
+                </FormProvider>
+            } />
+            <Route path='/vehicle-search' element={
+                <FormProvider initialValues={initialTripFormData.formData}>
+                    <SearchVehicles />
+                </FormProvider>
+            } />
+            <Route path='/vehicle/:id' element={
+                <FormProvider initialValues={initialTripFormData.formData}>
+                    <Vehicle />
+                </FormProvider>
+            } />
+            <Route path='/hotel/:id' element={
+                <FormProvider initialValues={initialTripFormData.formData}>
+                    <Hotel />
+                </FormProvider>
+            } />
+
+            {/* Guide-related routes - available to all users */}
+            <Route path='/guide-profile' element={<GuideProfile />} />
+            <Route path='/guide-complaints' element={<GuideComplaints />} />
+            <Route path='/guide-tour-request' element={<TourRequest />} />
+            <Route path='/guide-accepted-tours' element={<AcceptedTours />} />
+            <Route path='/guide-confirmed-tours' element={<ConfirmedTours />} />
+            <Route path='/guide-active-tour' element={<ActiveTour />} />
+            <Route path='/guide-dashboard' element={<GuideDashboard />} />
+            <Route path='/guide-notifications' element={<GuideNotifications />} />
+            <Route path='/guide-reviews' element={<GuideReviews />} />
+            <Route path='/guide-availability' element={<GuideAvailability />} />
+
+            {/* Authentication-based conditional routes */}
             {isAuthenticated ? (
                 <>
                     {/* Protected routes for authenticated users */}
@@ -225,8 +293,10 @@ export default function AppRoutes() {
                             </FormProvider>
                         }
                     />
+                    {/* Fallback for authenticated users */}
+                    <Route path="*" element={<Navigate to="/" replace />} />
                 </>
-            ) : ( 
+            ) : (
                 <>
                     {/* Routes for unauthenticated users */}
                     <Route path='/welcome' element={<Welcome />} />
@@ -252,10 +322,6 @@ export default function AppRoutes() {
                     <Route path="*" element={<Navigate to="/partner-login/step-1" replace />} />
                 </>
             )}
-
-            {/* Public routes available to all users */}
-            <Route path='/hotel/:id' element={<Hotel/>}/>
-            <Route path="/destination/:id" element={<DestinationPage />} />
         </Routes>
     );
 }
