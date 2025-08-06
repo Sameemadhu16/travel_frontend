@@ -14,7 +14,7 @@ export default function Header() {
     const dispatch = useDispatch();
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const menuRef = useRef(null);
-
+    const role = user?.data?.role || '';
     // Close menu on outside click
     useEffect(() => {
         function handleClickOutside(event) {
@@ -47,7 +47,7 @@ export default function Header() {
                     {token && !isExpired && (
                         <div className='flex gap-1 items-center'>
                             {
-                                user.data.role === 'traveler' && (
+                                role === 'traveler' && (
                                     <Navigate
                                         path={'/partner-details'}
                                         className='p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'
@@ -103,7 +103,7 @@ export default function Header() {
                                                 </Link>
                                             </li>
                                             <li>
-                                                <Link to="/" onClick={() => dispatch(resetAuth())} className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent rounded-b-xl">
+                                                <Link to="/partner-login/step-1" onClick={() => dispatch(resetAuth())} className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent rounded-b-xl">
                                                     Log Out
                                                 </Link>
                                             </li>

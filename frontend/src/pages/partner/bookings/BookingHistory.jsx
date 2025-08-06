@@ -77,7 +77,7 @@ const BookingCard = ({ booking }) => {
             <p className="font-medium mb-1">Amount</p>
             <div className="flex items-center gap-2">
               <i className="fas fa-dollar-sign"></i>
-              <span>${booking.amount.toLocaleString()}</span>
+              <span>LKR{booking.amount.toLocaleString()}</span>
             </div>
           </div>
         </div>
@@ -137,7 +137,7 @@ const BookingHistory = () => {
       },
       duration: "3 days",
       travelers: 2,
-      amount: 1200,
+      amount: 12000,
       status: "completed"
     },
     {
@@ -151,7 +151,7 @@ const BookingHistory = () => {
       },
       duration: "2 days",
       travelers: 4,
-      amount: 800,
+      amount: 8000,
       status: "cancelled"
     },
     {
@@ -165,7 +165,7 @@ const BookingHistory = () => {
       },
       duration: "4 days",
       travelers: 2,
-      amount: 1600,
+      amount: 16000,
       status: "refunded"
     }
   ];
@@ -277,7 +277,7 @@ const BookingHistory = () => {
           <StatsCard 
             icon="fa-dollar-sign" 
             label="Total Revenue" 
-            value={`$${stats.totalRevenue.toLocaleString()}`}
+            value={`LKR ${stats.totalRevenue.toLocaleString()}`}
             type="revenue"
           />
         </div>

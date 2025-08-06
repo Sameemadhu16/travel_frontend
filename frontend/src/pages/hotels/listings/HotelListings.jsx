@@ -10,7 +10,7 @@ export default function HotelListings() {
     {
       name: "Cinnamon Grand Colombo",
       location: "Colombo 03, Sri Lanka",
-      image: "/src/assets/hotels/cinnomon-red.jpg",
+      image: "/src/assets/hotels/cinnamon-grand.jpg",
       rating: 4.9,
       reviewCount: 425,
       startingPrice: "45,000",
@@ -21,7 +21,7 @@ export default function HotelListings() {
     {
       name: "Cinnamon Red Colombo",
       location: "Colombo 07, Sri Lanka",
-      image: "/src/assets/hotels/cinnomon-red.jpg",
+      image: "/src/assets/hotels/cinnamon-red.jpg",
       rating: 4.8,
       reviewCount: 245,
       startingPrice: "25,000",
@@ -32,7 +32,7 @@ export default function HotelListings() {
     {
       name: "Cinnamon Lakeside Colombo",
       location: "Colombo 02, Sri Lanka",
-      image: "/src/assets/hotels/cinnomon-red.jpg",
+      image: "/src/assets/hotels/cinnamon-lakeside.jpg",
       rating: 4.7,
       reviewCount: 312,
       startingPrice: "35,000",
@@ -43,7 +43,7 @@ export default function HotelListings() {
     {
       name: "Cinnamon Wild Yala",
       location: "Yala, Sri Lanka",
-      image: "/src/assets/hotels/cinnomon-red.jpg",
+      image: "/src/assets/hotels/cinnamon-yala.jpg",
       rating: 4.6,
       reviewCount: 189,
       startingPrice: "55,000",
@@ -54,7 +54,7 @@ export default function HotelListings() {
     {
       name: "Cinnamon Bentota Beach",
       location: "Bentota, Sri Lanka",
-      image: "/src/assets/hotels/cinnomon-red.jpg",
+      image: "/src/assets/hotels/cinnamon-bentota.jpg",
       rating: 4.8,
       reviewCount: 276,
       startingPrice: "42,000",

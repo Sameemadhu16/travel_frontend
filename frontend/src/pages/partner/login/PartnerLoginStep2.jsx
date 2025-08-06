@@ -52,8 +52,8 @@ export default function PartnerLoginStep2() {
                         navigateTo('/partner/dashboard')
                     }else if(userData.role === 'hotel'){
                         navigateTo('/hotel/dashboard')
-                        console.log("Hotel role detected, redirecting to hotel dashboard...");
-                        
+                    }else if(userData.role === 'admin'){
+                        navigateTo('/admin/dashboard')
                     }else{
                         navigateTo('/home')
                     };

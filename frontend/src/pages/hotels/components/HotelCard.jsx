@@ -21,10 +21,11 @@ export default function HotelCard({
     reviews,
     isFavorite = true,
     isTourMode = false,
-    selectedHotels = [],
+    onHotelSelect,
+    currentNight,
+    isSelectedForCurrentNight = false,
 }) {
     const currentLocation = useLocation();
-    const isSelected = selectedHotels.some(hotel => hotel.id === id);
 
     const handleFavoriteClick = (e) => {
         e.stopPropagation();
@@ -32,10 +33,48 @@ export default function HotelCard({
     };
 
     const handleCardClick = () => {
+        // In tour mode, only the buttons should handle navigation, not the whole card
+        if (isTourMode) return;
+        
         if (currentLocation.pathname === '/hotels-search') {
             handleNavigate(`/hotel/${id}`);
         } else if (currentLocation.pathname === '/tour/select-hotel') {
             handleNavigate(`/tour/select-hotel/${id}`);
+        }
+    };
+
+    const handleViewDetails = (e) => {
+        e.stopPropagation();
+        if (currentLocation.pathname === '/hotels-search') {
+            handleNavigate(`/hotel/${id}`);
+        } else if (currentLocation.pathname === '/tour/select-hotel') {
+            handleNavigate(`/tour/select-hotel/${id}`);
+        }
+    };
+
+    const handleSelectForNight = (e) => {
+        e.stopPropagation();
+        if (onHotelSelect) {
+            // First select the hotel
+            onHotelSelect({
+                id,
+                name,
+                location,
+                rating,
+                pricePerNight,
+                images,
+                amenities,
+                type,
+                roomLeft,
+                reviews
+            });
+            
+            // Then navigate to hotel details page for room selection
+            setTimeout(() => {
+                if (currentLocation.pathname === '/tour/select-hotel') {
+                    handleNavigate(`/tour/select-hotel/${id}`);
+                }
+            }, 100);
         }
     };
     return (
@@ -47,7 +86,7 @@ export default function HotelCard({
                 <div className='relative cursor-pointer h-[200px] w-[200px] rounded-[8px] overflow-hidden'>
                     <img
                         src={images && images.length > 0 ? images[0] : ''}
-                        alt={`${name} image`}
+                        alt={name}
                         className='h-full w-full object-cover'
                     />
                     <div 
@@ -67,9 +106,9 @@ export default function HotelCard({
 
                     {/* Amenities */}
                     <div className='flex gap-2 items-center flex-wrap mt-2 text-xs text-gray-600'>
-                        {amenities?.slice(0, 3).map((item, index) => (
+                        {amenities?.slice(0, 3).map((item) => (
                         <span
-                            key={index}
+                            key={`${id}-${item}`}
                             className='bg-gray-100 rounded-full px-3 py-1 border'
                         >
                             {item}
@@ -97,6 +136,29 @@ export default function HotelCard({
                                         textColor='text-red-600'
                                         icon={info}
                                     />
+                                </div>
+                                <div className='flex gap-2 w-full'>
+                                    {isSelectedForCurrentNight ? (
+                                        <button
+                                            onClick={handleSelectForNight}
+                                            className="px-3 py-1 bg-green-500 text-white text-sm rounded hover:bg-green-600 transition flex items-center gap-1"
+                                        >
+                                            ✓ Selected Night {currentNight}
+                                        </button>
+                                    ) : (
+                                        <button
+                                            onClick={handleSelectForNight}
+                                            className="px-3 py-1 bg-brand-primary text-white text-sm rounded hover:bg-brand-primary-dark transition"
+                                        >
+                                            Select for Night {currentNight}
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={handleViewDetails}
+                                        className="px-3 py-1 border border-gray-300 text-gray-700 text-sm rounded hover:bg-gray-50 transition"
+                                    >
+                                        Just View Details
+                                    </button>
                                 </div>
                             </div>
                         ) : (
@@ -130,5 +192,7 @@ HotelCard.propTypes = {
     reviews: PropTypes.number.isRequired,
     isFavorite: PropTypes.bool,
     isTourMode: PropTypes.bool,
-    selectedHotels: PropTypes.array,
+    onHotelSelect: PropTypes.func,
+    currentNight: PropTypes.number,
+    isSelectedForCurrentNight: PropTypes.bool,
 };

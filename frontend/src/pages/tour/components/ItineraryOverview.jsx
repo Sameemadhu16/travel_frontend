@@ -1,16 +1,65 @@
-import React, { useContext } from 'react';
-import { useTourContext } from '../../../context/TourContext';
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FormContext from '../../../context/InitialValues';
+import { touristAttractions, districts } from '../../../core/Lists/location';
 
 export default function ItineraryOverview() {
     const navigate = useNavigate();
-    const { formData, setFormData } = useContext(FormContext);
+    const { formData } = useContext(FormContext);
 
-    const itinerary = formData.itinerary
+    const itinerary = formData.itinerary || [];
 
     const handleEdit = () => {
         navigate('/tour/create-tour');
+    };
+
+    // Helper function to resolve activity details from IDs
+    const resolveActivityDetails = (activity) => {
+        // If activity already has a title, use it
+        if (activity.title?.trim()) {
+            return {
+                title: activity.title,
+                description: activity.description || '',
+                time: activity.time || ''
+            };
+        }
+
+        // If activity has attractionId, resolve to tourist attraction
+        if (activity.attractionId) {
+            const attraction = touristAttractions.find(attr => attr.id.toString() === activity.attractionId.toString());
+            if (attraction) {
+                return {
+                    title: attraction.value,
+                    description: activity.description || `Visit ${attraction.value} (${attraction.type})`,
+                    time: activity.time || '',
+                    type: attraction.type
+                };
+            }
+        }
+
+        // If activity has districtId, resolve to district name
+        if (activity.districtId) {
+            const district = districts.find(d => d.id.toString() === activity.districtId.toString());
+            if (district) {
+                return {
+                    title: `Explore ${district.value}`,
+                    description: activity.description || `Exploring ${district.value} district`,
+                    time: activity.time || ''
+                };
+            }
+        }
+
+        // If activity has customActivity, use it
+        if (activity.customActivity?.trim()) {
+            return {
+                title: activity.customActivity,
+                description: activity.description || '',
+                time: activity.time || ''
+            };
+        }
+
+        // Return null for empty activities
+        return null;
     };
 
     // Transform itinerary data for display
@@ -18,30 +67,28 @@ export default function ItineraryOverview() {
         if (!itinerary || itinerary.length === 0) return [];
         
         return itinerary.map((day, index) => {
-            // Get activities for the day
+            // Get activities for the day and resolve them
             const activities = day.activities || [];
-            const mainActivities = activities.filter(activity => activity.title && activity.title.trim());
+            const resolvedActivities = activities
+                .map(activity => resolveActivityDetails(activity))
+                .filter(activity => activity !== null);
             
-            // Create description from activities
-            const description = mainActivities.length > 0 
-                ? mainActivities.map(activity => activity.title).join(', ')
+            // Create description from resolved activities
+            const description = resolvedActivities.length > 0 
+                ? resolvedActivities.map(activity => activity.title).join(', ')
                 : 'No activities planned';
             
-            // Create title based on activities or day number
-            const title = mainActivities.length > 0 && mainActivities[0].title
-                ? `Day ${day.day || index + 1}: ${mainActivities[0].title}`
+            // Create title based on first activity or day number
+            const title = resolvedActivities.length > 0 && resolvedActivities[0].title
+                ? `Day ${day.day || index + 1}: ${resolvedActivities[0].title}`
                 : `Day ${day.day || index + 1}`;
             
             return {
                 day: day.day || index + 1,
                 title,
                 description,
-                activities: mainActivities,
-                timeActivities: activities.map(activity => ({
-                    time: activity.time,
-                    title: activity.title,
-                    description: activity.description
-                })).filter(activity => activity.title && activity.title.trim())
+                activities: resolvedActivities,
+                timeActivities: resolvedActivities
             };
         });
     };
@@ -100,14 +147,21 @@ export default function ItineraryOverview() {
                                 {item.timeActivities && item.timeActivities.length > 0 && (
                                     <div className="mt-3 space-y-2">
                                         {item.timeActivities.map((activity, actIndex) => (
-                                            <div key={actIndex} className="flex items-start gap-3 text-sm">
+                                            <div key={`activity-${item.day}-${actIndex}-${activity.title}`} className="flex items-start gap-3 text-sm">
                                                 {activity.time && (
                                                     <span className="bg-brand-light text-brand-primary px-2 py-1 rounded text-xs font-medium min-w-fit">
                                                         {activity.time}
                                                     </span>
                                                 )}
                                                 <div className="flex-1">
-                                                    <p className="font-medium text-content-primary">{activity.title}</p>
+                                                    <div className="flex items-center gap-2">
+                                                        <p className="font-medium text-content-primary">{activity.title}</p>
+                                                        {activity.type && (
+                                                            <span className="bg-gray-100 text-gray-600 px-2 py-0.5 rounded text-xs">
+                                                                {activity.type}
+                                                            </span>
+                                                        )}
+                                                    </div>
                                                     {activity.description && (
                                                         <p className="text-content-tertiary text-xs mt-1">{activity.description}</p>
                                                     )}

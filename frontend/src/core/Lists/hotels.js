@@ -25,6 +25,7 @@ export const hotelList = [
         id: 1,
         name: "Shangri-La Colombo",
         location: "Colombo",
+        provinceId: 1, // Western Province
         rating: 4.8,
         pricePerNight: 12490,
         images: getRandomImages(hotelImages),
@@ -52,6 +53,7 @@ export const hotelList = [
         id: 2,
         name: "Amaya Hills",
         location: "Kandy",
+        provinceId: 2, // Central Province
         rating: 4.5,
         pricePerNight: 5490,
         images: getRandomImages(hotelImages),
@@ -77,6 +79,7 @@ export const hotelList = [
         id: 3,
         name: "Galle Fort Hotel",
         location: "Galle",
+        provinceId: 3, // Southern Province
         rating: 4.6,
         pricePerNight: 11000,
         images: getRandomImages(hotelImages),
@@ -101,6 +104,7 @@ export const hotelList = [
         id: 4,
         name: "Jetwing Yala",
         location: "Yala National Park",
+        provinceId: 3, // Southern Province (Hambantota district)
         rating: 4.7,
         pricePerNight: 12400,
         images: getRandomImages(hotelImages),
@@ -126,6 +130,7 @@ export const hotelList = [
         id: 5,
         name: "98 Acres Resort & Spa",
         location: "Ella",
+        provinceId: 9, // Uva Province (Badulla district)
         rating: 4.9,
         pricePerNight: 5790,
         images: getRandomImages(hotelImages),
@@ -151,6 +156,7 @@ export const hotelList = [
         id: 6,
         name: "Araliya Green Hills Hotel",
         location: "Nuwara Eliya",
+        provinceId: 2, // Central Province
         rating: 4.3,
         pricePerNight: 7850,
         images: getRandomImages(hotelImages),
@@ -176,6 +182,7 @@ export const hotelList = [
         id: 7,
         name: "Trinco Blu by Cinnamon",
         location: "Trincomalee",
+        provinceId: 5, // Eastern Province
         rating: 4.4,
         pricePerNight: 6000,
         images: getRandomImages(hotelImages),
@@ -201,6 +208,7 @@ export const hotelList = [
         id: 8,
         name: "Anantaya Resort & Spa",
         location: "Chilaw",
+        provinceId: 6, // North Western Province (Puttalam district)
         rating: 4.2,
         pricePerNight: 34000,
         images: getRandomImages(hotelImages),
@@ -226,6 +234,7 @@ export const hotelList = [
         id: 9,
         name: "Cinnamon Red",
         location: "Colombo",
+        provinceId: 1, // Western Province
         rating: 4.1,
         pricePerNight: 2900,
         images: getRandomImages(hotelImages),
@@ -251,6 +260,7 @@ export const hotelList = [
         id: 10,
         name: "Mandara Resort",
         location: "Mirissa",
+        provinceId: 3, // Southern Province (Matara district)
         rating: 4.0,
         pricePerNight: 13790,
         images: getRandomImages(hotelImages),

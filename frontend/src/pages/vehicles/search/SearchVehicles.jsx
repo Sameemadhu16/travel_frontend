@@ -17,6 +17,7 @@ import { useContext, useMemo, useState } from 'react';
 import VehicleCard from '../components/VehicleCard.jsx';
 import { vehicleList } from '../../../core/Lists/vehicles';
 import FormContext from '../../../context/InitialValues.js';
+import { calculateCompleteTripCost, getDaysFromDuration } from '../../../utils/tripCalculator.js';
 
 const breadcrumbItems = [
     { label: "Home", path: "/home" },
@@ -54,31 +55,47 @@ export default function SearchVehicles() {
     }, [isTourSelectVehicle, travelDetails?.adults, travelDetails?.children]);
 
     const vehiclesContainer = useMemo(() => {
-            return filteredVehicles.map((vehicle, index) => (
-                <div key={index}>
-                    <VehicleCard
-                        id={vehicle.id}
-                        name={vehicle.name}
-                        type={vehicle.type}
-                        brand={vehicle.brand}
-                        model={vehicle.model}
-                        pricePerDay={vehicle.pricePerDay}
-                        images={vehicle.images}
-                        amenities={vehicle.amenities}
-                        seats={vehicle.seats}
-                        transmission={vehicle.transmission}
-                        fuelType={vehicle.fuelType}
-                        rating={vehicle.rating}
-                        reviews={vehicle.reviews}
-                        rentalAgency={vehicle.rentalAgency}
-                        location={vehicle.location}
-                        about={vehicle.about}
-                        available={vehicle.available}
-                        isTourMode={isTourSelectVehicle}
-                    />
-                </div>
-            ));
-        }, [filteredVehicles, isTourSelectVehicle]);
+            return filteredVehicles.map((vehicle, index) => {
+                // Calculate trip cost if in tour mode
+                let tripCostData = null;
+                if (isTourSelectVehicle && formData.itinerary && travelDetails.duration) {
+                    const numberOfDays = getDaysFromDuration(travelDetails.duration);
+                    tripCostData = calculateCompleteTripCost(
+                        vehicle,
+                        formData.itinerary,
+                        travelDetails.duration,
+                        travelDetails.location || 'Colombo'
+                    );
+                }
+
+                return (
+                    <div key={index}>
+                        <VehicleCard
+                            id={vehicle.id}
+                            name={vehicle.name}
+                            type={vehicle.type}
+                            brand={vehicle.brand}
+                            model={vehicle.model}
+                            pricePerDay={vehicle.pricePerDay}
+                            pricePerKm={vehicle.pricePerKm}
+                            images={vehicle.images}
+                            amenities={vehicle.amenities}
+                            seats={vehicle.seats}
+                            transmission={vehicle.transmission}
+                            fuelType={vehicle.fuelType}
+                            rating={vehicle.rating}
+                            reviews={vehicle.reviews}
+                            rentalAgency={vehicle.rentalAgency}
+                            location={vehicle.location}
+                            about={vehicle.about}
+                            available={vehicle.available}
+                            isTourMode={isTourSelectVehicle}
+                            tripCostData={tripCostData}
+                        />
+                    </div>
+                );
+            });
+        }, [filteredVehicles, isTourSelectVehicle, formData.itinerary, travelDetails.duration, travelDetails.location]);
 
     const handleNext = () => {
         navigate('/tour/complete-request');

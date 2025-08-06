@@ -5,6 +5,7 @@ import InputField from '../../../components/InputField'
 import InputArea from '../../../components/InputArea'
 import PrimaryButton from '../../../components/PrimaryButton'
 import StatusBadge from '../../../components/admin/StatusBadge'
+import SecondaryButton from '../../../components/SecondaryButton'
 
 export default function TripPlanner() {
     const [activeTab, setActiveTab] = useState('my-trips')
@@ -53,10 +54,6 @@ export default function TripPlanner() {
             <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
                     <Title text="Trip Planner" />
-                    <PrimaryButton
-                        text="Create New Trip"
-                        onClick={() => setShowAddTripModal(true)}
-                    />
                 </div>
 
                 {/* Tabs */}
@@ -274,6 +271,14 @@ export default function TripPlanner() {
                         </div>
                     </div>
                 )}
+                <div className='flex justify-start w-full mt-5'>
+                        <div className="flex justify-start w-1/4">
+                        <PrimaryButton
+                                text="Create New Trip"
+                                onClick={() => setShowAddTripModal(true)}
+                            />
+                        </div>
+                    </div>
 
                 {/* Add New Trip Modal */}
                 {showAddTripModal && (
@@ -316,13 +321,7 @@ export default function TripPlanner() {
                                     />
                                 </div>
                                 <div className="flex justify-end space-x-4">
-                                    <button
-                                        type="button"
-                                        onClick={() => setShowAddTripModal(false)}
-                                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                                    >
-                                        Cancel
-                                    </button>
+                                    <SecondaryButton text='Cancel' onClick={() => setShowAddTripModal(false)}/>
                                     <PrimaryButton text="Create Trip" type="submit" />
                                 </div>
                             </form>

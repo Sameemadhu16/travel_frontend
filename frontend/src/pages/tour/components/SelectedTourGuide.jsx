@@ -1,10 +1,9 @@
-import React, { useContext } from 'react';
-import { useTourContext } from '../../../context/TourContext';
+import { useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FormContext from '../../../context/InitialValues';
 
 export default function SelectedTourGuide() {
-    const { formData, setFormData } = useContext(FormContext);
+    const { formData } = useContext(FormContext);
     const navigate = useNavigate();
 
     const selectedItems = formData.selectedItems;

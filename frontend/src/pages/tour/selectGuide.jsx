@@ -9,7 +9,7 @@ import FormContext from '../../context/InitialValues';
 export default function SelectGuide() {
     const navigate = useNavigate();
     const { formData, setFormData } = useContext(FormContext);
-    const MAX_GUIDES = 5;
+    const MAX_GUIDES = 3;
     const MIN_GUIDES = 1;
     const selectedGuides = formData.selectedItems?.guides || [];
     const errors = formData.errors || {};
@@ -115,7 +115,7 @@ export default function SelectGuide() {
                 {/* Header Section */}
                 <div className="mb-4">
                     <h1 className="text-3xl font-bold text-content-primary mb-2">Select Your Tour Guide(s)</h1>
-                    <p className="text-content-secondary">Choose up to 5 experienced local guides for your Sri Lankan adventure. Your requests will be sent to selected guides, and the first to accept will be your confirmed guide.</p>
+                    <p className="text-content-secondary">Choose up to 3 experienced local guides for your Sri Lankan adventure. Your requests will be sent to selected guides, and the first to accept will be your confirmed guide.</p>
                 </div>
 
                 {/* Selection Status */}
