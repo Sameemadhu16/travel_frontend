@@ -8,6 +8,7 @@ import FormatText from '../../../components/FormatText';
 import PrimaryButton from '../../../components/PrimaryButton';
 import { FaCar, FaUsers, FaCogs, FaGasPump, FaUser } from 'react-icons/fa';
 import FormContext from '../../../context/InitialValues';
+import { calculateCompleteTripCost } from '../../../utils/tripCalculator';
 
 export default function Vehicle() {
     const [vehicle, setVehicle] = useState({});
@@ -17,18 +18,51 @@ export default function Vehicle() {
     const isTourSelectVehicle = location.pathname.includes('/tour/select-vehicle');
     const { formData, setFormData } = useContext(FormContext);
     const [driverOption, setDriverOption] = useState(null); // 'with' or 'without'
+    const [showLicenseModal, setShowLicenseModal] = useState(false);
+    const [licenseData, setLicenseData] = useState({
+        licenseNumber: '',
+        expiryDate: ''
+    });
+    const [tripCostData, setTripCostData] = useState(null);
     
     const isVehicleSelected = formData.selectedItems?.selectedVehicle?.id === id;
+
+    // Initialize license data from context if vehicle is already selected
+    useEffect(() => {
+        const existingVehicle = formData.selectedItems?.selectedVehicle;
+        if (existingVehicle && existingVehicle.id.toString() === id && existingVehicle.licenseData) {
+            setLicenseData({
+                licenseNumber: existingVehicle.licenseData.licenseNumber || '',
+                expiryDate: existingVehicle.licenseData.expiryDate || ''
+            });
+        }
+    }, [formData.selectedItems?.selectedVehicle, id]);
     
-    // Calculate prices with/without driver
+    // Calculate prices with/without driver and trip costs
     const driverFee = vehicle.pricePerDay ? Math.round(vehicle.pricePerDay * 0.3) : 0; // 30% of vehicle price for driver
-    const priceWithDriver = (vehicle.pricePerDay || 0) + driverFee;
-    const priceWithoutDriver = vehicle.pricePerDay || 0;
+    
+    // Calculate trip costs if in tour mode
+    const baseTripCost = tripCostData ? tripCostData.cost.totalCost : 0;
+    const driverTripFee = tripCostData ? (tripCostData.trip.numberOfDays * driverFee) : 0;
+    
+    const selfDrivePrice = isTourSelectVehicle ? baseTripCost : (vehicle.pricePerDay || 0);
+    const withDriverPrice = isTourSelectVehicle ? (baseTripCost + driverTripFee) : ((vehicle.pricePerDay || 0) + driverFee);
 
     useEffect(() => {
         const matchVehicle = vehicleList.find((v) => v.id.toString() === id);
         setVehicle(matchVehicle || {});
-    }, [id]);
+        
+        // Calculate trip cost if in tour mode
+        if (matchVehicle && isTourSelectVehicle && formData.itinerary && formData.travelDetails.duration) {
+            const tripCost = calculateCompleteTripCost(
+                matchVehicle,
+                formData.itinerary,
+                formData.travelDetails.duration,
+                formData.travelDetails.location || 'Colombo'
+            );
+            setTripCostData(tripCost);
+        }
+    }, [id, isTourSelectVehicle, formData.itinerary, formData.travelDetails.duration, formData.travelDetails.location]);
 
     const breadcrumbItems = [
         { label: "Home", path: "/home" },
@@ -44,10 +78,12 @@ export default function Vehicle() {
                 brand: vehicle.brand,
                 model: vehicle.model,
                 type: vehicle.type,
-                pricePerDay: driverOption === 'with' ? priceWithDriver : priceWithoutDriver,
+                pricePerDay: driverOption === 'with' ? withDriverPrice : selfDrivePrice,
                 basePrice: vehicle.pricePerDay,
                 driverIncluded: driverOption === 'with',
-                driverFee: driverOption === 'with' ? driverFee : 0,
+                driverFee: driverOption === 'with' ? (isTourSelectVehicle ? driverTripFee : driverFee) : 0,
+                tripCostData: tripCostData,
+                licenseData: driverOption === 'without' ? licenseData : null,
                 images: vehicle.images,
                 amenities: vehicle.amenities,
                 seats: vehicle.seats,
@@ -61,14 +97,21 @@ export default function Vehicle() {
                 available: vehicle.available
             };
             
-            // Update context with selected vehicle
-            setFormData(prev => ({
-                ...prev,
-                selectedItems: {
-                    ...prev.selectedItems,
-                    selectedVehicle: vehicleData
-                }
-            }));
+            // Update context with selected vehicle and ensure it persists
+            setFormData(prev => {
+                const newFormData = {
+                    ...prev,
+                    selectedItems: {
+                        ...prev.selectedItems,
+                        selectedVehicle: vehicleData
+                    }
+                };
+                
+                // Explicitly save to localStorage to ensure persistence
+                localStorage.setItem('formData', JSON.stringify(newFormData));
+                
+                return newFormData;
+            });
             
             navigate('/tour/complete-request');
         } else {
@@ -76,6 +119,26 @@ export default function Vehicle() {
             localStorage.setItem('selectedVehicle', JSON.stringify(vehicle));
             navigate('/book-vehicle');
         }
+    };
+
+    const handleDriverOptionSelect = (option) => {
+        if (option === 'without') {
+            setShowLicenseModal(true);
+        } else {
+            setDriverOption(option);
+        }
+    };
+
+    const handleLicenseSubmit = () => {
+        if (licenseData.licenseNumber && licenseData.expiryDate) {
+            setDriverOption('without');
+            setShowLicenseModal(false);
+        }
+    };
+
+    const handleLicenseModalClose = () => {
+        setShowLicenseModal(false);
+        setLicenseData({ licenseNumber: '', expiryDate: '' });
     };
 
     const handleContinue = () => {
@@ -251,7 +314,7 @@ export default function Vehicle() {
                                     <div className='grid grid-cols-2 gap-4'>
                                         {/* Self-drive Option */}
                                         <div 
-                                            onClick={() => setDriverOption('without')}
+                                            onClick={() => handleDriverOptionSelect('without')}
                                             className={`cursor-pointer border-2 rounded-lg p-4 transition ${
                                                 driverOption === 'without' 
                                                     ? 'border-brand-primary bg-brand-primary/5' 
@@ -266,9 +329,17 @@ export default function Vehicle() {
                                                 </div>
                                                 <div className='text-center'>
                                                     <div className='text-2xl font-bold text-brand-primary'>
-                                                        LKR {priceWithoutDriver.toLocaleString()}
+                                                        LKR {selfDrivePrice.toLocaleString()}
                                                     </div>
-                                                    <div className='text-sm text-content-secondary'>/day</div>
+                                                    <div className='text-sm text-content-secondary'>
+                                                        {isTourSelectVehicle ? 'total trip' : '/day'}
+                                                    </div>
+                                                    {isTourSelectVehicle && tripCostData && (
+                                                        <div className='text-xs text-gray-500 mt-1'>
+                                                            <div>LKR {vehicle.pricePerDay?.toLocaleString()}/day × {tripCostData.trip.numberOfDays} days</div>
+                                                            <div>LKR {vehicle.pricePerKm}/km × {Math.round(tripCostData.distance.totalDistance)} km</div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 {driverOption === 'without' && (
                                                     <div className='flex items-center gap-1 text-brand-primary text-sm font-medium'>
@@ -283,7 +354,7 @@ export default function Vehicle() {
 
                                         {/* With Driver Option */}
                                         <div 
-                                            onClick={() => setDriverOption('with')}
+                                            onClick={() => handleDriverOptionSelect('with')}
                                             className={`cursor-pointer border-2 rounded-lg p-4 transition ${
                                                 driverOption === 'with' 
                                                     ? 'border-brand-primary bg-brand-primary/5' 
@@ -298,12 +369,20 @@ export default function Vehicle() {
                                                 </div>
                                                 <div className='text-center'>
                                                     <div className='text-2xl font-bold text-brand-primary'>
-                                                        LKR {priceWithDriver.toLocaleString()}
+                                                        LKR {withDriverPrice.toLocaleString()}
                                                     </div>
-                                                    <div className='text-sm text-content-secondary'>/day</div>
+                                                    <div className='text-sm text-content-secondary'>
+                                                        {isTourSelectVehicle ? 'total trip' : '/day'}
+                                                    </div>
                                                     <div className='text-xs text-warning'>
-                                                        +LKR {driverFee.toLocaleString()} driver fee
+                                                        +LKR {isTourSelectVehicle ? driverTripFee.toLocaleString() : driverFee.toLocaleString()} driver fee
                                                     </div>
+                                                    {isTourSelectVehicle && tripCostData && (
+                                                        <div className='text-xs text-gray-500 mt-1'>
+                                                            <div>Vehicle: LKR {baseTripCost.toLocaleString()}</div>
+                                                            <div>Driver: LKR {driverFee.toLocaleString()}/day × {tripCostData.trip.numberOfDays} days</div>
+                                                        </div>
+                                                    )}
                                                 </div>
                                                 {driverOption === 'with' && (
                                                     <div className='flex items-center gap-1 text-brand-primary text-sm font-medium'>
@@ -395,6 +474,87 @@ export default function Vehicle() {
                     </div>
                 </div>
             </div>
+
+            {/* License Modal */}
+            {showLicenseModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className="text-lg font-semibold text-content-primary">
+                                Driving License Information
+                            </h3>
+                            <button
+                                onClick={handleLicenseModalClose}
+                                className="text-gray-400 hover:text-gray-600"
+                            >
+                                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                            </button>
+                        </div>
+                        
+                        <p className="text-sm text-content-secondary mb-4">
+                            Please provide your driving license details to proceed with self-drive option.
+                        </p>
+                        
+                        <div className="space-y-4">
+                            <div>
+                                <label htmlFor="licenseNumber" className="block text-sm font-medium text-content-primary mb-1">
+                                    License Number *
+                                </label>
+                                <input
+                                    id="licenseNumber"
+                                    type="text"
+                                    value={licenseData.licenseNumber}
+                                    onChange={(e) => setLicenseData(prev => ({
+                                        ...prev,
+                                        licenseNumber: e.target.value
+                                    }))}
+                                    placeholder="Enter your license number"
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+                                />
+                            </div>
+                            
+                            <div>
+                                <label htmlFor="expiryDate" className="block text-sm font-medium text-content-primary mb-1">
+                                    Expiry Date *
+                                </label>
+                                <input
+                                    id="expiryDate"
+                                    type="date"
+                                    value={licenseData.expiryDate}
+                                    onChange={(e) => setLicenseData(prev => ({
+                                        ...prev,
+                                        expiryDate: e.target.value
+                                    }))}
+                                    min={new Date().toISOString().split('T')[0]}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+                                />
+                            </div>
+                        </div>
+                        
+                        <div className="flex gap-3 mt-6">
+                            <button
+                                onClick={handleLicenseModalClose}
+                                className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-md hover:bg-gray-50 transition"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={handleLicenseSubmit}
+                                disabled={!licenseData.licenseNumber || !licenseData.expiryDate}
+                                className={`flex-1 px-4 py-2 rounded-md transition ${
+                                    licenseData.licenseNumber && licenseData.expiryDate
+                                        ? 'bg-brand-primary text-white hover:bg-brand-primary-dark'
+                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                }`}
+                            >
+                                Confirm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </Main>
     );
 }

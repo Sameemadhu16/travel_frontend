@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useContext } from 'react';
+import PropTypes from 'prop-types';
 import FormContext from '../../../context/InitialValues';
 import jsPDF from 'jspdf';
 import { postRequest }  from '../../../core/service'
@@ -8,13 +9,20 @@ export default function BookingSummary({tripData}) {
     const navigate = useNavigate();
     const { formData, setFormData } = useContext(FormContext);
     
+    // Safety check
+    if (!formData || !formData.selectedItems) {
+        return (
+            <div className="bg-white rounded-lg border border-brand-primary p-6 sticky top-6">
+                <h2 className="text-lg font-semibold text-content-primary mb-4">Booking Summary</h2>
+                <p className="text-content-secondary">Loading booking information...</p>
+            </div>
+        );
+    }
+    
     const {
-        bookingSummary, 
         travelDetails, 
         selectedItems, 
         contactInfo,
-        tourPreferences,
-        itinerary,
         agreedToTerms
     } = formData;
 
@@ -62,24 +70,57 @@ export default function BookingSummary({tripData}) {
             parseInt(travelDetails.duration.match(/(\d+)/)?.[1] || '1') : 1;
         const nights = Math.max(duration - 1, 1);
         
-        const baseCosts = {
-            hotels: (selectedItems.hotels || []).reduce((total, hotel) => {
-                const nightlyRate = hotel.pricePerNight || hotel.price || 0;
-                return total + (nightlyRate * nights);
-            }, 0),
-            rooms: (selectedItems.rooms || []).reduce((total, room) => {
-                const nightlyRate = room.pricePerNight || room.price || 0;
-                return total + (nightlyRate * nights);
-            }, 0),
-            vehicles: selectedItems.selectedVehicle ? 
-                (selectedItems.selectedVehicle.pricePerDay || selectedItems.selectedVehicle.price || 0) * duration : 0
+        // Calculate hotel costs using night-wise selections
+        const calculateHotelCosts = () => {
+            let totalHotelCost = 0;
+            
+            // Use nightHotels and nightRooms if available
+            if (selectedItems.nightHotels && selectedItems.nightHotels.length > 0) {
+                selectedItems.nightHotels.forEach((hotel, nightIndex) => {
+                    if (hotel?.id) {
+                        const room = selectedItems.nightRooms?.[nightIndex];
+                        const nightCost = room ? (room.price || 0) : (hotel.pricePerNight || hotel.price || 0);
+                        totalHotelCost += nightCost || 0;
+                    }
+                });
+            } else {
+                // Fallback to legacy hotels and rooms
+                const legacyHotelCost = (selectedItems.hotels || []).reduce((total, hotel) => {
+                    const nightlyRate = hotel.pricePerNight || hotel.price || 0;
+                    return total + (nightlyRate * nights);
+                }, 0);
+                
+                const legacyRoomCost = (selectedItems.rooms || []).reduce((total, room) => {
+                    const nightlyRate = room.pricePerNight || room.price || 0;
+                    return total + (nightlyRate * nights);
+                }, 0);
+                
+                totalHotelCost = legacyHotelCost + legacyRoomCost;
+            }
+            
+            return totalHotelCost;
         };
         
-        return selectedItems.guides.map((guide, index) => {
+        // Calculate vehicle costs using trip cost data if available
+        const calculateVehicleCosts = () => {
+            if (selectedItems.selectedVehicle && selectedItems.selectedVehicle.tripCostData) {
+                return selectedItems.selectedVehicle.tripCostData.cost.totalCost;
+            } else if (selectedItems.selectedVehicle) {
+                return (selectedItems.selectedVehicle.pricePerDay || selectedItems.selectedVehicle.price || 0) * duration;
+            }
+            return 0;
+        };
+        
+        const baseCosts = {
+            hotels: calculateHotelCosts(),
+            vehicles: calculateVehicleCosts()
+        };
+        
+        return selectedItems.guides.map((guide) => {
             const guidePrice = guide.price || guide.pricePerDay || 8500;
             const guideCost = guidePrice * duration;
             
-            const subtotal = guideCost + baseCosts.hotels + baseCosts.rooms + baseCosts.vehicles;
+            const subtotal = guideCost + baseCosts.hotels + baseCosts.vehicles;
             const serviceFee = Math.round(subtotal * 0.05);
             const taxes = Math.round(subtotal * 0.08);
             const totalCost = subtotal + serviceFee + taxes;
@@ -87,14 +128,15 @@ export default function BookingSummary({tripData}) {
             return {
                 guide,
                 guideCost,
-                hotelsCost: baseCosts.hotels + baseCosts.rooms,
+                hotelsCost: baseCosts.hotels,
                 vehiclesCost: baseCosts.vehicles,
                 subtotal,
                 serviceFee,
                 taxes,
                 totalCost,
                 duration,
-                nights
+                nights,
+                vehicleDetails: selectedItems.selectedVehicle || null
             };
         });
     };
@@ -282,7 +324,7 @@ export default function BookingSummary({tripData}) {
             {individualCosts.length > 0 ? (
                 <div className="space-y-6">
                     {individualCosts.map((guideCost, index) => (
-                        <div key={index} className="border border-border-light rounded-lg p-4">
+                        <div key={`guide-option-${guideCost.guide.id || index}`} className="border border-border-light rounded-lg p-4">
                             <h3 className="text-md font-semibold text-content-primary mb-3">
                                 Option {index + 1}: {guideCost.guide.name}
                             </h3>
@@ -319,17 +361,43 @@ export default function BookingSummary({tripData}) {
                                 <div className="flex justify-between text-sm">
                                     <span className="text-content-secondary">
                                         Hotels Cost:
-                                        {guideCost.hotelsCost === 0 && <span className="text-xs text-gray-400 ml-1">(Optional - Not selected)</span>}
+                                        {guideCost.hotelsCost === 0 && <span className="text-xs text-gray-400 ml-1">(Not selected)</span>}
                                     </span>
                                     <span className="font-medium">LKR {guideCost.hotelsCost.toLocaleString()}</span>
                                 </div>
                                 <div className="flex justify-between text-sm">
                                     <span className="text-content-secondary">
-                                        Vehicles Cost:
-                                        {guideCost.vehiclesCost === 0 && <span className="text-xs text-gray-400 ml-1">(Optional - Not selected)</span>}
+                                        Vehicle Cost:
+                                        {guideCost.vehiclesCost === 0 && <span className="text-xs text-gray-400 ml-1">(Not selected)</span>}
                                     </span>
                                     <span className="font-medium">LKR {guideCost.vehiclesCost.toLocaleString()}</span>
                                 </div>
+                                
+                                {/* Show vehicle cost breakdown if available */}
+                                {guideCost.vehicleDetails && guideCost.vehicleDetails.tripCostData && (
+                                    <div className="ml-4 text-xs text-gray-600 space-y-1">
+                                        <div className="flex justify-between">
+                                            <span>• Daily rate ({guideCost.vehicleDetails.tripCostData.trip.numberOfDays} days):</span>
+                                            <span>LKR {guideCost.vehicleDetails.tripCostData.cost.breakdown.dailyCost.toLocaleString()}</span>
+                                        </div>
+                                        <div className="flex justify-between">
+                                            <span>• Distance ({Math.round(guideCost.vehicleDetails.tripCostData.distance.totalDistance)} km):</span>
+                                            <span>LKR {guideCost.vehicleDetails.tripCostData.cost.breakdown.distanceCost.toLocaleString()}</span>
+                                        </div>
+                                        {guideCost.vehicleDetails.driverFee > 0 && (
+                                            <div className="flex justify-between">
+                                                <span>• Driver fee:</span>
+                                                <span>LKR {guideCost.vehicleDetails.driverFee.toLocaleString()}</span>
+                                            </div>
+                                        )}
+                                        {guideCost.vehicleDetails.licenseData && (
+                                            <div className="text-blue-600">
+                                                • Self-drive (License: {guideCost.vehicleDetails.licenseData.licenseNumber})
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                                
                                 <div className="border-t border-border-light pt-2">
                                     <div className="flex justify-between text-sm">
                                         <span className="text-content-secondary">Service Fee (5%):</span>
@@ -372,7 +440,7 @@ export default function BookingSummary({tripData}) {
                                 <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
                             </svg>
                             <div className="text-sm text-info-dark">
-                                <strong>Multiple Guide Options:</strong> You've selected {individualCosts.length} guides. 
+                                <strong>Multiple Guide Options:</strong> You&apos;ve selected {individualCosts.length} guides. 
                                 You can choose one guide from these options when finalizing your tour. 
                                 Each option shows the total cost if you select that specific guide.
                             </div>
@@ -460,3 +528,7 @@ export default function BookingSummary({tripData}) {
         </div>
     );
 }
+
+BookingSummary.propTypes = {
+    tripData: PropTypes.object
+};

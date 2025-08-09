@@ -144,3 +144,91 @@ export const cities = [
     { id: 43, value: "Ratnapura", districtId: 23 },
     { id: 44, value: "Monaragala", districtId: 25 },
 ];
+
+export const touristAttractions = [
+    // Colombo District Attractions (District ID: 1)
+    { id: 1, value: "Gangaramaya Temple", cityId: 101, districtId: 1, type: "Religious" },
+    { id: 2, value: "Independence Memorial Hall", cityId: 101, districtId: 1, type: "Historical" },
+    { id: 3, value: "National Museum", cityId: 101, districtId: 1, type: "Cultural" },
+    { id: 4, value: "Galle Face Green", cityId: 101, districtId: 1, type: "Recreation" },
+    { id: 5, value: "Red Mosque", cityId: 101, districtId: 1, type: "Religious" },
+    { id: 6, value: "Viharamahadevi Park", cityId: 101, districtId: 1, type: "Recreation" },
+    { id: 7, value: "Dutch Hospital Shopping Precinct", cityId: 101, districtId: 1, type: "Shopping" },
+    
+    // Kandy District Attractions (District ID: 4)
+    { id: 8, value: "Temple of the Sacred Tooth Relic", cityId: 16, districtId: 4, type: "Religious" },
+    { id: 9, value: "Royal Botanical Gardens", cityId: 17, districtId: 4, type: "Nature" },
+    { id: 10, value: "Kandy Lake", cityId: 16, districtId: 4, type: "Nature" },
+    { id: 11, value: "Udawattakele Forest Reserve", cityId: 16, districtId: 4, type: "Nature" },
+    { id: 12, value: "Bahirawakanda Vihara Buddha Statue", cityId: 16, districtId: 4, type: "Religious" },
+    
+    // Galle District Attractions (District ID: 7)
+    { id: 13, value: "Galle Fort", cityId: 24, districtId: 7, type: "Historical" },
+    { id: 14, value: "Galle Lighthouse", cityId: 24, districtId: 7, type: "Historical" },
+    { id: 15, value: "Dutch Reformed Church", cityId: 24, districtId: 7, type: "Historical" },
+    { id: 16, value: "National Maritime Museum", cityId: 24, districtId: 7, type: "Cultural" },
+    { id: 42, value: "Hikkaduwa Beach", cityId: 26, districtId: 7, type: "Beach" },
+    { id: 43, value: "Hikkaduwa Coral Sanctuary", cityId: 26, districtId: 7, type: "Nature" },
+    { id: 44, value: "Turtle Hatchery", cityId: 26, districtId: 7, type: "Wildlife" },
+    
+    // Nuwara Eliya District Attractions (District ID: 6)
+    { id: 17, value: "Gregory Lake", cityId: 22, districtId: 6, type: "Nature" },
+    { id: 18, value: "Hakgala Botanical Garden", cityId: 22, districtId: 6, type: "Nature" },
+    { id: 19, value: "Seetha Amman Temple", cityId: 22, districtId: 6, type: "Religious" },
+    { id: 20, value: "Tea Factory Visit", cityId: 22, districtId: 6, type: "Cultural" },
+    { id: 21, value: "Horton Plains National Park", cityId: 22, districtId: 6, type: "Nature" },
+    { id: 22, value: "World's End", cityId: 22, districtId: 6, type: "Nature" },
+    
+    // Matale District Attractions (District ID: 5)
+    { id: 23, value: "Sigiriya Rock Fortress", cityId: 21, districtId: 5, type: "Historical" },
+    { id: 24, value: "Dambulla Cave Temple", cityId: 21, districtId: 5, type: "Religious" },
+    { id: 25, value: "Pidurangala Rock", cityId: 21, districtId: 5, type: "Adventure" },
+    { id: 49, value: "Spice Garden Visit", cityId: 20, districtId: 5, type: "Cultural" },
+    
+    // Anuradhapura District Attractions (District ID: 20)
+    { id: 26, value: "Sri Maha Bodhi", cityId: 37, districtId: 20, type: "Religious" },
+    { id: 27, value: "Ruwanwelisaya", cityId: 37, districtId: 20, type: "Religious" },
+    { id: 28, value: "Jetavanaramaya", cityId: 37, districtId: 20, type: "Historical" },
+    
+    // Trincomalee District Attractions (District ID: 17)
+    { id: 29, value: "Koneswaram Temple", cityId: 33, districtId: 17, type: "Religious" },
+    { id: 30, value: "Nilaveli Beach", cityId: 33, districtId: 17, type: "Beach" },
+    { id: 31, value: "Pigeon Island National Park", cityId: 33, districtId: 17, type: "Nature" },
+    
+    // Badulla District Attractions (District ID: 24)
+    { id: 32, value: "Nine Arch Bridge", cityId: 39, districtId: 24, type: "Adventure" },
+    { id: 33, value: "Little Adam's Peak", cityId: 39, districtId: 24, type: "Adventure" },
+    { id: 34, value: "Ella Rock", cityId: 39, districtId: 24, type: "Adventure" },
+    { id: 35, value: "Ravana Falls", cityId: 39, districtId: 24, type: "Nature" },
+    
+    // Matara District Attractions (District ID: 8)
+    { id: 36, value: "Whale Watching", cityId: 28, districtId: 8, type: "Adventure" },
+    { id: 37, value: "Mirissa Beach", cityId: 28, districtId: 8, type: "Beach" },
+    { id: 38, value: "Snake Island", cityId: 28, districtId: 8, type: "Nature" },
+    
+    // Gampaha District Attractions (District ID: 2)
+    { id: 39, value: "Negombo Beach", cityId: 8, districtId: 2, type: "Beach" },
+    { id: 40, value: "Negombo Fish Market", cityId: 8, districtId: 2, type: "Cultural" },
+    { id: 41, value: "St. Mary's Church", cityId: 8, districtId: 2, type: "Religious" },
+    
+    // Hambantota District Attractions (District ID: 9)
+    { id: 46, value: "Safari - Yala National Park", cityId: 29, districtId: 9, type: "Wildlife" },
+    
+    // Ratnapura District Attractions (District ID: 23)
+    { id: 47, value: "Safari - Udawalawe National Park", cityId: 43, districtId: 23, type: "Wildlife" },
+    { id: 48, value: "White Water Rafting", cityId: 43, districtId: 23, type: "Adventure" },
+    
+    // Kurunegala District Attractions (District ID: 18)
+    { id: 50, value: "Traditional Village Tour", cityId: 35, districtId: 18, type: "Cultural" },
+    
+    // Polonnaruwa District Attractions (District ID: 21)
+    { id: 51, value: "Polonnaruwa Ancient City", cityId: 38, districtId: 21, type: "Historical" },
+    { id: 52, value: "Gal Vihara", cityId: 38, districtId: 21, type: "Religious" },
+    { id: 53, value: "Parakrama Samudra", cityId: 38, districtId: 21, type: "Nature" },
+    
+    // Kalutara District Attractions (District ID: 3)
+    { id: 54, value: "Kalutara Beach", cityId: 12, districtId: 3, type: "Beach" },
+    { id: 55, value: "Kalutara Bodhiya", cityId: 12, districtId: 3, type: "Religious" },
+    { id: 56, value: "Brief Garden", cityId: 15, districtId: 3, type: "Nature" },
+    
+];

@@ -1,4 +1,3 @@
-import { useState } from 'react';
 import PropTypes from 'prop-types';
 
 // PropTypes style reference: see InputField.jsx for detailed prop documentation
@@ -7,15 +6,14 @@ export default function CustomSelector({
     options = [], 
     label = '',
     placeholder = 'Select an option', 
-    onChange ,
-    error = ''
+    onChange,
+    error = '',
+    value = '',
+    disabled = false
 }) {
-    const [selected, setSelected] = useState('');
-
     const handleChange = (e) => {
-        setSelected(e.target.value);
         if (onChange) {
-        onChange(e.target.value);
+            onChange(e.target.value);
         }
     };
 
@@ -29,17 +27,18 @@ export default function CustomSelector({
                 )
             }
             <select
-                value={selected}
+                value={value}
                 onChange={handleChange}
+                disabled={disabled}
                 className={`border-2 w-full p-2 cursor-pointer rounded-md text-gray-700 bg-white ${
                         error ? 'border-danger' : 'border-b-2'
-                    } focus:border-brand-primary focus:outline-none`}
+                    } ${disabled ? 'opacity-50 cursor-not-allowed' : ''} focus:border-brand-primary focus:outline-none`}
             >
                 <option className='cursor-pointer' value="" disabled>
                     {placeholder}
                 </option>
                 {options.map((option) => (
-                <option key={option.id} value={option.value}>
+                <option key={option.id} value={option.id}>
                     {option.value}
                 </option>
                 ))}
@@ -61,4 +60,6 @@ CustomSelector.propTypes = {
     placeholder: PropTypes.string,
     onChange: PropTypes.func,
     error: PropTypes.string,
+    value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+    disabled: PropTypes.bool,
 };

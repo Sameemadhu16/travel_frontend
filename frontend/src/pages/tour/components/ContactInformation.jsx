@@ -13,30 +13,64 @@ export default function ContactInformation({setValid}) {
         setValid(valid);
     }, [formData.travelDetails, formData.itinerary]);
 
+    // Set default value to local visitor on component mount
+    useEffect(() => {
+        if (contactInfo.isLocal === undefined) {
+            setFormData(prev => ({
+                ...prev,
+                contactInfo: { 
+                    ...prev.contactInfo, 
+                    isLocal: true 
+                }
+            }));
+        }
+    }, [contactInfo.isLocal, setFormData]);
+
 
     const validateField = (name, value) => {
         let error = '';
+        
+        // Handle undefined/null values
+        const fieldValue = value || '';
+        
         switch (name) {
             case 'fullName':
-                if (!value.trim()) error = 'Full name is required';
+                if (!fieldValue.trim()) error = 'Full name is required';
                 break;
             case 'email':
-                if (!value.trim()) error = 'Email is required';
-                else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) error = 'Please enter a valid email address';
+                if (!fieldValue.trim()) error = 'Email is required';
+                else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(fieldValue)) error = 'Please enter a valid email address';
                 break;
             case 'phone':
-                if (!value.trim()) error = 'Phone number is required';
-                else if (!/^\+?[\d\s-()]{10,15}$/.test(value.replace(/\s/g, ''))) error = 'Please enter a valid phone number';
+                if (!fieldValue.trim()) error = 'Phone number is required';
+                else if (!/^\+?[\d\s-()]{10,15}$/.test(fieldValue.replace(/\s/g, ''))) error = 'Please enter a valid phone number';
                 break;
             case 'country':
-                if (!value) error = 'Please select your country';
+                if (!fieldValue) error = 'Please select your country';
                 break;
             case 'nicNumber':
-                if (!value.trim()) error = 'NIC number is required';
-                else if (!/^(\d{9}[vVxX]|\d{12})$/.test(value.replace(/\s/g, ''))) error = 'Please enter a valid NIC number (e.g., 123456789V or 199812345678)';
+                if (contactInfo.isLocal && !fieldValue.trim()) error = 'NIC number is required';
+                else if (contactInfo.isLocal && fieldValue && !/^(\d{9}[vVxX]|\d{12})$/.test(fieldValue.replace(/\s/g, ''))) error = 'Please enter a valid NIC number (e.g., 123456789V or 199812345678)';
+                break;
+            case 'passportNumber':
+                if (!contactInfo.isLocal && !fieldValue.trim()) error = 'Passport number is required';
+                else if (!contactInfo.isLocal && fieldValue && !/^[A-Z0-9]{6,9}$/.test(fieldValue.replace(/\s/g, ''))) error = 'Please enter a valid passport number';
+                break;
+            case 'passportExpiry':
+                if (!contactInfo.isLocal && !fieldValue) error = 'Passport expiry date is required';
+                else if (!contactInfo.isLocal && fieldValue) {
+                    const expiryDate = new Date(fieldValue);
+                    const today = new Date();
+                    if (expiryDate <= today) error = 'Passport must be valid for at least 6 months';
+                    else {
+                        const sixMonthsFromNow = new Date();
+                        sixMonthsFromNow.setMonth(today.getMonth() + 6);
+                        if (expiryDate < sixMonthsFromNow) error = 'Passport should be valid for at least 6 months from today';
+                    }
+                }
                 break;
             case 'optionalContact':
-                if (value && !/^\+?[\d\s-()]{10,15}$/.test(value.replace(/\s/g, ''))) error = 'Please enter a valid phone number';
+                if (fieldValue && !/^\+?[\d\s-()]{10,15}$/.test(fieldValue.replace(/\s/g, ''))) error = 'Please enter a valid phone number';
                 break;
             default:
                 break;
@@ -45,15 +79,24 @@ export default function ContactInformation({setValid}) {
     };
 
     const handleInputChange = (e) => {
-        const { name, value } = e.target;
+        const { name, value, type, checked } = e.target;
+        const newValue = type === 'checkbox' ? checked : value;
+        
         // Update contactInfo in context
         setFormData(prev => ({
             ...prev,
-            contactInfo: { ...prev.contactInfo, [name]: value }
+            contactInfo: { 
+                ...prev.contactInfo, 
+                [name]: newValue,
+                // Clear opposite fields when switching between local/foreigner
+                ...(name === 'isLocal' && newValue ? { passportNumber: '', passportExpiry: '' } : {}),
+                ...(name === 'isLocal' && !newValue ? { nicNumber: '' } : {})
+            }
         }));
+        
         // Validation
         if (localTouched[name]) {
-            const error = validateField(name, value);
+            const error = validateField(name, newValue);
             setLocalErrors(prev => ({ ...prev, [name]: error }));
         }
     };
@@ -66,10 +109,27 @@ export default function ContactInformation({setValid}) {
     };
 
     const isFormValid = () => {
-        const requiredFields = ['fullName', 'email', 'phone', 'country', 'nicNumber'];
+        const requiredFields = ['fullName', 'email', 'phone', 'country'];
+        
+        // Add conditional required fields based on local/foreigner status
+        if (contactInfo.isLocal) {
+            requiredFields.push('nicNumber');
+        } else {
+            requiredFields.push('passportNumber', 'passportExpiry');
+        }
+        
         return requiredFields.every(field => {
-            const error = validateField(field, contactInfo[field]);
-            return !error && contactInfo[field] && contactInfo[field].trim();
+            const fieldValue = contactInfo[field];
+            const error = validateField(field, fieldValue);
+            
+            // Check if field has a value and no validation error
+            if (error) return false;
+            if (!fieldValue) return false;
+            
+            // For string fields, check if they're not just whitespace
+            if (typeof fieldValue === 'string' && !fieldValue.trim()) return false;
+            
+            return true;
         });
     };
 
@@ -91,7 +151,7 @@ export default function ContactInformation({setValid}) {
                     <input 
                         type="text"
                         name="fullName"
-                        value={contactInfo.fullName}
+                        value={contactInfo.fullName || ''}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
@@ -110,7 +170,7 @@ export default function ContactInformation({setValid}) {
                     <input 
                         type="email"
                         name="email"
-                        value={contactInfo.email}
+                        value={contactInfo.email || ''}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
@@ -131,7 +191,7 @@ export default function ContactInformation({setValid}) {
                     <input 
                         type="tel"
                         name="phone"
-                        value={contactInfo.phone}
+                        value={contactInfo.phone || ''}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
@@ -149,7 +209,7 @@ export default function ContactInformation({setValid}) {
                     </label>
                     <select
                         name="country"
-                        value={contactInfo.country}
+                        value={contactInfo.country || ''}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all bg-white ${
@@ -256,30 +316,109 @@ export default function ContactInformation({setValid}) {
                     {localErrors.country && <p className="text-red-500 text-xs mt-1">{localErrors.country}</p>}
                 </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label className="block text-sm font-semibold mb-1">
-                        NIC Number <span className="text-red-500">*</span>
+            
+            {/* Local/Foreigner Selection */}
+            <div className="mb-4">
+                <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+                    <label className="flex items-center gap-2 cursor-pointer">
+                        <input
+                            type="checkbox"
+                            name="isLocal"
+                            checked={contactInfo.isLocal === true}
+                            onChange={handleInputChange}
+                            className="w-4 h-4 text-brand-primary bg-gray-100 border-gray-300 rounded focus:ring-brand-primary focus:ring-2"
+                        />
+                        <span className="text-sm font-medium text-gray-700">
+                            🇱🇰 I am a Sri Lankan citizen (Local)
+                        </span>
                     </label>
-                    <input 
-                        type="text"
-                        name="nicNumber"
-                        value={contactInfo.nicNumber}
-                        onChange={handleInputChange}
-                        onBlur={handleBlur}
-                        className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
-                            localErrors.nicNumber ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
-                            'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
-                        }`}
-                        placeholder="123456789V or 199812345678" 
-                        required
-                    />
-                    {localErrors.nicNumber ? (
-                        <p className="text-red-500 text-xs mt-1">{localErrors.nicNumber}</p>
-                    ) : (
-                        <p className="text-xs text-gray-500 mt-1">Enter your National Identity Card number</p>
+                    {!contactInfo.isLocal && (
+                        <span className="text-sm text-gray-600">
+                            🌍 Foreign visitor
+                        </span>
                     )}
                 </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                {/* Conditional rendering based on local/foreigner status */}
+                {contactInfo.isLocal ? (
+                    /* NIC Number for Sri Lankan citizens */
+                    <div>
+                        <label className="block text-sm font-semibold mb-1">
+                            NIC Number <span className="text-red-500">*</span>
+                        </label>
+                        <input 
+                            type="text"
+                            name="nicNumber"
+                            value={contactInfo.nicNumber || ''}
+                            onChange={handleInputChange}
+                            onBlur={handleBlur}
+                            className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
+                                localErrors.nicNumber ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
+                                'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
+                            }`}
+                            placeholder="123456789V or 199812345678" 
+                            required
+                        />
+                        {localErrors.nicNumber ? (
+                            <p className="text-red-500 text-xs mt-1">{localErrors.nicNumber}</p>
+                        ) : (
+                            <p className="text-xs text-gray-500 mt-1">Enter your National Identity Card number</p>
+                        )}
+                    </div>
+                ) : (
+                    /* Passport details for foreign visitors */
+                    <>
+                        <div>
+                            <label className="block text-sm font-semibold mb-1">
+                                Passport Number <span className="text-red-500">*</span>
+                            </label>
+                            <input 
+                                type="text"
+                                name="passportNumber"
+                                value={contactInfo.passportNumber || ''}
+                                onChange={handleInputChange}
+                                onBlur={handleBlur}
+                                className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
+                                    localErrors.passportNumber ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
+                                    'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
+                                }`}
+                                placeholder="A1234567" 
+                                required
+                            />
+                            {localErrors.passportNumber ? (
+                                <p className="text-red-500 text-xs mt-1">{localErrors.passportNumber}</p>
+                            ) : (
+                                <p className="text-xs text-gray-500 mt-1">Enter your passport number</p>
+                            )}
+                        </div>
+                        <div>
+                            <label className="block text-sm font-semibold mb-1">
+                                Passport Expiry Date <span className="text-red-500">*</span>
+                            </label>
+                            <input 
+                                type="date"
+                                name="passportExpiry"
+                                value={contactInfo.passportExpiry || ''}
+                                onChange={handleInputChange}
+                                onBlur={handleBlur}
+                                min={new Date().toISOString().split('T')[0]}
+                                className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
+                                    localErrors.passportExpiry ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
+                                    'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
+                                }`}
+                                required
+                            />
+                            {localErrors.passportExpiry ? (
+                                <p className="text-red-500 text-xs mt-1">{localErrors.passportExpiry}</p>
+                            ) : (
+                                <p className="text-xs text-gray-500 mt-1">Passport should be valid for at least 6 months</p>
+                            )}
+                        </div>
+                    </>
+                )}
+                
                 <div>
                     <label className="block text-sm font-medium mb-1">
                         Emergency Contact
@@ -288,7 +427,7 @@ export default function ContactInformation({setValid}) {
                     <input 
                         type="tel"
                         name="optionalContact"
-                        value={contactInfo.optionalContact}
+                        value={contactInfo.optionalContact || ''}
                         onChange={handleInputChange}
                         onBlur={handleBlur}
                         className={`w-full border rounded-lg px-4 py-3 text-sm focus:outline-none transition-all ${
@@ -398,7 +537,7 @@ export default function ContactInformation({setValid}) {
                 <label className="block text-sm font-semibold mb-1">Special Requests</label>
                 <textarea 
                     name="specialRequests"
-                    value={contactInfo.specialRequests}
+                    value={contactInfo.specialRequests || ''}
                     onChange={handleInputChange}
                     className="w-full border border-border-light rounded-lg px-4 py-3 text-sm focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20 transition-all resize-none" 
                     placeholder="Tell us about any dietary restrictions, accessibility needs, special celebrations, or other requirements..."

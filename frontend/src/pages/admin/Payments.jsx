@@ -114,7 +114,7 @@ export default function Payments() {
                 </td>
                 <td>{transaction.date}</td>
                 <td>
-                  <button className="text-blue-500"><FaEye /></button>
+                  <button className="text-orange-500"><FaEye /></button>
                 </td>
               </tr>
             ))}

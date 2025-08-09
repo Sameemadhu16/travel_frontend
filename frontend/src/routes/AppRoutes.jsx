@@ -43,6 +43,17 @@ import GuideAvailability from '../pages/guide/GuideAvailability';
 import GuideDashboard from '../pages/guide/GuideDashboard';
 import GuideTourHistory from '../pages/guide/TourHistory';
 
+
+// Booking pages
+import GuideBooking from '../pages/bookings/GuideBooking';
+import HotelBooking from '../pages/bookings/HotelBooking';
+import VehicleBooking from '../pages/bookings/VehicleBooking';
+import VehicleDeal from '../pages/bookings/VehicleDeal';
+import VehicleProtection from '../pages/bookings/VehicleProtection';
+import VehicleCheckout from '../pages/bookings/VehicleCheckout';
+import VehicleBookingConfirmation from '../pages/bookings/VehicleBookingConfirmation';
+
+
 // Admin imports
 import AdminDashboard from '../pages/admin/Dashboard';
 import Users from '../pages/admin/Users';
@@ -108,6 +119,15 @@ export default function AppRoutes() {
             <Route path='/home' element={<Home />} />
             <Route path='/traveler-register' element={<TravelerRegister />} />
             <Route path="/destination/:id" element={<DestinationPage />} />
+
+            {/* Independent Booking Pages */}
+            <Route path='/bookings/guides' element={<GuideBooking />} />
+            <Route path='/bookings/hotels' element={<HotelBooking />} />
+            <Route path='/bookings/vehicles' element={<VehicleBooking />} />
+            <Route path='/bookings/vehicle/:id/deal' element={<VehicleDeal />} />
+            <Route path='/bookings/vehicle/:id/protection' element={<VehicleProtection />} />
+            <Route path='/bookings/vehicle/:id/checkout' element={<VehicleCheckout />} />
+            <Route path='/bookings/vehicle/:id/confirmation' element={<VehicleBookingConfirmation />} />
 
             {/* Partner login routes */}
             <Route

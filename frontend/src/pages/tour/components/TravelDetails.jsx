@@ -1,11 +1,18 @@
-import { useState, useContext, useEffect } from 'react';
+import { useState, useContext, useEffect, useCallback } from 'react';
 import FormContext from '../../../context/InitialValues';
+import CustomSelector from '../../../components/CustomSelector';
+import { districts, touristAttractions, provinces } from '../../../core/Lists/location';
+
+
 
 export default function TravelDetails({setValid}) {
     const { formData, setFormData } = useContext(FormContext);
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({});
     const { travelDetails, itinerary } = formData;
+
+  
+    
 
     const setFieldTouched = (field) => {
         setTouched(prev => ({ ...prev, [field]: true }));
@@ -14,11 +21,6 @@ export default function TravelDetails({setValid}) {
     const setFieldError = (field, error) => {
         setErrors(prev => ({ ...prev, [field]: error }));
     };
-
-    useEffect(() => {
-        const valid = isFormValid();
-        setValid(valid);
-    }, [formData.travelDetails, formData.itinerary, errors]);
 
     const validateField = (name, value) => {
         let error = '';
@@ -65,14 +67,28 @@ export default function TravelDetails({setValid}) {
         return error;
     };
 
-    const validateItinerary = () => {
+    const validateItinerary = useCallback(() => {
         let hasError = false;
         
         for (let dayIndex = 0; dayIndex < itinerary.length; dayIndex++) {
             const day = itinerary[dayIndex];
             for (let activityIndex = 0; activityIndex < day.activities.length; activityIndex++) {
                 const activity = day.activities[activityIndex];
-                if (!activity.title.trim() || !activity.time || !activity.description.trim()) {
+                
+                // Check if district is selected
+                if (!activity.districtId) {
+                    hasError = true;
+                    break;
+                }
+                
+                // Check if activity/attraction is selected
+                if (!activity.attractionId) {
+                    hasError = true;
+                    break;
+                }
+                
+                // If "other" is selected, check if custom activity is provided
+                if (activity.attractionId === 'other' && !activity.customActivity?.trim()) {
                     hasError = true;
                     break;
                 }
@@ -80,43 +96,83 @@ export default function TravelDetails({setValid}) {
             if (hasError) break;
         }
         
-        return hasError ? 'Please complete all itinerary activities' : '';
-    };
+        return hasError ? 'Please complete all itinerary activities (select district and activity for each)' : '';
+    }, [itinerary]);
+
+    const isFormValid = useCallback(() => {
+        const requiredFields = ['duration', 'travelStyle', 'startDate', 'location', 'time', 'adults'];
+        const hasFieldErrors = requiredFields.some(field => {
+            const error = validateField(field, travelDetails[field]);
+            return error || !travelDetails[field];
+        });
+        
+        const itineraryError = validateItinerary();
+        
+        return !hasFieldErrors && !itineraryError;
+    }, [travelDetails, validateItinerary]);
+
+    useEffect(() => {
+        const valid = isFormValid();
+        setValid(valid);
+    }, [formData.travelDetails, formData.itinerary, errors, setValid, isFormValid]);
 
     const updateTravelDetails = (updates) => {
-        setFormData(prev => ({
-            ...prev,
-            travelDetails: {
-                ...prev.travelDetails,
-                ...updates
-            }
-        }));
+        setFormData(prev => {
+            const newFormData = {
+                ...prev,
+                travelDetails: {
+                    ...prev.travelDetails,
+                    ...updates
+                }
+            };
+            
+            // Clear localStorage to prevent conflicts
+            localStorage.removeItem('tour_form_data');
+            
+            return newFormData;
+        });
     };
 
-    const updateItinerary = (newItinerary) => {
-        setFormData(prev => ({
-            ...prev,
-            itinerary: newItinerary
-        }));
-    };
+    const updateItinerary = useCallback((newItinerary) => {
+        setFormData(prev => {
+            const newFormData = {
+                ...prev,
+                itinerary: newItinerary
+            };
+            
+            // Clear localStorage to prevent conflicts
+            localStorage.removeItem('tour_form_data');
+            
+            return newFormData;
+        });
+    }, [setFormData]);
 
     const addItineraryDay = () => {
         const newDay = { 
             day: itinerary.length + 1, 
-            activities: [{ title: '', time: '', description: '' }] 
+            activities: [{ title: '', time: '', description: '', districtId: '', attractionId: '', customActivity: '' }] 
         };
         updateItinerary([...itinerary, newDay]);
     };
 
     const addItineraryActivity = (dayIndex) => {
+        const currentDay = itinerary[dayIndex];
+        
+        // Check if maximum activities (3) reached
+        if (currentDay.activities.length >= 3) {
+            return; // Don't add more activities
+        }
+        
         const newItinerary = [...itinerary];
-        newItinerary[dayIndex].activities.push({ title: '', time: '', description: '' });
-        updateItinerary(newItinerary);
-    };
-
-    const updateItineraryActivity = (dayIndex, activityIndex, field, value) => {
-        const newItinerary = [...itinerary];
-        newItinerary[dayIndex].activities[activityIndex][field] = value;
+        // Add new activity with empty fields (don't force same district, let user choose within province)
+        newItinerary[dayIndex].activities.push({ 
+            title: '', 
+            time: '', 
+            description: '', 
+            districtId: '', // Let user choose district within the same province
+            attractionId: '', 
+            customActivity: '' 
+        });
         updateItinerary(newItinerary);
     };
 
@@ -156,17 +212,45 @@ export default function TravelDetails({setValid}) {
         setFieldError(name, error);
     };
 
-    const isFormValid = () => {
-        const requiredFields = ['destination', 'duration', 'travelStyle', 'startDate', 'location', 'time', 'adults'];
-        const hasFieldErrors = requiredFields.some(field => {
-            const error = validateField(field, travelDetails[field]);
-            return error || !travelDetails[field];
-        });
-        
-        const itineraryError = validateItinerary();
-        
-        return !hasFieldErrors && !itineraryError;
+    // Add terms and conditions checkbox
+    const handleTermsChange = (e) => {
+        const { checked } = e.target;
+        updateTravelDetails({ agreedToTerms: checked });
     };
+
+    // Auto-adjust itinerary days based on duration selection
+    useEffect(() => {
+        const duration = travelDetails.duration;
+        if (!duration || duration === 'custom') return;
+
+        // Extract number of days from duration string
+        const getDaysFromDuration = (duration) => {
+            const match = duration.match(/(\d+)-day/);
+            return match ? parseInt(match[1]) : 0;
+        };
+
+        const requiredDays = getDaysFromDuration(duration);
+        const currentDays = itinerary.length;
+        
+        if (requiredDays > 0 && requiredDays !== currentDays) {
+            // Create new itinerary array with the correct number of days
+            const newItinerary = [];
+            
+            for (let i = 0; i < requiredDays; i++) {
+                // Keep existing day data if available, otherwise create new day
+                const existingDay = itinerary[i];
+                newItinerary.push({
+                    day: i + 1,
+                    activities: existingDay?.activities?.length > 0 
+                        ? existingDay.activities 
+                        : [{ title: '', time: '', description: '', districtId: '', attractionId: '', customActivity: '' }]
+                });
+            }
+            
+            updateItinerary(newItinerary);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [travelDetails.duration, updateItinerary]); // Intentionally excluding itinerary to prevent infinite loops
 
     return (
         <section className="bg-white rounded-xl shadow p-6 border border-brand-accent border-l-4 border-l-brand-primary">
@@ -180,95 +264,7 @@ export default function TravelDetails({setValid}) {
                 </span>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <div>
-                    <label className="block text-sm font-semibold mb-1">
-                        Destination <span className="text-red-500">*</span>
-                    </label>
-                    <select 
-                        name="destination"
-                        value={travelDetails.destination || ''}
-                        onChange={handleInputChange}
-                        onBlur={handleBlur}
-                        className={`w-full border rounded-lg px-3 py-2 text-sm focus:outline-none transition-all ${
-                            errors.destination ? 'border-red-500 focus:border-red-500 focus:ring-2 focus:ring-red-500/20' : 
-                            'border-border-light focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20'
-                        }`}
-                        required
-                    >
-                        <option value="">Select Destination Package</option>
-                        <optgroup label="Day Trips (1 Day)">
-                            <option value="colombo-city">Colombo City Tour</option>
-                            <option value="kandy-day">Kandy Day Trip</option>
-                            <option value="galle-day">Galle Fort & Southern Coast</option>
-                            <option value="pinnawala-kandy">Pinnawala Elephant Orphanage & Kandy</option>
-                            <option value="bentota-day">Bentota Beach Day Trip</option>
-                        </optgroup>
-                        <optgroup label="Short Getaways (2-3 Days)">
-                            <option value="kandy-nuwara">Kandy & Nuwara Eliya</option>
-                            <option value="southern-beaches">Southern Beaches (Galle, Mirissa, Unawatuna)</option>
-                            <option value="sigiriya-dambulla">Sigiriya & Dambulla Cultural Tour</option>
-                            <option value="ella-adventure">Ella Adventure (Train Journey & Hiking)</option>
-                            <option value="yala-safari">Yala National Park Safari</option>
-                            <option value="negombo-colombo">Negombo & Colombo</option>
-                        </optgroup>
-                        <optgroup label="Classic Tours (4-7 Days)">
-                            <option value="cultural-triangle">Cultural Triangle (Anuradhapura, Polonnaruwa, Sigiriya)</option>
-                            <option value="hill-country">Hill Country Explorer (Kandy, Nuwara Eliya, Ella)</option>
-                            <option value="south-west-coast">South West Coast (Colombo to Galle)</option>
-                            <option value="central-highlands">Central Highlands & Tea Country</option>
-                            <option value="wildlife-adventure">Wildlife & Adventure (Yala, Udawalawe, Sinharaja)</option>
-                            <option value="beaches-culture">Beaches & Culture Combo</option>
-                            <option value="ancient-kingdoms">Ancient Kingdoms Tour</option>
-                        </optgroup>
-                        <optgroup label="Extended Tours (8-14 Days)">
-                            <option value="grand-tour">Grand Sri Lanka Tour</option>
-                            <option value="complete-island">Complete Island Experience</option>
-                            <option value="cultural-nature">Cultural Sites & Nature Reserves</option>
-                            <option value="coast-to-mountains">Coast to Mountains Adventure</option>
-                            <option value="photography-tour">Photography Expedition</option>
-                            <option value="ayurveda-wellness">Ayurveda & Wellness Journey</option>
-                            <option value="adventure-explorer">Adventure Explorer Tour</option>
-                        </optgroup>
-                        <optgroup label="Luxury & Special Interest (10+ Days)">
-                            <option value="luxury-sri-lanka">Luxury Sri Lanka Experience</option>
-                            <option value="honeymoon-special">Honeymoon Special Tour</option>
-                            <option value="family-adventure">Family Adventure Package</option>
-                            <option value="wildlife-photography">Wildlife Photography Tour</option>
-                            <option value="culinary-journey">Culinary Journey of Sri Lanka</option>
-                            <option value="spiritual-tour">Spiritual & Meditation Tour</option>
-                            <option value="eco-adventure">Eco-Adventure & Conservation Tour</option>
-                        </optgroup>
-                        <optgroup label="Custom Options">
-                            <option value="custom-tour">Custom Itinerary (Tell us your preferences)</option>
-                            <option value="business-travel">Business Travel Package</option>
-                            <option value="educational-tour">Educational/School Group Tour</option>
-                        </optgroup>
-                    </select>
-                    {errors.destination && <p className="text-red-500 text-xs mt-1">{errors.destination}</p>}
-                    
-                    {travelDetails.duration && (
-                        <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-xs">
-                            <span className="font-medium text-blue-800">💡 Recommended for {travelDetails.duration}:</span>
-                            <div className="text-blue-700 mt-1">
-                                {travelDetails.duration === '1-day' && 
-                                    "Day trips perfect for exploring single destinations like Colombo city or Kandy temple complex."
-                                }
-                                {(travelDetails.duration === '2-days' || travelDetails.duration === '3-days') && 
-                                    "Short getaways ideal for nearby destinations or quick cultural experiences like Kandy-Nuwara Eliya or Sigiriya-Dambulla."
-                                }
-                                {(travelDetails.duration === '4-days' || travelDetails.duration === '5-days' || travelDetails.duration === '6-days' || travelDetails.duration === '7-days') && 
-                                    "Classic tours allowing deeper exploration of regions like Cultural Triangle, Hill Country, or South Coast with comfortable pace."
-                                }
-                                {(travelDetails.duration === '8-days' || travelDetails.duration === '9-days' || travelDetails.duration === '10-days' || travelDetails.duration === '12-days' || travelDetails.duration === '14-days') && 
-                                    "Extended tours perfect for comprehensive island exploration, wildlife safaris, and cultural immersion experiences."
-                                }
-                                {(travelDetails.duration === '16-days' || travelDetails.duration === '18-days' || travelDetails.duration === '21-days') && 
-                                    "Luxury tours allowing in-depth exploration, multiple activities per location, and relaxed travel pace with premium experiences."
-                                }
-                            </div>
-                        </div>
-                    )}
-                </div>
+                
                 <div>
                     <label className="block text-sm font-semibold mb-1">
                         Duration <span className="text-red-500">*</span>
@@ -306,7 +302,7 @@ export default function TravelDetails({setValid}) {
                     
                     {travelDetails.duration && (
                         <div className="mt-2 p-2 bg-green-50 border border-green-200 rounded text-xs">
-                            <span className="font-medium text-green-800">ℹ️ What's included in {travelDetails.duration}:</span>
+                            <span className="font-medium text-green-800">ℹ️ What&apos;s included in {travelDetails.duration}:</span>
                             <div className="text-green-700 mt-1">
                                 {travelDetails.duration === '1-day' && 
                                     "Transportation, guide, entrance fees, lunch. Perfect for exploring one main attraction with nearby sites."
@@ -492,14 +488,32 @@ export default function TravelDetails({setValid}) {
             <div className="mb-2 flex items-center justify-between">
                 <span className="font-semibold text-brand-primary">
                     Itinerary <span className="text-red-500">*</span>
+                    {travelDetails.duration && travelDetails.duration !== 'custom' && (
+                        <span className="text-sm font-normal text-gray-600 ml-2">
+                            (Auto-managed based on {travelDetails.duration})
+                        </span>
+                    )}
                 </span>
-                <button 
-                    type="button" 
-                    onClick={addItineraryDay}
-                    className="bg-brand-primary text-white px-3 py-1 rounded text-xs font-semibold hover:bg-warning transition"
-                >
-                    Add Day +
-                </button>
+                {(!travelDetails.duration || travelDetails.duration === 'custom') && (
+                    <button 
+                        type="button" 
+                        onClick={addItineraryDay}
+                        className="bg-brand-primary text-white px-3 py-1 rounded text-xs font-semibold hover:bg-warning transition"
+                    >
+                        Add Day +
+                    </button>
+                )}
+            </div>
+            
+            {/* Itinerary Guidelines */}
+            <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm text-blue-800">
+                    <strong>Guidelines:</strong> 
+                    {travelDetails.duration && travelDetails.duration !== 'custom' 
+                        ? ` Days are automatically set based on your selected duration (${travelDetails.duration}). Each day can have maximum 3 activities.`
+                        : ' Each day can have maximum 3 activities. All activities in the same day must be within the same province for practical travel planning.'
+                    }
+                </p>
             </div>
             {itinerary.map((day, dayIndex) => (
                 <div key={dayIndex} className="bg-brand-light rounded-lg border border-brand-secondary border-l-4 border-l-brand-primary p-4 mb-2">
@@ -509,11 +523,16 @@ export default function TravelDetails({setValid}) {
                             <button 
                                 type="button" 
                                 onClick={() => addItineraryActivity(dayIndex)}
-                                className="bg-brand-primary text-white px-2 py-1 rounded text-xs font-semibold hover:bg-warning transition"
+                                disabled={day.activities.length >= 3}
+                                className={`px-2 py-1 rounded text-xs font-semibold transition ${
+                                    day.activities.length >= 3 
+                                        ? 'bg-gray-300 text-gray-500 cursor-not-allowed' 
+                                        : 'bg-brand-primary text-white hover:bg-warning'
+                                }`}
                             >
-                                Add Activity +
+                                {day.activities.length >= 3 ? 'Max Activities (3)' : 'Add Activity +'}
                             </button>
-                            {itinerary.length > 1 && (
+                            {itinerary.length > 1 && (!travelDetails.duration || travelDetails.duration === 'custom') && (
                                 <button 
                                     type="button" 
                                     onClick={() => removeItineraryDay(dayIndex)}
@@ -524,57 +543,221 @@ export default function TravelDetails({setValid}) {
                             )}
                         </div>
                     </div>
-                    {day.activities.map((activity, activityIndex) => (
-                        <div key={activityIndex} className="mb-3">
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
-                                <div>
-                                    <label className="block text-xs font-medium mb-1">Title</label>
-                                    <input 
-                                        className="w-full border border-border-light rounded px-3 py-2 text-sm focus:outline-none focus:border-brand-primary" 
-                                        placeholder="Enter a title"
-                                        value={activity.title}
-                                        onChange={(e) => updateItineraryActivity(dayIndex, activityIndex, 'title', e.target.value)}
-                                    />
-                                </div>
-                                <div>
-                                    <label className="block text-xs font-medium mb-1">Time</label>
-                                    <input 
-                                        type="time" 
-                                        className="w-full border border-border-light rounded px-3 py-2 text-sm focus:outline-none focus:border-brand-primary"
-                                        value={activity.time}
-                                        onChange={(e) => updateItineraryActivity(dayIndex, activityIndex, 'time', e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            <div className="relative">
-                                <label className="block text-xs font-medium mb-1">Description</label>
-                                <div className="flex gap-2">
-                                    <textarea 
-                                        className="flex-1 border border-border-light rounded px-3 py-2 text-sm focus:outline-none focus:border-brand-primary" 
-                                        placeholder="Add a description"
-                                        rows="2"
-                                        value={activity.description}
-                                        onChange={(e) => updateItineraryActivity(dayIndex, activityIndex, 'description', e.target.value)}
-                                    />
+                    {day.activities.map((activity, activityIndex) => {
+                        // Get the district and province of the first activity for this day
+                        const firstActivityDistrictId = day.activities[0]?.districtId;
+                        const firstActivityDistrict = districts.find(d => d.id === firstActivityDistrictId);
+                        const selectedProvinceId = firstActivityDistrict?.provinceId;
+                        
+                        // Filter districts based on whether this is the first activity or not
+                        const availableDistricts = activityIndex === 0 
+                            ? districts // First activity can select any district
+                            : selectedProvinceId 
+                                ? districts.filter(district => district.provinceId === selectedProvinceId)
+                                : []; // Subsequent activities are limited to same province
+
+                        return (
+                            <div key={activityIndex} className="mb-3 p-3 bg-white rounded border border-brand-accent">
+                                <div className="grid grid-cols-1 gap-3">
+                                    {/* Activity Number and Province Info */}
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-sm font-medium text-brand-primary">
+                                            Activity {activityIndex + 1}
+                                        </span>
+                                        {activityIndex > 0 && selectedProvinceId && (
+                                            <span className="text-xs text-gray-600 bg-gray-100 px-2 py-1 rounded">
+                                                Limited to: {provinces.find(p => p.id === selectedProvinceId)?.value}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    {/* District Selection */}
+                                    <div className="w-full">
+                                        <CustomSelector
+                                            label="District"
+                                            options={availableDistricts}
+                                            placeholder={
+                                                activityIndex === 0 
+                                                    ? "Select District" 
+                                                    : availableDistricts.length === 0
+                                                        ? "Please select district for first activity"
+                                                        : `Select District (${provinces.find(p => p.id === selectedProvinceId)?.value})`
+                                            }
+                                            value={activity.districtId || ''}
+                                            onChange={value => {
+                                                const districtId = parseInt(value);
+                                                const selectedDistrict = districts.find(d => d.id === districtId);
+                                                const newItinerary = [...itinerary];
+                                                
+                                                // Update current activity
+                                                newItinerary[dayIndex].activities[activityIndex] = {
+                                                    ...activity,
+                                                    districtId: districtId,
+                                                    attractionId: '', // Reset activity when district changes
+                                                    customActivity: '' // Reset custom activity when district changes
+                                                };
+                                                
+                                                // If this is the first activity and we're changing provinces,
+                                                // clear all subsequent activities for this day
+                                                if (activityIndex === 0) {
+                                                    const newProvinceId = selectedDistrict?.provinceId;
+                                                    const currentFirstDistrict = districts.find(d => d.id === day.activities[0]?.districtId);
+                                                    const currentProvinceId = currentFirstDistrict?.provinceId;
+                                                    
+                                                    // If province changed, clear subsequent activities
+                                                    if (newProvinceId !== currentProvinceId) {
+                                                        for (let i = 1; i < day.activities.length; i++) {
+                                                            newItinerary[dayIndex].activities[i] = {
+                                                                ...newItinerary[dayIndex].activities[i],
+                                                                districtId: '',
+                                                                attractionId: '',
+                                                                customActivity: ''
+                                                            };
+                                                        }
+                                                    }
+                                                }
+                                                
+                                                updateItinerary(newItinerary);
+                                                
+                                                // Debug: Log the selected district and available activities
+                                                console.log('Selected District ID:', districtId);
+                                                console.log('Selected District:', selectedDistrict);
+                                                const availableAttractions = touristAttractions.filter(attraction => 
+                                                    attraction.districtId === districtId
+                                                );
+                                                console.log('Available attractions for district', districtId, ':', availableAttractions);
+                                                console.log('Number of attractions:', availableAttractions.length);
+                                            }}
+                                            disabled={activityIndex > 0 && !selectedProvinceId}
+                                        />
+                                    </div>
+
+                                    {/* Activity Selection */}
+                                    <div className="w-full">
+                                        {/* Show available attractions count for debugging */}
+                                        {activity.districtId && (
+                                            <div className="mb-2 text-xs text-gray-600">
+                                                Available attractions: {touristAttractions.filter(attraction => 
+                                                    attraction.districtId === parseInt(activity.districtId)
+                                                ).length}
+                                            </div>
+                                        )}
+                                        <CustomSelector
+                                            label="Activities"
+                                            options={activity.districtId ? [
+                                                ...touristAttractions
+                                                    .filter(attraction => 
+                                                        attraction.districtId === parseInt(activity.districtId)
+                                                    )
+                                                    .map(attraction => ({
+                                                        id: attraction.id,
+                                                        value: `${attraction.value} (${attraction.type})`
+                                                    })),
+                                                { id: 'other', value: 'Other (Custom Activity)' }
+                                            ] : []}
+                                            placeholder={activity.districtId ? "Select Activity/Attraction" : "Please select a district first"}
+                                            value={activity.attractionId || ''}
+                                            onChange={value => {
+                                                const newItinerary = [...itinerary];
+                                                
+                                                // Convert value to number if it's a valid attraction ID, keep as string if 'other'
+                                                const attractionId = value === 'other' ? 'other' : parseInt(value);
+                                                
+                                                newItinerary[dayIndex].activities[activityIndex] = {
+                                                    ...activity,
+                                                    attractionId: attractionId,
+                                                    customActivity: value === 'other' ? activity.customActivity : ''
+                                                };
+                                                updateItinerary(newItinerary);
+
+                                                // Debug: Log the selected activity and current form data
+                                                console.log('Selected Activity ID (raw):', value);
+                                                console.log('Selected Activity ID (processed):', attractionId);
+                                                
+                                                // Find and log the selected attraction details
+                                                if (value !== 'other') {
+                                                    const selectedAttraction = touristAttractions.find(attr => attr.id === parseInt(value));
+                                                    console.log('Selected Attraction Details:', selectedAttraction);
+                                                }
+                                                
+                                                console.log('Updated Activity:', newItinerary[dayIndex].activities[activityIndex]);
+                                                console.log('Full Day Activities:', newItinerary[dayIndex].activities);
+                                            }}
+                                            disabled={!activity.districtId}
+                                        />
+
+                                        {/* Custom Activity Input - Only shown when "Other" is selected */}
+                                        {activity.attractionId === 'other' && (
+                                            <div className="mt-2">
+                                                <input
+                                                    type="text"
+                                                    placeholder="Enter your custom activity"
+                                                    value={activity.customActivity || ''}
+                                                    onChange={(e) => {
+                                                        const newItinerary = [...itinerary];
+                                                        newItinerary[dayIndex].activities[activityIndex] = {
+                                                            ...activity,
+                                                            customActivity: e.target.value
+                                                        };
+                                                        updateItinerary(newItinerary);
+                                                    }}
+                                                    className="w-full border border-border-light rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-brand-primary focus:ring-2 focus:ring-brand-primary/20"
+                                                />
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Remove Activity Button */}
                                     {day.activities.length > 1 && (
-                                        <button 
-                                            type="button" 
-                                            onClick={() => removeItineraryActivity(dayIndex, activityIndex)}
-                                            className="bg-danger text-white px-2 py-1 rounded text-xs font-semibold hover:bg-red-600 transition self-end"
-                                        >
-                                            ×
-                                        </button>
+                                        <div className="flex justify-end">
+                                            <button 
+                                                type="button" 
+                                                onClick={() => removeItineraryActivity(dayIndex, activityIndex)}
+                                                className="bg-danger text-white px-3 py-1 rounded text-xs font-semibold hover:bg-red-600 transition"
+                                            >
+                                                Remove Activity
+                                            </button>
+                                        </div>
                                     )}
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             ))}
             
+            {/* Add Terms and Conditions section */}
+            <div className="mt-4 p-3 rounded-lg bg-blue-50 border border-blue-200">
+                <label className="flex items-start gap-3 cursor-pointer">
+                    <input
+                        type="checkbox"
+                        name="agreedToTerms"
+                        checked={travelDetails.agreedToTerms || false}
+                        onChange={handleTermsChange}
+                        className="mt-1 w-4 h-4 text-brand-primary bg-gray-100 border-gray-300 rounded focus:ring-brand-primary focus:ring-2"
+                    />
+                    <div className="text-sm">
+                        <span className="font-medium text-gray-900">
+                            I agree to the{' '}
+                            <a href="/terms" className="text-brand-primary hover:underline" target="_blank" rel="noopener noreferrer">
+                                Terms and Conditions
+                            </a>
+                            {' '}and{' '}
+                            <a href="/privacy" className="text-brand-primary hover:underline" target="_blank" rel="noopener noreferrer">
+                                Privacy Policy
+                            </a>
+                            <span className="text-red-500"> *</span>
+                        </span>
+                        <p className="text-gray-600 mt-1">
+                            By checking this box, you confirm that you have read and agree to our terms of service and privacy policy.
+                        </p>
+                    </div>
+                </label>
+            </div>
+            
             <div className="mt-4 p-3 rounded-lg bg-gray-50">
                 <div className="flex items-center gap-2">
-                    {isFormValid() ? (
+                    {isFormValid() && travelDetails.agreedToTerms ? (
                         <>
                             <svg className="w-5 h-5 text-green-500" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/>
@@ -586,7 +769,9 @@ export default function TravelDetails({setValid}) {
                             <svg className="w-5 h-5 text-orange-500" fill="currentColor" viewBox="0 0 20 20">
                                 <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd"/>
                             </svg>
-                            <span className="text-orange-700 text-sm font-medium">Please complete all required fields and itinerary details</span>
+                            <span className="text-orange-700 text-sm font-medium">
+                                Please complete all required fields, itinerary details, and accept terms & conditions
+                            </span>
                         </>
                     )}
                 </div>

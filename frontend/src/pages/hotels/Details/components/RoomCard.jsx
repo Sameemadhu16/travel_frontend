@@ -2,8 +2,7 @@ import Title from '../../../../components/Title';
 import FormatText from '../../../../components/FormatText';
 import { FaBed, FaUser } from 'react-icons/fa';
 import { useNavigate, useLocation } from 'react-router-dom';
-import PropTypes from 'prop-types';
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import FormContext from '../../../../context/InitialValues';
 
 export default function RoomCard({ room, isTourMode = false, hotel = {} }) {
@@ -11,55 +10,46 @@ export default function RoomCard({ room, isTourMode = false, hotel = {} }) {
     const location = useLocation();
     const isTourSelectHotel = location.pathname.includes('/tour/select-hotel');
     const { formData, setFormData } = useContext(FormContext);
-    const selectedRoomId = formData.selectedItems?.rooms?.[0]?.id;
-    const selectedHotelId = formData.selectedItems?.hotels?.[0]?.id;
+    
+    // For tour mode, we need to find which night this hotel was selected for
+    const getCurrentNightIndex = () => {
+        if (!isTourMode || !isTourSelectHotel) return -1;
+        const nightHotels = formData.selectedItems?.nightHotels || [];
+        return nightHotels.findIndex(nightHotel => nightHotel && nightHotel.id === (hotel.id || room.hotelId));
+    };
 
-    // If selected hotel doesn't match current one, clear previous selection
-    if (isTourMode && isTourSelectHotel && selectedHotelId && selectedHotelId !== (hotel.id || room.hotelId)) {
-        setFormData(prev => ({
-            ...prev,
-            selectedItems: {
-                hotels: [],
-                rooms: [],
-            }
-        }));
-    }
-    const isSelected = selectedRoomId === room.id;
+    const currentNightIndex = getCurrentNightIndex();
+    const selectedRoom = currentNightIndex >= 0 ? formData.selectedItems?.nightRooms?.[currentNightIndex] : null;
+    const isSelected = selectedRoom && selectedRoom.id === room.id;
 
     const handleRoomSelection = () => {
-        if (!isTourMode || !isTourSelectHotel) return;
-
-        const hotelData = {
-            id: hotel.id || room.hotelId,
-            name: hotel.name || room.hotelName || '',
-            location: hotel.location || '',
-            rating: hotel.rating || 0,
-            pricePerNight: hotel.pricePerNight || 0,
-            images: hotel.images || [],
-            amenities: hotel.amenities || [],
-            type: hotel.type || '',
-            roomLeft: hotel.leftRooms || 0,
-            reviews: hotel.reviews || [],
-        };
+        if (!isTourMode || !isTourSelectHotel || currentNightIndex < 0) return;
 
         // If the room is already selected, unselect it
         if (isSelected) {
+            const updatedNightRooms = [...(formData.selectedItems.nightRooms || [])];
+            updatedNightRooms[currentNightIndex] = null;
+            
             setFormData(prev => ({
                 ...prev,
                 selectedItems: {
                     ...prev.selectedItems,
-                    rooms: [],
-                    hotels: [],
+                    nightRooms: updatedNightRooms
                 }
             }));
         } else {
-            // Replace current selection with the new room and hotel
+            // Select the new room for this night
+            const updatedNightRooms = [...(formData.selectedItems.nightRooms || [])];
+            updatedNightRooms[currentNightIndex] = {
+                ...room,
+                selectedForNight: currentNightIndex + 1
+            };
+            
             setFormData(prev => ({
                 ...prev,
                 selectedItems: {
                     ...prev.selectedItems,
-                    rooms: [room],
-                    hotels: [hotelData],
+                    nightRooms: updatedNightRooms
                 }
             }));
         }

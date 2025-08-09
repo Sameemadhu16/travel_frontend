@@ -7,7 +7,7 @@ export const guides = [
             experience: "6 years experience",
             languages: ["English", "German", "Sinhala"],
             specialties: ["Cultural & Wildlife Tours"],
-            price: 65,
+            price: 6500,
             image: "/src/assets/users/user1.jpg",
             available: true
         },
@@ -19,7 +19,7 @@ export const guides = [
             experience: "5 years experience",
             languages: ["English", "French", "Sinhala"],
             specialties: ["Beach & Adventure Tours"],
-            price: 55,
+            price: 5500,
             image: "/src/assets/users/user2.avif",
             available: true
         },
@@ -31,7 +31,7 @@ export const guides = [
             experience: "12 years experience",
             languages: ["English", "Japanese", "Sinhala"],
             specialties: ["Historical & Temple Tours"],
-            price: 85,
+            price: 8500,
             image: "/src/assets/users/user3.avif",
             available: false
         },
@@ -43,7 +43,7 @@ export const guides = [
             experience: "4 years experience",
             languages: ["English", "Italian", "Sinhala"],
             specialties: ["Tea Country & Hill Tours"],
-            price: 45,
+            price: 4500,
             image: "/src/assets/users/user4.jpg",
             available: true
         },
@@ -55,7 +55,7 @@ export const guides = [
             experience: "15 years experience",
             languages: ["English", "Spanish", "Sinhala"],
             specialties: ["Wildlife Safari Specialist"],
-            price: 95,
+            price: 9500,
             image: "/src/assets/users/user5.jpg",
             available: true
         }
