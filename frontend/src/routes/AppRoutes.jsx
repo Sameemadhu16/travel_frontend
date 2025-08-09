@@ -43,6 +43,7 @@ import GuideAvailability from '../pages/guide/GuideAvailability';
 import GuideDashboard from '../pages/guide/GuideDashboard';
 import GuideTourHistory from '../pages/guide/TourHistory';
 
+
 // Booking pages
 import GuideBooking from '../pages/bookings/GuideBooking';
 import HotelBooking from '../pages/bookings/HotelBooking';
@@ -51,6 +52,7 @@ import VehicleDeal from '../pages/bookings/VehicleDeal';
 import VehicleProtection from '../pages/bookings/VehicleProtection';
 import VehicleCheckout from '../pages/bookings/VehicleCheckout';
 import VehicleBookingConfirmation from '../pages/bookings/VehicleBookingConfirmation';
+
 
 // Admin imports
 import AdminDashboard from '../pages/admin/Dashboard';
