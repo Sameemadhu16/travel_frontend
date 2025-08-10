@@ -97,7 +97,27 @@ const loginPartnerAccountForm = {
     setFormData: () => {},
 }
 
+const initialAiTripData = {
+    formData: {
+        destination: '',
+        duration: '',
+        adults: 1,
+        children: 0,
+        startDate: '',
+        budget: '',
+        tripType: '',
+        activityLevel: '',
+        interests: [],
+    },
+    setFormData: () => {}
+}
+
 const FormContext = createContext();
 
 export default FormContext;
-export { registerPartnerAccountForm, loginPartnerAccountForm, initialTripFormData };
+export { 
+    registerPartnerAccountForm, 
+    loginPartnerAccountForm, 
+    initialTripFormData,
+    initialAiTripData,
+};

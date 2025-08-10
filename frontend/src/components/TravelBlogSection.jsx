@@ -40,7 +40,7 @@ export default function TravelBlogSection() {
                                 </div>
                             </div>
                             <button 
-                                onClick={() => navigateTo('/ai-trip-basic-info')}
+                                onClick={() => navigateTo('/ai-trip/basic-info')}
                                 className="w-full bg-surface-primary hover:bg-surface-secondary text-content-primary font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center gap-2 border border-border-light hover:border-primary">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />

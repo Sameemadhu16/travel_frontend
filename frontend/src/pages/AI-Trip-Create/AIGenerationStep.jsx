@@ -2,15 +2,15 @@ import { FaCar, FaCheck, FaEdit, FaHotel, FaMapMarkerAlt, FaRobot, FaStar, FaUse
 import PrimaryButton from "../../components/PrimaryButton";
 import SecondaryButton from "../../components/SecondaryButton";
 import StepIndicator from "../../components/StepIndicator";
-import { useState } from "react";
+import { useContext, useState } from "react";
 import Main from "../../components/Main";
 import { navigateTo } from "../../core/navigateHelper";
+import FormContext from "../../context/InitialValues";
 
 export default function AIGenerationStep({  generatedTrip, isGenerating, onGenerate, onEdit }){
 
-    const [formData, setFormData] = useState({
-        destination: '',
-    })
+    const { formData } = useContext(FormContext);
+    
     if (isGenerating) {
         return (
             <Main>
@@ -57,7 +57,7 @@ export default function AIGenerationStep({  generatedTrip, isGenerating, onGener
                                 Trip Summary
                             </h3>
                             <div 
-                                onClick={() => navigateTo('/ai-trip-basic-info')}
+                                onClick={() => navigateTo('/ai-trip/basic-info')}
                                 className="flex items-center justify-center gap-1 text-brand-primary cursor-pointer hover:underline">
                                 <FaEdit/>
                                 <p>Edit</p>

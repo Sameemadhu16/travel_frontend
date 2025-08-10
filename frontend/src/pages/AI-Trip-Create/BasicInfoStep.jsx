@@ -3,10 +3,11 @@ import InputField from '../../components/InputField';
 import Main from '../../components/Main';
 import CustomSelector from '../../components/CustomSelector';
 import StepIndicator from '../../components/StepIndicator';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import { navigateTo } from '../../core/navigateHelper';
+import FormContext from '../../context/InitialValues';
 
 const durationOptions = [
     { id: "", value: "Select duration" },
@@ -28,17 +29,9 @@ const budgetOptions = [
 ];
 
 export default function BasicInfoStep() {
-    const [formData, setFormData] = useState({
-        destination: '',
-        duration: '',
-        adults: 1,
-        children: 0,
-        startDate: '',
-        budget: ''
-    });
+    const { formData, setFormData } = useContext(FormContext);
     
     const handleChange = (field, value) => {
-        console.log(`Changing ${field} to:`, value); // Debug log
         setFormData(prev => ({ ...prev, [field]: value }));
     };
 
@@ -110,7 +103,7 @@ export default function BasicInfoStep() {
                 />
                 <PrimaryButton
                     text='Next'
-                    onClick={() => navigateTo('/ai-trip-preference-info')}
+                    onClick={() => navigateTo('/ai-trip/preference-info')}
                 />
             </div>
         </Main>

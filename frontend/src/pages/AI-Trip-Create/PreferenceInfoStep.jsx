@@ -1,10 +1,11 @@
-import { useState, useMemo, useCallback } from "react";
+import { useState, useMemo, useCallback, useContext } from "react";
 import { FaCamera, FaMonument, FaMountain, FaMusic, FaShoppingBag, FaSpa, FaUmbrellaBeach, FaUsers, FaUtensils } from "react-icons/fa";
 import Main from "../../components/Main";
 import SecondaryButton from "../../components/SecondaryButton";
 import PrimaryButton from "../../components/PrimaryButton";
 import StepIndicator from "../../components/StepIndicator";
 import { navigateTo } from "../../core/navigateHelper";
+import FormContext from "../../context/InitialValues";
 
     const tripTypes = [
         { id: 'cultural', label: 'Cultural & Historical', icon: FaMonument },
@@ -34,11 +35,8 @@ import { navigateTo } from "../../core/navigateHelper";
 
 export default function PreferenceInfoStep (){
 
-    const [formData, setFormData] = useState({
-        tripType: '',
-        activityLevel: '',
-    })
-    
+    const { formData, setFormData } = useContext(FormContext);
+
     const toggleSelection = useCallback((field, value) => {
         setFormData(prev => {
             const currentArray = prev[field] || [];
@@ -150,11 +148,11 @@ export default function PreferenceInfoStep (){
 
     // Navigation callbacks
     const handleBackClick = useCallback(() => {
-        navigateTo('/ai-trip-basic-info');
+        navigateTo('/ai-trip/basic-info');
     }, []);
 
     const handleNextClick = useCallback(() => {
-        navigateTo('/ai-trip-generation');
+        navigateTo('/ai-trip/generation');
     }, []);
 
     return (

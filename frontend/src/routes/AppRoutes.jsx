@@ -16,7 +16,7 @@ import ForgotPassword from '../pages/partner/forgot_details/ForgotPassword';
 import ForgotUsername from '../pages/partner/forgot_details/ForgotUsername';
 import ChangePassword from '../pages/partner/forgot_details/ChangePassword';
 import { FormProvider } from '../context/FormContext';
-import { initialTripFormData, loginPartnerAccountForm, registerPartnerAccountForm } from '../context/InitialValues';
+import { initialAiTripData, initialTripFormData, loginPartnerAccountForm, registerPartnerAccountForm } from '../context/InitialValues';
 import ChatBot from '../pages/chatBot/ChatBot';
 import TravelerRegister from '../pages/TravelerRegister';
 import ChooseProperty from '../pages/partner/register/ChooseProperty';
@@ -297,12 +297,20 @@ export default function AppRoutes() {
                     />
                     {/* Fallback for authenticated users */}
                     <Route path="*" element={<Navigate to="/" replace />} />
-
+                    
                     {/* Ai Trip creation part */}
-                    <Route path='/ai-trip-basic-info' element={<BasicInfoStep/>} />
-                    <Route path='/ai-trip-preference-info' element={<PreferenceInfoStep/>} />
-                    <Route path='/ai-trip-generation' element={<AIGenerationStep/>} />
-
+                    <Route 
+                        path='/ai-trip/*'
+                        element={
+                            <FormProvider initialValues={initialAiTripData}>
+                                <Routes>
+                                    <Route path='basic-info' element={<BasicInfoStep/>} />
+                                    <Route path='preference-info' element={<PreferenceInfoStep/>} />
+                                    <Route path='generation' element={<AIGenerationStep/>} />
+                                </Routes>
+                            </FormProvider>
+                        }
+                    />
                 </>
             ) : (
                 <>
