@@ -22,7 +22,7 @@ export default function Payment() {
             <BillingAddress />
           </div>
           
-          {/* Right Column - Order Summary */}
+          
           <div className="lg:col-span-1 space-y-6  border-primary rounded-lg p-6">
             <OrderSummary />
             <SecurityFeatures />

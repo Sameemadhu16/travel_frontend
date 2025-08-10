@@ -1,7 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import Main from '../../components/Main';
 import Title from '../../components/Title';
-import PrimaryButton from '../../components/PrimaryButton';
 import { postRequest, getRequest } from '../../core/service';
 import { showToastMessage } from '../../utils/toastHelper';
 import Spinner from '../../components/Spinner';
@@ -108,7 +107,7 @@ export default function AdminGuideReview() {
                                             <h4 className="font-medium text-gray-900 mb-2">Languages</h4>
                                             <div className="flex flex-wrap gap-1">
                                                 {guide.languagesSpoken?.map((lang, index) => (
-                                                    <span key={index} className="bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
+                                                    <span key={index} className="bg-orange-100 text-orange-800 text-xs px-2 py-1 rounded">
                                                         {lang}
                                                     </span>
                                                 ))}
@@ -142,19 +141,19 @@ export default function AdminGuideReview() {
                                     <div className="grid grid-cols-3 gap-4 text-xs">
                                         <div>
                                             <span className="font-medium">SLTA License:</span>
-                                            <span className="text-blue-600 ml-1">
+                                            <span className="text-orange-600 ml-1">
                                                 {guide.sltaLicensePhoto?.length || 0} file(s)
                                             </span>
                                         </div>
                                         <div>
                                             <span className="font-medium">NIC Front:</span>
-                                            <span className="text-blue-600 ml-1">
+                                            <span className="text-orange-600 ml-1">
                                                 {guide.nicPhotoFront?.length || 0} file(s)
                                             </span>
                                         </div>
                                         <div>
                                             <span className="font-medium">NIC Back:</span>
-                                            <span className="text-blue-600 ml-1">
+                                            <span className="text-orange-600 ml-1">
                                                 {guide.nicPhotoBack?.length || 0} file(s)
                                             </span>
                                         </div>

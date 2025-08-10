@@ -4,6 +4,7 @@ import Title from '../../../components/Title'
 import InputField from '../../../components/InputField'
 import InputArea from '../../../components/InputArea'
 import PrimaryButton from '../../../components/PrimaryButton'
+import SecondaryButton from '../../../components/SecondaryButton'
 
 export default function HelpCenter() {
     const [activeTab, setActiveTab] = useState('faqs')
@@ -75,10 +76,7 @@ export default function HelpCenter() {
             <div className="p-6">
                 <div className="flex justify-between items-center mb-6">
                     <Title text="Help Center" />
-                    <PrimaryButton
-                        text="Submit a Ticket"
-                        onClick={() => setShowTicketModal(true)}
-                    />
+                    
                 </div>
 
                 {/* Search Bar */}
@@ -133,6 +131,14 @@ export default function HelpCenter() {
                                             {category.charAt(0).toUpperCase() + category.slice(1)}
                                         </button>
                                     ))}
+                                </div>
+                            </div>
+                            <div className='flex w-full justify-start mt-5'>
+                                <div className=''>
+                                    <PrimaryButton
+                                        text="Submit a Ticket"
+                                        onClick={() => setShowTicketModal(true)}
+                                    />
                                 </div>
                             </div>
                         </div>
@@ -324,13 +330,10 @@ export default function HelpCenter() {
                                     </select>
                                 </div>
                                 <div className="flex justify-end space-x-4">
-                                    <button
-                                        type="button"
+                                    <SecondaryButton
                                         onClick={() => setShowTicketModal(false)}
-                                        className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                                    >
-                                        Cancel
-                                    </button>
+                                        text="Cancel"
+                                    />
                                     <PrimaryButton text="Submit Ticket" type="submit" />
                                 </div>
                             </form>

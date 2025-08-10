@@ -118,7 +118,7 @@ export default function TravelerRegister() {
                             />
                             <Navigate path="/partner-login/step-1" className="hover:underline text-brand-primary">
                                 <Title 
-                                    title="Register"
+                                    title="Login now"
                                     size="text-[14px]"
                                     font="font-[400]"
                                     color="text-brand-primary"

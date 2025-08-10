@@ -1,6 +1,6 @@
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
 import { hotelList } from '../../../core/Lists/hotels';
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useContext } from 'react';
 import Main from '../../../components/Main';
 import Title from '../../../components/Title';
 import Breadcrumb from '../../../components/Breadcrumb';
@@ -8,7 +8,6 @@ import { roomList } from '../../../core/Lists/rooms';
 import RoomCard from './components/RoomCard';
 import FormatText from '../../../components/FormatText';
 import Border from '../../../components/Border';
-import { useContext } from 'react';
 import FormContext from '../../../context/InitialValues';
 
 export default function Hotel() {
@@ -18,11 +17,24 @@ export default function Hotel() {
     const location = useLocation();
     const navigate = useNavigate();
     const isTourSelectHotel = location.pathname.includes('/tour/select-hotel');
-    
-    // Use FormContext
     const { formData } = useContext(FormContext);
-    const selectedItems = formData.selectedItems || {};
-    const isHotelSelected = selectedItems.hotels?.some(h => h.id.toString() === id) || false;
+    
+    // Find which night this hotel was selected for
+    const getSelectedNightInfo = () => {
+        if (!isTourSelectHotel) return null;
+        const nightHotels = formData.selectedItems?.nightHotels || [];
+        const nightIndex = nightHotels.findIndex(nightHotel => nightHotel && nightHotel.id.toString() === id);
+        if (nightIndex >= 0) {
+            const selectedRoom = formData.selectedItems?.nightRooms?.[nightIndex];
+            return {
+                nightNumber: nightIndex + 1,
+                selectedRoom: selectedRoom
+            };
+        }
+        return null;
+    };
+
+    const selectedNightInfo = getSelectedNightInfo();
     
     useEffect(() => {
         const matchHotel = hotelList.find((hotel) => hotel.id.toString() === id);
@@ -40,13 +52,8 @@ export default function Hotel() {
     const handleContinue = () => {
         if (!isTourSelectHotel) return;
         
-        // Validate that at least one room is selected if hotel is selected
-        if (isHotelSelected && (!selectedItems.rooms || selectedItems.rooms.length === 0)) {
-            alert('Please select at least one room before continuing');
-            return;
-        }
-        
-        navigate('/tour/select-vehicle');
+        // Navigate back to hotel selection page so user can proceed to next night or continue
+        navigate('/tour/select-hotel');
     };
 
     const roomsList = useMemo(() => {
@@ -62,12 +69,12 @@ export default function Hotel() {
                 />
             </div>
         ));
-    }, [rooms, isTourSelectHotel, selectedItems.rooms]);
+    }, [rooms, isTourSelectHotel, hotel]);
 
     const amenityList = useMemo(() => {
-        return hotel.amenities && hotel.amenities.map((amenity, index) => (
+        return hotel.amenities?.map((amenity) => (
             <Title
-                key={index}
+                key={`amenity-${amenity}`}
                 title={amenity || ''}
                 size='text-[18px]'
                 color='text-content-tertiary'
@@ -141,10 +148,37 @@ export default function Hotel() {
                         title={hotel.location || ''}
                         color='text-brand-primary'
                     />
+                    {selectedNightInfo && (
+                        <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                            <Title
+                                title={`Selected for Night ${selectedNightInfo.nightNumber}`}
+                                size='text-[14px]'
+                                color='text-blue-900'
+                                font='font-[600]'
+                            />
+                            {selectedNightInfo.selectedRoom && (
+                                <div className="mt-1">
+                                    <Title
+                                        title={`Room: ${selectedNightInfo.selectedRoom.roomType}`}
+                                        size='text-[12px]'
+                                        color='text-blue-700'
+                                    />
+                                    <Title
+                                        title={`LKR ${selectedNightInfo.selectedRoom.pricePerNight} / night`}
+                                        size='text-[12px]'
+                                        color='text-blue-700'
+                                    />
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
                 
                 {isTourSelectHotel && (
                     <div className='flex flex-col gap-2'>
+                        <div className="text-sm text-brand-primary bg-blue-50 px-3 py-2 rounded-lg">
+                            ✓ Hotel selected for tour accommodation. Select your preferred rooms below, then return to hotel selection to continue.
+                        </div>
                         <div className='flex items-center gap-2 text-sm text-content-secondary'>
                             <span>Starting from</span>
                             <span className='text-lg font-bold text-brand-primary'>
@@ -154,9 +188,9 @@ export default function Hotel() {
                         <div className='flex gap-2'>
                             <button
                                 onClick={handleContinue}
-                                className="px-6 py-2 rounded-lg bg-surface-secondary text-content-primary font-semibold hover:bg-surface-tertiary transition"
+                                className="px-6 py-2 rounded-lg bg-brand-primary text-white font-semibold hover:bg-brand-primary-dark transition"
                             >
-                                Continue to Vehicles
+                                Back to Hotel Selection
                             </button>
                         </div>
                     </div>

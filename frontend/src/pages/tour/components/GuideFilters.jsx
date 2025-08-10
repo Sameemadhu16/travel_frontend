@@ -72,10 +72,10 @@ export default function GuideFilters() {
                         className="w-full border border-border-light rounded px-3 py-2 text-sm focus:outline-none focus:border-brand-primary"
                     >
                         <option>Any Price</option>
-                        <option>Under $50</option>
-                        <option>$50 - $75</option>
-                        <option>$75 - $100</option>
-                        <option>Over $100</option>
+                        <option>Under 5000</option>
+                        <option>5000 - 7500</option>
+                        <option>7500 - 10000</option>
+                        <option>Over 10000</option>
                     </select>
                 </div>
             </div>

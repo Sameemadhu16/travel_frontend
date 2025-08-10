@@ -119,7 +119,7 @@ export default function GuideCard({ guide, isSelected, onSelect, disabled }) {
             {/* Price and Buttons */}
             <div className="flex items-center justify-between">
                 <div>
-                    <span className="text-2xl font-bold text-content-primary">${price}</span>
+                    <span className="text-2xl font-bold text-content-primary">LKR{price}</span>
                     <span className="text-sm text-content-secondary">/day</span>
                 </div>
                 <button className="text-brand-primary text-sm font-medium hover:underline">

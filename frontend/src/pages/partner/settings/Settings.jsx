@@ -126,7 +126,7 @@ export default function Settings() {
                                     value={userData.profile.businessRegNo}
                                     placeholder="Enter business registration number"
                                 />
-                                <div className="col-span-2">
+                                <div className="w-1/4 col-span-2">
                                     <PrimaryButton text="Save Changes" />
                                 </div>
                             </div>
@@ -284,8 +284,10 @@ export default function Settings() {
                                                 placeholder="Enter postal code"
                                             />
                                         </div>
-                                        <div>
-                                            <PrimaryButton text="Save Billing Address" />
+                                        <div className='w-full flex justify-start'>
+                                            <div className="w-1/2">
+                                                <PrimaryButton text="Save Billing Address" />
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

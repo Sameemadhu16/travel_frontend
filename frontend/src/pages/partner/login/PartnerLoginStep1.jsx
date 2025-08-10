@@ -80,7 +80,7 @@ export default function PartnerLoginStep1() {
                                 />
                                 <Navigate path="/" className="hover:underline text-brand-primary">
                                     <Title 
-                                        title="Login "
+                                        title="Register now"
                                         size="text-[14px]"
                                         font="font-[400]"
                                         color="text-brand-primary"

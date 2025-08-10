@@ -171,7 +171,7 @@ export default function DestinationDetails() {
                 </div>
             </div>
             
-            <div className="mt-4">
+            {/* <div className="mt-4">
                 <h3 className="text-sm font-medium text-content-secondary mb-2">Destinations</h3>
                 <div className="flex gap-2 flex-wrap">
                     {getDestinations().map((destination, index) => (
@@ -183,7 +183,7 @@ export default function DestinationDetails() {
                         </span>
                     ))}
                 </div>
-            </div>
+            </div> */}
             
             {/* Additional sections for pickup details and preferences */}
             {(travelDetails.location || travelDetails.time) && (

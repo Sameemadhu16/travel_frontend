@@ -12,36 +12,12 @@ import FormContext from '../../context/InitialValues';
 import { createTripRequest } from './service';
 import { useSelector } from 'react-redux'
 
-const tripData = {
-  tripCode: "TRIP2025001",
-  user: { id: 1 },
-  pickupLocation: "Colombo",
-  tripStartDate: "2025-07-10",
-  tripEndDate: "2025-07-15",
-  startTime: "08:00:00",
-  numberOfAdults: 2,
-  numberOfKids: 1,
-  estimateDuration: "5 days",
-  distanceKm: 500,
-  tripStatus: "pending",
-  selectedVehicleAgency: { id: 1 },
-  selectedVehicle: { 
-    id: 202,
-    isVerified: false
-  },
-  selectedHotel: { id: 1002 },
-  selectedRooms: [
-    { id: 2 }
-  ],
-  basePrice: 1000.00,
-  totalFare: 1200.00
-};
-
 export default function CompleteRequest() {
-    const { formData, setFormData } = useContext(FormContext);
+    const { formData } = useContext(FormContext);
     const {user} = useSelector((state) => state.auth);
     const id = user.data.id;
     const tripReq = createTripRequest(formData, id);
+    console.log('Complete request formData:', formData)
   return (
     <Main>
       <div className="max-w-7xl mx-auto py-8 px-4">

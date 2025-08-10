@@ -10,7 +10,7 @@ const options = [
         id: 1,
         name: 'Guide',
         icon: FaUser,
-        path: '/'
+        path: '/tour/select-guide'
     },
     {
         id: 2,

@@ -6,7 +6,7 @@ const reportCards = [
   {
     title: "Revenue Analysis",
     description: "Monthly and yearly revenue breakdowns",
-    icon: <FaChartBar className="text-blue-500" />,
+    icon: <FaChartBar className="text-orange-500" />,
     lastUpdated: "Updated 2 hours ago"
   },
   {

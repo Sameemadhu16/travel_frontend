@@ -17,7 +17,17 @@ const initialTripFormData = {
             children: 0
         },
         itinerary: [
-            { day: 1, activities: [{ title: INITIAL_STRING, time: INITIAL_STRING, description: INITIAL_STRING }] }
+            { 
+                day: 1, 
+                activities: [{ 
+                    title: INITIAL_STRING, 
+                    time: INITIAL_STRING, 
+                    description: INITIAL_STRING,
+                    districtId: INITIAL_STRING,
+                    attractionId: INITIAL_STRING,
+                    customActivity: INITIAL_STRING
+                }] 
+            }
         ],
         tourPreferences: {
             interests: [],
@@ -32,7 +42,10 @@ const initialTripFormData = {
             email: INITIAL_STRING,
             phone: INITIAL_STRING,
             country: INITIAL_STRING,
+            isLocal: true, // Default to local visitor
             nicNumber: INITIAL_STRING,
+            passportNumber: INITIAL_STRING,
+            passportExpiry: INITIAL_STRING,
             optionalContact: INITIAL_STRING,
             specialRequests: INITIAL_STRING,
             ageGroup: INITIAL_STRING,
@@ -42,10 +55,12 @@ const initialTripFormData = {
         },
         selectedItems: {
             guides: [],
-            hotels: [],
-            rooms: [],
+            hotels: [], // Legacy - for compatibility
+            rooms: [], // Legacy - for compatibility
             vehicles: [],
-            selectedVehicle: null
+            selectedVehicle: null,
+            nightHotels: [], // Array to store hotel selections for each night
+            nightRooms: [] // Array to store room selections for each night (matches nightHotels index)
         },
         bookingSummary: {
             totalCost: INITIAL_NUMBER,

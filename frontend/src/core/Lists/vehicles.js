@@ -28,6 +28,7 @@ export const vehicleList = [
     model: 'Corolla',
     type: 'Sedan',
     pricePerDay: 5000,
+    pricePerKm: 45, // LKR per kilometer
     images: getRandomImages(vehicleImages),
     amenities: [
       "Air Conditioning",
@@ -54,6 +55,7 @@ export const vehicleList = [
     model: 'Explorer',
     type: 'SUV',
     pricePerDay: 7500,
+    pricePerKm: 65, // LKR per kilometer
     images: getRandomImages(vehicleImages),
     amenities: [
       "4WD",
@@ -80,6 +82,7 @@ export const vehicleList = [
     model: 'Civic',
     type: 'Sedan',
     pricePerDay: 6000,
+    pricePerKm: 50, // LKR per kilometer
     images: getRandomImages(vehicleImages),
     amenities: [
       "Air Conditioning",
@@ -106,6 +109,7 @@ export const vehicleList = [
     model: 'E-Class',
     type: 'Luxury Car',
     pricePerDay: 15000,
+    pricePerKm: 120, // LKR per kilometer
     images: getRandomImages(vehicleImages),
     amenities: [
       "Leather Seats",
@@ -132,6 +136,7 @@ export const vehicleList = [
     model: 'Leaf',
     type: 'Electric',
     pricePerDay: 7000,
+    pricePerKm: 35, // LKR per kilometer (lower due to electric efficiency)
     images: getRandomImages(vehicleImages),
     amenities: [
       "Electric Charging",
@@ -158,6 +163,7 @@ export const vehicleList = [
     model: 'Tucson',
     type: 'SUV',
     pricePerDay: 8500,
+    pricePerKm: 70, // LKR per kilometer
     images: getRandomImages(vehicleImages),
     amenities: [
       "4WD",
@@ -184,6 +190,7 @@ export const vehicleList = [
     model: 'Prius',
     type: 'Hybrid',
     pricePerDay: 6500,
+    pricePerKm: 40, // LKR per kilometer (lower due to hybrid efficiency)
     images: getRandomImages(vehicleImages),
     amenities: [
       "Hybrid Engine",
@@ -210,6 +217,7 @@ export const vehicleList = [
     model: 'Mustang Convertible',
     type: 'Convertible',
     pricePerDay: 12000,
+    pricePerKm: 95, // LKR per kilometer
     images: getRandomImages(vehicleImages),
     amenities: [
       "Convertible Roof",
@@ -236,6 +244,7 @@ export const vehicleList = [
     model: 'X5',
     type: 'Luxury SUV',
     pricePerDay: 9500,
+    pricePerKm: 85, // LKR per kilometer
     images: getRandomImages(vehicleImages),
     amenities: [
       "Leather Seats",
@@ -262,6 +271,7 @@ export const vehicleList = [
     model: 'Swift',
     type: 'Hatchback',
     pricePerDay: 4000,
+    pricePerKm: 35, // LKR per kilometer
     images: getRandomImages(vehicleImages),
     amenities: [
       "Air Conditioning",
