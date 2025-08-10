@@ -12,36 +12,39 @@ export default function AIGenerationStep(){
     const { formData } = useContext(FormContext);
     
     // Dummy data for testing UI
-    const [isGenerating, setIsGenerating] = useState(true);
-    const [generatedTrip, setGeneratedTrip] = useState({
-        itinerary: {
-            destinations: 8
-        },
-        recommendations: {
-            guides: [
-                { id: 1, name: "Guide 1", rating: 4.9, reviews: 120, price: 50 },
-                { id: 2, name: "Guide 2", rating: 4.8, reviews: 95, price: 60 },
-                { id: 3, name: "Guide 3", rating: 4.7, reviews: 87, price: 45 }
-            ],
-            hotels: [
-                { id: 1, name: "Hotel 1", rating: 4.6, reviews: 80, price: 30 },
-                { id: 2, name: "Hotel 2", rating: 4.7, reviews: 105, price: 50 },
-                { id: 3, name: "Hotel 3", rating: 4.8, reviews: 92, price: 70 }
-            ],
-            vehicles: [
-                { id: 1, name: "Vehicle 1", rating: 4.7, reviews: 50, price: 25 },
-                { id: 2, name: "Vehicle 2", rating: 4.8, reviews: 65, price: 40 },
-                { id: 3, name: "Vehicle 3", rating: 4.9, reviews: 78, price: 55 }
-            ]
-        }
-    });
+    const [isGenerating, setIsGenerating] = useState(false);
+    const [generatedTrip, setGeneratedTrip] = useState({});
+    const [error, setError] = useState('');
 
-    const handleGenerate = () => {
+    const handleGenerate = async () => {
         setIsGenerating(true);
-        // Simulate AI generation
-        setTimeout(() => {
+        setError(null);
+        
+        try {
+            console.log('🚀 Sending request with data:', formData);
+            
+            const response = await fetch('http://localhost:5000/api/recommendations/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const result = await response.json();
+            console.log('✅ Received response:', result);
+            
+            setGeneratedTrip(result);
+        } catch (error) {
+            console.error('❌ Error generating trip:', error);
+            setError(error.message);
+        } finally {
             setIsGenerating(false);
-        }, 3000);
+        }
     };
 
     const handleEdit = () => {
@@ -78,7 +81,7 @@ export default function AIGenerationStep(){
         );
     }
 
-    if (!generatedTrip) {
+    if (generatedTrip !== null) {
         return (
             <Main>
                 <StepIndicator currentStep={3} />
