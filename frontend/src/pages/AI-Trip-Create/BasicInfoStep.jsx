@@ -2,6 +2,7 @@ import { FaRobot } from 'react-icons/fa';
 import InputField from '../../components/InputField';
 import Main from '../../components/Main';
 import CustomSelector from '../../components/CustomSelector';
+import StepIndicator from '../../components/StepIndicator';
 import { useState } from 'react';
 import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
@@ -43,11 +44,9 @@ export default function BasicInfoStep() {
 
     return (
         <Main>
+            <StepIndicator currentStep={1} />
             <div className="space-y-6">
                 <div className="text-center mb-8">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-accent rounded-full mb-4">
-                        <FaRobot className="text-brand-primary text-2xl" />
-                    </div>
                     <h2 className="text-2xl font-bold text-content-primary mb-2">Let's Plan Your Perfect Trip</h2>
                     <p className="text-content-secondary">Tell us about your travel preferences and we'll create a personalized itinerary</p>
                 </div>

@@ -1,6 +1,7 @@
 import { FaCar, FaCheck, FaEdit, FaHotel, FaMapMarkerAlt, FaRobot, FaStar, FaUserTie } from "react-icons/fa";
 import PrimaryButton from "../../components/PrimaryButton";
 import SecondaryButton from "../../components/SecondaryButton";
+import StepIndicator from "../../components/StepIndicator";
 import { useState } from "react";
 import Main from "../../components/Main";
 import { navigateTo } from "../../core/navigateHelper";
@@ -12,39 +13,40 @@ export default function AIGenerationStep({  generatedTrip, isGenerating, onGener
     })
     if (isGenerating) {
         return (
-            <div className="text-center py-12">
-                <div className="inline-flex items-center justify-center w-20 h-20 bg-brand-accent rounded-full mb-6 animate-pulse">
-                    <FaRobot className="text-brand-primary text-3xl" />
-                </div>
-                <h2 className="text-2xl font-bold text-content-primary mb-4">Creating Your Perfect Trip...</h2>
-                <p className="text-content-secondary mb-8">Our AI is analyzing your preferences and matching them with the best local experiences</p>
-                <div className="max-w-md mx-auto bg-surface-secondary rounded-lg p-6">
-                    <div className="space-y-3">
-                        <div className="flex items-center">
-                            <div className="w-4 h-4 bg-brand-primary rounded-full animate-pulse mr-3"></div>
-                            <span className="text-content-secondary">Analyzing destination and preferences...</span>
-                        </div>
-                        <div className="flex items-center">
-                            <div className="w-4 h-4 bg-brand-primary rounded-full animate-pulse mr-3" style={{animationDelay: '0.5s'}}></div>
-                            <span className="text-content-secondary">Finding best guides and activities...</span>
-                        </div>
-                        <div className="flex items-center">
-                            <div className="w-4 h-4 bg-brand-primary rounded-full animate-pulse mr-3" style={{animationDelay: '1s'}}></div>
-                            <span className="text-content-secondary">Matching hotels and transportation...</span>
+            <Main>
+                <StepIndicator currentStep={3} />
+                <div className="text-center py-12">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-brand-accent rounded-full mb-6 animate-pulse">
+                        <FaRobot className="text-brand-primary text-3xl" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-content-primary mb-4">Creating Your Perfect Trip...</h2>
+                    <p className="text-content-secondary mb-8">Our AI is analyzing your preferences and matching them with the best local experiences</p>
+                    <div className="max-w-md mx-auto bg-surface-secondary rounded-lg p-6">
+                        <div className="space-y-3">
+                            <div className="flex items-center">
+                                <div className="w-4 h-4 bg-brand-primary rounded-full animate-pulse mr-3"></div>
+                                <span className="text-content-secondary">Analyzing destination and preferences...</span>
+                            </div>
+                            <div className="flex items-center">
+                                <div className="w-4 h-4 bg-brand-primary rounded-full animate-pulse mr-3" style={{animationDelay: '0.5s'}}></div>
+                                <span className="text-content-secondary">Finding best guides and activities...</span>
+                            </div>
+                            <div className="flex items-center">
+                                <div className="w-4 h-4 bg-brand-primary rounded-full animate-pulse mr-3" style={{animationDelay: '1s'}}></div>
+                                <span className="text-content-secondary">Matching hotels and transportation...</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+            </Main>
         );
     }
 
     if (!generatedTrip) {
         return (
             <Main>
+                <StepIndicator currentStep={3} />
                 <div className="text-center py-12">
-                    <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-accent rounded-full mb-6">
-                        <FaRobot className="text-brand-primary text-2xl" />
-                    </div>
                     <h2 className="text-2xl font-bold text-content-primary mb-4">Ready to Generate Your Trip?</h2>
                     <p className="text-content-secondary mb-8">Based on your preferences, we'll create a personalized itinerary with recommendations for guides, hotels, and vehicles</p>
                     
@@ -109,7 +111,9 @@ export default function AIGenerationStep({  generatedTrip, isGenerating, onGener
 
     // Show generated trip results
     return (
-        <div className="space-y-8">
+        <Main>
+            <StepIndicator currentStep={3} />
+            <div className="space-y-8">
             <div className="text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-success rounded-full mb-4">
                     <FaCheck className="text-white text-2xl" />
@@ -267,5 +271,6 @@ export default function AIGenerationStep({  generatedTrip, isGenerating, onGener
                 />
             </div>
         </div>
+        </Main>
     );
 };

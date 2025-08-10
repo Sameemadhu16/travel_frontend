@@ -3,6 +3,7 @@ import { FaCamera, FaMonument, FaMountain, FaMusic, FaShoppingBag, FaSpa, FaUmbr
 import Main from "../../components/Main";
 import SecondaryButton from "../../components/SecondaryButton";
 import PrimaryButton from "../../components/PrimaryButton";
+import StepIndicator from "../../components/StepIndicator";
 import { navigateTo } from "../../core/navigateHelper";
 
     const tripTypes = [
@@ -158,6 +159,7 @@ export default function PreferenceInfoStep (){
 
     return (
         <Main>
+            <StepIndicator currentStep={2} />
             <div className="space-y-8">
                 <div className="text-center">
                     <h2 className="text-2xl font-bold text-content-primary mb-2">What kind of trip are you looking for?</h2>
