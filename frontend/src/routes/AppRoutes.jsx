@@ -107,6 +107,7 @@ import HotelCalendar from '../pages/hotels/calendar/HotelCalendar';
 import PaymentsPage from '../pages/hotels/payments/PaymentsPage';
 import BasicInfoStep from '../pages/AI-Trip-Create/BasicInfoStep';
 import PreferenceInfoStep from '../pages/AI-Trip-Create/PreferenceInfoStep';
+import AIGenerationStep from '../pages/AI-Trip-Create/AIGenerationStep';
 // import { Users } from 'lucide-react';
 
 export default function AppRoutes() {
@@ -300,6 +301,8 @@ export default function AppRoutes() {
                     {/* Ai Trip creation part */}
                     <Route path='/ai-trip-basic-info' element={<BasicInfoStep/>} />
                     <Route path='/ai-trip-preference-info' element={<PreferenceInfoStep/>} />
+                    <Route path='/ai-trip-generation' element={<AIGenerationStep/>} />
+
                 </>
             ) : (
                 <>

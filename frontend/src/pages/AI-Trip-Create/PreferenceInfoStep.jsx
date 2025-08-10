@@ -153,7 +153,7 @@ export default function PreferenceInfoStep (){
     }, []);
 
     const handleNextClick = useCallback(() => {
-        navigateTo('/ai-trip-preference-info');
+        navigateTo('/ai-trip-generation');
     }, []);
 
     return (
