@@ -1,4 +1,3 @@
-import { FaRobot } from 'react-icons/fa';
 import InputField from '../../components/InputField';
 import Main from '../../components/Main';
 import CustomSelector from '../../components/CustomSelector';
@@ -32,7 +31,7 @@ const budgetOptions = [
 export default function BasicInfoStep() {
     const { formData, setFormData } = useContext(FormContext);
     const [error, setError] = useState('');
-    console.log(formData);
+
     const handleChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
@@ -42,9 +41,9 @@ export default function BasicInfoStep() {
     })
 
     const handleNext = useCallback(() => {
-        const errors = formValidator(formData, ['destination, duration, adults, children, startDate,'], {})
-        setError(errors.message);
-        if(errors.message === ''){
+        const errors = formValidator(formData, ['destination', 'duration', 'adults', 'children', 'startDate'], {});
+        setError(errors?.message);
+        if(errors === null){
             navigateTo('/ai-trip/preference-info')
         }
     },[])

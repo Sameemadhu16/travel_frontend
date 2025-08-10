@@ -99,14 +99,14 @@ const loginPartnerAccountForm = {
 
 const initialAiTripData = {
     formData: {
-        destination: '',
-        duration: '',
-        adults: 1,
-        children: 0,
-        startDate: '',
-        budget: '',
-        tripType: '',
-        activityLevel: '',
+        destination: INITIAL_STRING,
+        duration: INITIAL_STRING,
+        adults: INITIAL_NUMBER,
+        children: INITIAL_NUMBER,
+        startDate: INITIAL_STRING,
+        budget: INITIAL_STRING,
+        tripType: INITIAL_STRING,
+        activityLevel: INITIAL_STRING,
         interests: [],
     },
     setFormData: () => {}
