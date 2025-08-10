@@ -25,8 +25,7 @@ export default function TravelerRegister() {
     });
     const [errors, setErrors] = useState({});
     const dispatch = useDispatch();
-    const { loading } = useSelector((state) => state.auth);
-
+    const [loading, setLoading] = useState(false);
     const handleSubmit = useCallback( async (e) => {
         e.preventDefault();
         try {
@@ -39,7 +38,7 @@ export default function TravelerRegister() {
                 if (code) {
                     const errorMessage = getFirebaseErrorMessage(code);
                     showToastMessage('error', errorMessage); 
-                    dispatch(registerFailure());
+                    dispatch(registerFailure(errorMessage));
                     return;
                 }
 
@@ -54,11 +53,11 @@ export default function TravelerRegister() {
                 showToastMessage('success', 'Traveler account created successfully!');
                 navigateTo('/partner-login/step-1');
             } else {
-                dispatch(registerFailure());
+                dispatch(registerFailure('Please fix the validation errors'));
             }
         } catch (e) {
             console.error("Unexpected error:", e);
-            dispatch(registerFailure());
+            dispatch(registerFailure(e.message || 'Registration failed. Please try again.'));
             showToastMessage('error', 'Registration failed. Please try again.');
         }
     }, [formData]);
