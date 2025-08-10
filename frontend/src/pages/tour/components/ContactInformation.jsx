@@ -1,31 +1,29 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState, useCallback } from 'react';
 import FormContext from '../../../context/InitialValues';
 
 export default function ContactInformation({setValid}) {
     const { formData, setFormData } = useContext(FormContext);
-    // Get contactInfo from formData as per initialTripFormData structure
-    const contactInfo = formData.contactInfo;
+    
+    // Add null checks and default values to prevent undefined errors
+    const contactInfo = formData?.contactInfo || {
+        fullName: '',
+        email: '',
+        phone: '',
+        country: '',
+        isLocal: true, // Default to local visitor
+        nicNumber: '',
+        passportNumber: '',
+        passportExpiry: '',
+        optionalContact: '',
+        specialRequests: '',
+        ageGroup: '',
+        occupation: '',
+        travelExperience: '',
+        referralSource: ''
+    };
+    
     const [localErrors, setLocalErrors] = useState({});
     const [localTouched, setLocalTouched] = useState({});
-
-    useEffect(() => {
-        const valid = isFormValid();
-        setValid(valid);
-    }, [formData.travelDetails, formData.itinerary]);
-
-    // Set default value to local visitor on component mount
-    useEffect(() => {
-        if (contactInfo.isLocal === undefined) {
-            setFormData(prev => ({
-                ...prev,
-                contactInfo: { 
-                    ...prev.contactInfo, 
-                    isLocal: true 
-                }
-            }));
-        }
-    }, [contactInfo.isLocal, setFormData]);
-
 
     const validateField = (name, value) => {
         let error = '';
@@ -78,37 +76,7 @@ export default function ContactInformation({setValid}) {
         return error;
     };
 
-    const handleInputChange = (e) => {
-        const { name, value, type, checked } = e.target;
-        const newValue = type === 'checkbox' ? checked : value;
-        
-        // Update contactInfo in context
-        setFormData(prev => ({
-            ...prev,
-            contactInfo: { 
-                ...prev.contactInfo, 
-                [name]: newValue,
-                // Clear opposite fields when switching between local/foreigner
-                ...(name === 'isLocal' && newValue ? { passportNumber: '', passportExpiry: '' } : {}),
-                ...(name === 'isLocal' && !newValue ? { nicNumber: '' } : {})
-            }
-        }));
-        
-        // Validation
-        if (localTouched[name]) {
-            const error = validateField(name, newValue);
-            setLocalErrors(prev => ({ ...prev, [name]: error }));
-        }
-    };
-
-    const handleBlur = (e) => {
-        const { name, value } = e.target;
-        setLocalTouched(prev => ({ ...prev, [name]: true }));
-        const error = validateField(name, value);
-        setLocalErrors(prev => ({ ...prev, [name]: error }));
-    };
-
-    const isFormValid = () => {
+    const isFormValid = useCallback(() => {
         const requiredFields = ['fullName', 'email', 'phone', 'country'];
         
         // Add conditional required fields based on local/foreigner status
@@ -131,6 +99,57 @@ export default function ContactInformation({setValid}) {
             
             return true;
         });
+    }, [contactInfo]);
+
+    useEffect(() => {
+        const valid = isFormValid();
+        setValid(valid);
+    }, [contactInfo, isFormValid, setValid]);
+
+    // Set default value to local visitor on component mount
+    useEffect(() => {
+        if (contactInfo.isLocal === undefined) {
+            setFormData(prev => ({
+                ...prev,
+                contactInfo: { 
+                    ...(prev?.contactInfo || {}), 
+                    isLocal: true 
+                }
+            }));
+        }
+    }, [contactInfo.isLocal, setFormData]);
+
+    const handleInputChange = (e) => {
+        const { name, value, type, checked } = e.target;
+        const newValue = type === 'checkbox' ? checked : value;
+        
+        // Update contactInfo in context
+        setFormData(prev => {
+            const safePrev = prev || {};
+            return {
+                ...safePrev,
+                contactInfo: { 
+                    ...(safePrev.contactInfo || {}), 
+                    [name]: newValue,
+                    // Clear opposite fields when switching between local/foreigner
+                    ...(name === 'isLocal' && newValue ? { passportNumber: '', passportExpiry: '' } : {}),
+                    ...(name === 'isLocal' && !newValue ? { nicNumber: '' } : {})
+                }
+            };
+        });
+        
+        // Validation
+        if (localTouched[name]) {
+            const error = validateField(name, newValue);
+            setLocalErrors(prev => ({ ...prev, [name]: error }));
+        }
+    };
+
+    const handleBlur = (e) => {
+        const { name, value } = e.target;
+        setLocalTouched(prev => ({ ...prev, [name]: true }));
+        const error = validateField(name, value);
+        setLocalErrors(prev => ({ ...prev, [name]: error }));
     };
 
     return (
