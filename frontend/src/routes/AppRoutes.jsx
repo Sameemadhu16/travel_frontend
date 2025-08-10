@@ -142,27 +142,6 @@ export default function AppRoutes() {
                     </FormProvider>
                 }
             />
-
-            {/* Tour routes with TourProvider - available to all users */}
-            <Route
-                path="/tour/*"
-                element={
-                    <FormProvider initialValues={initialTripFormData.formData}>
-                        <Routes>
-                            <Route path="create-tour" element={<CreateTour />} />
-                            <Route path="select-guide" element={<SelectGuide />} />
-                            <Route path="select-hotel" element={<Search />} />
-                            <Route path="select-hotel/:id" element={<Hotel />} />
-                            <Route path="select-vehicle" element={<SearchVehicles />} />
-                            <Route path="select-vehicle/:id" element={<Vehicle />} />
-                            <Route path="complete-request" element={<CompleteRequest />} />
-                            <Route path="request-sent" element={<RequestSent />} />
-                            <Route path="payment" element={<Payment />} />
-                        </Routes>
-                    </FormProvider>
-                }
-            />
-
             {/* Hotel and Vehicle search routes with FormProvider */}
             <Route path='/hotels-search' element={
                 <FormProvider initialValues={initialTripFormData.formData}>
