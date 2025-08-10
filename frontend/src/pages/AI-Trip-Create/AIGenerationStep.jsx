@@ -1,7 +1,9 @@
-import { FaCar, FaCheck, FaHotel, FaMapMarkerAlt, FaRobot, FaStar, FaUserTie } from "react-icons/fa";
+import { FaCar, FaCheck, FaEdit, FaHotel, FaMapMarkerAlt, FaRobot, FaStar, FaUserTie } from "react-icons/fa";
 import PrimaryButton from "../../components/PrimaryButton";
 import SecondaryButton from "../../components/SecondaryButton";
 import { useState } from "react";
+import Main from "../../components/Main";
+import { navigateTo } from "../../core/navigateHelper";
 
 export default function AIGenerationStep({  generatedTrip, isGenerating, onGenerate, onEdit }){
 
@@ -38,36 +40,70 @@ export default function AIGenerationStep({  generatedTrip, isGenerating, onGener
 
     if (!generatedTrip) {
         return (
-            <div className="text-center py-12">
-                <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-accent rounded-full mb-6">
-                    <FaRobot className="text-brand-primary text-2xl" />
-                </div>
-                <h2 className="text-2xl font-bold text-content-primary mb-4">Ready to Generate Your Trip?</h2>
-                <p className="text-content-secondary mb-8">Based on your preferences, we'll create a personalized itinerary with recommendations for guides, hotels, and vehicles</p>
-                
-                {/* Summary of selections */}
-                <div className="max-w-2xl mx-auto bg-surface-secondary rounded-lg p-6 mb-8">
-                    <h3 className="font-semibold text-content-primary mb-4">Trip Summary</h3>
-                    <div className="grid md:grid-cols-2 gap-4 text-sm">
-                        <div className="text-left">
-                            <p><span className="font-medium">Destination:</span> {formData.destination}</p>
-                            <p><span className="font-medium">Duration:</span> {formData.duration} days</p>
-                            <p><span className="font-medium">Group:</span> {formData.adults} adults, {formData.children} children</p>
+            <Main>
+                <div className="text-center py-12">
+                    <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-accent rounded-full mb-6">
+                        <FaRobot className="text-brand-primary text-2xl" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-content-primary mb-4">Ready to Generate Your Trip?</h2>
+                    <p className="text-content-secondary mb-8">Based on your preferences, we'll create a personalized itinerary with recommendations for guides, hotels, and vehicles</p>
+                    
+                    {/* Summary of selections */}
+                    <div className="max-w-3xl mx-auto bg-surface-secondary rounded-2xl p-8 mb-10 border border-gray-200">
+                        <div className="flex justify-between items-center mb-6 border-b pb-3">
+                            <h3 className="font-bold text-2xl text-content-primary">
+                                Trip Summary
+                            </h3>
+                            <div 
+                                onClick={() => navigateTo('/ai-trip-basic-info')}
+                                className="flex items-center justify-center gap-1 text-brand-primary cursor-pointer hover:underline">
+                                <FaEdit/>
+                                <p>Edit</p>
+                            </div>
                         </div>
-                        <div className="text-left">
-                            <p><span className="font-medium">Trip Type:</span> {formData.tripType?.[0] || 'Not selected'}</p>
-                            <p><span className="font-medium">Budget:</span> {formData.budget || 'Flexible'}</p>
-                            <p><span className="font-medium">Activity Level:</span> {formData.activityLevel || 'Not selected'}</p>
+
+                        <div className="grid md:grid-cols-2 gap-6 text-lg leading-relaxed">
+                            {/* Left column */}
+                            <div className="text-left space-y-3">
+                            <p>
+                                <span className="font-semibold text-gray-800">Destination:</span>{" "}
+                                {formData.destination || "Not specified"}
+                            </p>
+                            <p>
+                                <span className="font-semibold text-gray-800">Duration:</span>{" "}
+                                {formData.duration || "0"} days
+                            </p>
+                            <p>
+                                <span className="font-semibold text-gray-800">Group:</span>{" "}
+                                {formData.adults || 0} adults, {formData.children || 0} children
+                            </p>
+                            </div>
+
+                            {/* Right column */}
+                            <div className="text-left space-y-3">
+                            <p>
+                                <span className="font-semibold text-gray-800">Trip Type:</span>{" "}
+                                {formData.tripType?.[0] || "Not selected"}
+                            </p>
+                            <p>
+                                <span className="font-semibold text-gray-800">Budget:</span>{" "}
+                                {formData.budget || "Flexible"}
+                            </p>
+                            <p>
+                                <span className="font-semibold text-gray-800">Activity Level:</span>{" "}
+                                {formData.activityLevel || "Not selected"}
+                            </p>
+                            </div>
                         </div>
                     </div>
-                </div>
 
-                <PrimaryButton
-                    text="Generate My Trip with AI"
-                    onClick={onGenerate}
-                    className="max-w-md mx-auto"
-                />
-            </div>
+                    <PrimaryButton
+                        text="Generate My Trip with AI"
+                        onClick={onGenerate}
+                        className="max-w-md mx-auto"
+                    />
+                </div>
+            </Main>
         );
     }
 
