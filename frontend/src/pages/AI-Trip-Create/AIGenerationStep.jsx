@@ -7,14 +7,50 @@ import Main from "../../components/Main";
 import { navigateTo } from "../../core/navigateHelper";
 import FormContext from "../../context/InitialValues";
 
-export default function AIGenerationStep({  generatedTrip, isGenerating, onGenerate, onEdit }){
+export default function AIGenerationStep(){
 
     const { formData } = useContext(FormContext);
+    
+    // Dummy data for testing UI
+    const [isGenerating, setIsGenerating] = useState(true);
+    const [generatedTrip, setGeneratedTrip] = useState({
+        itinerary: {
+            destinations: 8
+        },
+        recommendations: {
+            guides: [
+                { id: 1, name: "Guide 1", rating: 4.9, reviews: 120, price: 50 },
+                { id: 2, name: "Guide 2", rating: 4.8, reviews: 95, price: 60 },
+                { id: 3, name: "Guide 3", rating: 4.7, reviews: 87, price: 45 }
+            ],
+            hotels: [
+                { id: 1, name: "Hotel 1", rating: 4.6, reviews: 80, price: 30 },
+                { id: 2, name: "Hotel 2", rating: 4.7, reviews: 105, price: 50 },
+                { id: 3, name: "Hotel 3", rating: 4.8, reviews: 92, price: 70 }
+            ],
+            vehicles: [
+                { id: 1, name: "Vehicle 1", rating: 4.7, reviews: 50, price: 25 },
+                { id: 2, name: "Vehicle 2", rating: 4.8, reviews: 65, price: 40 },
+                { id: 3, name: "Vehicle 3", rating: 4.9, reviews: 78, price: 55 }
+            ]
+        }
+    });
+
+    const handleGenerate = () => {
+        setIsGenerating(true);
+        // Simulate AI generation
+        setTimeout(() => {
+            setIsGenerating(false);
+        }, 3000);
+    };
+
+    const handleEdit = () => {
+        navigateTo('/ai-trip/basic-info');
+    };
     
     if (isGenerating) {
         return (
             <Main>
-                <StepIndicator currentStep={3} />
                 <div className="text-center py-12">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-brand-accent rounded-full mb-6 animate-pulse">
                         <FaRobot className="text-brand-primary text-3xl" />
@@ -101,7 +137,7 @@ export default function AIGenerationStep({  generatedTrip, isGenerating, onGener
 
                     <PrimaryButton
                         text="Generate My Trip with AI"
-                        onClick={onGenerate}
+                        onClick={handleGenerate}
                         className="max-w-md mx-auto"
                     />
                 </div>
@@ -112,7 +148,6 @@ export default function AIGenerationStep({  generatedTrip, isGenerating, onGener
     // Show generated trip results
     return (
         <Main>
-            <StepIndicator currentStep={3} />
             <div className="space-y-8">
             <div className="text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-success rounded-full mb-4">
@@ -123,7 +158,7 @@ export default function AIGenerationStep({  generatedTrip, isGenerating, onGener
             </div>
 
             {/* Trip Overview */}
-            <div className="bg-gradient-to-r from-brand-accent to-brand-secondary rounded-lg p-6">
+            <div className="bg-brand-accent rounded-lg p-6">
                 <h3 className="text-xl font-bold text-content-primary mb-4">{formData.destination} - {formData.duration} Day Adventure</h3>
                 <div className="grid md:grid-cols-4 gap-4">
                     <div className="text-center">
@@ -262,7 +297,7 @@ export default function AIGenerationStep({  generatedTrip, isGenerating, onGener
             <div className="grid md:grid-cols-2 gap-4">
                 <SecondaryButton
                     text="Edit Trip Details"
-                    onClick={onEdit}
+                    onClick={handleEdit}
                     image=""
                 />
                 <PrimaryButton
