@@ -3,11 +3,12 @@ import InputField from '../../components/InputField';
 import Main from '../../components/Main';
 import CustomSelector from '../../components/CustomSelector';
 import StepIndicator from '../../components/StepIndicator';
-import { useContext, useState } from 'react';
+import { useCallback, useContext, useState } from 'react';
 import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import { navigateTo } from '../../core/navigateHelper';
 import FormContext from '../../context/InitialValues';
+import { formValidator } from '../../core/validation';
 
 const durationOptions = [
     { id: "", value: "Select duration" },
@@ -30,10 +31,23 @@ const budgetOptions = [
 
 export default function BasicInfoStep() {
     const { formData, setFormData } = useContext(FormContext);
-    
+    const [error, setError] = useState('');
+    console.log(formData);
     const handleChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
     };
+
+    const handleBack = useCallback(() => {
+        navigateTo('/')
+    })
+
+    const handleNext = useCallback(() => {
+        const errors = formValidator(formData, ['destination, duration, adults, children, startDate,'], {})
+        setError(errors.message);
+        if(errors.message === ''){
+            navigateTo('/ai-trip/preference-info')
+        }
+    },[])
 
     return (
         <Main>
@@ -96,14 +110,19 @@ export default function BasicInfoStep() {
                     />
                 </div>
             </div>
+            {
+                error && (
+                    <p className='text-danger text-[16px] mt-5'>*All field are required</p>
+                )
+            }
             <div className='w-1/4 grid grid-cols-2 gap-2 mt-5 mb-5'>
                 <SecondaryButton 
                     text='Back'
-                    onClick={() => navigateTo('/')}
+                    onClick={ handleBack } 
                 />
                 <PrimaryButton
                     text='Next'
-                    onClick={() => navigateTo('/ai-trip/preference-info')}
+                    onClick={ handleNext }
                 />
             </div>
         </Main>

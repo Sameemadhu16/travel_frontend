@@ -302,7 +302,7 @@ export default function AppRoutes() {
                     <Route 
                         path='/ai-trip/*'
                         element={
-                            <FormProvider initialValues={initialAiTripData}>
+                            <FormProvider initialValues={initialAiTripData.formData}>
                                 <Routes>
                                     <Route path='basic-info' element={<BasicInfoStep/>} />
                                     <Route path='preference-info' element={<PreferenceInfoStep/>} />
