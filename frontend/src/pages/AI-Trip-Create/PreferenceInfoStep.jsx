@@ -1,11 +1,10 @@
-import { useState, useMemo, useCallback, useContext } from "react";
+import { useMemo, useCallback, useContext, useState } from "react";
 import { FaCamera, FaMonument, FaMountain, FaMusic, FaShoppingBag, FaSpa, FaUmbrellaBeach, FaUsers, FaUtensils } from "react-icons/fa";
 import Main from "../../components/Main";
-import SecondaryButton from "../../components/SecondaryButton";
-import PrimaryButton from "../../components/PrimaryButton";
 import StepIndicator from "../../components/StepIndicator";
 import { navigateTo } from "../../core/navigateHelper";
 import FormContext from "../../context/InitialValues";
+import ButtonContainer from "./components/ButtonContainer";
 
     const tripTypes = [
         { id: 'cultural', label: 'Cultural & Historical', icon: FaMonument },
@@ -36,7 +35,7 @@ import FormContext from "../../context/InitialValues";
 export default function PreferenceInfoStep (){
 
     const { formData, setFormData } = useContext(FormContext);
-
+    const [error, setError] = useState('');
     const toggleSelection = useCallback((field, value) => {
         setFormData(prev => {
             const currentArray = prev[field] || [];
@@ -150,10 +149,14 @@ export default function PreferenceInfoStep (){
     const handleBackClick = useCallback(() => {
         navigateTo('/ai-trip/basic-info');
     }, []);
-
+    
     const handleNextClick = useCallback(() => {
+        if(formData.activityLevel === '' || formData.tripType === '' || formData.interests.length === 0){
+            setError('Your travel preferences guide our AI to create a customized trip that matches your unique style.')
+            return;
+        }
         navigateTo('/ai-trip/generation');
-    }, []);
+    }, [formData]);
 
     return (
         <Main>
@@ -188,16 +191,12 @@ export default function PreferenceInfoStep (){
                     </div>
                 </div>
             </div>
-            <div className='w-1/4 grid grid-cols-2 gap-2 mt-5 mb-5'>
-                <SecondaryButton
-                    text='Back'
-                    onClick={handleBackClick}
-                />
-                <PrimaryButton
-                    text='Next'
-                    onClick={handleNextClick}
-                />
-            </div>
+            {
+                error && (
+                    <p className='text-danger text-[16px] mt-5'>{error}</p>
+                )
+            }
+            <ButtonContainer handleNext={handleNextClick} handleBack={handleBackClick}/>
         </Main>
     );
 };

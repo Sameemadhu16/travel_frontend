@@ -3,11 +3,10 @@ import Main from '../../components/Main';
 import CustomSelector from '../../components/CustomSelector';
 import StepIndicator from '../../components/StepIndicator';
 import { useCallback, useContext, useState } from 'react';
-import PrimaryButton from '../../components/PrimaryButton';
-import SecondaryButton from '../../components/SecondaryButton';
 import { navigateTo } from '../../core/navigateHelper';
 import FormContext from '../../context/InitialValues';
 import { formValidator } from '../../core/validation';
+import ButtonContainer from './components/ButtonContainer';
 
 const durationOptions = [
     { id: "", value: "Select duration" },
@@ -23,9 +22,9 @@ const durationOptions = [
 
 const budgetOptions = [
     { id:"", value: "Select Budget"},
-    { id:"1", value: "Budget (Under $50/day)"},
-    { id:"2", value: "Mid-range ($50-150/day)"},
-    { id:"3", value: "Luxury ($150+/day)"},
+    { id:"Budget (Under $50/day)", value: "Budget (Under $50/day)"},
+    { id:"Mid-range ($50-150/day)", value: "Mid-range ($50-150/day)"},
+    { id:"Luxury ($150+/day)", value: "Luxury ($150+/day)"},
 ];
 
 export default function BasicInfoStep() {
@@ -46,7 +45,7 @@ export default function BasicInfoStep() {
         if(errors === null){
             navigateTo('/ai-trip/preference-info')
         }
-    },[])
+    },[formData])
 
     return (
         <Main>
@@ -79,7 +78,8 @@ export default function BasicInfoStep() {
                         label="Number of Adults"
                         type="number"
                         value={formData.adults}
-                        onChange={(e) => handleChange('adults', parseInt(e.target.value) || 0)}
+                        onChange={(e) => handleChange('adults', e.target.value)}
+                        min="0"
                         placeholder="0"
                     />
 
@@ -87,7 +87,8 @@ export default function BasicInfoStep() {
                         label="Number of Children"
                         type="number"
                         value={formData.children}
-                        onChange={(e) => handleChange('children', parseInt(e.target.value) || 0)}
+                        onChange={(e) => handleChange('children', e.target.value)}
+                        min="0"
                         placeholder="0"
                     />
                 </div>
@@ -114,16 +115,7 @@ export default function BasicInfoStep() {
                     <p className='text-danger text-[16px] mt-5'>*All field are required</p>
                 )
             }
-            <div className='w-1/4 grid grid-cols-2 gap-2 mt-5 mb-5'>
-                <SecondaryButton 
-                    text='Back'
-                    onClick={ handleBack } 
-                />
-                <PrimaryButton
-                    text='Next'
-                    onClick={ handleNext }
-                />
-            </div>
+            <ButtonContainer handleNext={handleNext} handleBack={handleBack}/>
         </Main>
     );
 }
