@@ -7,7 +7,7 @@ class DatabaseService {
             const query = `
                 SELECT 
                 g.id,
-                u.first_name,  
+                u.first_name as name,  
                 g.bio as description,
                 g.hours_rate * 8 as price_per_day,  
                 g.experience_years,
@@ -26,23 +26,29 @@ class DatabaseService {
             LIMIT 20
             `;
 
+            console.log('🔍 Executing guides query...');
             const result = await db.query(query);
+            console.log(`📊 Database returned ${result.rows.length} guides`);
             
             if (result.rows.length === 0) {
+                console.log('⚠️ No guides found in database');
                 return [];
             }
             
-            return result.rows.map(guide => ({
-                id: guide.id,
+            const mappedGuides = result.rows.map(guide => ({
+                id: guide.id.toString(),
                 name: guide.name,
                 specialties: this.getGuideSpecialties(guide.experience_years),
-                rating: parseFloat(guide.rating) || 4.5,
-                price: parseInt(guide.price_per_day) || 15000, // LKR instead of USD
-                reviews: parseInt(guide.reviews) || 10,
+                rating: 4.5, // Fixed rating for now
+                price: parseInt(guide.price_per_day) || 15000,
+                reviews: 10, // Fixed reviews for now
                 verified: guide.is_verified,
                 experience: guide.experience_years,
                 description: guide.description
             }));
+
+            console.log('✅ Mapped guides:', mappedGuides.length);
+            return mappedGuides;
             
         } catch (e) {
             console.error('❌ Database error fetching guides:', e.message);
@@ -55,31 +61,37 @@ class DatabaseService {
             const query = `
                 SELECT 
                     h.id,
-                    h.hotel_name,
+                    h.hotel_name as name,
                     h.city,
                     h.description,
                     h.type
                 FROM hotels h
                 WHERE h.city ILIKE $1 
+                LIMIT 20
             `;
             
+            console.log('🔍 Executing hotels query for:', destination);
             const result = await db.query(query, [`%${destination}%`]);
+            console.log(`📊 Database returned ${result.rows.length} hotels`);
             
             if (result.rows.length === 0) {
-                console.log(`❌ No hotels found in ${destination}`);
+                console.log(`⚠️ No hotels found in ${destination}`);
                 return [];
             }
             
-            return result.rows.map(hotel => ({
-                id: hotel.id,
+            const mappedHotels = result.rows.map(hotel => ({
+                id: hotel.id.toString(),
                 name: hotel.name,
-                price: parseInt(hotel.price) || 22500, // LKR instead of USD
-                rating: parseFloat(hotel.rating) || 4.3,
-                reviews: parseInt(hotel.reviews) || 50,
+                price: 22500, // Fixed price for now
+                rating: 4.3, // Fixed rating for now
+                reviews: 50, // Fixed reviews for now
                 location: hotel.city,
                 type: hotel.type,
                 description: hotel.description
             }));
+
+            console.log('✅ Mapped hotels:', mappedHotels.length);
+            return mappedHotels;
             
         } catch (e) {
             console.error('❌ Database error fetching hotels:', e.message);
@@ -106,22 +118,28 @@ class DatabaseService {
                 LIMIT 15
             `;
             
+            console.log('🔍 Executing vehicles query for capacity:', totalPeople);
             const result = await db.query(query, [totalPeople]);
+            console.log(`📊 Database returned ${result.rows.length} vehicles`);
             
             if (result.rows.length === 0) {
+                console.log(`⚠️ No vehicles found for ${totalPeople} people`);
                 return [];
             }
             
-            return result.rows.map(vehicle => ({
-                id: vehicle.id,
+            const mappedVehicles = result.rows.map(vehicle => ({
+                id: vehicle.id.toString(),
                 name: `${vehicle.name} ${vehicle.vehicle_model}`.trim(),
                 capacity: vehicle.capacity,
-                price: parseInt(vehicle.price) || 9000, // LKR instead of USD
-                rating: parseFloat(vehicle.rating) || 4.2,
-                reviews: parseInt(vehicle.reviews) || 25,
-                pricePerKm: parseFloat(vehicle.price_per_kilometer) || 150, // LKR per km
+                price: parseInt(vehicle.base_price) || 9000,
+                rating: 4.2, // Fixed rating for now
+                reviews: 25, // Fixed reviews for now
+                pricePerKm: parseFloat(vehicle.price_per_kilometer) || 150,
                 vehicleNo: vehicle.vehicle_no
             }));
+
+            console.log('✅ Mapped vehicles:', mappedVehicles.length);
+            return mappedVehicles;
             
         } catch (e) {
             console.error('❌ Database error fetching vehicles:', e.message);
