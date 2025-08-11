@@ -152,11 +152,13 @@ export default function AIGenerationStep(){
                         </div>
                     </div>
 
-                    <PrimaryButton
-                        text="Generate My Trip with AI"
-                        onClick={handleGenerate}
-                        className="max-w-md mx-auto"
-                    />
+                    <div className="w-full">
+                        <PrimaryButton
+                            text="Generate My Trip with AI"
+                            onClick={handleGenerate}
+                            className="max-w-md mx-auto"
+                        />
+                    </div>
                 </div>
             </Main>
         );
@@ -380,7 +382,7 @@ export default function AIGenerationStep(){
                         <p className="text-sm text-content-secondary font-bold">Total</p>
                         <p className="text-2xl font-bold text-success">
                             ${((generatedTrip?.recommendations?.guides?.[0]?.price || 50) + 
-                               (generatedTrip?.recommendations?.hotels?.[0]?.price || 80) + 
+                                (generatedTrip?.recommendations?.hotels?.[0]?.price || 80) + 
                                (generatedTrip?.recommendations?.vehicles?.[0]?.price || 40)) * parseInt(formData.duration)}
                         </p>
                     </div>
@@ -388,7 +390,7 @@ export default function AIGenerationStep(){
             </div>
 
             {/* Action Buttons */}
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="w-1/2 grid md:grid-cols-2 gap-4">
                 <SecondaryButton
                     text="Edit Trip Details"
                     onClick={handleEdit}

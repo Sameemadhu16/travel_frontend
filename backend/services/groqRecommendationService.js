@@ -28,7 +28,7 @@ class GroqRecommendationService {
             
             // Generate dynamic AI itinerary based on actual destination
             const itinerary = await this.generateItinerary(userInputs, recommendations);
-            
+            console.log(itinerary.data)
             return {
                 ...recommendations,
                 ...itinerary,
@@ -207,7 +207,7 @@ class GroqRecommendationService {
         };
         
         const budgetKey = budget.toLowerCase().includes('budget') ? 'budget' :
-                         budget.toLowerCase().includes('luxury') ? 'luxury' : 'mid-range';
+                        budget.toLowerCase().includes('luxury') ? 'luxury' : 'mid-range';
         
         return budgetMap[budgetKey] || '$50-80 per person';
     }
@@ -218,57 +218,72 @@ class GroqRecommendationService {
             return this.getFallbackItinerary(userInputs);
         }
 
-        // Create a more detailed and location-specific prompt
-        const prompt = `Create a detailed ${userInputs.duration}-day travel itinerary for ${userInputs.destination}, Sri Lanka.
+        const prompt = `
+        Create a detailed ${userInputs.duration}-day travel itinerary for ${userInputs.destination}, Sri Lanka.
 
-User Details:
-- Travelers: ${userInputs.adults} adults${userInputs.children ? `, ${userInputs.children} children` : ''}
-- Trip Style: ${Array.isArray(userInputs.tripType) ? userInputs.tripType.join(', ') : userInputs.tripType}
-- Activity Level: ${userInputs.activityLevel}
-- Interests: ${Array.isArray(userInputs.interests) ? userInputs.interests.join(', ') : userInputs.interests}
-- Budget Range: ${userInputs.budget}
+        --- USER DETAILS ---
+        - Travelers: ${userInputs.adults} adults${userInputs.children ? `, ${userInputs.children} children` : ''}
+        - Trip Style: ${Array.isArray(userInputs.tripType) ? userInputs.tripType.join(', ') : userInputs.tripType}
+        - Activity Level: ${userInputs.activityLevel}
+        - Interests: ${Array.isArray(userInputs.interests) ? userInputs.interests.join(', ') : userInputs.interests}
+        - Budget Range: ${userInputs.budget}
 
-IMPORTANT: Create itinerary specifically for ${userInputs.destination}. Include real places, attractions, and activities available in this exact location.
+        --- REQUIREMENTS ---
+        1. The trip must be specific to ${userInputs.destination} and nearby real places in Sri Lanka.
+        2. Each day has **only one main location** (city, area, or attraction hub).
+        3. Each day must have **exactly 3 realistic activities** in that location.
+        4. Include real attractions, restaurants, cultural experiences, or nature spots.
+        5. Activities must match:
+        - The ${userInputs.activityLevel} activity level
+        - The trip style: ${Array.isArray(userInputs.tripType) ? userInputs.tripType.join(', ') : userInputs.tripType}
+        - Interests: ${Array.isArray(userInputs.interests) ? userInputs.interests.join(', ') : userInputs.interests}
+        6. Consider the budget (${userInputs.budget}) when choosing hotels, food, and transport recommendations.
+        7. Provide **local tips** for each day (avoid generic advice).
+        8. Avoid repeating activities unless necessary.
 
-Available Local Services:
-- Guides: ${recommendations.recommendations?.guides?.length || 0} available
-- Hotels: ${recommendations.recommendations?.hotels?.length || 0} options  
-- Vehicles: ${recommendations.recommendations?.vehicles?.length || 0} transport options
+        --- LOCAL SERVICES AVAILABLE ---
+        - Guides: ${recommendations.recommendations?.guides?.length || 0}
+        - Hotels: ${recommendations.recommendations?.hotels?.length || 0}
+        - Vehicles: ${recommendations.recommendations?.vehicles?.length || 0}
 
-Create a realistic day-by-day plan with:
-1. Specific attractions and places in ${userInputs.destination}
-2. Activities matching the ${userInputs.activityLevel} activity level
-3. Experiences aligned with interests: ${Array.isArray(userInputs.interests) ? userInputs.interests.join(', ') : userInputs.interests}
-4. Appropriate for ${userInputs.adults} adults${userInputs.children ? ` and ${userInputs.children} children` : ''}
+        --- JSON OUTPUT FORMAT ---
+        Return ONLY valid JSON in this format:
+        {
+            "itinerary": {
+                "days": ${userInputs.duration},
+                "title": "Your ${userInputs.duration}-Day ${userInputs.destination} Adventure",
+                "summary": "Brief description of the trip highlights",
+                "dailyPlans": [
+                    {
+                        "day": 1,
+                        "location": "Main location for the day",
+                        "title": "Day title",
+                        "activities": [
+                            "Specific activity 1",
+                            "Specific activity 2",
+                            "Specific activity 3"
+                        ],
+                        "highlights": ["Highlight 1", "Highlight 2"],
+                        "estimatedCost": "Cost range for the day",
+                        "tips": "Specific local tips for this day"
+                    }
+                ]
+            }
+        }
 
-Return ONLY valid JSON in this exact format:
-{
-  "itinerary": {
-    "destinations": ${userInputs.duration},
-    "title": "Your ${userInputs.duration}-Day ${userInputs.destination} Adventure",
-    "summary": "Brief description of the trip highlights",
-    "dailyPlans": [
-      {
-        "day": 1,
-        "destination": "${userInputs.destination}",
-        "title": "Day title",
-        "activities": ["Specific activity 1", "Specific activity 2", "Specific activity 3"],
-        "highlights": ["Key highlight 1", "Key highlight 2"],
-        "estimatedCost": "Cost range for the day",
-        "tips": "Local tips for this day"
-      }
-    ]
-  }
-}`;
+        IMPORTANT:
+        - Each day must have exactly 3 activities
+        - All places and activities must be real and in/near ${userInputs.destination}
+        - Ensure the JSON is valid and has no extra text outside the JSON object
+        `;
 
         try {
-            console.log(`🤖 Generating AI itinerary for ${userInputs.destination}...`);
             
             const response = await this.groq.chat.completions.create({
                 messages: [
                     {
                         role: "system",
-                        content: `You are an expert Sri Lankan travel guide with deep knowledge of ${userInputs.destination}. Create authentic, location-specific itineraries with real attractions and activities. Always return valid JSON only.`
+                        content: `You are an expert Sri Lankan travel guide. You know all locations, activities, and cultural experiences in ${userInputs.destination} and nearby areas. Always return valid JSON only.`
                     },
                     { 
                         role: "user", 
@@ -277,13 +292,11 @@ Return ONLY valid JSON in this exact format:
                 ],
                 model: "llama3-8b-8192",
                 temperature: 0.7,
-                max_tokens: 1200
+                max_tokens: 1500
             });
 
             const content = response.choices[0]?.message?.content;
-            console.log('🤖 Groq Response:', content);
             
-            // Extract JSON from response
             const jsonMatch = content.match(/\{[\s\S]*\}/);
             
             if (jsonMatch) {
@@ -297,9 +310,9 @@ Return ONLY valid JSON in this exact format:
             console.error('❌ Itinerary generation error:', error.message);
         }
 
-        // Fallback to location-specific template
         return this.getLocationSpecificFallback(userInputs);
     }
+
 
     getFallbackItinerary(userInputs) {
         return this.getLocationSpecificFallback(userInputs);

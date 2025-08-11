@@ -12,7 +12,6 @@ const recommendationAPI = axios.create({
 // Request interceptor for logging
 recommendationAPI.interceptors.request.use(
     (config) => {
-        console.log('🚀 API Request:', config.method?.toUpperCase(), config.url, config.data);
         return config;
     },
     (error) => {
@@ -24,7 +23,6 @@ recommendationAPI.interceptors.request.use(
 // Response interceptor for logging
 recommendationAPI.interceptors.response.use(
     (response) => {
-        console.log('✅ API Response:', response.status, response.data);
         return response;
     },
     (error) => {
@@ -38,6 +36,7 @@ export const recommendationService = {
     async generateRecommendations(userInputs) {
         try {
             const response = await recommendationAPI.post('/recommendations/generate', userInputs);
+            console.log(response.data)
             return response.data;
         } catch (error) {
             // Handle different error types
