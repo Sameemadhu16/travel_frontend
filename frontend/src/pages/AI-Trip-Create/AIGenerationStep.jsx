@@ -1,7 +1,6 @@
-import { FaCar, FaCheck, FaEdit, FaHotel, FaMapMarkerAlt, FaRobot, FaStar, FaUserTie } from "react-icons/fa";
+import { FaHotel, FaMapMarkerAlt, FaRobot, FaStar, FaUserTie } from "react-icons/fa";
 import PrimaryButton from "../../components/PrimaryButton";
 import SecondaryButton from "../../components/SecondaryButton";
-import StepIndicator from "../../components/StepIndicator";
 import { useContext, useState } from "react";
 import Main from "../../components/Main";
 import { navigateTo } from "../../core/navigateHelper";
@@ -19,7 +18,6 @@ export default function AIGenerationStep(){
     const [isGenerating, setIsGenerating] = useState(false);
     const [generatedTrip, setGeneratedTrip] = useState(null);
     const [error, setError] = useState(null);
-
     const handleGenerate = async () => {
         setIsGenerating(true);
         setError(null);
@@ -27,7 +25,7 @@ export default function AIGenerationStep(){
         try {            
             // Use the recommendation service
             const result = await recommendationService.generateRecommendations(formData);
-                        setGeneratedTrip(result.data);
+            setGeneratedTrip(result.data);
             
         } catch (error) {
             console.error('❌ Error generating trip:', error);

@@ -2,6 +2,7 @@ import { FaCar, FaCheck, FaHotel, FaMapMarkerAlt, FaStar, FaUserTie } from 'reac
 import Main from '../../../components/Main'
 import SecondaryButton from '../../../components/SecondaryButton'
 import PrimaryButton from '../../../components/PrimaryButton'
+import RecommendationCard from './RecommendationCard'
 import { useMemo } from 'react'
 
 export default function GeneratedTrip({ generatedTrip, handleEdit, formData }) {
@@ -95,104 +96,39 @@ export default function GeneratedTrip({ generatedTrip, handleEdit, formData }) {
 
                 {/* Recommendations Preview */}
                 <div className="grid md:grid-cols-3 gap-6">
-                    {/* Guides */}
-                    <div className="bg-white border border-border-light rounded-lg p-4">
-                        <h4 className="font-semibold text-content-primary mb-3 flex items-center">
-                            <FaUserTie className="mr-2 text-brand-primary" />
-                            Top Recommended Guides
-                        </h4>
-                        <div className="space-y-3">
-                            {generatedTrip?.missingData?.guides ? (
-                                <div className="text-center py-6 bg-surface-secondary rounded-lg">
-                                    <FaUserTie className="text-gray-400 text-3xl mx-auto mb-3" />
-                                    <p className="text-content-secondary font-medium mb-2">No verified guides found for {formData.destination}</p>
-                                    <p className="text-sm text-content-secondary">
-                                        Try searching nearby cities or we'll help you find suitable guides.
-                                    </p>
-                                </div>
-                            ) : generatedTrip?.recommendations?.guides?.map((guide, i) => (
-                                <div key={guide.id || i} className="flex items-center justify-between">
-                                    <div>
-                                        <p className="font-medium text-content-primary">{guide.name}</p>
-                                        <div className="flex items-center">
-                                            <FaStar className="text-warning text-xs mr-1" />
-                                            <span className="text-xs text-content-secondary">{guide.rating} ({guide.reviews}+ reviews)</span>
-                                        </div>
-                                        {guide.specialties && (
-                                            <p className="text-xs text-brand-primary">{guide.specialties}</p>
-                                        )}
-                                    </div>
-                                    <span className="text-sm font-bold text-brand-primary">LKR {guide.price}/day</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    <RecommendationCard
+                        icon={FaUserTie}
+                        title="Top Recommended Guides"
+                        items={generatedTrip?.recommendations?.guides}
+                        isMissing={generatedTrip?.missingData?.guides}
+                        missingMessage={`No verified guides found for ${formData.destination}`}
+                        missingDescription="Try searching nearby cities or we'll help you find suitable guides."
+                        priceUnit="day"
+                        extraField="specialties"
+                    />
 
-                    {/* Hotels */}
-                    <div className="bg-white border border-border-light rounded-lg p-4">
-                        <h4 className="font-semibold text-content-primary mb-3 flex items-center">
-                            <FaHotel className="mr-2 text-brand-primary" />
-                            Recommended Hotels
-                        </h4>
-                        <div className="space-y-3">
-                            {generatedTrip?.missingData?.hotels ? (
-                                <div className="text-center py-6 bg-surface-secondary rounded-lg">
-                                    <FaHotel className="text-gray-400 text-3xl mx-auto mb-3" />
-                                    <p className="text-content-secondary font-medium mb-2">No hotels found for {formData.destination}</p>
-                                    <p className="text-sm text-content-secondary">
-                                        Try searching for nearby cities or contact us to add hotels in this area.
-                                    </p>
-                                </div>
-                            ) : generatedTrip?.recommendations?.hotels?.map((hotel, i) => (
-                                <div key={hotel.id || i} className="flex items-center justify-between">
-                                    <div>
-                                        <p className="font-medium text-content-primary">{hotel.name}</p>
-                                        <div className="flex items-center">
-                                            <FaStar className="text-warning text-xs mr-1" />
-                                            <span className="text-xs text-content-secondary">{hotel.rating} ({hotel.reviews}+ reviews)</span>
-                                        </div>
-                                        {hotel.location && (
-                                            <p className="text-xs text-brand-primary">{hotel.location}</p>
-                                        )}
-                                    </div>
-                                    <span className="text-sm font-bold text-brand-primary">LKR {hotel.price}/night</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    <RecommendationCard
+                        icon={FaHotel}
+                        title="Recommended Hotels"
+                        items={generatedTrip?.recommendations?.hotels}
+                        isMissing={generatedTrip?.missingData?.hotels}
+                        missingMessage={`No hotels found for ${formData.destination}`}
+                        missingDescription="Try searching for nearby cities or contact us to add hotels in this area."
+                        priceUnit="night"
+                        extraField="location"
+                    />
 
-                    {/* Vehicles */}
-                    <div className="bg-white border border-border-light rounded-lg p-4">
-                        <h4 className="font-semibold text-content-primary mb-3 flex items-center">
-                            <FaCar className="mr-2 text-brand-primary" />
-                            Recommended Vehicles
-                        </h4>
-                        <div className="space-y-3">
-                            {generatedTrip?.missingData?.vehicles ? (
-                                <div className="text-center py-6 bg-surface-secondary rounded-lg">
-                                    <FaCar className="text-gray-400 text-3xl mx-auto mb-3" />
-                                    <p className="text-content-secondary font-medium mb-2">No suitable vehicles for {formData.adults + formData.children} people</p>
-                                    <p className="text-sm text-content-secondary">
-                                        Try reducing group size or contact us for custom vehicle arrangements.
-                                    </p>
-                                </div>
-                            ) : generatedTrip?.recommendations?.vehicles?.map((vehicle, i) => (
-                                <div key={vehicle.id || i} className="flex items-center justify-between">
-                                    <div>
-                                        <p className="font-medium text-content-primary">{vehicle.name}</p>
-                                        <div className="flex items-center">
-                                            <FaStar className="text-warning text-xs mr-1" />
-                                            <span className="text-xs text-content-secondary">{vehicle.rating} ({vehicle.reviews}+ reviews)</span>
-                                        </div>
-                                        {vehicle.capacity && (
-                                            <p className="text-xs text-brand-primary">Capacity: {vehicle.capacity} people</p>
-                                        )}
-                                    </div>
-                                    <span className="text-sm font-bold text-brand-primary">LKR {vehicle.price}/day</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                    <RecommendationCard
+                        icon={FaCar}
+                        title="Recommended Vehicles"
+                        items={generatedTrip?.recommendations?.vehicles}
+                        isMissing={generatedTrip?.missingData?.vehicles}
+                        missingMessage={`No suitable vehicles for ${formData.adults + formData.children} people`}
+                        missingDescription="Try reducing group size or contact us for custom vehicle arrangements."
+                        priceUnit="day"
+                        extraField="capacity"
+                        extraFieldLabel="Capacity"
+                    />
                 </div>
 
                 {/* Estimated Cost */}
