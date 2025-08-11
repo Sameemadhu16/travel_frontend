@@ -1,0 +1,73 @@
+# Project-wide ignores
+
+# Dependencies
+node_modules/
+**/node_modules/
+
+# Environment variables
+.env
+**/.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Build outputs
+dist/
+build/
+**/dist/
+**/build/
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Temporary files
+tmp/
+temp/
+**/tmp/
+**/temp/
+
+# Coverage reports
+coverage/
+**/coverage/
+
+# Cache directories
+.cache/
+.parcel-cache/
+.vite/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Backup files
+*.bak
+*.backup
+
+# Lock files (optional - uncomment if needed)
+# package-lock.json
+# yarn.lock
+# **/package-lock.json
+# **/yarn.lock

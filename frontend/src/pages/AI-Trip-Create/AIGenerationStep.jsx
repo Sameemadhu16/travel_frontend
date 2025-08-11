@@ -6,42 +6,33 @@ import { useContext, useState } from "react";
 import Main from "../../components/Main";
 import { navigateTo } from "../../core/navigateHelper";
 import FormContext from "../../context/InitialValues";
+import { recommendationService } from "../../api/recommendationService";
 
 export default function AIGenerationStep(){
 
     const { formData } = useContext(FormContext);
     
-    // Dummy data for testing UI
+    // State management for AI generation
     const [isGenerating, setIsGenerating] = useState(false);
-    const [generatedTrip, setGeneratedTrip] = useState({});
-    const [error, setError] = useState('');
+    const [generatedTrip, setGeneratedTrip] = useState(null);
+    const [error, setError] = useState(null);
 
     const handleGenerate = async () => {
         setIsGenerating(true);
         setError(null);
         
         try {
-            console.log('🚀 Sending request with data:', formData);
+            console.log('🚀 Generating trip with data:', formData);
             
-            const response = await fetch('http://localhost:5000/api/recommendations/generate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            });
-
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-
-            const result = await response.json();
-            console.log('✅ Received response:', result);
+            // Use the recommendation service
+            const result = await recommendationService.generateRecommendations(formData);
             
-            setGeneratedTrip(result);
+            console.log('✅ Trip generated successfully:', result);
+            setGeneratedTrip(result.data);
+            
         } catch (error) {
             console.error('❌ Error generating trip:', error);
-            setError(error.message);
+            setError(error.message || 'Failed to generate trip. Please try again.');
         } finally {
             setIsGenerating(false);
         }
@@ -51,9 +42,38 @@ export default function AIGenerationStep(){
         navigateTo('/ai-trip/basic-info');
     };
     
+    // Error state
+    if (error) {
+        return (
+            <Main>
+                <StepIndicator currentStep={3} />
+                <div className="text-center py-12">
+                    <div className="inline-flex items-center justify-center w-20 h-20 bg-error rounded-full mb-6">
+                        <FaRobot className="text-white text-3xl" />
+                    </div>
+                    <h2 className="text-2xl font-bold text-content-primary mb-4">Oops! Something went wrong</h2>
+                    <p className="text-content-secondary mb-8 max-w-md mx-auto">{error}</p>
+                    <div className="space-x-4">
+                        <PrimaryButton
+                            text="Try Again"
+                            onClick={handleGenerate}
+                            className="w-40"
+                        />
+                        <SecondaryButton
+                            text="Edit Details"
+                            onClick={handleEdit}
+                            className="w-40"
+                        />
+                    </div>
+                </div>
+            </Main>
+        );
+    }
+
     if (isGenerating) {
         return (
             <Main>
+                <StepIndicator currentStep={3} />
                 <div className="text-center py-12">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-brand-accent rounded-full mb-6 animate-pulse">
                         <FaRobot className="text-brand-primary text-3xl" />
@@ -81,7 +101,8 @@ export default function AIGenerationStep(){
         );
     }
 
-    if (generatedTrip !== null) {
+    // Show trip generation form if no trip generated yet
+    if (!generatedTrip) {
         return (
             <Main>
                 <StepIndicator currentStep={3} />
@@ -124,7 +145,7 @@ export default function AIGenerationStep(){
                             <div className="text-left space-y-3">
                             <p>
                                 <span className="font-semibold text-gray-800">Trip Type:</span>{" "}
-                                {formData.tripType?.[0] || "Not selected"}
+                                {Array.isArray(formData.tripType) ? formData.tripType.join(', ') : (formData.tripType || "Not selected")}
                             </p>
                             <p>
                                 <span className="font-semibold text-gray-800">Budget:</span>{" "}
@@ -151,6 +172,7 @@ export default function AIGenerationStep(){
     // Show generated trip results
     return (
         <Main>
+            <StepIndicator currentStep={3} />
             <div className="space-y-8">
             <div className="text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-success rounded-full mb-4">
@@ -167,22 +189,22 @@ export default function AIGenerationStep(){
                     <div className="text-center">
                         <FaMapMarkerAlt className="text-brand-primary text-2xl mx-auto mb-2" />
                         <p className="text-sm font-medium text-content-primary">Destinations</p>
-                        <p className="text-lg font-bold text-brand-primary">{generatedTrip.itinerary?.destinations || 8}</p>
+                        <p className="text-lg font-bold text-brand-primary">{generatedTrip?.itinerary?.destinations || formData.duration}</p>
                     </div>
                     <div className="text-center">
                         <FaUserTie className="text-brand-primary text-2xl mx-auto mb-2" />
                         <p className="text-sm font-medium text-content-primary">Recommended Guides</p>
-                        <p className="text-lg font-bold text-brand-primary">{generatedTrip.recommendations?.guides?.length || 3}</p>
+                        <p className="text-lg font-bold text-brand-primary">{generatedTrip?.recommendations?.guides?.length || 3}</p>
                     </div>
                     <div className="text-center">
                         <FaHotel className="text-brand-primary text-2xl mx-auto mb-2" />
                         <p className="text-sm font-medium text-content-primary">Hotel Options</p>
-                        <p className="text-lg font-bold text-brand-primary">{generatedTrip.recommendations?.hotels?.length || 5}</p>
+                        <p className="text-lg font-bold text-brand-primary">{generatedTrip?.recommendations?.hotels?.length || 3}</p>
                     </div>
                     <div className="text-center">
                         <FaCar className="text-brand-primary text-2xl mx-auto mb-2" />
                         <p className="text-sm font-medium text-content-primary">Vehicle Options</p>
-                        <p className="text-lg font-bold text-brand-primary">{generatedTrip.recommendations?.vehicles?.length || 3}</p>
+                        <p className="text-lg font-bold text-brand-primary">{generatedTrip?.recommendations?.vehicles?.length || 3}</p>
                     </div>
                 </div>
             </div>
@@ -191,7 +213,32 @@ export default function AIGenerationStep(){
             <div>
                 <h3 className="text-xl font-bold text-content-primary mb-4">Daily Itinerary</h3>
                 <div className="space-y-4">
-                    {Array.from({length: parseInt(formData.duration)}, (_, index) => (
+                    {generatedTrip?.itinerary?.dailyPlans?.map((day, index) => (
+                        <div key={index} className="bg-white border border-border-light rounded-lg p-4">
+                            <h4 className="font-semibold text-content-primary mb-2">Day {day.day} - {day.destination}</h4>
+                            <div className="text-sm text-content-secondary space-y-1">
+                                {day.activities?.map((activity, i) => (
+                                    <p key={i}>• {activity}</p>
+                                )) || (
+                                    <>
+                                        <p>• Morning: Temple visit and cultural exploration</p>
+                                        <p>• Afternoon: Local market tour and lunch</p>
+                                        <p>• Evening: Scenic viewpoint and sunset</p>
+                                    </>
+                                )}
+                            </div>
+                            {day.highlights && day.highlights.length > 0 && (
+                                <div className="mt-2 pt-2 border-t border-gray-100">
+                                    <p className="text-xs font-medium text-brand-primary">Highlights:</p>
+                                    <div className="text-xs text-content-secondary">
+                                        {day.highlights.map((highlight, i) => (
+                                            <span key={i} className="inline-block bg-brand-accent px-2 py-1 rounded mr-1 mt-1">{highlight}</span>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )) || Array.from({length: parseInt(formData.duration)}, (_, index) => (
                         <div key={index} className="bg-white border border-border-light rounded-lg p-4">
                             <h4 className="font-semibold text-content-primary mb-2">Day {index + 1}</h4>
                             <div className="text-sm text-content-secondary space-y-1">
@@ -213,7 +260,21 @@ export default function AIGenerationStep(){
                         Top Recommended Guides
                     </h4>
                     <div className="space-y-3">
-                        {[1,2,3].map(i => (
+                        {generatedTrip?.recommendations?.guides?.map((guide, i) => (
+                            <div key={guide.id || i} className="flex items-center justify-between">
+                                <div>
+                                    <p className="font-medium text-content-primary">{guide.name}</p>
+                                    <div className="flex items-center">
+                                        <FaStar className="text-warning text-xs mr-1" />
+                                        <span className="text-xs text-content-secondary">{guide.rating} ({guide.reviews}+ reviews)</span>
+                                    </div>
+                                    {guide.specialties && (
+                                        <p className="text-xs text-brand-primary">{guide.specialties}</p>
+                                    )}
+                                </div>
+                                <span className="text-sm font-bold text-brand-primary">${guide.price}/day</span>
+                            </div>
+                        )) || [1,2,3].map(i => (
                             <div key={i} className="flex items-center justify-between">
                                 <div>
                                     <p className="font-medium text-content-primary">Guide {i}</p>
@@ -235,7 +296,21 @@ export default function AIGenerationStep(){
                         Recommended Hotels
                     </h4>
                     <div className="space-y-3">
-                        {[1,2,3].map(i => (
+                        {generatedTrip?.recommendations?.hotels?.map((hotel, i) => (
+                            <div key={hotel.id || i} className="flex items-center justify-between">
+                                <div>
+                                    <p className="font-medium text-content-primary">{hotel.name}</p>
+                                    <div className="flex items-center">
+                                        <FaStar className="text-warning text-xs mr-1" />
+                                        <span className="text-xs text-content-secondary">{hotel.rating} ({hotel.reviews}+ reviews)</span>
+                                    </div>
+                                    {hotel.location && (
+                                        <p className="text-xs text-brand-primary">{hotel.location}</p>
+                                    )}
+                                </div>
+                                <span className="text-sm font-bold text-brand-primary">${hotel.price}/night</span>
+                            </div>
+                        )) || [1,2,3].map(i => (
                             <div key={i} className="flex items-center justify-between">
                                 <div>
                                     <p className="font-medium text-content-primary">Hotel {i}</p>
@@ -257,7 +332,21 @@ export default function AIGenerationStep(){
                         Recommended Vehicles
                     </h4>
                     <div className="space-y-3">
-                        {[1,2,3].map(i => (
+                        {generatedTrip?.recommendations?.vehicles?.map((vehicle, i) => (
+                            <div key={vehicle.id || i} className="flex items-center justify-between">
+                                <div>
+                                    <p className="font-medium text-content-primary">{vehicle.name}</p>
+                                    <div className="flex items-center">
+                                        <FaStar className="text-warning text-xs mr-1" />
+                                        <span className="text-xs text-content-secondary">{vehicle.rating} ({vehicle.reviews}+ reviews)</span>
+                                    </div>
+                                    {vehicle.capacity && (
+                                        <p className="text-xs text-brand-primary">Capacity: {vehicle.capacity} people</p>
+                                    )}
+                                </div>
+                                <span className="text-sm font-bold text-brand-primary">${vehicle.price}/day</span>
+                            </div>
+                        )) || [1,2,3].map(i => (
                             <div key={i} className="flex items-center justify-between">
                                 <div>
                                     <p className="font-medium text-content-primary">Vehicle {i}</p>
@@ -279,19 +368,29 @@ export default function AIGenerationStep(){
                 <div className="grid md:grid-cols-4 gap-4 text-center">
                     <div>
                         <p className="text-sm text-content-secondary">Guides</p>
-                        <p className="text-xl font-bold text-brand-primary">$150</p>
+                        <p className="text-xl font-bold text-brand-primary">
+                            ${(generatedTrip?.recommendations?.guides?.[0]?.price || 50) * parseInt(formData.duration)}
+                        </p>
                     </div>
                     <div>
                         <p className="text-sm text-content-secondary">Hotels</p>
-                        <p className="text-xl font-bold text-brand-primary">$200</p>
+                        <p className="text-xl font-bold text-brand-primary">
+                            ${(generatedTrip?.recommendations?.hotels?.[0]?.price || 80) * parseInt(formData.duration)}
+                        </p>
                     </div>
                     <div>
                         <p className="text-sm text-content-secondary">Transport</p>
-                        <p className="text-xl font-bold text-brand-primary">$100</p>
+                        <p className="text-xl font-bold text-brand-primary">
+                            ${(generatedTrip?.recommendations?.vehicles?.[0]?.price || 40) * parseInt(formData.duration)}
+                        </p>
                     </div>
                     <div>
                         <p className="text-sm text-content-secondary font-bold">Total</p>
-                        <p className="text-2xl font-bold text-success">$450</p>
+                        <p className="text-2xl font-bold text-success">
+                            ${((generatedTrip?.recommendations?.guides?.[0]?.price || 50) + 
+                               (generatedTrip?.recommendations?.hotels?.[0]?.price || 80) + 
+                               (generatedTrip?.recommendations?.vehicles?.[0]?.price || 40)) * parseInt(formData.duration)}
+                        </p>
                     </div>
                 </div>
             </div>
