@@ -7,6 +7,7 @@ import QuickActions from './components/QuickActions';
 
 export default function ChatBot() {
     const messagesEndRef = useRef(null);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [messages, setMessages] = useState([
     {
         id: 1,
@@ -48,6 +49,12 @@ export default function ChatBot() {
                 {
                     id: prev.length + 1,
                     text: "Under construction...",
+                    sender: 'bot',
+                    timestamp: new Date(),
+                }
+            ]);
+        }, 1000);
+    };
                     sender: 'bot',
                     timestamp: new Date(),
                 }
