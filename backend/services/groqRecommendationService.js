@@ -77,25 +77,25 @@ class GroqRecommendationService {
 
     getMockGuides() {
         return [
-            { id: 1, name: "Saman Perera", specialties: "Cultural Tours", rating: 4.8, price: 50, reviews: 120, verified: true },
-            { id: 2, name: "Nimal Silva", specialties: "Adventure Tours", rating: 4.9, price: 60, reviews: 95, verified: true },
-            { id: 3, name: "Kamal Fernando", specialties: "Wildlife Tours", rating: 4.7, price: 45, reviews: 87, verified: true }
+            { id: 1, name: "Saman Perera", specialties: "Cultural Tours", rating: 4.8, price: 15000, reviews: 120, verified: true },
+            { id: 2, name: "Nimal Silva", specialties: "Adventure Tours", rating: 4.9, price: 18000, reviews: 95, verified: true },
+            { id: 3, name: "Kamal Fernando", specialties: "Wildlife Tours", rating: 4.7, price: 13500, reviews: 87, verified: true }
         ];
     }
 
     getMockHotels(destination) {
         return [
-            { id: 1, name: "Heritage Hotel", price: 80, rating: 4.6, reviews: 200, location: destination, type: "Heritage" },
-            { id: 2, name: "City Comfort Inn", price: 50, rating: 4.4, reviews: 150, location: destination, type: "Budget" },
-            { id: 3, name: "Luxury Resort", price: 150, rating: 4.8, reviews: 300, location: destination, type: "Luxury" }
+            { id: 1, name: "Heritage Hotel", price: 24000, rating: 4.6, reviews: 200, location: destination, type: "Heritage" },
+            { id: 2, name: "City Comfort Inn", price: 15000, rating: 4.4, reviews: 150, location: destination, type: "Budget" },
+            { id: 3, name: "Luxury Resort", price: 45000, rating: 4.8, reviews: 300, location: destination, type: "Luxury" }
         ];
     }
 
     getMockVehicles() {
         return [
-            { id: 1, name: "Toyota Hiace", capacity: 8, price: 40, rating: 4.5, reviews: 80, pricePerKm: 0.5 },
-            { id: 2, name: "Suzuki Wagon R", capacity: 4, price: 25, rating: 4.3, reviews: 60, pricePerKm: 0.3 },
-            { id: 3, name: "Tuk Tuk", capacity: 3, price: 15, rating: 4.1, reviews: 45, pricePerKm: 0.2 }
+            { id: 1, name: "Toyota Hiace", capacity: 8, price: 12000, rating: 4.5, reviews: 80, pricePerKm: 150 },
+            { id: 2, name: "Suzuki Wagon R", capacity: 4, price: 7500, rating: 4.3, reviews: 60, pricePerKm: 90 },
+            { id: 3, name: "Tuk Tuk", capacity: 3, price: 4500, rating: 4.1, reviews: 45, pricePerKm: 60 }
         ];
     }
 
@@ -201,18 +201,16 @@ class GroqRecommendationService {
 
     estimateDayCost(budget) {
         const budgetMap = {
-            'budget': '$25-40 per person',
-            'mid-range': '$50-80 per person', 
-            'luxury': '$100-200 per person'
+            'budget': 'LKR 7,500-12,000 per person',
+            'mid-range': 'LKR 15,000-24,000 per person', 
+            'luxury': 'LKR 30,000-60,000 per person'
         };
         
         const budgetKey = budget.toLowerCase().includes('budget') ? 'budget' :
-                        budget.toLowerCase().includes('luxury') ? 'luxury' : 'mid-range';
+                         budget.toLowerCase().includes('luxury') ? 'luxury' : 'mid-range';
         
-        return budgetMap[budgetKey] || '$50-80 per person';
-    }
-
-    async generateItinerary(userInputs, recommendations) {
+        return budgetMap[budgetKey] || 'LKR 15,000-24,000 per person';
+    }    async generateItinerary(userInputs, recommendations) {
         if (!process.env.GROQ_API_KEY) {
             console.warn('⚠️ GROQ_API_KEY not found, using fallback itinerary');
             return this.getFallbackItinerary(userInputs);

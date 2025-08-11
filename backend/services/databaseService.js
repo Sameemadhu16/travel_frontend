@@ -42,7 +42,7 @@ class DatabaseService {
                 name: guide.name,
                 specialties: this.getGuideSpecialties(guide.experience_years),
                 rating: parseFloat(guide.rating) || 4.5,
-                price: parseInt(guide.price_per_day) || 50,
+                price: parseInt(guide.price_per_day) || 15000, // LKR instead of USD
                 reviews: parseInt(guide.reviews) || 10,
                 verified: guide.is_verified,
                 experience: guide.experience_years,
@@ -64,7 +64,7 @@ class DatabaseService {
                     h.city,
                     h.description,
                     h.type,
-                    COALESCE(h.price_per_night, 75) as price,
+                    COALESCE(h.price_per_night, 22500) as price,
                     COALESCE(h.rating, 4.3) as rating,
                     COALESCE(h.reviews_count, 50) as reviews
                 FROM hotels h
@@ -85,7 +85,7 @@ class DatabaseService {
             return result.rows.map(hotel => ({
                 id: hotel.id,
                 name: hotel.name,
-                price: parseInt(hotel.price) || 75,
+                price: parseInt(hotel.price) || 22500, // LKR instead of USD
                 rating: parseFloat(hotel.rating) || 4.3,
                 reviews: parseInt(hotel.reviews) || 50,
                 location: hotel.city,
@@ -133,10 +133,10 @@ class DatabaseService {
                 id: vehicle.id,
                 name: `${vehicle.name} ${vehicle.vehicle_model}`.trim(),
                 capacity: vehicle.capacity,
-                price: parseInt(vehicle.price) || 30,
+                price: parseInt(vehicle.price) || 9000, // LKR instead of USD
                 rating: parseFloat(vehicle.rating) || 4.2,
                 reviews: parseInt(vehicle.reviews) || 25,
-                pricePerKm: parseFloat(vehicle.price_per_kilometer) || 0.5,
+                pricePerKm: parseFloat(vehicle.price_per_kilometer) || 150, // LKR per km
                 vehicleNo: vehicle.vehicle_no
             }));
             

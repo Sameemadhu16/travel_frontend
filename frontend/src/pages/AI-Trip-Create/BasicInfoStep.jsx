@@ -22,9 +22,9 @@ const durationOptions = [
 
 const budgetOptions = [
     { id:"", value: "Select Budget"},
-    { id:"Budget (Under $50/day)", value: "Budget (Under $50/day)"},
-    { id:"Mid-range ($50-150/day)", value: "Mid-range ($50-150/day)"},
-    { id:"Luxury ($150+/day)", value: "Luxury ($150+/day)"},
+    { id:"Budget (Under LKR 15,000/day)", value: "Budget (Under LKR 15,000/day)"},
+    { id:"Mid-range (LKR 15,000-45,000/day)", value: "Mid-range (LKR 15,000-45,000/day)"},
+    { id:"Luxury (LKR 45,000+/day)", value: "Luxury (LKR 45,000+/day)"},
 ];
 
 export default function BasicInfoStep() {

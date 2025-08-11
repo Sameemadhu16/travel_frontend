@@ -266,7 +266,7 @@ export default function AIGenerationStep(){
                                         <p className="text-xs text-brand-primary">{guide.specialties}</p>
                                     )}
                                 </div>
-                                <span className="text-sm font-bold text-brand-primary">${guide.price}/day</span>
+                                <span className="text-sm font-bold text-brand-primary">LKR {guide.price}/day</span>
                             </div>
                         )) || [1,2,3].map(i => (
                             <div key={i} className="flex items-center justify-between">
@@ -277,7 +277,7 @@ export default function AIGenerationStep(){
                                         <span className="text-xs text-content-secondary">4.{8+i} (120+ reviews)</span>
                                     </div>
                                 </div>
-                                <span className="text-sm font-bold text-brand-primary">$50/day</span>
+                                <span className="text-sm font-bold text-brand-primary">LKR 15,000/day</span>
                             </div>
                         ))}
                     </div>
@@ -302,7 +302,7 @@ export default function AIGenerationStep(){
                                         <p className="text-xs text-brand-primary">{hotel.location}</p>
                                     )}
                                 </div>
-                                <span className="text-sm font-bold text-brand-primary">${hotel.price}/night</span>
+                                <span className="text-sm font-bold text-brand-primary">LKR {hotel.price}/night</span>
                             </div>
                         )) || [1,2,3].map(i => (
                             <div key={i} className="flex items-center justify-between">
@@ -313,7 +313,7 @@ export default function AIGenerationStep(){
                                         <span className="text-xs text-content-secondary">4.{6+i} (80+ reviews)</span>
                                     </div>
                                 </div>
-                                <span className="text-sm font-bold text-brand-primary">${30+i*20}/night</span>
+                                <span className="text-sm font-bold text-brand-primary">LKR {9000+i*6000}/night</span>
                             </div>
                         ))}
                     </div>
@@ -338,7 +338,7 @@ export default function AIGenerationStep(){
                                         <p className="text-xs text-brand-primary">Capacity: {vehicle.capacity} people</p>
                                     )}
                                 </div>
-                                <span className="text-sm font-bold text-brand-primary">${vehicle.price}/day</span>
+                                <span className="text-sm font-bold text-brand-primary">LKR {vehicle.price}/day</span>
                             </div>
                         )) || [1,2,3].map(i => (
                             <div key={i} className="flex items-center justify-between">
@@ -349,7 +349,7 @@ export default function AIGenerationStep(){
                                         <span className="text-xs text-content-secondary">4.{7+i} (50+ reviews)</span>
                                     </div>
                                 </div>
-                                <span className="text-sm font-bold text-brand-primary">${25+i*15}/day</span>
+                                <span className="text-sm font-bold text-brand-primary">LKR {7500+i*4500}/day</span>
                             </div>
                         ))}
                     </div>
@@ -363,27 +363,27 @@ export default function AIGenerationStep(){
                     <div>
                         <p className="text-sm text-content-secondary">Guides</p>
                         <p className="text-xl font-bold text-brand-primary">
-                            ${(generatedTrip?.recommendations?.guides?.[0]?.price || 50) * parseInt(formData.duration)}
+                            LKR {(generatedTrip?.recommendations?.guides?.[0]?.price || 15000) * parseInt(formData.duration)}
                         </p>
                     </div>
                     <div>
                         <p className="text-sm text-content-secondary">Hotels</p>
                         <p className="text-xl font-bold text-brand-primary">
-                            ${(generatedTrip?.recommendations?.hotels?.[0]?.price || 80) * parseInt(formData.duration)}
+                            LKR {(generatedTrip?.recommendations?.hotels?.[0]?.price || 24000) * parseInt(formData.duration)}
                         </p>
                     </div>
                     <div>
                         <p className="text-sm text-content-secondary">Transport</p>
                         <p className="text-xl font-bold text-brand-primary">
-                            ${(generatedTrip?.recommendations?.vehicles?.[0]?.price || 40) * parseInt(formData.duration)}
+                            LKR {(generatedTrip?.recommendations?.vehicles?.[0]?.price || 12000) * parseInt(formData.duration)}
                         </p>
                     </div>
                     <div>
                         <p className="text-sm text-content-secondary font-bold">Total</p>
                         <p className="text-2xl font-bold text-success">
-                            ${((generatedTrip?.recommendations?.guides?.[0]?.price || 50) + 
-                                (generatedTrip?.recommendations?.hotels?.[0]?.price || 80) + 
-                               (generatedTrip?.recommendations?.vehicles?.[0]?.price || 40)) * parseInt(formData.duration)}
+                            LKR {((generatedTrip?.recommendations?.guides?.[0]?.price || 15000) + 
+                                (generatedTrip?.recommendations?.hotels?.[0]?.price || 24000) + 
+                               (generatedTrip?.recommendations?.vehicles?.[0]?.price || 12000)) * parseInt(formData.duration)}
                         </p>
                     </div>
                 </div>

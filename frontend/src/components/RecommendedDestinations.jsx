@@ -15,7 +15,7 @@ const destinations = [
         location: 'Central Province, Sri Lanka',
         bestTime: 'December - April',
         duration: '2-3 days',
-        budget: '$50-80/day',
+        budget: 'LKR 15,000-24,000/day',
         temperature: '20-28°C',
         highlights: [
             'Temple of the Sacred Tooth Relic',
@@ -57,7 +57,7 @@ const destinations = [
         location: 'Southern Province, Sri Lanka',
         bestTime: 'November - April',
         duration: '2-3 days',
-        budget: '$40-70/day',
+        budget: 'LKR 12,000-21,000/day',
         temperature: '24-30°C',
         highlights: [
             'Galle Fort (UNESCO World Heritage)',
@@ -99,7 +99,7 @@ const destinations = [
         location: 'Central Province, Sri Lanka',
         bestTime: 'May - September',
         duration: '1-2 days',
-        budget: '$45-75/day',
+        budget: 'LKR 13,500-22,500/day',
         temperature: '22-32°C',
         highlights: [
             'Sigiriya Rock Fortress',
@@ -141,7 +141,7 @@ const destinations = [
         location: 'Uva Province, Sri Lanka',
         bestTime: 'December - March',
         duration: '2-4 days',
-        budget: '$35-60/day',
+        budget: 'LKR 10,500-18,000/day',
         temperature: '16-24°C',
         highlights: [
             'Ella Rock Hiking',
@@ -183,7 +183,7 @@ const destinations = [
         location: 'Central Province, Sri Lanka',
         bestTime: 'April - June',
         duration: '2-3 days',
-        budget: '$40-70/day',
+        budget: 'LKR 12,000-21,000/day',
         temperature: '14-20°C',
         highlights: [
             'Horton Plains National Park',
@@ -225,7 +225,7 @@ const destinations = [
         location: 'Southern Province, Sri Lanka',
         bestTime: 'November - April',
         duration: '2-4 days',
-        budget: '$30-60/day',
+        budget: 'LKR 9,000-18,000/day',
         temperature: '26-32°C',
         highlights: [
             'Whale Watching',
@@ -267,7 +267,7 @@ const destinations = [
         location: 'North Central Province, Sri Lanka',
         bestTime: 'May - September',
         duration: '2-3 days',
-        budget: '$35-55/day',
+        budget: 'LKR 10,500-16,500/day',
         temperature: '24-34°C',
         highlights: [
             'Ruwanwelisaya Dagoba',
