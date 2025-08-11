@@ -12,9 +12,6 @@ const recommendationController = {
                     error: 'Destination and duration are required'
                 });
             }
-
-            console.log('📝 Received user inputs:', userInputs);
-
             const service = new GroqRecommendationService();
             
             // Get recommendations
@@ -26,8 +23,6 @@ const recommendationController = {
                 userInputs: userInputs,
                 generatedAt: new Date().toISOString()
             };
-
-            console.log('✅ Sending response:', response);
             res.json(response);
 
         } catch (error) {

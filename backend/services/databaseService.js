@@ -26,15 +26,12 @@ class DatabaseService {
             LIMIT 20
             `;
 
-            console.log(`🔍 Searching for guides in: ${destination}`);
             const result = await db.query(query);
             
             if (result.rows.length === 0) {
-                console.log(`❌ No guides found in ${destination}`);
                 return [];
             }
             
-            console.log(`✅ Found ${result.rows.length} guides in ${destination}`);
             return result.rows.map(guide => ({
                 id: guide.id,
                 name: guide.name,
@@ -66,7 +63,6 @@ class DatabaseService {
                 WHERE h.city ILIKE $1 
             `;
             
-            console.log(`🔍 Searching for hotels in: ${destination}`);
             const result = await db.query(query, [`%${destination}%`]);
             
             if (result.rows.length === 0) {
@@ -74,7 +70,6 @@ class DatabaseService {
                 return [];
             }
             
-            console.log(`✅ Found ${result.rows.length} hotels in ${destination}`);
             return result.rows.map(hotel => ({
                 id: hotel.id,
                 name: hotel.name,
@@ -111,15 +106,12 @@ class DatabaseService {
                 LIMIT 15
             `;
             
-            console.log(`🔍 Searching for vehicles for ${totalPeople} people`);
             const result = await db.query(query, [totalPeople]);
             
             if (result.rows.length === 0) {
-                console.log(`❌ No vehicles found for ${totalPeople} people`);
                 return [];
             }
             
-            console.log(`✅ Found ${result.rows.length} vehicles for ${totalPeople} people`);
             return result.rows.map(vehicle => ({
                 id: vehicle.id,
                 name: `${vehicle.name} ${vehicle.vehicle_model}`.trim(),
@@ -149,7 +141,7 @@ class DatabaseService {
     async testConnection() {
         try {
             const result = await db.query('SELECT NOW() as current_time');
-            console.log('✅ Database connection successful:', result.rows[0].current_time);
+            console.log("DB Connected");
             return true;
         } catch (error) {
             console.error('❌ Database connection failed:', error.message);

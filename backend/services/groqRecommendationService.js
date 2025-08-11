@@ -11,8 +11,6 @@ class GroqRecommendationService {
 
     async getRecommendation(userInputs){
         try{
-            console.log('🚀 Starting recommendation with Groq for:', userInputs);
-
             // Test database connection first
             const dbConnected = await this.dbService.testConnection();
             
@@ -46,7 +44,6 @@ class GroqRecommendationService {
 
     async getDatabaseRecommendations(userInputs) {
         try {
-            console.log('📊 Fetching recommendations from database...');
             
             const [guides, hotels, vehicles] = await Promise.all([
                 this.dbService.fetchGuides(userInputs.destination),
@@ -164,7 +161,7 @@ class GroqRecommendationService {
             
             if (jsonMatch) {
                 const parsed = JSON.parse(jsonMatch[0]);
-                console.log(`✅ Generated dynamic itinerary for ${userInputs.destination}`);
+                console.log(`Generated dynamic itinerary for ${userInputs.destination}`);
                 return parsed;
             } else {
                 console.warn('⚠️ No valid JSON found in Groq response');
