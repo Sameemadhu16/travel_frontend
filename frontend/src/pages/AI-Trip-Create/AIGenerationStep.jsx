@@ -21,14 +21,10 @@ export default function AIGenerationStep(){
         setIsGenerating(true);
         setError(null);
         
-        try {
-            console.log('🚀 Generating trip with data:', formData);
-            
+        try {            
             // Use the recommendation service
             const result = await recommendationService.generateRecommendations(formData);
-            
-            console.log('✅ Trip generated successfully:', result);
-            setGeneratedTrip(result.data);
+                        setGeneratedTrip(result.data);
             
         } catch (error) {
             console.error('❌ Error generating trip:', error);
@@ -47,22 +43,20 @@ export default function AIGenerationStep(){
         return (
             <Main>
                 <StepIndicator currentStep={3} />
-                <div className="text-center py-12">
+                <div className="text-center py-12 justify-center items-center flex flex-col">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-error rounded-full mb-6">
                         <FaRobot className="text-white text-3xl" />
                     </div>
                     <h2 className="text-2xl font-bold text-content-primary mb-4">Oops! Something went wrong</h2>
                     <p className="text-content-secondary mb-8 max-w-md mx-auto">{error}</p>
-                    <div className="space-x-4">
+                    <div className="flex space-x-4 w-1/2 ">
                         <PrimaryButton
                             text="Try Again"
                             onClick={handleGenerate}
-                            className="w-40"
                         />
                         <SecondaryButton
                             text="Edit Details"
                             onClick={handleEdit}
-                            className="w-40"
                         />
                     </div>
                 </div>
@@ -73,7 +67,6 @@ export default function AIGenerationStep(){
     if (isGenerating) {
         return (
             <Main>
-                <StepIndicator currentStep={3} />
                 <div className="text-center py-12">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-brand-accent rounded-full mb-6 animate-pulse">
                         <FaRobot className="text-brand-primary text-3xl" />
@@ -172,7 +165,6 @@ export default function AIGenerationStep(){
     // Show generated trip results
     return (
         <Main>
-            <StepIndicator currentStep={3} />
             <div className="space-y-8">
             <div className="text-center">
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-success rounded-full mb-4">
