@@ -66,8 +66,8 @@ export default function PartnerLoginStep2() {
                 }
             }
         } catch (e) {
-            console.error("Unexpected error:", e);
             showToastMessage('error', 'Registration failed. Please try again.');
+            navigateTo('/partner-login/step-1')
         }finally{
             setLoading(false);
         }

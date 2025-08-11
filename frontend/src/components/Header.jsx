@@ -8,6 +8,9 @@ import { resetAuth } from '../redux/slices/authSlice';
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ReserveDropdown from './ReserveDropdown';
+import PrimaryButton from './PrimaryButton';
+import SecondaryButton from './SecondaryButton';
+import { navigateTo } from '../core/navigateHelper';
 
 export default function Header() {
     const { user, token } = useSelector((state) => state.auth);
@@ -16,6 +19,9 @@ export default function Header() {
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const menuRef = useRef(null);
     const role = user?.data?.role || '';
+    
+    // Check if user is authenticated (has valid token)
+    const isAuthenticated = token && !isExpired;
     // Close menu on outside click
     
     useEffect(() => {
@@ -50,7 +56,7 @@ export default function Header() {
                         <img src={logo} alt="Travel.lk" className='h-full w-full object-cover' />
                     </Navigate>
                     
-                    {token && !isExpired && (
+                    {isAuthenticated ? (
                         <div className='flex gap-4 items-center'>
                             {/* Show Reserve dropdown for traveler role */}
                             {role === 'traveler' && (
@@ -128,8 +134,20 @@ export default function Header() {
                                 </div>
                             )} */}
                         </div>
-                    )
-                    }
+                    ) : (
+                        /* Show login/signup buttons when not authenticated */
+                        <div className='flex gap-3 items-center'>
+                            <h2 
+                                onClick={() => navigateTo('/partner-login/step-1')}
+                                className='text-brand-primary text-[20px] cursor-pointer'>Login
+                            </h2>
+                            <SecondaryButton
+                                text="Get Started"
+                                onClick={() => navigateTo('/partner-register/step-1')}
+                                className="px-4 py-2"
+                            />
+                        </div>
+                    )}
                 </div>  
             </div>
     );
