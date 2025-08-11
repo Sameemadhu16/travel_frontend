@@ -16,29 +16,31 @@ class GroqRecommendationService {
             // Test database connection first
             const dbConnected = await this.dbService.testConnection();
             
-            let recommendations;
-            if (dbConnected) {
-                // Get real data from database
-                recommendations = await this.getDatabaseRecommendations(userInputs);
-            } else {
-                // Fallback to mock data if database is not available
-                console.log('⚠️ Database not available, using mock data');
-                recommendations = this.getMockRecommendations(userInputs);
+            if (!dbConnected) {
+                throw new Error('Database connection failed. Unable to fetch recommendations.');
+            }
+
+            // Get real data from database
+            const recommendations = await this.getDatabaseRecommendations(userInputs);
+            
+            // Check if we have any data at all
+            if (!recommendations.hasData) {
+                throw new Error(`No travel data found for ${userInputs.destination}. Please try a different destination or contact support.`);
             }
             
-            // Generate dynamic AI itinerary based on actual destination
+            // Generate dynamic AI itinerary based on available data
             const itinerary = await this.generateItinerary(userInputs, recommendations);
-            console.log(itinerary.data)
+            
             return {
                 ...recommendations,
                 ...itinerary,
                 generatedAt: new Date().toISOString(),
-                dataSource: dbConnected ? 'database' : 'mock'
+                dataSource: 'database'
             };
 
         } catch(error) {
             console.error('❌ Groq Service Error:', error);
-            return this.getFallbackRecommendations(userInputs);
+            throw error; // Pass the error up instead of returning fallback data
         }
     }
 
@@ -52,168 +54,31 @@ class GroqRecommendationService {
                 this.dbService.fetchVehicles(userInputs.adults || 2, userInputs.children || 0)
             ]);
 
+            // Create status flags for missing data
+            const missingData = {
+                guides: guides.length === 0,
+                hotels: hotels.length === 0,
+                vehicles: vehicles.length === 0
+            };
+
             return {
                 recommendations: {
-                    guides: guides.length > 0 ? guides : this.getMockGuides(),
-                    hotels: hotels.length > 0 ? hotels : this.getMockHotels(userInputs.destination),
-                    vehicles: vehicles.length > 0 ? vehicles : this.getMockVehicles()
-                }
+                    guides,
+                    hotels,
+                    vehicles
+                },
+                missingData,
+                hasData: guides.length > 0 || hotels.length > 0 || vehicles.length > 0
             };
         } catch (error) {
             console.error('❌ Database fetch error:', error);
-            return this.getMockRecommendations(userInputs);
+            throw error; // Pass the error up instead of fallback
         }
     }
 
-    getMockRecommendations(userInputs) {
-        return {
-            recommendations: {
-                guides: this.getMockGuides(),
-                hotels: this.getMockHotels(userInputs.destination),
-                vehicles: this.getMockVehicles()
-            }
-        };
-    }
-
-    getMockGuides() {
-        return [
-            { id: 1, name: "Saman Perera", specialties: "Cultural Tours", rating: 4.8, price: 15000, reviews: 120, verified: true },
-            { id: 2, name: "Nimal Silva", specialties: "Adventure Tours", rating: 4.9, price: 18000, reviews: 95, verified: true },
-            { id: 3, name: "Kamal Fernando", specialties: "Wildlife Tours", rating: 4.7, price: 13500, reviews: 87, verified: true }
-        ];
-    }
-
-    getMockHotels(destination) {
-        return [
-            { id: 1, name: "Heritage Hotel", price: 24000, rating: 4.6, reviews: 200, location: destination, type: "Heritage" },
-            { id: 2, name: "City Comfort Inn", price: 15000, rating: 4.4, reviews: 150, location: destination, type: "Budget" },
-            { id: 3, name: "Luxury Resort", price: 45000, rating: 4.8, reviews: 300, location: destination, type: "Luxury" }
-        ];
-    }
-
-    getMockVehicles() {
-        return [
-            { id: 1, name: "Toyota Hiace", capacity: 8, price: 12000, rating: 4.5, reviews: 80, pricePerKm: 150 },
-            { id: 2, name: "Suzuki Wagon R", capacity: 4, price: 7500, rating: 4.3, reviews: 60, pricePerKm: 90 },
-            { id: 3, name: "Tuk Tuk", capacity: 3, price: 4500, rating: 4.1, reviews: 45, pricePerKm: 60 }
-        ];
-    }
-
-    getLocationSpecificFallback(userInputs) {
-        const destination = userInputs.destination.toLowerCase();
-        const duration = parseInt(userInputs.duration);
-        
-        // Location-specific attractions and activities
-        const locationData = this.getLocationData(destination);
-        
-        return {
-            itinerary: {
-                destinations: duration,
-                title: `Your ${duration}-Day ${userInputs.destination} Adventure`,
-                summary: `Experience the best of ${userInputs.destination} with ${locationData.theme}`,
-                dailyPlans: Array.from({ length: duration }, (_, i) => ({
-                    day: i + 1,
-                    destination: userInputs.destination,
-                    title: `Day ${i + 1}: ${locationData.dayTitles[i % locationData.dayTitles.length]}`,
-                    activities: this.selectActivitiesForDay(locationData.activities, i, userInputs),
-                    highlights: locationData.highlights.slice(i, i + 2),
-                    estimatedCost: this.estimateDayCost(userInputs.budget),
-                    tips: locationData.tips[i % locationData.tips.length]
-                }))
-            }
-        };
-    }
-
-    getLocationData(destination) {
-        const locationMap = {
-            'kandy': {
-                theme: 'cultural heritage and scenic beauty',
-                dayTitles: ['Cultural Immersion', 'Temple & Gardens', 'Traditional Crafts', 'Nature Exploration'],
-                activities: [
-                    'Visit Temple of the Sacred Tooth Relic',
-                    'Explore Kandy Lake and Royal Palace',
-                    'Traditional Kandyan dance performance',
-                    'Royal Botanical Gardens Peradeniya',
-                    'Gem museum and jewelry shopping',
-                    'Udawatta Kele Sanctuary nature walk',
-                    'Local spice garden tour',
-                    'Traditional batik and wood carving workshops'
-                ],
-                highlights: ['Sacred Tooth Relic', 'Kandyan Cultural Show', 'Botanical Gardens', 'Scenic Lake Views'],
-                tips: ['Visit temple early morning', 'Dress modestly for temples', 'Try traditional Kandyan cuisine', 'Book cultural show in advance']
-            },
-            'colombo': {
-                theme: 'urban culture and historical landmarks',
-                dayTitles: ['City Discovery', 'Colonial Heritage', 'Local Markets', 'Modern Colombo'],
-                activities: [
-                    'Independence Memorial Hall visit',
-                    'Galle Face Green sunset walk',
-                    'Pettah Market shopping experience',
-                    'National Museum exploration',
-                    'Gangaramaya Temple tour',
-                    'Red Mosque and Dutch Hospital',
-                    'Viharamahadevi Park relaxation',
-                    'Modern shopping at One Galle Face'
-                ],
-                highlights: ['Independence Square', 'Galle Face Green', 'Pettah Markets', 'Colonial Architecture'],
-                tips: ['Avoid rush hour traffic', 'Bargain at local markets', 'Try street food safely', 'Use rideshare apps']
-            },
-            'galle': {
-                theme: 'coastal heritage and Dutch colonial charm',
-                dayTitles: ['Fort Exploration', 'Coastal Adventures', 'Local Culture', 'Beach Relaxation'],
-                activities: [
-                    'Galle Fort UNESCO site tour',
-                    'Dutch Reformed Church visit',
-                    'Lighthouse and rampart walk',
-                    'Unawatuna Beach activities',
-                    'Traditional lace making demo',
-                    'Stilt fishermen watching',
-                    'Sea turtle hatchery visit',
-                    'Sunset at Flag Rock'
-                ],
-                highlights: ['Galle Fort', 'Stilt Fishermen', 'Colonial Architecture', 'Beautiful Beaches'],
-                tips: ['Wear comfortable walking shoes', 'Visit fort early or late', 'Respect turtle conservation', 'Check tide times for fishing']
-            }
-        };
-
-        return locationMap[destination] || {
-            theme: 'authentic Sri Lankan experiences',
-            dayTitles: ['Cultural Discovery', 'Nature Exploration', 'Local Experiences', 'Scenic Adventures'],
-            activities: [
-                'Local temple and cultural site visits',
-                'Traditional village tour',
-                'Local market and food exploration',
-                'Nature walk and wildlife spotting',
-                'Traditional craft demonstrations',
-                'Scenic viewpoint visits',
-                'Local family homestay experience',
-                'Regional specialty tasting'
-            ],
-            highlights: ['Local Culture', 'Natural Beauty', 'Authentic Experiences', 'Traditional Crafts'],
-            tips: ['Respect local customs', 'Try authentic local cuisine', 'Support local artisans', 'Ask guides about hidden gems']
-        };
-    }
-
-    selectActivitiesForDay(activities, dayIndex, userInputs) {
-        const dailyActivities = activities.slice(dayIndex * 2, (dayIndex * 2) + 3);
-        return dailyActivities.length > 0 ? dailyActivities : activities.slice(0, 3);
-    }
-
-    estimateDayCost(budget) {
-        const budgetMap = {
-            'budget': 'LKR 7,500-12,000 per person',
-            'mid-range': 'LKR 15,000-24,000 per person', 
-            'luxury': 'LKR 30,000-60,000 per person'
-        };
-        
-        const budgetKey = budget.toLowerCase().includes('budget') ? 'budget' :
-                         budget.toLowerCase().includes('luxury') ? 'luxury' : 'mid-range';
-        
-        return budgetMap[budgetKey] || 'LKR 15,000-24,000 per person';
-    }    async generateItinerary(userInputs, recommendations) {
+    async generateItinerary(userInputs, recommendations) {
         if (!process.env.GROQ_API_KEY) {
-            console.warn('⚠️ GROQ_API_KEY not found, using fallback itinerary');
-            return this.getFallbackItinerary(userInputs);
+            throw new Error('GROQ_API_KEY not configured. Unable to generate AI itinerary.');
         }
 
         const prompt = `
@@ -303,25 +168,12 @@ class GroqRecommendationService {
                 return parsed;
             } else {
                 console.warn('⚠️ No valid JSON found in Groq response');
+                throw new Error('Failed to generate valid itinerary from AI service');
             }
         } catch (error) {
             console.error('❌ Itinerary generation error:', error.message);
+            throw error; // Pass the error up instead of fallback
         }
-
-        return this.getLocationSpecificFallback(userInputs);
-    }
-
-
-    getFallbackItinerary(userInputs) {
-        return this.getLocationSpecificFallback(userInputs);
-    }
-
-    getFallbackRecommendations(userInputs) {
-        return {
-            recommendations: this.getMockRecommendations(userInputs).recommendations,
-            itinerary: this.getFallbackItinerary(userInputs).itinerary,
-            error: "Fallback data - Groq API unavailable"
-        };
     }
 }
 

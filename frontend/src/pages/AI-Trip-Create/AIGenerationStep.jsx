@@ -38,26 +38,105 @@ export default function AIGenerationStep(){
         navigateTo('/ai-trip/basic-info');
     };
     
+    // Enhanced error handling function
+    const getErrorContent = (errorMessage) => {
+        const lowerError = errorMessage.toLowerCase();
+        
+        if (lowerError.includes('database connection')) {
+            return {
+                icon: FaRobot,
+                title: "Service Temporarily Unavailable",
+                message: "Our recommendation service is currently experiencing technical difficulties.",
+                suggestions: [
+                    "Please try again in a few moments",
+                    "Check your internet connection",
+                    "Contact support if the problem persists"
+                ],
+                actions: [
+                    { label: "Try Again", action: handleGenerate, type: "primary" },
+                    { label: "Go Back", action: handleEdit, type: "secondary" }
+                ]
+            };
+        }
+        
+        if (lowerError.includes('no travel data found')) {
+            return {
+                icon: FaMapMarkerAlt,
+                title: "Destination Not Found",
+                message: errorMessage,
+                suggestions: [
+                    "Check the spelling of your destination",
+                    "Try a nearby major city instead",
+                    "Contact us to add this destination to our database"
+                ],
+                actions: [
+                    { label: "Edit Destination", action: handleEdit, type: "primary" },
+                    { label: "Try Again", action: handleGenerate, type: "secondary" }
+                ]
+            };
+        }
+        
+        // Default error case
+        return {
+            icon: FaRobot,
+            title: "Something went wrong",
+            message: errorMessage,
+            suggestions: [
+                "Please try again",
+                "Check your input details",
+                "Contact support if the issue continues"
+            ],
+            actions: [
+                { label: "Try Again", action: handleGenerate, type: "primary" },
+                { label: "Edit Details", action: handleEdit, type: "secondary" }
+            ]
+        };
+    };
+    
     // Error state
     if (error) {
+        const errorContent = getErrorContent(error);
+        const IconComponent = errorContent.icon;
+        
         return (
             <Main>
-                <StepIndicator currentStep={3} />
-                <div className="text-center py-12 justify-center items-center flex flex-col">
+                <div className="text-center mb-60 justify-center items-center flex flex-col max-w-2xl mx-auto">
                     <div className="inline-flex items-center justify-center w-20 h-20 bg-error rounded-full mb-6">
-                        <FaRobot className="text-white text-3xl" />
+                        <IconComponent className="text-white text-3xl" />
                     </div>
-                    <h2 className="text-2xl font-bold text-content-primary mb-4">Oops! Something went wrong</h2>
-                    <p className="text-content-secondary mb-8 max-w-md mx-auto">{error}</p>
-                    <div className="flex space-x-4 w-1/2 ">
-                        <PrimaryButton
-                            text="Try Again"
-                            onClick={handleGenerate}
-                        />
-                        <SecondaryButton
-                            text="Edit Details"
-                            onClick={handleEdit}
-                        />
+                    <h2 className="text-2xl font-bold text-content-primary mb-4">{errorContent.title}</h2>
+                    <p className="text-content-secondary mb-6 max-w-md mx-auto">{errorContent.message}</p>
+                    
+                    {/* Suggestions */}
+                    <div className="bg-surface-secondary rounded-lg p-6 mb-8 w-full max-w-lg">
+                        <h3 className="font-semibold text-content-primary mb-3">Possible solutions:</h3>
+                        <ul className="text-left space-y-2">
+                            {errorContent.suggestions.map((suggestion, index) => (
+                                <li key={index} className="flex items-start">
+                                    <span className="text-brand-primary mr-2">•</span>
+                                    <span className="text-content-secondary text-sm">{suggestion}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                    
+                    {/* Action buttons */}
+                    <div className="flex space-x-4 w-full max-w-md">
+                        {errorContent.actions.map((action, index) => (
+                            action.type === "primary" ? (
+                                <PrimaryButton
+                                    key={index}
+                                    text={action.label}
+                                    onClick={action.action}
+                                />
+                            ) : (
+                                <SecondaryButton
+                                    key={index}
+                                    text={action.label}
+                                    onClick={action.action}
+                                />
+                            )
+                        ))}
                     </div>
                 </div>
             </Main>
@@ -188,17 +267,32 @@ export default function AIGenerationStep(){
                     <div className="text-center">
                         <FaUserTie className="text-brand-primary text-2xl mx-auto mb-2" />
                         <p className="text-sm font-medium text-content-primary">Recommended Guides</p>
-                        <p className="text-lg font-bold text-brand-primary">{generatedTrip?.recommendations?.guides?.length || 3}</p>
+                        <p className="text-lg font-bold text-brand-primary">
+                            {generatedTrip?.missingData?.guides ? 
+                                <span className="text-gray-400">Not Available</span> : 
+                                generatedTrip?.recommendations?.guides?.length || 0
+                            }
+                        </p>
                     </div>
                     <div className="text-center">
                         <FaHotel className="text-brand-primary text-2xl mx-auto mb-2" />
                         <p className="text-sm font-medium text-content-primary">Hotel Options</p>
-                        <p className="text-lg font-bold text-brand-primary">{generatedTrip?.recommendations?.hotels?.length || 3}</p>
+                        <p className="text-lg font-bold text-brand-primary">
+                            {generatedTrip?.missingData?.hotels ? 
+                                <span className="text-gray-400">Not Available</span> : 
+                                generatedTrip?.recommendations?.hotels?.length || 0
+                            }
+                        </p>
                     </div>
                     <div className="text-center">
                         <FaCar className="text-brand-primary text-2xl mx-auto mb-2" />
                         <p className="text-sm font-medium text-content-primary">Vehicle Options</p>
-                        <p className="text-lg font-bold text-brand-primary">{generatedTrip?.recommendations?.vehicles?.length || 3}</p>
+                        <p className="text-lg font-bold text-brand-primary">
+                            {generatedTrip?.missingData?.vehicles ? 
+                                <span className="text-gray-400">Not Available</span> : 
+                                generatedTrip?.recommendations?.vehicles?.length || 0
+                            }
+                        </p>
                     </div>
                 </div>
             </div>
@@ -254,7 +348,15 @@ export default function AIGenerationStep(){
                         Top Recommended Guides
                     </h4>
                     <div className="space-y-3">
-                        {generatedTrip?.recommendations?.guides?.map((guide, i) => (
+                        {generatedTrip?.missingData?.guides ? (
+                            <div className="text-center py-6 bg-surface-secondary rounded-lg">
+                                <FaUserTie className="text-gray-400 text-3xl mx-auto mb-3" />
+                                <p className="text-content-secondary font-medium mb-2">No verified guides found for {formData.destination}</p>
+                                <p className="text-sm text-content-secondary">
+                                    Try searching nearby cities or we'll help you find suitable guides.
+                                </p>
+                            </div>
+                        ) : generatedTrip?.recommendations?.guides?.map((guide, i) => (
                             <div key={guide.id || i} className="flex items-center justify-between">
                                 <div>
                                     <p className="font-medium text-content-primary">{guide.name}</p>
@@ -268,17 +370,6 @@ export default function AIGenerationStep(){
                                 </div>
                                 <span className="text-sm font-bold text-brand-primary">LKR {guide.price}/day</span>
                             </div>
-                        )) || [1,2,3].map(i => (
-                            <div key={i} className="flex items-center justify-between">
-                                <div>
-                                    <p className="font-medium text-content-primary">Guide {i}</p>
-                                    <div className="flex items-center">
-                                        <FaStar className="text-warning text-xs mr-1" />
-                                        <span className="text-xs text-content-secondary">4.{8+i} (120+ reviews)</span>
-                                    </div>
-                                </div>
-                                <span className="text-sm font-bold text-brand-primary">LKR 15,000/day</span>
-                            </div>
                         ))}
                     </div>
                 </div>
@@ -290,7 +381,15 @@ export default function AIGenerationStep(){
                         Recommended Hotels
                     </h4>
                     <div className="space-y-3">
-                        {generatedTrip?.recommendations?.hotels?.map((hotel, i) => (
+                        {generatedTrip?.missingData?.hotels ? (
+                            <div className="text-center py-6 bg-surface-secondary rounded-lg">
+                                <FaHotel className="text-gray-400 text-3xl mx-auto mb-3" />
+                                <p className="text-content-secondary font-medium mb-2">No hotels found for {formData.destination}</p>
+                                <p className="text-sm text-content-secondary">
+                                    Try searching for nearby cities or contact us to add hotels in this area.
+                                </p>
+                            </div>
+                        ) : generatedTrip?.recommendations?.hotels?.map((hotel, i) => (
                             <div key={hotel.id || i} className="flex items-center justify-between">
                                 <div>
                                     <p className="font-medium text-content-primary">{hotel.name}</p>
@@ -304,17 +403,6 @@ export default function AIGenerationStep(){
                                 </div>
                                 <span className="text-sm font-bold text-brand-primary">LKR {hotel.price}/night</span>
                             </div>
-                        )) || [1,2,3].map(i => (
-                            <div key={i} className="flex items-center justify-between">
-                                <div>
-                                    <p className="font-medium text-content-primary">Hotel {i}</p>
-                                    <div className="flex items-center">
-                                        <FaStar className="text-warning text-xs mr-1" />
-                                        <span className="text-xs text-content-secondary">4.{6+i} (80+ reviews)</span>
-                                    </div>
-                                </div>
-                                <span className="text-sm font-bold text-brand-primary">LKR {9000+i*6000}/night</span>
-                            </div>
                         ))}
                     </div>
                 </div>
@@ -326,7 +414,15 @@ export default function AIGenerationStep(){
                         Recommended Vehicles
                     </h4>
                     <div className="space-y-3">
-                        {generatedTrip?.recommendations?.vehicles?.map((vehicle, i) => (
+                        {generatedTrip?.missingData?.vehicles ? (
+                            <div className="text-center py-6 bg-surface-secondary rounded-lg">
+                                <FaCar className="text-gray-400 text-3xl mx-auto mb-3" />
+                                <p className="text-content-secondary font-medium mb-2">No suitable vehicles for {formData.adults + formData.children} people</p>
+                                <p className="text-sm text-content-secondary">
+                                    Try reducing group size or contact us for custom vehicle arrangements.
+                                </p>
+                            </div>
+                        ) : generatedTrip?.recommendations?.vehicles?.map((vehicle, i) => (
                             <div key={vehicle.id || i} className="flex items-center justify-between">
                                 <div>
                                     <p className="font-medium text-content-primary">{vehicle.name}</p>
@@ -340,17 +436,6 @@ export default function AIGenerationStep(){
                                 </div>
                                 <span className="text-sm font-bold text-brand-primary">LKR {vehicle.price}/day</span>
                             </div>
-                        )) || [1,2,3].map(i => (
-                            <div key={i} className="flex items-center justify-between">
-                                <div>
-                                    <p className="font-medium text-content-primary">Vehicle {i}</p>
-                                    <div className="flex items-center">
-                                        <FaStar className="text-warning text-xs mr-1" />
-                                        <span className="text-xs text-content-secondary">4.{7+i} (50+ reviews)</span>
-                                    </div>
-                                </div>
-                                <span className="text-sm font-bold text-brand-primary">LKR {7500+i*4500}/day</span>
-                            </div>
                         ))}
                     </div>
                 </div>
@@ -363,19 +448,28 @@ export default function AIGenerationStep(){
                     <div>
                         <p className="text-sm text-content-secondary">Guides</p>
                         <p className="text-xl font-bold text-brand-primary">
-                            LKR {(generatedTrip?.recommendations?.guides?.[0]?.price || 15000) * parseInt(formData.duration)}
+                            {generatedTrip?.missingData?.guides ? 
+                                <span className="text-gray-400">N/A</span> :
+                                `LKR ${(generatedTrip?.recommendations?.guides?.[0]?.price || 15000) * parseInt(formData.duration)}`
+                            }
                         </p>
                     </div>
                     <div>
                         <p className="text-sm text-content-secondary">Hotels</p>
                         <p className="text-xl font-bold text-brand-primary">
-                            LKR {(generatedTrip?.recommendations?.hotels?.[0]?.price || 24000) * parseInt(formData.duration)}
+                            {generatedTrip?.missingData?.hotels ? 
+                                <span className="text-gray-400">N/A</span> :
+                                `LKR ${(generatedTrip?.recommendations?.hotels?.[0]?.price || 24000) * parseInt(formData.duration)}`
+                            }
                         </p>
                     </div>
                     <div>
                         <p className="text-sm text-content-secondary">Transport</p>
                         <p className="text-xl font-bold text-brand-primary">
-                            LKR {(generatedTrip?.recommendations?.vehicles?.[0]?.price || 12000) * parseInt(formData.duration)}
+                            {generatedTrip?.missingData?.vehicles ? 
+                                <span className="text-gray-400">N/A</span> :
+                                `LKR ${(generatedTrip?.recommendations?.vehicles?.[0]?.price || 12000) * parseInt(formData.duration)}`
+                            }
                         </p>
                     </div>
                     <div>

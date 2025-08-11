@@ -6,26 +6,24 @@ class DatabaseService {
         try {
             const query = `
                 SELECT 
-                    g.id,
-                    u.first_name as name,  
-                    g.bio as description,
-                    g.hours_rate * 8 as price_per_day,  
-                    g.experience_years,
-                    g.is_verified,
-                    g.is_available,
-                    g.slta_license_id,
-                    g.slta_license_expiry,
-                    g.nic_number,
-                    g.created_at,
-                    COALESCE(g.rating, 4.5) as rating,
-                    COALESCE(g.reviews_count, 10) as reviews
-                FROM guides g
-                JOIN users u ON g.user_id = u.id
-                WHERE g.is_available = true
-                    AND g.is_verified = true
-                    AND (g.slta_license_expiry IS NULL OR g.slta_license_expiry > NOW())
-                ORDER BY g.experience_years DESC, g.created_at DESC
-                LIMIT 20
+                g.id,
+                u.first_name,  
+                g.bio as description,
+                g.hours_rate * 8 as price_per_day,  
+                g.experience_years,
+                g.is_verified,
+                g.is_available,
+                g.slta_license_id,
+                g.slta_license_expiry,
+                g.nic_number,
+                g.created_at
+            FROM guides g
+            JOIN users u ON g.user_id = u.id
+            WHERE g.is_available = true
+                AND g.is_verified = true
+                AND (g.slta_license_expiry IS NULL OR g.slta_license_expiry > NOW())
+            ORDER BY g.experience_years DESC, g.created_at DESC
+            LIMIT 20
             `;
 
             console.log(`🔍 Searching for guides in: ${destination}`);
@@ -60,17 +58,12 @@ class DatabaseService {
             const query = `
                 SELECT 
                     h.id,
-                    h.hotel_name as name,
+                    h.hotel_name,
                     h.city,
                     h.description,
-                    h.type,
-                    COALESCE(h.price_per_night, 22500) as price,
-                    COALESCE(h.rating, 4.3) as rating,
-                    COALESCE(h.reviews_count, 50) as reviews
+                    h.type
                 FROM hotels h
                 WHERE h.city ILIKE $1 
-                ORDER BY h.rating DESC, h.id ASC
-                LIMIT 15
             `;
             
             console.log(`🔍 Searching for hotels in: ${destination}`);
@@ -110,10 +103,8 @@ class DatabaseService {
                     v.vehicle_model,
                     v.vehicle_no,
                     v.capacity,
-                    v.base_price as price,
-                    v.price_per_kilometer,
-                    COALESCE(v.rating, 4.2) as rating,
-                    COALESCE(v.reviews_count, 25) as reviews
+                    v.base_price,
+                    v.price_per_kilometer
                 FROM vehicles v
                 WHERE v.capacity >= $1 
                 ORDER BY v.capacity ASC, v.id ASC
