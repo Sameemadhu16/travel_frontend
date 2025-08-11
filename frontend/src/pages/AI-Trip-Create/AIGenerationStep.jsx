@@ -84,7 +84,7 @@ export default function AIGenerationStep(){
             message: errorMessage,
             suggestions: [
                 "Please try again",
-                "Check your input details",
+                "Check your internet connection",
                 "Contact support if the issue continues"
             ],
             actions: [

@@ -26,12 +26,12 @@ class DatabaseService {
             LIMIT 20
             `;
 
-            console.log('🔍 Executing guides query...');
+            console.log(' Executing guides query...');
             const result = await db.query(query);
-            console.log(`📊 Database returned ${result.rows.length} guides`);
+            console.log(` Database returned ${result.rows.length} guides`);
             
             if (result.rows.length === 0) {
-                console.log('⚠️ No guides found in database');
+                console.log(' No guides found in database');
                 return [];
             }
             
@@ -47,11 +47,11 @@ class DatabaseService {
                 description: guide.description
             }));
 
-            console.log('✅ Mapped guides:', mappedGuides.length);
+            console.log(' Mapped guides:', mappedGuides.length);
             return mappedGuides;
             
         } catch (e) {
-            console.error('❌ Database error fetching guides:', e.message);
+            console.error(' Database error fetching guides:', e.message);
             return [];
         }
     }
@@ -72,10 +72,10 @@ class DatabaseService {
             
             console.log('🔍 Executing hotels query for:', destination);
             const result = await db.query(query, [`%${destination}%`]);
-            console.log(`📊 Database returned ${result.rows.length} hotels`);
+            console.log(` Database returned ${result.rows.length} hotels`);
             
             if (result.rows.length === 0) {
-                console.log(`⚠️ No hotels found in ${destination}`);
+                console.log(` No hotels found in ${destination}`);
                 return [];
             }
             
@@ -90,11 +90,11 @@ class DatabaseService {
                 description: hotel.description
             }));
 
-            console.log('✅ Mapped hotels:', mappedHotels.length);
+            console.log(' Mapped hotels:', mappedHotels.length);
             return mappedHotels;
             
         } catch (e) {
-            console.error('❌ Database error fetching hotels:', e.message);
+            console.error(' Database error fetching hotels:', e.message);
             return [];
         }
     }
@@ -118,12 +118,12 @@ class DatabaseService {
                 LIMIT 15
             `;
             
-            console.log('🔍 Executing vehicles query for capacity:', totalPeople);
+            console.log(' Executing vehicles query for capacity:', totalPeople);
             const result = await db.query(query, [totalPeople]);
-            console.log(`📊 Database returned ${result.rows.length} vehicles`);
+            console.log(` Database returned ${result.rows.length} vehicles`);
             
             if (result.rows.length === 0) {
-                console.log(`⚠️ No vehicles found for ${totalPeople} people`);
+                console.log(` No vehicles found for ${totalPeople} people`);
                 return [];
             }
             
@@ -138,11 +138,11 @@ class DatabaseService {
                 vehicleNo: vehicle.vehicle_no
             }));
 
-            console.log('✅ Mapped vehicles:', mappedVehicles.length);
+            console.log(' Mapped vehicles:', mappedVehicles.length);
             return mappedVehicles;
             
         } catch (e) {
-            console.error('❌ Database error fetching vehicles:', e.message);
+            console.error(' Database error fetching vehicles:', e.message);
             return [];
         }
     }
@@ -162,7 +162,7 @@ class DatabaseService {
             console.log("DB Connected");
             return true;
         } catch (error) {
-            console.error('❌ Database connection failed:', error.message);
+            console.error(' Database connection failed:', error.message);
             return false;
         }
     }

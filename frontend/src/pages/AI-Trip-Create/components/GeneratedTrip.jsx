@@ -140,7 +140,7 @@ export default function GeneratedTrip({ generatedTrip, handleEdit, formData }) {
                             <p className="text-xl font-bold text-brand-primary">
                                 {generatedTrip?.missingData?.guides ? 
                                     <span className="text-gray-400">N/A</span> :
-                                    `LKR ${generatedTrip?.recommendations?.guides?.[0]?.price * parseInt(formData.duration) || 0}`
+                                    `LKR ${generatedTrip?.costs?.guide || (generatedTrip?.recommendations?.guides?.[0]?.price * parseInt(formData.duration)) || 0}`
                                 }
                             </p>
                         </div>
@@ -149,7 +149,7 @@ export default function GeneratedTrip({ generatedTrip, handleEdit, formData }) {
                             <p className="text-xl font-bold text-brand-primary">
                                 {generatedTrip?.missingData?.hotels ? 
                                     <span className="text-gray-400">N/A</span> :
-                                    `LKR ${generatedTrip?.recommendations?.hotels?.[0]?.price * parseInt(formData.duration) || 0}`
+                                    `LKR ${generatedTrip?.costs?.hotel || (generatedTrip?.recommendations?.hotels?.[0]?.price * parseInt(formData.duration)) || 0}`
                                 }
                             </p>
                         </div>
@@ -158,7 +158,7 @@ export default function GeneratedTrip({ generatedTrip, handleEdit, formData }) {
                             <p className="text-xl font-bold text-brand-primary">
                                 {generatedTrip?.missingData?.vehicles ? 
                                     <span className="text-gray-400">N/A</span> :
-                                    `LKR ${generatedTrip?.recommendations?.vehicles?.[0]?.price * parseInt(formData.duration) || 0}`
+                                    `LKR ${generatedTrip?.costs?.vehicle || (generatedTrip?.recommendations?.vehicles?.[0]?.price * parseInt(formData.duration)) || 0}`
                                 }
                             </p>
                         </div>
@@ -167,9 +167,9 @@ export default function GeneratedTrip({ generatedTrip, handleEdit, formData }) {
                             <p className="text-2xl font-bold text-success">
                                 {generatedTrip?.missingData?.guides || generatedTrip?.missingData?.hotels || generatedTrip?.missingData?.vehicles ? 
                                     <span className="text-gray-400">N/A</span> :
-                                    `LKR ${((generatedTrip?.recommendations?.guides?.[0]?.price || 0) + 
+                                    `LKR ${generatedTrip?.costs?.total || (((generatedTrip?.recommendations?.guides?.[0]?.price || 0) + 
                                         (generatedTrip?.recommendations?.hotels?.[0]?.price || 0) + 
-                                        (generatedTrip?.recommendations?.vehicles?.[0]?.price || 0)) * parseInt(formData.duration)}`
+                                        (generatedTrip?.recommendations?.vehicles?.[0]?.price || 0)) * parseInt(formData.duration))}`
                                 }
                             </p>
                         </div>

@@ -11,6 +11,8 @@ class GroqRecommendationService {
 
     async getRecommendation(userInputs){
         try{
+            console.log('🚀 Starting recommendation generation for:', userInputs.destination);
+
             // Test database connection first
             const dbConnected = await this.dbService.testConnection();
             
@@ -29,17 +31,52 @@ class GroqRecommendationService {
             // Generate dynamic AI itinerary based on available data
             const itinerary = await this.generateItinerary(userInputs, recommendations);
             
-            return {
+            // Calculate destinations count from itinerary
+            const destinationsCount = itinerary?.itinerary?.dailyPlans?.length || parseInt(userInputs.duration) || 0;
+            
+            // Calculate real costs
+            const duration = parseInt(userInputs.duration) || 1;
+            const costs = this.calculateRealCosts(recommendations, duration);
+            
+            const result = {
                 ...recommendations,
                 ...itinerary,
+                itinerary: {
+                    ...itinerary.itinerary,
+                    destinations: destinationsCount
+                },
+                costs: costs,
                 generatedAt: new Date().toISOString(),
                 dataSource: 'database'
             };
+
+            console.log('✅ Complete recommendation generated with', destinationsCount, 'destinations');
+            return result;
 
         } catch(error) {
             console.error('❌ Groq Service Error:', error);
             throw error; // Pass the error up instead of returning fallback data
         }
+    }
+
+    // Helper method to calculate real costs
+    calculateRealCosts(recommendations, duration) {
+        const guides = recommendations.recommendations?.guides || [];
+        const hotels = recommendations.recommendations?.hotels || [];
+        const vehicles = recommendations.recommendations?.vehicles || [];
+
+        const guideCost = guides.length > 0 ? guides[0].price * duration : 0;
+        const hotelCost = hotels.length > 0 ? hotels[0].price * duration : 0;
+        const vehicleCost = vehicles.length > 0 ? vehicles[0].price * duration : 0;
+        const totalCost = guideCost + hotelCost + vehicleCost;
+
+        return {
+            guide: guideCost,
+            hotel: hotelCost,
+            vehicle: vehicleCost,
+            total: totalCost,
+            perPerson: Math.round(totalCost / (parseInt(recommendations.adults) || 1))
+        };
     }
 
     async getDatabaseRecommendations(userInputs) {
