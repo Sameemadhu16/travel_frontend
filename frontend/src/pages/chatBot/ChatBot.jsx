@@ -55,16 +55,6 @@ export default function ChatBot() {
             ]);
         }, 1000);
     };
-                    sender: 'bot',
-                    timestamp: new Date(),
-                }
-            ]);
-        }, 1000);
-    };
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
 
     const messageContainer = useMemo(()=>{
         return messages.map((message, index)=>(
