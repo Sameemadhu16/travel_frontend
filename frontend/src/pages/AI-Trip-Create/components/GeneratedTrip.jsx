@@ -138,38 +138,36 @@ export default function GeneratedTrip({ generatedTrip, handleEdit, formData }) {
                         <div>
                             <p className="text-sm text-content-secondary">Guides</p>
                             <p className="text-xl font-bold text-brand-primary">
-                                {generatedTrip?.missingData?.guides ? 
-                                    <span className="text-gray-400">N/A</span> :
-                                    `LKR ${generatedTrip?.costs?.guide || (generatedTrip?.recommendations?.guides?.[0]?.price * parseInt(formData.duration)) || 0}`
+                                {generatedTrip?.costs?.guide === 0 || generatedTrip?.missingData?.guides ? 
+                                    <span className="text-gray-400">LKR 0</span> :
+                                    `LKR ${generatedTrip?.costs?.guide?.toLocaleString()}`
                                 }
                             </p>
                         </div>
                         <div>
                             <p className="text-sm text-content-secondary">Hotels</p>
                             <p className="text-xl font-bold text-brand-primary">
-                                {generatedTrip?.missingData?.hotels ? 
-                                    <span className="text-gray-400">N/A</span> :
-                                    `LKR ${generatedTrip?.costs?.hotel || (generatedTrip?.recommendations?.hotels?.[0]?.price * parseInt(formData.duration)) || 0}`
+                                {generatedTrip?.costs?.hotel === 0 || generatedTrip?.missingData?.hotels ? 
+                                    <span className="text-gray-400">LKR 0</span> :
+                                    `LKR ${generatedTrip?.costs?.hotel?.toLocaleString()}`
                                 }
                             </p>
                         </div>
                         <div>
                             <p className="text-sm text-content-secondary">Transport</p>
                             <p className="text-xl font-bold text-brand-primary">
-                                {generatedTrip?.missingData?.vehicles ? 
-                                    <span className="text-gray-400">N/A</span> :
-                                    `LKR ${generatedTrip?.costs?.vehicle || (generatedTrip?.recommendations?.vehicles?.[0]?.price * parseInt(formData.duration)) || 0}`
+                                {generatedTrip?.costs?.vehicle === 0 || generatedTrip?.missingData?.vehicles ? 
+                                    <span className="text-gray-400">LKR 0</span> :
+                                    `LKR ${generatedTrip?.costs?.vehicle?.toLocaleString()}`
                                 }
                             </p>
                         </div>
                         <div>
                             <p className="text-sm text-content-secondary font-bold">Total</p>
                             <p className="text-2xl font-bold text-success">
-                                {generatedTrip?.missingData?.guides || generatedTrip?.missingData?.hotels || generatedTrip?.missingData?.vehicles ? 
-                                    <span className="text-gray-400">N/A</span> :
-                                    `LKR ${generatedTrip?.costs?.total || (((generatedTrip?.recommendations?.guides?.[0]?.price || 0) + 
-                                        (generatedTrip?.recommendations?.hotels?.[0]?.price || 0) + 
-                                        (generatedTrip?.recommendations?.vehicles?.[0]?.price || 0)) * parseInt(formData.duration))}`
+                                {generatedTrip?.costs?.total === 0 || !generatedTrip?.hasData ? 
+                                    <span className="text-gray-400">LKR 0</span> :
+                                    `LKR ${generatedTrip?.costs?.total?.toLocaleString()}`
                                 }
                             </p>
                         </div>

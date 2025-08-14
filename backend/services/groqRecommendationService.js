@@ -1,116 +1,59 @@
 const Groq = require('groq-sdk');
-const DatabaseService = require('./databaseService');
 
 class GroqRecommendationService {
     constructor(){
         this.groq = new Groq({
             apiKey: process.env.GROQ_API_KEY
         });
-        this.dbService = new DatabaseService();
     }
 
     async getRecommendation(userInputs){
         try{
-            console.log('🚀 Starting recommendation generation for:', userInputs.destination);
+            console.log('🚀 Starting AI itinerary generation for:', userInputs.destination);
 
-            // Test database connection first
-            const dbConnected = await this.dbService.testConnection();
-            
-            if (!dbConnected) {
-                throw new Error('Database connection failed. Unable to fetch recommendations.');
-            }
-
-            // Get real data from database
-            const recommendations = await this.getDatabaseRecommendations(userInputs);
-            
-            // Check if we have any data at all
-            if (!recommendations.hasData) {
-                throw new Error(`No travel data found for ${userInputs.destination}. Please try a different destination or contact support.`);
-            }
-            
-            // Generate dynamic AI itinerary based on available data
-            const itinerary = await this.generateItinerary(userInputs, recommendations);
-            
-            // Calculate destinations count from itinerary
+            // Only generate AI itinerary, no database recommendations
+            const itinerary = await this.generateItinerary(userInputs);
             const destinationsCount = itinerary?.itinerary?.dailyPlans?.length || parseInt(userInputs.duration) || 0;
-            
-            // Calculate real costs
-            const duration = parseInt(userInputs.duration) || 1;
-            const costs = this.calculateRealCosts(recommendations, duration);
-            
+
+            // Return empty recommendations and costs
             const result = {
-                ...recommendations,
+                recommendations: {
+                    guides: [],
+                    hotels: [],
+                    vehicles: []
+                },
+                missingData: {
+                    guides: true,
+                    hotels: true,
+                    vehicles: true
+                },
+                hasData: false,
                 ...itinerary,
                 itinerary: {
                     ...itinerary.itinerary,
                     destinations: destinationsCount
                 },
-                costs: costs,
+                costs: {
+                    guide: 0,
+                    hotel: 0,
+                    vehicle: 0,
+                    total: 0,
+                    perPerson: 0
+                },
                 generatedAt: new Date().toISOString(),
-                dataSource: 'database'
+                dataSource: 'ai-only'
             };
 
-            console.log('✅ Complete recommendation generated with', destinationsCount, 'destinations');
+            console.log('✅ AI itinerary generated with', destinationsCount, 'destinations');
             return result;
 
         } catch(error) {
             console.error('❌ Groq Service Error:', error);
-            throw error; // Pass the error up instead of returning fallback data
+            throw error;
         }
     }
 
-    // Helper method to calculate real costs
-    calculateRealCosts(recommendations, duration) {
-        const guides = recommendations.recommendations?.guides || [];
-        const hotels = recommendations.recommendations?.hotels || [];
-        const vehicles = recommendations.recommendations?.vehicles || [];
-
-        const guideCost = guides.length > 0 ? guides[0].price * duration : 0;
-        const hotelCost = hotels.length > 0 ? hotels[0].price * duration : 0;
-        const vehicleCost = vehicles.length > 0 ? vehicles[0].price * duration : 0;
-        const totalCost = guideCost + hotelCost + vehicleCost;
-
-        return {
-            guide: guideCost,
-            hotel: hotelCost,
-            vehicle: vehicleCost,
-            total: totalCost,
-            perPerson: Math.round(totalCost / (parseInt(recommendations.adults) || 1))
-        };
-    }
-
-    async getDatabaseRecommendations(userInputs) {
-        try {
-            
-            const [guides, hotels, vehicles] = await Promise.all([
-                this.dbService.fetchGuides(userInputs.destination),
-                this.dbService.fetchHotels(userInputs.destination),
-                this.dbService.fetchVehicles(userInputs.adults || 2, userInputs.children || 0)
-            ]);
-
-            // Create status flags for missing data
-            const missingData = {
-                guides: guides.length === 0,
-                hotels: hotels.length === 0,
-                vehicles: vehicles.length === 0
-            };
-
-            return {
-                recommendations: {
-                    guides,
-                    hotels,
-                    vehicles
-                },
-                missingData,
-                hasData: guides.length > 0 || hotels.length > 0 || vehicles.length > 0
-            };
-        } catch (error) {
-            console.error('❌ Database fetch error:', error);
-            throw error; // Pass the error up instead of fallback
-        }
-    }
-
-    async generateItinerary(userInputs, recommendations) {
+    async generateItinerary(userInputs) {
         if (!process.env.GROQ_API_KEY) {
             throw new Error('GROQ_API_KEY not configured. Unable to generate AI itinerary.');
         }
@@ -137,11 +80,6 @@ class GroqRecommendationService {
         6. Consider the budget (${userInputs.budget}) when choosing hotels, food, and transport recommendations.
         7. Provide **local tips** for each day (avoid generic advice).
         8. Avoid repeating activities unless necessary.
-
-        --- LOCAL SERVICES AVAILABLE ---
-        - Guides: ${recommendations.recommendations?.guides?.length || 0}
-        - Hotels: ${recommendations.recommendations?.hotels?.length || 0}
-        - Vehicles: ${recommendations.recommendations?.vehicles?.length || 0}
 
         --- JSON OUTPUT FORMAT ---
         Return ONLY valid JSON in this format:
@@ -175,7 +113,6 @@ class GroqRecommendationService {
         `;
 
         try {
-            
             const response = await this.groq.chat.completions.create({
                 messages: [
                     {
@@ -193,9 +130,7 @@ class GroqRecommendationService {
             });
 
             const content = response.choices[0]?.message?.content;
-            
             const jsonMatch = content.match(/\{[\s\S]*\}/);
-            
             if (jsonMatch) {
                 const parsed = JSON.parse(jsonMatch[0]);
                 console.log(`Generated dynamic itinerary for ${userInputs.destination}`);
@@ -206,7 +141,7 @@ class GroqRecommendationService {
             }
         } catch (error) {
             console.error('❌ Itinerary generation error:', error.message);
-            throw error; // Pass the error up instead of fallback
+            throw error;
         }
     }
 }
