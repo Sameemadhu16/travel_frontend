@@ -5,73 +5,30 @@ import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import { FaCalendar, FaClock, FaUsers } from 'react-icons/fa';
 import NavBar from './guideComponents/NavBar'
+import { useState } from 'react';
+import TourDetailsModal from './guideComponents/TourDetailsModal';
+import { tours } from './assets/acceptedTourData';
 
 const AcceptedTours = () => {
-    const tours = [
-        {
-            id: 1,
-            customer: {
-                name: "Sarah Johnson",
-                type: "Premium Traveler",
-                avatar: "https://images.unsplash.com/photo-1494790108755-2616b332446c?w=50&h=50&fit=crop&crop=face"
-            },
-            tour: {
-                title: "Historic Paris Walking Tour",
-                date: "March 15, 2024 - 10:00 AM",
-                travelers: 4,
-                duration: "3 hours duration"
-            },
-            payment: {
-                status: "Pending Payment",
-                deadline: "6 days left",
-                due: "March 13, 2024",
-                amount: "Rs. 20000",
-                accepted: "March 8, 2024"
-            }
-        },
-        {
-            id: 2,
-            customer: {
-                name: "Michael Chen",
-                type: "Business Traveler",
-                avatar: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=50&h=50&fit=crop&crop=face"
-            },
-            tour: {
-                title: "Art & Culture District Tour",
-                date: "March 18, 2024 - 2:00 PM",
-                travelers: 2,
-                duration: "4 hours duration"
-            },
-            payment: {
-                status: "Pending Payment",
-                deadline: "10 days left",
-                due: "March 12, 2024",
-                amount: "Rs. 30000",
-                accepted: "March 7, 2024"
-            }
-        },
-        {
-            id: 3,
-            customer: {
-                name: "Emma Rodriguez",
-                type: "Adventure Seeker",
-                avatar: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=50&h=50&fit=crop&crop=face"
-            },
-            tour: {
-                title: "Food & Wine Experience",
-                date: "March 20, 2024 - 6:00 PM",
-                travelers: 6,
-                duration: "5 hours duration"
-            },
-            payment: {
-                status: "Pending Payment",
-                deadline: "18 days left",
-                due: "March 15, 2024",
-                amount: "Rs. 21000",
-                accepted: "March 9, 2024"
-            }
-        }
-    ];
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedTour, setSelectedTour] = useState(null);
+
+    const handleViewDetails = (tourData) => {
+        setSelectedTour(tourData);
+        setIsModalOpen(true);
+    }
+
+    const handleCloseDetails = () => {
+        setIsModalOpen(false);
+        setSelectedTour(null);
+    }
+
+    let totalEarnings = 0;
+
+    tours.forEach(tour => {
+        totalEarnings += Number(tour.payment.totalAmount.replace(/,/g,''));
+    });
 
     return (
         <>
@@ -93,7 +50,7 @@ const AcceptedTours = () => {
                                     3 Pending Payments
                                 </div>
                                 <div className="text-gray-700 font-medium border border-gray-300 px-4 py-2 rounded-lg text-sm">
-                                    Total Earnings: <span className="text-green-600">Rs. 71000</span>
+                                    Total Earnings: <span className="text-green-600">Rs. {totalEarnings}</span>
                                 </div>
                             </div>
                         </div>
@@ -101,17 +58,17 @@ const AcceptedTours = () => {
                         {/* Tour Cards */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
                             {tours.map((tour) => (
-                                <Card key={tour.id} className="h-full">
+                                <Card key={tour.tour.tour_id} className="h-full">
                                     {/* Customer Info */}
                                     <div className="flex items-center mb-4">
                                         <img
-                                            src={tour.customer.avatar}
+                                            src={tour.customer.image}
                                             alt={tour.customer.name}
                                             className="w-12 h-12 rounded-lg mr-3"
                                         />
                                         <div className="flex-1">
                                             <h3 className="font-semibold text-gray-900">{tour.customer.name}</h3>
-                                            <p className="text-sm text-gray-600">{tour.customer.type}</p>
+                                            {/* <p className="text-sm text-gray-600">{tour.customer.type}</p> */}
                                         </div>
                                         <div className="flex items-center bg-orange-100 text-orange-600 px-2 py-1 rounded-full text-xs font-medium">
                                             <span className="w-2 h-2 bg-orange-500 rounded-full mr-1"></span>
@@ -121,7 +78,7 @@ const AcceptedTours = () => {
 
                                     {/* Tour Details */}
                                     <div className="mb-4">
-                                        <h4 className="font-semibold text-gray-900 mb-3">{tour.tour.title}</h4>
+                                        <h4 className="font-semibold text-gray-900 mb-3">{tour.tour.destination}</h4>
                                         <div className="space-y-2">
                                             <div className="flex items-center text-sm text-gray-600 gap-2">
                                                 <FaCalendar className='text-orange-500' />
@@ -129,11 +86,11 @@ const AcceptedTours = () => {
                                             </div>
                                             <div className="flex items-center text-sm text-gray-600 gap-2">
                                                 <FaUsers className='text-orange-500' />
-                                                {tour.tour.travelers} Travelers
+                                                {tour.tour.groupSize} Travelers
                                             </div>
                                             <div className="flex items-center text-sm text-gray-600 gap-2">
                                                 <FaClock className='text-orange-500' />
-                                                {tour.tour.duration}
+                                                {tour.tour.duration} days
                                             </div>
                                         </div>
                                     </div>
@@ -151,7 +108,7 @@ const AcceptedTours = () => {
                                     <div className="flex justify-between items-center mb-4">
                                         <div>
                                             <p className="text-sm text-gray-600">Estimated Earnings</p>
-                                            <p className="text-2xl font-bold text-green-600">{tour.payment.amount}</p>
+                                            <p className="text-2xl font-bold text-green-600">{tour.payment.totalAmount}</p>
                                         </div>
                                         <div className="text-right">
                                             <p className="text-sm text-gray-600">Accepted</p>
@@ -173,6 +130,7 @@ const AcceptedTours = () => {
                                                 text="View Details"
                                                 type={'button'}
                                                 className={'text-base hover:text-orange-600'}
+                                                onClick={() => handleViewDetails(tour)}
                                             />
                                         </div>
                                     </div>
@@ -221,6 +179,15 @@ const AcceptedTours = () => {
                     </Main>
                 </div>
             </div>
+
+            {selectedTour &&
+                <TourDetailsModal
+                    isOpen={isModalOpen}
+                    onClose={handleCloseDetails}
+                    tourData={selectedTour}
+                    tourAccepted={true}
+                />
+            }
         </>
     );
 };
