@@ -1,4 +1,5 @@
 import { FaHotel, FaMapMarkerAlt, FaRobot, FaStar, FaUserTie } from "react-icons/fa";
+import { getRequest } from "../../core/service";
 import PrimaryButton from "../../components/PrimaryButton";
 import SecondaryButton from "../../components/SecondaryButton";
 import { useContext, useState } from "react";
@@ -13,11 +14,12 @@ import GeneratedTrip from "./components/GeneratedTrip";
 export default function AIGenerationStep(){
 
     const { formData } = useContext(FormContext);
-    
     // State management for AI generation
     const [isGenerating, setIsGenerating] = useState(false);
     const [generatedTrip, setGeneratedTrip] = useState(null);
     const [error, setError] = useState(null);
+    const capacity = Number(formData.adults) + Number(formData.children);
+
     const handleGenerate = async () => {
         setIsGenerating(true);
         setError(null);
@@ -25,10 +27,44 @@ export default function AIGenerationStep(){
         try {            
             // Use the recommendation service
             const result = await recommendationService.generateRecommendations(formData);
-            setGeneratedTrip(result.data);
+            const bookingData = await getRequest(`/api/search/all?city=${formData.destination}&capacity=${capacity}`);
             
+            // Transform the data to match RecommendationCard expectations
+            const recommendations = {
+                guides: bookingData.guides?.map(guide => ({
+                    ...guide,
+                    price: guide.pricePerDay || guide.price || 0,
+                    rating: guide.rating || 4.5,
+                    reviews: guide.reviews || '50+'
+                })) || [],
+                hotels: bookingData.hotels?.map(hotel => ({
+                    ...hotel,
+                    price: hotel.pricePerNight || hotel.price || 0,
+                    rating: hotel.rating || 4.0,
+                    reviews: hotel.reviews || '30+'
+                })) || [],
+                vehicles: bookingData.vehicles?.map(vehicle => ({
+                    ...vehicle,
+                    price: vehicle.pricePerDay || vehicle.price || 0,
+                    rating: vehicle.rating || 4.2,
+                    reviews: vehicle.reviews || '25+'
+                })) || [],
+            };
+            
+            // Update missing data based on actual availability
+            const missingData = {
+                guides: !recommendations.guides || recommendations.guides.length === 0,
+                hotels: !recommendations.hotels || recommendations.hotels.length === 0,
+                vehicles: !recommendations.vehicles || recommendations.vehicles.length === 0
+            };
+            
+            setGeneratedTrip({
+                ...result.data,
+                recommendations: recommendations,
+                missingData: missingData
+            });
         } catch (error) {
-            console.error('❌ Error generating trip:', error);
+            console.error(error);
             setError(error.message || 'Failed to generate trip. Please try again.');
         } finally {
             setIsGenerating(false);

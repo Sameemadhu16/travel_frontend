@@ -8,7 +8,7 @@ export default function RecommendationCard({
     missingMessage, 
     missingDescription,
     priceUnit,
-    extraField, // for specialties, location, capacity
+    extraField,
     extraFieldLabel
 }) {
     return (
