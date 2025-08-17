@@ -39,13 +39,13 @@ export default function AIGenerationStep(){
                 })) || [],
                 hotels: bookingData.hotels?.map(hotel => ({
                     ...hotel,
-                    price: hotel.pricePerNight || hotel.price || 0,
+                    price: hotel.pricePerNight || hotel.price || 8500, // Default fake price for hotels
                     rating: hotel.rating || 4.0,
                     reviews: hotel.reviews || '30+'
                 })) || [],
                 vehicles: bookingData.vehicles?.map(vehicle => ({
                     ...vehicle,
-                    price: vehicle.pricePerDay || vehicle.price || 0,
+                    price: vehicle.basePrice || vehicle.pricePerDay || vehicle.price || 0,
                     rating: vehicle.rating || 4.2,
                     reviews: vehicle.reviews || '25+'
                 })) || [],
@@ -58,10 +58,32 @@ export default function AIGenerationStep(){
                 vehicles: !recommendations.vehicles || recommendations.vehicles.length === 0
             };
             
+            // Calculate costs based on available recommendations
+            const duration = formData.duration || 1;
+            const guideCost = !missingData.guides && recommendations.guides.length > 0 
+                ? recommendations.guides[0].price * duration 
+                : 0;
+            const hotelCost = !missingData.hotels && recommendations.hotels.length > 0 
+                ? recommendations.hotels[0].price * duration 
+                : 0;
+            const vehicleCost = !missingData.vehicles && recommendations.vehicles.length > 0 
+                ? recommendations.vehicles[0].price * duration 
+                : 0;
+            const totalCost = guideCost + hotelCost + vehicleCost;
+            
+            const costs = {
+                guide: guideCost,
+                hotel: hotelCost,
+                vehicle: vehicleCost,
+                total: totalCost
+            };
+            
             setGeneratedTrip({
                 ...result.data,
                 recommendations: recommendations,
-                missingData: missingData
+                missingData: missingData,
+                costs: costs,
+                hasData: totalCost > 0
             });
         } catch (error) {
             console.error(error);

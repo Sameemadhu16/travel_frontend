@@ -7,8 +7,7 @@ import { useMemo } from 'react'
 
 export default function GeneratedTrip({ generatedTrip, handleEdit, formData }) {
     const numbers = Number(formData.adults) + Number(formData.children);
-    console.log('Generated Trip Data:', generatedTrip);
-    console.log('Recommendations:', generatedTrip?.recommendations);
+
     const tripPlain = useMemo(()=>{
         return generatedTrip?.itinerary?.dailyPlans?.map((day, index) => (
             <div key={index} className="bg-white border border-border-light rounded-lg p-4">
