@@ -9,7 +9,34 @@ export default function TravelDetails({setValid}) {
     const { formData, setFormData } = useContext(FormContext);
     const [errors, setErrors] = useState({});
     const [touched, setTouched] = useState({});
-    const { travelDetails, itinerary } = formData;
+    
+    // Add null checks and default values to prevent undefined errors
+    const travelDetails = formData?.travelDetails || {
+        destination: '',
+        duration: '',
+        travelStyle: '',
+        groupType: '',
+        startDate: '',
+        location: '',
+        time: '',
+        adults: 1,
+        children: 0,
+        agreedToTerms: false
+    };
+    
+    const itinerary = formData?.itinerary || [
+        { 
+            day: 1, 
+            activities: [{ 
+                title: '', 
+                time: '', 
+                description: '',
+                districtId: '',
+                attractionId: '',
+                customActivity: ''
+            }] 
+        }
+    ];
 
   
     
@@ -114,14 +141,16 @@ export default function TravelDetails({setValid}) {
     useEffect(() => {
         const valid = isFormValid();
         setValid(valid);
-    }, [formData.travelDetails, formData.itinerary, errors, setValid, isFormValid]);
+    }, [travelDetails, itinerary, errors, setValid, isFormValid]);
 
     const updateTravelDetails = (updates) => {
         setFormData(prev => {
+            // Ensure prev is an object and has the expected structure
+            const safePrev = prev || {};
             const newFormData = {
-                ...prev,
+                ...safePrev,
                 travelDetails: {
-                    ...prev.travelDetails,
+                    ...(safePrev.travelDetails || {}),
                     ...updates
                 }
             };

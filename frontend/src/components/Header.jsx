@@ -17,7 +17,7 @@ export default function Header() {
     const menuRef = useRef(null);
     const role = user?.data?.role || '';
     // Close menu on outside click
-    console.log('Role:', user);
+    
     useEffect(() => {
         function handleClickOutside(event) {
             if (menuRef.current && !menuRef.current.contains(event.target)) {
