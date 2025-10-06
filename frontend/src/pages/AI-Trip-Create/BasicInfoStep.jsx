@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 import { FaRobot } from 'react-icons/fa';
 import InputField from '../../components/InputField';
 
@@ -15,8 +16,8 @@ export default function BasicInfoStep({ formData, setFormData, errors, setErrors
                 <div className="inline-flex items-center justify-center w-16 h-16 bg-brand-accent rounded-full mb-4">
                     <FaRobot className="text-brand-primary text-2xl" />
                 </div>
-                <h2 className="text-2xl font-bold text-content-primary mb-2">Let's Plan Your Perfect Trip</h2>
-                <p className="text-content-secondary">Tell us about your travel preferences and we'll create a personalized itinerary</p>
+                <h2 className="text-2xl font-bold text-content-primary mb-2">Let&#39;s Plan Your Perfect Trip</h2>
+                <p className="text-content-secondary">Tell us about your travel preferences and we&#39;ll create a personalized itinerary</p>
             </div>
 
             <div className="grid md:grid-cols-2 gap-6">
@@ -31,7 +32,7 @@ export default function BasicInfoStep({ formData, setFormData, errors, setErrors
 
                 <div className="space-y-2">
                     <label className="font-medium text-[16px] text-content-primary">Trip Duration</label>
-                    <select 
+                    <select
                         className="border-2 w-full py-2 px-4 rounded-md border-border-light focus:border-brand-primary focus:outline-none bg-white"
                         value={formData.duration}
                         onChange={(e) => handleChange('duration', e.target.value)}

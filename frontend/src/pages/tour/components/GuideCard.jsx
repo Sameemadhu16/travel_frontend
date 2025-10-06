@@ -1,164 +1,187 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+import { Star, Calendar, Languages, Award, CheckCircle } from 'lucide-react';
 
 export default function GuideCard({ guide, isSelected, onSelect, disabled }) {
     const {
+        id,
         name,
-        rating,
-        reviews,
-        experience,
-        languages,
-        specialties,
+        profilePicture,
+        bio,
+        languagesSpoken,
+        specialization,
+        experienceYears,
         price,
-        image,
-        available
+        isVerified,
+        isAvailable,
+        status,
+        rating,
+        reviewCount
     } = guide;
+
+    // Map backend fields to component logic
+    const guideLanguages = languagesSpoken || [];
+    const guideSpecialties = specialization || [];
+    const available = isAvailable;
+    const verified = isVerified;
+    const reviews = reviewCount;
+    const experience = experienceYears ? `${experienceYears} years` : null;
+    const description = bio;
+    const image = profilePicture || '/default-avatar.png';
+    
+    // Safely handle languages and specialties arrays to prevent .join() errors
+    const languageList = Array.isArray(guideLanguages) ? guideLanguages : 
+                        typeof guideLanguages === 'string' ? [guideLanguages] : 
+                        ['Not specified'];
+    
+    const specialtyList = Array.isArray(guideSpecialties) ? guideSpecialties : 
+                         typeof guideSpecialties === 'string' ? [guideSpecialties] : 
+                         ['General tours'];
 
     const renderStars = (rating) => {
         const stars = [];
-        const fullStars = Math.floor(rating);
-        const hasHalfStar = rating % 1 !== 0;
+        const fullStars = Math.floor(rating || 0);
+        const hasHalfStar = (rating || 0) % 1 !== 0;
 
-        for (let i = 0; i < fullStars; i++) {
-            stars.push(
-                <svg key={i} className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                    <path d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                </svg>
-            );
-        }
-
-        if (hasHalfStar) {
-            stars.push(
-                <svg key="half" className="w-4 h-4 text-yellow-400 fill-current" viewBox="0 0 20 20">
-                    <defs>
-                        <linearGradient id="half">
-                            <stop offset="50%" stopColor="currentColor"/>
-                            <stop offset="50%" stopColor="transparent"/>
-                        </linearGradient>
-                    </defs>
-                    <path fill="url(#half)" d="M10 15l-5.878 3.09 1.123-6.545L.489 6.91l6.572-.955L10 0l2.939 5.955 6.572.955-4.756 4.635 1.123 6.545z"/>
-                </svg>
-            );
+        for (let i = 0; i < 5; i++) {
+            if (i < fullStars) {
+                stars.push(
+                    <Star key={i} className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                );
+            } else if (i === fullStars && hasHalfStar) {
+                stars.push(
+                    <div key={i} className="relative">
+                        <Star className="w-4 h-4 text-gray-300 fill-gray-300" />
+                        <div className="absolute inset-0 overflow-hidden w-1/2">
+                            <Star className="w-4 h-4 text-yellow-400 fill-yellow-400" />
+                        </div>
+                    </div>
+                );
+            } else {
+                stars.push(
+                    <Star key={i} className="w-4 h-4 text-gray-300 fill-gray-300" />
+                );
+            }
         }
 
         return stars;
     };
 
     return (
-        <div className={`bg-white rounded-xl border-2 p-4 transition ${
+        <div className={`bg-white rounded-xl border-2 transition-all duration-300 hover:shadow-lg ${
             isSelected 
-                ? 'border-brand-primary bg-brand-light shadow-lg' 
+                ? 'border-orange-500 shadow-lg ring-2 ring-orange-100' 
                 : disabled 
-                    ? 'border-surface-secondary opacity-50' 
-                    : 'border-brand-secondary hover:border-brand-primary'
+                    ? 'border-gray-200 opacity-50 cursor-not-allowed'
+                    : 'border-gray-200 hover:border-orange-300 cursor-pointer'
         }`}>
-            {/* Header with Profile and Availability */}
-            <div className="flex items-start justify-between mb-4">
-                <div className="flex items-center gap-3">
-                    <div className="relative">
+            <div className="p-6">
+                <div className="flex items-start gap-4 mb-4">
+                    <div className="relative flex-shrink-0">
                         <img 
                             src={image} 
                             alt={name}
-                            className="w-12 h-12 rounded-full object-cover"
+                            className="w-20 h-20 rounded-full object-cover border-3 border-white shadow-lg"
                         />
-                        {isSelected && (
-                            <div className="absolute -top-1 -right-1 bg-brand-primary text-white rounded-full w-5 h-5 flex items-center justify-center">
-                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                                </svg>
+                        {verified && (
+                            <div className="absolute -bottom-1 -right-1 bg-green-500 rounded-full p-1">
+                                <CheckCircle className="w-3 h-3 text-white" />
                             </div>
                         )}
                     </div>
-                    <div>
-                        <h3 className="font-semibold text-content-primary">{name}</h3>
-                        <div className="flex items-center gap-1">
-                            {renderStars(rating)}
-                            <span className="text-sm text-content-secondary ml-1">
-                                {rating} ({reviews} reviews)
-                            </span>
+                    
+                    <div className="flex-1 min-w-0">
+                        <div className="flex items-start justify-between">
+                            <div>
+                                <h3 className="text-xl font-bold text-gray-900 mb-1 truncate">{name}</h3>
+                                <div className="flex items-center gap-2 mb-2">
+                                    <div className="flex items-center gap-1">
+                                        {renderStars(rating)}
+                                    </div>
+                                    <span className="text-sm font-medium text-gray-700">
+                                        {rating || 0} ({reviews || 0} reviews)
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <div className="flex flex-col items-end gap-1">
-                    <span className={`px-2 py-1 rounded text-xs font-medium ${
+
+                <div className="flex items-center gap-2 mb-4">
+                    <span className={`px-3 py-1 rounded-full text-xs font-medium ${
                         available 
-                            ? 'bg-success text-white' 
-                            : 'bg-surface-secondary text-content-tertiary'
+                            ? 'bg-green-100 text-green-700' 
+                            : 'bg-red-100 text-red-700'
                     }`}>
-                        {available ? 'Available' : 'Busy'}
+                        {status || (available ? 'Available' : 'Busy')}
                     </span>
+                    {verified && (
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-700">
+                            Verified Guide
+                        </span>
+                    )}
                     {isSelected && (
-                        <span className="px-2 py-1 rounded text-xs font-medium bg-brand-primary text-white">
+                        <span className="px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-700">
                             Selected
                         </span>
                     )}
                 </div>
-            </div>
 
-            {/* Experience and Details */}
-            <div className="space-y-2 mb-4">
-                <div className="flex items-center gap-2 text-sm text-content-secondary">
-                    <svg className="w-4 h-4 text-brand-primary" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clipRule="evenodd"/>
-                    </svg>
-                    {experience}
+                <div className="space-y-3 mb-4">
+                    {experience && (
+                        <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <Calendar className="w-4 h-4 text-orange-500" />
+                            <span>{experience} experience</span>
+                        </div>
+                    )}
+                    
+                    <div className="flex items-start gap-2 text-sm text-gray-600">
+                        <Languages className="w-4 h-4 text-orange-500 mt-0.5" />
+                        <span>{languageList.join(', ')}</span>
+                    </div>
+                    
+                    <div className="flex items-start gap-2 text-sm text-gray-600">
+                        <Award className="w-4 h-4 text-orange-500 mt-0.5" />
+                        <span>{specialtyList.join(', ')}</span>
+                    </div>
+
+                    {description && (
+                        <p className="text-sm text-gray-600 line-clamp-2">
+                            {description}
+                        </p>
+                    )}
                 </div>
-                <div className="flex items-center gap-2 text-sm text-content-secondary">
-                    <svg className="w-4 h-4 text-brand-primary" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M7 2a1 1 0 011 1v1h3V3a1 1 0 112 0v1h3a2 2 0 012 2v2H1V6a2 2 0 012-2h3V3a1 1 0 011-1zM1 9h18v8a2 2 0 01-2 2H3a2 2 0 01-2-2V9z" clipRule="evenodd"/>
-                    </svg>
-                    {languages.join(', ')}
-                </div>
-                <div className="flex items-center gap-2 text-sm text-content-secondary">
-                    <svg className="w-4 h-4 text-brand-primary" fill="currentColor" viewBox="0 0 20 20">
-                        <path fillRule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clipRule="evenodd"/>
-                    </svg>
-                    {specialties.join(', ')}
+
+                <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="text-left">
+                        <div className="text-2xl font-bold text-orange-600">
+                            LKR {price?.toLocaleString() || '0'}
+                            <span className="text-sm font-normal text-gray-500">/day</span>
+                        </div>
+                    </div>
+
+                    <div className="flex gap-2">
+                        <button className="text-orange-600 hover:text-orange-700 font-medium text-sm px-3 py-1 border border-orange-600 rounded-lg hover:bg-orange-50 transition">
+                            View Profile
+                        </button>
+                        <button 
+                            onClick={onSelect}
+                            disabled={disabled}
+                            className={`font-semibold py-2 px-4 rounded-lg transition ${
+                                isSelected
+                                    ? 'bg-gray-100 text-gray-700 border border-gray-300 hover:bg-gray-200'
+                                    : disabled
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                        : available
+                                            ? 'bg-orange-600 text-white hover:bg-orange-700'
+                                            : 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                            }`}
+                        >
+                            {isSelected ? 'Remove' : available ? 'Select Guide' : 'Currently Unavailable'}
+                        </button>
+                    </div>
                 </div>
             </div>
-
-            {/* Price and Buttons */}
-            <div className="flex items-center justify-between">
-                <div>
-                    <span className="text-2xl font-bold text-content-primary">LKR{price}</span>
-                    <span className="text-sm text-content-secondary">/day</span>
-                </div>
-                <button className="text-brand-primary text-sm font-medium hover:underline">
-                    View Profile
-                </button>
-            </div>
-
-            {/* Select Guide Button */}
-            <div className="mt-4">
-                {available ? (
-                    <button 
-                        onClick={onSelect}
-                        disabled={disabled && !isSelected}
-                        className={`w-full py-2 rounded font-semibold transition ${
-                            isSelected 
-                                ? 'bg-danger text-white hover:bg-danger-dark' 
-                                : disabled 
-                                    ? 'bg-surface-secondary text-content-tertiary cursor-not-allowed'
-                                    : 'bg-brand-primary text-white hover:bg-warning'
-                        }`}
-                    >
-                        {isSelected ? 'Remove Guide' : 'Select Guide'}
-                    </button>
-                ) : (
-                    <button 
-                        disabled 
-                        className="w-full bg-surface-secondary text-content-tertiary py-2 rounded font-semibold cursor-not-allowed"
-                    >
-                        Currently Unavailable
-                    </button>
-                )}
-            </div>
-
-            {/* Selection limit warning */}
-            {disabled && !isSelected && (
-                <div className="mt-2 p-2 bg-warning-light border border-warning rounded text-warning text-xs text-center">
-                    Maximum guides selected
-                </div>
-            )}
         </div>
     );
 }

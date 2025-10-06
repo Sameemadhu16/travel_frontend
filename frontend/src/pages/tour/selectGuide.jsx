@@ -1,24 +1,83 @@
 import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
+import { useContext, useState, useEffect } from 'react';
 import Main from '../../components/Main';
 import GuideFilters from './components/GuideFilters';
 import GuideCard from './components/GuideCard';
-import { guides } from '../../core/Lists/guides';
+import { fetchGuides, fetchGuidesWithFilters } from '../guide/service';
 import FormContext from '../../context/InitialValues';
+import Spinner from '../../components/Spinner';
 
 export default function SelectGuide() {
     const navigate = useNavigate();
     const { formData, setFormData } = useContext(FormContext);
+    
+    // State for guides data
+    const [guides, setGuides] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [filters, setFilters] = useState({});
+    
     const MAX_GUIDES = 3;
     const MIN_GUIDES = 1;
     const selectedGuides = formData.selectedItems?.guides || [];
     const errors = formData.errors || {};
+
+    // Fetch guides on component mount
+    useEffect(() => {
+        loadGuides();
+    }, []);
+
+    // Fetch guides with filters when filters change
+    useEffect(() => {
+        const loadGuidesWithFilters = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                const guidesData = await fetchGuidesWithFilters(filters);
+                setGuides(guidesData);
+            } catch (err) {
+                console.error('Error loading guides with filters:', err);
+                setError('Failed to load guides. Please try again.');
+                // Fallback to empty array if API fails
+                setGuides([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (Object.keys(filters).length > 0) {
+            loadGuidesWithFilters();
+        }
+    }, [filters]);
+
+    const loadGuides = async () => {
+        try {
+            setLoading(true);
+            setError(null);
+            const guidesData = await fetchGuides();
+            setGuides(guidesData);
+        } catch (err) {
+            console.error('Error loading guides:', err);
+            setError('Failed to load guides. Please try again.');
+            // Fallback to empty array if API fails
+            setGuides([]);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleFiltersChange = (newFilters) => {
+        setFilters(newFilters);
+    };
     
     const handleGuideSelection = (guide) => {
+        console.log('handleGuideSelection called:', { guide: guide.name, selectedGuides: selectedGuides.length });
         const isAlreadySelected = selectedGuides.some(g => g.id === guide.id);
+        console.log('Is already selected:', isAlreadySelected);
         
         if (isAlreadySelected) {
             // Remove guide from selection
+            console.log('Removing guide:', guide.name);
             removeSelectedGuide(guide.id);
             // Clear errors if we have valid selection count
             if (selectedGuides.length - 1 >= MIN_GUIDES) {
@@ -27,6 +86,7 @@ export default function SelectGuide() {
         } else {
             // Add guide if under limit
             if (selectedGuides.length < MAX_GUIDES) {
+                console.log('Adding guide:', guide.name);
                 addSelectedGuide(guide);
                 // Clear errors if we have valid selection
                 clearFieldError('guideSelection');
@@ -144,7 +204,7 @@ export default function SelectGuide() {
                                 {selectedGuides.map((guide) => (
                                     <div key={guide.id} className="flex items-center gap-2 bg-brand-light px-3 py-2 rounded-lg border border-brand-secondary">
                                         <img 
-                                            src={guide.image} 
+                                            src={guide.profilePicture || guide.image || '/default-avatar.png'} 
                                             alt={guide.name}
                                             className="w-6 h-6 rounded-full object-cover"
                                         />
@@ -178,7 +238,7 @@ export default function SelectGuide() {
                                         <li>• Your request will be sent to all selected guides</li>
                                         <li>• The first guide to accept your request will be confirmed</li>
                                         <li>• Other pending requests will be automatically cancelled</li>
-                                        <li>• You'll receive notification once a guide accepts</li>
+                                        <li>• You&apos;ll receive notification once a guide accepts</li>
                                     </ul>
                                 </div>
                             </div>
@@ -187,20 +247,73 @@ export default function SelectGuide() {
                 </div>
 
                 {/* Filters Section */}
-                <GuideFilters />
+                <GuideFilters onFiltersChange={handleFiltersChange} />
 
-                {/* Guides Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    {guides.map((guide) => (
-                        <GuideCard 
-                            key={guide.id} 
-                            guide={guide}
-                            isSelected={isGuideSelected(guide.id)}
-                            onSelect={() => handleGuideSelection(guide)}
-                            disabled={selectedGuides.length >= MAX_GUIDES && !isGuideSelected(guide.id)}
-                        />
-                    ))}
-                </div>
+                {/* Error Message */}
+                {error && (
+                    <div className="mb-6 p-4 bg-danger-light border border-danger rounded-lg text-danger">
+                        <div className="flex items-center gap-2">
+                            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                                <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-2-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clipRule="evenodd"/>
+                            </svg>
+                            <span>{error}</span>
+                            <button 
+                                onClick={() => setFilters({})}
+                                className="ml-auto px-3 py-1 bg-danger text-white rounded text-sm hover:bg-danger-dark"
+                            >
+                                Retry
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {/* Loading State */}
+                {loading ? (
+                    <div className="flex justify-center items-center py-20">
+                        <Spinner />
+                        <span className="ml-3 text-content-secondary">Loading guides...</span>
+                    </div>
+                ) : (
+                    <>
+                        {/* Guides Grid */}
+                        {guides.length > 0 ? (
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                                {guides.map((guide) => (
+                                    <GuideCard 
+                                        key={guide.id} 
+                                        guide={guide}
+                                        isSelected={isGuideSelected(guide.id)}
+                                        onSelect={() => handleGuideSelection(guide)}
+                                        disabled={selectedGuides.length >= MAX_GUIDES && !isGuideSelected(guide.id)}
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="text-center py-20">
+                                <div className="text-content-secondary mb-4">
+                                    <svg className="w-16 h-16 mx-auto mb-4 text-content-tertiary" fill="none" stroke="currentColor" strokeWidth="1" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                                    </svg>
+                                </div>
+                                <h3 className="text-lg font-semibold text-content-primary mb-2">No guides found</h3>
+                                <p className="text-content-secondary mb-4">
+                                    {Object.keys(filters).length > 0 
+                                        ? 'No guides match your current filters. Try adjusting your search criteria.'
+                                        : 'No guides are available at the moment. Please try again later.'
+                                    }
+                                </p>
+                                {Object.keys(filters).length > 0 && (
+                                    <button 
+                                        onClick={() => setFilters({})}
+                                        className="px-4 py-2 bg-brand-primary text-white rounded-lg hover:bg-warning transition-colors"
+                                    >
+                                        Clear Filters
+                                    </button>
+                                )}
+                            </div>
+                        )}
+                    </>
+                )}
 
                 {/* Next Button */}
                 <div className="flex justify-start">
