@@ -1,4 +1,3 @@
-import React from 'react'
 import BlurPage from './BlurPage';
 
 export default function Spinner() {
