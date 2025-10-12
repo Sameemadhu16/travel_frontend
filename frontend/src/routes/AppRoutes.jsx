@@ -16,7 +16,7 @@ import ForgotPassword from '../pages/partner/forgot_details/ForgotPassword';
 import ForgotUsername from '../pages/partner/forgot_details/ForgotUsername';
 import ChangePassword from '../pages/partner/forgot_details/ChangePassword';
 import { FormProvider } from '../context/FormContext';
-import { initialTripFormData, loginPartnerAccountForm, registerPartnerAccountForm } from '../context/InitialValues';
+import { initialAiTripData, initialTripFormData, loginPartnerAccountForm, registerPartnerAccountForm } from '../context/InitialValues';
 import ChatBot from '../pages/chatBot/ChatBot';
 import TravelerRegister from '../pages/TravelerRegister';
 import ChooseProperty from '../pages/partner/register/ChooseProperty';
@@ -105,6 +105,9 @@ import HotelReports from '../pages/hotels/reports/HotelReports';
 import HotelSettings from '../pages/hotels/settings/HotelSettings';
 import HotelCalendar from '../pages/hotels/calendar/HotelCalendar';
 import PaymentsPage from '../pages/hotels/payments/PaymentsPage';
+import BasicInfoStep from '../pages/AI-Trip-Create/BasicInfoStep';
+import PreferenceInfoStep from '../pages/AI-Trip-Create/PreferenceInfoStep';
+import AIGenerationStep from '../pages/AI-Trip-Create/AIGenerationStep';
 // import { Users } from 'lucide-react';
 
 export default function AppRoutes() {
@@ -142,27 +145,6 @@ export default function AppRoutes() {
                     </FormProvider>
                 }
             />
-
-            {/* Tour routes with TourProvider - available to all users */}
-            <Route
-                path="/tour/*"
-                element={
-                    <FormProvider initialValues={initialTripFormData.formData}>
-                        <Routes>
-                            <Route path="create-tour" element={<CreateTour />} />
-                            <Route path="select-guide" element={<SelectGuide />} />
-                            <Route path="select-hotel" element={<Search />} />
-                            <Route path="select-hotel/:id" element={<Hotel />} />
-                            <Route path="select-vehicle" element={<SearchVehicles />} />
-                            <Route path="select-vehicle/:id" element={<Vehicle />} />
-                            <Route path="complete-request" element={<CompleteRequest />} />
-                            <Route path="request-sent" element={<RequestSent />} />
-                            <Route path="payment" element={<Payment />} />
-                        </Routes>
-                    </FormProvider>
-                }
-            />
-
             {/* Hotel and Vehicle search routes with FormProvider */}
             <Route path='/hotels-search' element={
                 <FormProvider initialValues={initialTripFormData.formData}>
@@ -315,6 +297,20 @@ export default function AppRoutes() {
                     />
                     {/* Fallback for authenticated users */}
                     <Route path="*" element={<Navigate to="/" replace />} />
+                    
+                    {/* Ai Trip creation part */}
+                    <Route 
+                        path='/ai-trip/*'
+                        element={
+                            <FormProvider initialValues={initialAiTripData.formData}>
+                                <Routes>
+                                    <Route path='basic-info' element={<BasicInfoStep/>} />
+                                    <Route path='preference-info' element={<PreferenceInfoStep/>} />
+                                    <Route path='generation' element={<AIGenerationStep/>} />
+                                </Routes>
+                            </FormProvider>
+                        }
+                    />
                 </>
             ) : (
                 <>

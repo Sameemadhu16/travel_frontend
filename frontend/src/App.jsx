@@ -1,12 +1,14 @@
 import { useNavigate } from 'react-router-dom'
 import Header from './components/Header'
 import AppRoutes from './routes/AppRoutes'
+import ScrollToTop from './components/ScrollToTop'
 import { useEffect } from 'react';
 import { setNavigator } from './core/navigateHelper';
 import { ToastContainer } from 'react-toastify';
 import { Provider } from 'react-redux';
 import store from './redux/store';
 import Footer from './components/Footer';
+import BotImage from './components/BotImage';
 
 export default function App() {
 
@@ -18,9 +20,11 @@ export default function App() {
   
   return (
       <Provider store={store}>
+        <ScrollToTop />
         <Header/>
         <AppRoutes/>
         <ToastContainer theme="colored"/>
+        <BotImage/>
         <Footer/>
       </Provider>
     

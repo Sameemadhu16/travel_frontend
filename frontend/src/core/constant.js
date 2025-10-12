@@ -94,10 +94,10 @@ export const amenities = [
 ];
 
 export const priceRanges = [
-    { id: 1, value: "Under $50" },
-    { id: 2, value: "$50 - $100" },
-    { id: 3, value: "$100 - $200" },
-    { id: 4, value: "Over $200" },
+    { id: 1, value: "Under LKR 15,000" },
+    { id: 2, value: "LKR 15,000 - 30,000" },
+    { id: 3, value: "LKR 30,000 - 60,000" },
+    { id: 4, value: "Over LKR 60,000" },
 ];
 
 export const mealOptions = [
@@ -184,10 +184,10 @@ export const vehicleAmenities = [
 
 // Vehicle price ranges
 export const vehiclePriceRanges = [
-    { id: 1, value: "Under $30/day" },
-    { id: 2, value: "$30 - $60/day" },
-    { id: 3, value: "$60 - $100/day" },
-    { id: 4, value: "Over $100/day" }
+    { id: 1, value: "Under LKR 9,000/day" },
+    { id: 2, value: "LKR 9,000 - 18,000/day" },
+    { id: 3, value: "LKR 18,000 - 30,000/day" },
+    { id: 4, value: "Over LKR 30,000/day" }
 ];
 
 // Vehicle fuel policy options
