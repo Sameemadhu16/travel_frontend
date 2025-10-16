@@ -1,18 +1,50 @@
 import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import Main from '../../components/Main';
 import GuideFilters from './components/GuideFilters';
 import GuideCard from './components/GuideCard';
-import { guides } from '../../core/Lists/guides';
 import FormContext from '../../context/InitialValues';
+import { getAllGuides } from '../../api/tourService';
+import Spinner from '../../components/Spinner';
 
 export default function SelectGuide() {
     const navigate = useNavigate();
     const { formData, setFormData } = useContext(FormContext);
+    const [guides, setGuides] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const MAX_GUIDES = 3;
     const MIN_GUIDES = 1;
     const selectedGuides = formData.selectedItems?.guides || [];
     const errors = formData.errors || {};
+
+    // Fetch guides from database on component mount
+    useEffect(() => {
+        const fetchGuides = async () => {
+            try {
+                setLoading(true);
+                const guidesData = await getAllGuides();
+                console.log('✅ Fetched guides from database:', guidesData);
+                
+                // Validate that we have an array
+                if (!Array.isArray(guidesData)) {
+                    console.error('❌ Guides data is not an array:', guidesData);
+                    setError('Invalid data format received from server');
+                    return;
+                }
+                
+                setGuides(guidesData);
+                setError(null);
+            } catch (err) {
+                console.error('❌ Failed to fetch guides:', err);
+                setError(err.response?.data?.message || err.message || 'Failed to load guides. Please try again later.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchGuides();
+    }, []);
     
     const handleGuideSelection = (guide) => {
         const isAlreadySelected = selectedGuides.some(g => g.id === guide.id);
@@ -109,6 +141,36 @@ export default function SelectGuide() {
         return true;
     };
 
+    // Loading and error states
+    if (loading) {
+        return (
+            <Main>
+                <div className="max-w-6xl mx-auto px-4 py-20 text-center">
+                    <Spinner />
+                    <p className="text-content-secondary mt-4">Loading available guides...</p>
+                </div>
+            </Main>
+        );
+    }
+
+    if (error) {
+        return (
+            <Main>
+                <div className="max-w-6xl mx-auto px-4 py-20">
+                    <div className="bg-danger-light border border-danger rounded-lg p-6 text-center">
+                        <p className="text-danger font-semibold mb-4">{error}</p>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="px-6 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-secondary transition"
+                        >
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            </Main>
+        );
+    }
+
     return (
         <Main>
             <div className="max-w-6xl mx-auto px-4">
@@ -190,17 +252,31 @@ export default function SelectGuide() {
                 <GuideFilters />
 
                 {/* Guides Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                    {guides.map((guide) => (
-                        <GuideCard 
-                            key={guide.id} 
-                            guide={guide}
-                            isSelected={isGuideSelected(guide.id)}
-                            onSelect={() => handleGuideSelection(guide)}
-                            disabled={selectedGuides.length >= MAX_GUIDES && !isGuideSelected(guide.id)}
-                        />
-                    ))}
-                </div>
+                {guides.length === 0 ? (
+                    <div className="text-center py-12 bg-white rounded-lg border-2 border-dashed border-brand-secondary">
+                        <div className="w-16 h-16 bg-brand-light rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg className="w-8 h-8 text-brand-primary" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"/>
+                            </svg>
+                        </div>
+                        <h3 className="text-xl font-semibold text-content-primary mb-2">No Guides Available</h3>
+                        <p className="text-content-secondary mb-4">
+                            There are currently no guides in the database. Please contact the administrator.
+                        </p>
+                    </div>
+                ) : (
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        {guides.map((guide) => (
+                            <GuideCard 
+                                key={guide.id} 
+                                guide={guide}
+                                isSelected={isGuideSelected(guide.id)}
+                                onSelect={() => handleGuideSelection(guide)}
+                                disabled={selectedGuides.length >= MAX_GUIDES && !isGuideSelected(guide.id)}
+                            />
+                        ))}
+                    </div>
+                )}
 
                 {/* Next Button */}
                 <div className="flex justify-start">

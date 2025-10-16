@@ -1,13 +1,15 @@
 import { useNavigate } from 'react-router-dom';
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import PropTypes from 'prop-types';
 import FormContext from '../../../context/InitialValues';
 import jsPDF from 'jspdf';
-import { postRequest }  from '../../../core/service'
+import { createTrip } from '../../../api/tourService';
 
 export default function BookingSummary({tripData}) {
     const navigate = useNavigate();
     const { formData, setFormData } = useContext(FormContext);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState(null);
     
     // Safety check
     if (!formData || !formData.selectedItems) {
@@ -46,15 +48,38 @@ export default function BookingSummary({tripData}) {
         );
     };
     const handleCompleteRequest = async() => {
-        if (agreedToTerms && isTourComplete()) {
-            try{
-                const res = await postRequest('/api/trips', tripData)
-                navigate('/tour/request-sent');
-                console.log(res)
-            }catch(e){
-                console.log(e);
-            }
-            navigate('/tour/request-sent');
+        if (!agreedToTerms) {
+            alert('Please agree to the terms and conditions before proceeding.');
+            return;
+        }
+        
+        if (!isTourComplete()) {
+            alert('Please complete all required fields before submitting.');
+            return;
+        }
+        
+        setIsSubmitting(true);
+        setSubmitError(null);
+        
+        try {
+            console.log('Submitting trip data:', tripData);
+            const response = await createTrip(tripData);
+            console.log('Trip created successfully:', response);
+            
+            // Clear form data from localStorage after successful submission
+            localStorage.removeItem('formData');
+            
+            // Navigate to success page
+            navigate('/tour/request-sent', { state: { tripData: response } });
+        } catch (error) {
+            console.error('Error creating trip:', error);
+            setSubmitError(
+                error.response?.data?.message || 
+                error.message || 
+                'Failed to submit tour request. Please try again.'
+            );
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -492,27 +517,46 @@ export default function BookingSummary({tripData}) {
                     />
                     <label htmlFor="terms" className="text-sm text-content-secondary">
                         I agree to the{' '}
-                        <a href="#" className="text-brand-primary hover:underline">Terms & Conditions</a>
+                        <a href="/terms" className="text-brand-primary hover:underline">Terms & Conditions</a>
                         {' '}and{' '}
-                        <a href="#" className="text-brand-primary hover:underline">Privacy Policy</a>
+                        <a href="/privacy" className="text-brand-primary hover:underline">Privacy Policy</a>
                     </label>
                 </div>
+                
+                {/* Error message */}
+                {submitError && (
+                    <div className="mb-4 p-3 bg-danger-light border border-danger rounded-lg text-danger text-sm">
+                        {submitError}
+                    </div>
+                )}
             </div>
 
             <div className="space-y-3">
                 <button 
-                    disabled={!agreedToTerms || !isTourComplete()}
+                    disabled={!agreedToTerms || !isTourComplete() || isSubmitting}
                     onClick={handleCompleteRequest}
-                    className={`w-full py-3 px-4 rounded-lg font-semibold transition ${
-                        agreedToTerms && isTourComplete()
+                    className={`w-full py-3 px-4 rounded-lg font-semibold transition flex items-center justify-center ${
+                        agreedToTerms && isTourComplete() && !isSubmitting
                             ? 'bg-brand-primary text-white hover:bg-warning' 
                             : 'bg-border-light text-content-disabled cursor-not-allowed'
                     }`}
                 >
-                    <svg className="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
-                    </svg>
-                    Complete Request
+                    {isSubmitting ? (
+                        <>
+                            <svg className="animate-spin h-5 w-5 mr-2" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                            </svg>
+                            Submitting...
+                        </>
+                    ) : (
+                        <>
+                            <svg className="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7"/>
+                            </svg>
+                            Complete Request
+                        </>
+                    )}
                 </button>
                 
                 <button 
