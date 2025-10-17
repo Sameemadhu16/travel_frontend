@@ -180,6 +180,7 @@ export default function AppRoutes() {
             <Route path='/guide-reviews' element={<GuideReviews />} />
             <Route path='/guide-availability' element={<GuideAvailability />} />
             <Route path='/earnings' element={<GuideEarnings />} />
+            <Route path='/guide-tour-history' element={<GuideTourHistory />} />
 
             {/* Authentication-based conditional routes */}
             {isAuthenticated ? (
