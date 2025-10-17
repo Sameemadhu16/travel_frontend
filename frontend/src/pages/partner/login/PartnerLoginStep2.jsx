@@ -45,7 +45,7 @@ export default function PartnerLoginStep2() {
                         }),
                     );
                     {localStorage.removeItem('formData')}
-                    console.log("User logged in successfully:", userData);
+                    
                     if(userData.role === 'guide'){
                         navigateTo('/guide-dashboard');
                     }else if(userData.role === 'agency'){
@@ -66,8 +66,8 @@ export default function PartnerLoginStep2() {
                 }
             }
         } catch (e) {
-            console.error("Unexpected error:", e);
             showToastMessage('error', 'Registration failed. Please try again.');
+            navigateTo('/partner-login/step-1')
         }finally{
             setLoading(false);
         }

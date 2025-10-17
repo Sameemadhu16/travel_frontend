@@ -7,8 +7,10 @@ export const handleSelect = (setFormData, name, value) => {
     }));
 };
 
+export const API_BASE_URL = 'http://localhost:5454';
+
 const apiClient = axios.create({
-    baseURL: 'http://localhost:5454',
+    baseURL: API_BASE_URL,
     headers: {
         'Content-Type': 'application/json',
     },

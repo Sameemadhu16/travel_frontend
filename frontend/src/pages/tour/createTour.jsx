@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import TravelDetails from './components/TravelDetails';
 import ContactInformation from './components/ContactInformation';
 import Main from '../../components/Main';
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import FormContext from '../../context/InitialValues';
 
 export default function CreateTour() {
@@ -14,7 +14,6 @@ export default function CreateTour() {
     const handleBack = () => {
         navigate('/');
     };
-console.log('formData', formData);
     const handleNext = (e) => {
         e.preventDefault();
         navigate('/tour/select-guide');

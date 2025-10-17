@@ -7,6 +7,7 @@ import QuickActions from './components/QuickActions';
 
 export default function ChatBot() {
     const messagesEndRef = useRef(null);
+    const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [messages, setMessages] = useState([
     {
         id: 1,
@@ -54,10 +55,6 @@ export default function ChatBot() {
             ]);
         }, 1000);
     };
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
 
     const messageContainer = useMemo(()=>{
         return messages.map((message, index)=>(

@@ -1,5 +1,4 @@
-import React from 'react';
-import PrimaryButton from './PrimaryButton';
+import { navigateTo } from "../core/navigateHelper";
 
 export default function TravelBlogSection() {
     return (
@@ -40,7 +39,9 @@ export default function TravelBlogSection() {
                                     <p className="text-white/80 text-sm">Let AI create your perfect itinerary</p>
                                 </div>
                             </div>
-                            <button className="w-full bg-surface-primary hover:bg-surface-secondary text-content-primary font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center gap-2 border border-border-light hover:border-primary">
+                            <button 
+                                onClick={() => navigateTo('/ai-trip/basic-info')}
+                                className="w-full bg-surface-primary hover:bg-surface-secondary text-content-primary font-semibold py-3 px-6 rounded-xl transition-all duration-200 hover:shadow-lg transform hover:-translate-y-0.5 flex items-center justify-center gap-2 border border-border-light hover:border-primary">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
                                 </svg>
@@ -48,7 +49,7 @@ export default function TravelBlogSection() {
                             </button>
                         </div>
                         
-                       
+                    
                     </div>
 
                     {/* Right Side: Blog Cards */}
