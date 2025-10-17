@@ -126,15 +126,22 @@ const GuideBooking = () => {
     }
 
     return (
-        <Main>
+        <>
+            <div className="bg-brand-primary text-white py-6 rounded-t">
+                <div className="container mx-auto px-4">
+                    <h1 className="text-3xl font-bold mb-4">Find Your Perfect Guide</h1>
+                    <p className="text-sm">Search and book experienced local guides. Select multiple guides to request availability or book a single guide directly.</p>
+                </div>
+            </div>
+            <Main>
             <div className="min-h-screen bg-gray-50">
                 {/* Header */}
-                <div className="bg-brand-primary text-white py-6 rounded-t">
+                {/* <div className="bg-brand-primary text-white py-6 rounded-t">
                     <div className="container mx-auto px-4">
                         <h1 className="text-3xl font-bold mb-4">Find Your Perfect Guide</h1>
                         <p className="text-sm">Search and book experienced local guides. Select multiple guides to request availability or book a single guide directly.</p>
                     </div>
-                </div>
+                </div> */}
 
                 <div className="container mx-auto px-4 py-8">
                     {/* Full-width filters */}
@@ -180,7 +187,8 @@ const GuideBooking = () => {
                     </div>
                 </div>
             </div>
-        </Main>
+            </Main>
+        </>
     );
 };
 
