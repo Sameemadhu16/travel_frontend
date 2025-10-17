@@ -24,17 +24,20 @@ export default function PartnerRegisterStep1() {
         localStorage.removeItem('formData');
         setFormData(registerPartnerAccountForm.formData);
 
-        const email = user.data.email;
-        const id = user.data.id;
-        const role = USER_ROLES.PARTNER;
+        // Only set user data if user and user.data exist
+        if (user && user.data) {
+            const email = user.data.email;
+            const id = user.data.id;
+            const role = USER_ROLES.PARTNER;
 
-        setFormData((prev)=>({
-            ...prev,
-            id:id,
-            role: role,
-            email,
-        }))
-    }, [setFormData]);
+            setFormData((prev)=>({
+                ...prev,
+                id:id,
+                role: role,
+                email,
+            }))
+        }
+    }, [setFormData, user]);
 
     return (
         <AnimatePresence>
