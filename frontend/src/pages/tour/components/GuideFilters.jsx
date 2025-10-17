@@ -1,11 +1,11 @@
 import { useState } from 'react';
 import PropTypes from 'prop-types';
 
-export default function GuideFilters({ onApply }) {
+export default function GuideFilters({ onApply, noWrapper = false }) {
     const [filters, setFilters] = useState({
         search: '',
         rating: 'Any Rating',
-        language: 'All Languages',
+        language: '',
         priceRange: 'Any Price',
         sortBy: 'Highest Rated',
         experience: 'Any Experience',
@@ -22,8 +22,8 @@ export default function GuideFilters({ onApply }) {
         }));
     };
 
-    return (
-        <div className="bg-white rounded-xl border-2 border-brand-primary p-8 mb-8">
+    const inner = (
+        <>
             {/* First Row - Search, Rating, Language, Price */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
                 <div>
@@ -56,13 +56,20 @@ export default function GuideFilters({ onApply }) {
                         onChange={(e) => handleFilterChange('language', e.target.value)}
                         className="w-full border border-border-light rounded px-3 py-2 text-sm focus:outline-none focus:border-brand-primary"
                     >
-                        <option>All Languages</option>
-                        <option>English</option>
-                        <option>German</option>
-                        <option>French</option>
-                        <option>Spanish</option>
-                        <option>Italian</option>
-                        <option>Japanese</option>
+                        <option value="">All Languages</option>
+                        <option value="english">English</option>
+                        <option value="sinhala">Sinhala</option>
+                        <option value="tamil">Tamil</option>
+                        <option value="german">German</option>
+                        <option value="french">French</option>
+                        <option value="spanish">Spanish</option>
+                        <option value="italian">Italian</option>
+                        <option value="japanese">Japanese</option>
+                        <option value="chinese">Chinese</option>
+                        <option value="hindi">Hindi</option>
+                        <option value="arabic">Arabic</option>
+                        <option value="russian">Russian</option>
+                        <option value="korean">Korean</option>
                     </select>
                 </div>
                 <div>
@@ -103,7 +110,10 @@ export default function GuideFilters({ onApply }) {
                         const params = {};
                         if (filters.search) params.search = filters.search;
                         if (filters.rating && filters.rating !== 'Any Rating') params.minRating = filters.rating.replace('+ Stars', '').trim();
-                        if (filters.language && filters.language !== 'All Languages') params.language = filters.language;
+                        // Only include language when a specific language is selected
+                        if (filters.language && filters.language !== '') {
+                            params.language = String(filters.language).toLowerCase().trim();
+                        }
                         if (filters.priceRange && filters.priceRange !== 'Any Price') {
                             if (filters.priceRange === 'Under 5000') { params.maxPrice = '5000'; }
                             else if (filters.priceRange === 'Over 10000') { params.minPrice = '10000'; }
@@ -123,10 +133,27 @@ export default function GuideFilters({ onApply }) {
                     Apply Filters
                 </button>
             </div>
+        </>
+    );
+
+    if (noWrapper) return inner;
+
+    return (
+        <div className="bg-white rounded-xl border-2 border-brand-primary p-8 mb-8">
+            {inner}
         </div>
     );
 }
 
 GuideFilters.propTypes = {
     onApply: PropTypes.func
+};
+
+GuideFilters.defaultProps = {
+    noWrapper: false
+};
+
+GuideFilters.propTypes = {
+    onApply: PropTypes.func,
+    noWrapper: PropTypes.bool
 };
