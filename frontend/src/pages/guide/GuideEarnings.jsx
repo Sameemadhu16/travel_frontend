@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Download, ChevronDown, X, DollarSign } from 'lucide-react';
+import { Download, ChevronDown, X } from 'lucide-react';
 import Main from '../../components/Main';
 import NavBar from './guideComponents/NavBar'
 import Card from './guideComponents/Card'
