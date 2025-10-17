@@ -1,17 +1,18 @@
 import React from 'react';
 
 export default function GuideCard({ guide, isSelected, onSelect, disabled }) {
-    const {
-        name,
-        rating,
-        reviews,
-        experience,
-        languages,
-        specialties,
-        price,
-        image,
-        available
-    } = guide;
+    // Map backend fields to frontend display
+    const name = guide.user?.fullName || guide.name || 'Unknown Guide';
+    const rating = guide.rating || 4.5;
+    const reviews = guide.reviews || guide.reviewCount || 0;
+    const experience = guide.experienceYears 
+        ? `${guide.experienceYears} years experience` 
+        : guide.experience || '5+ years experience';
+    const languages = guide.languagesSpoken || guide.languages || [];
+    const specialties = guide.specialization || guide.specialties || [];
+    const price = guide.hoursRate || guide.price || guide.pricePerDay || 8500;
+    const image = guide.user?.profilePicture || guide.image || '/default-guide.png';
+    const available = guide.isAvailable !== undefined ? guide.isAvailable : guide.available !== undefined ? guide.available : true;
 
     const renderStars = (rating) => {
         const stars = [];
@@ -106,13 +107,13 @@ export default function GuideCard({ guide, isSelected, onSelect, disabled }) {
                     <svg className="w-4 h-4 text-brand-primary" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M7 2a1 1 0 011 1v1h3V3a1 1 0 112 0v1h3a2 2 0 012 2v2H1V6a2 2 0 012-2h3V3a1 1 0 011-1zM1 9h18v8a2 2 0 01-2 2H3a2 2 0 01-2-2V9z" clipRule="evenodd"/>
                     </svg>
-                    {languages.join(', ')}
+                    {Array.isArray(languages) && languages.length > 0 ? languages.join(', ') : 'English, Sinhala'}
                 </div>
                 <div className="flex items-center gap-2 text-sm text-content-secondary">
                     <svg className="w-4 h-4 text-brand-primary" fill="currentColor" viewBox="0 0 20 20">
                         <path fillRule="evenodd" d="M3 6a3 3 0 013-3h10a1 1 0 01.8 1.6L14.25 8l2.55 3.4A1 1 0 0116 13H6a1 1 0 00-1 1v3a1 1 0 11-2 0V6z" clipRule="evenodd"/>
                     </svg>
-                    {specialties.join(', ')}
+                    {Array.isArray(specialties) && specialties.length > 0 ? specialties.join(', ') : 'Cultural Tours'}
                 </div>
             </div>
 
