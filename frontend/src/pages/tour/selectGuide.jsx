@@ -5,6 +5,8 @@ import GuideFilters from './components/GuideFilters';
 import GuideCard from './components/GuideCard';
 import FormContext from '../../context/InitialValues';
 import { getAllGuides } from '../../api/tourService';
+import { API_BASE_URL } from '../../core/service';
+import defaultGuideImg from '../../assets/users/user1.jpg';
 import Spinner from '../../components/Spinner';
 
 export default function SelectGuide() {
@@ -20,10 +22,10 @@ export default function SelectGuide() {
 
     // Fetch guides from database on component mount
     useEffect(() => {
-        const fetchGuides = async () => {
+        const fetchGuides = async (params = {}) => {
             try {
                 setLoading(true);
-                const guidesData = await getAllGuides();
+                const guidesData = await getAllGuides(params);
                 console.log('✅ Fetched guides from database:', guidesData);
                 
                 // Validate that we have an array
@@ -33,7 +35,22 @@ export default function SelectGuide() {
                     return;
                 }
                 
-                setGuides(guidesData);
+                // Normalize guide objects so the UI always has predictable fields
+                const normalizedGuides = guidesData.map(g => {
+                    const rawImage = g.user?.profilePictures?.[0] || g.user?.profilePicture || g.image || defaultGuideImg;
+                    // If image is a relative path (no protocol) prefix with API base URL
+                    const isAbsolute = /^(https?:\/\/|blob:|data:)/.test(rawImage) || rawImage.startsWith('/');
+                    const image = isAbsolute ? rawImage : `${API_BASE_URL.replace(/\/$/, '')}/${rawImage.replace(/^\//, '')}`;
+                    const name = g.user ? `${g.user.firstName || ''} ${g.user.lastName || ''}`.trim() : g.name || 'Unknown Guide';
+                    return {
+                        ...g,
+                        image,
+                        name
+                    };
+                });
+
+                setGuides(normalizedGuides);
+                console.log('🔍 Normalized guides (with image):', normalizedGuides.map(g => ({ id: g.id, image: g.image })));
                 setError(null);
             } catch (err) {
                 console.error('❌ Failed to fetch guides:', err);
@@ -43,8 +60,21 @@ export default function SelectGuide() {
             }
         };
 
+        // initial load
         fetchGuides();
+        // expose for later calls
+        SelectGuide.fetchGuides = fetchGuides;
     }, []);
+
+    // Handler when filters are applied from child
+    const handleApplyFilters = (params) => {
+        if (typeof SelectGuide.fetchGuides === 'function') {
+            SelectGuide.fetchGuides(params);
+        } else {
+            // fallback
+            getAllGuides(params).then(data => setGuides(data)).catch(() => setError('Failed to load guides'));
+        }
+    };
     
     const handleGuideSelection = (guide) => {
         const isAlreadySelected = selectedGuides.some(g => g.id === guide.id);
@@ -240,7 +270,7 @@ export default function SelectGuide() {
                                         <li>• Your request will be sent to all selected guides</li>
                                         <li>• The first guide to accept your request will be confirmed</li>
                                         <li>• Other pending requests will be automatically cancelled</li>
-                                        <li>• You'll receive notification once a guide accepts</li>
+                                        <li>• You will receive notification once a guide accepts</li>
                                     </ul>
                                 </div>
                             </div>
@@ -249,7 +279,7 @@ export default function SelectGuide() {
                 </div>
 
                 {/* Filters Section */}
-                <GuideFilters />
+                <GuideFilters onApply={handleApplyFilters} />
 
                 {/* Guides Grid */}
                 {guides.length === 0 ? (
