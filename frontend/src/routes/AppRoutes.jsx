@@ -215,14 +215,23 @@ export default function AppRoutes() {
                     <Route path='/admin/vehicle-agency-review' element={<AdminVehicleAgencyReview />} />
 
                     {/* Hotel Dashboard routes */}
+                    <Route path='/hotel/dashboard/:hotelId' element={<HotelDashboard />} />
                     <Route path='/hotel/dashboard' element={<HotelDashboard />} />
+                    <Route path='/hotel/listings/:hotelId' element={<HotelListings />} />
                     <Route path='/hotel/listings' element={<HotelListings />} />
+                    <Route path='/hotel/rooms/:hotelId' element={<RoomTypes />} />
                     <Route path='/hotel/rooms' element={<RoomTypes />} />
+                    <Route path='/hotel/bookings/:hotelId' element={<BookingsPage />} />
                     <Route path='/hotel/bookings' element={<BookingsPage />} />
+                    <Route path='/hotel/calendar/:hotelId' element={<HotelCalendar />} />
                     <Route path='/hotel/calendar' element={<HotelCalendar />} />
+                    <Route path='/hotel/payments/:hotelId' element={<PaymentsPage />} />
                     <Route path='/hotel/payments' element={<PaymentsPage />} />
+                    <Route path='/hotel/reviews/:hotelId' element={<HotelReviews />} />
                     <Route path='/hotel/reviews' element={<HotelReviews />} />
+                    <Route path='/hotel/reports/:hotelId' element={<HotelReports />} />
                     <Route path='/hotel/reports' element={<HotelReports />} />
+                    <Route path='/hotel/settings/:hotelId' element={<HotelSettings />} />
                     <Route path='/hotel/settings' element={<HotelSettings />} />
                     <Route path='/hotel/branch/:id' element={<HotelDetails />} />
 

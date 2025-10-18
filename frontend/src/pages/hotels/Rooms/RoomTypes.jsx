@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { FaBed, FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
 import HotelLayout from '../../../components/hotel/HotelLayout';
 
@@ -22,7 +23,7 @@ function RoomTypeCard({ roomType, onEdit, onDelete }) {
           >
             <FaEdit />
           </button>
-          <button 
+          <button
             onClick={() => onDelete(roomType.id)}
             className="p-2 text-red-500 hover:bg-red-50 rounded-lg"
           >
@@ -155,6 +156,7 @@ function RoomTypeModal({ isOpen, onClose, roomType, onSave }) {
 }
 
 export default function RoomTypes() {
+  const navigate = useNavigate();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingRoomType, setEditingRoomType] = useState(null);
 
@@ -205,11 +207,6 @@ export default function RoomTypes() {
     }
   };
 
-  const openAddModal = () => {
-    setEditingRoomType(null);
-    setIsModalOpen(true);
-  };
-
   const openEditModal = (roomType) => {
     setEditingRoomType({
       ...roomType,
@@ -227,7 +224,7 @@ export default function RoomTypes() {
             <p className="text-content-secondary">Manage your hotel room types and their details</p>
           </div>
           <button
-            onClick={openAddModal}
+            onClick={() => navigate('/rooms-add')}
             className="flex items-center gap-2 px-4 py-2 bg-brand-primary text-white rounded-lg"
           >
             <FaPlus />

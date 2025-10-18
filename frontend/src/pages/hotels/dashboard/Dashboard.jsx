@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getAuth } from 'firebase/auth';
 import { 
   FaBed, FaCalendarCheck, FaStar, FaWallet, 
   FaUsers, FaCheck, FaClock 
@@ -15,6 +17,10 @@ import {
 } from '../../../components/hotel/DashboardComponents';
 import AdminLayout from '../../../components/admin/AdminLayout';
 import StatusBadge from '../../../components/admin/StatusBadge';
+import { getHotelByUserDocId, getHotelById } from '../../../api/hotelService';
+import { showToastMessage } from '../../../utils/toastHelper';
+import { app } from '../../../config/firebase';
+import Spinner from '../../../components/Spinner';
 
 function DashboardMetricCard({ icon, label, value, subValue, color }) {
   return (
@@ -73,6 +79,69 @@ function RoomStatusDisplay({ room }) {
 }
 
 export default function HotelDashboard() {
+  const { hotelId } = useParams();
+  const navigate = useNavigate();
+  const auth = getAuth(app);
+  const [hotelData, setHotelData] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchHotelData = async () => {
+      try {
+        setLoading(true);
+        const currentUser = auth.currentUser;
+        
+        if (!currentUser) {
+          showToastMessage('error', 'Please login to access hotel dashboard');
+          navigate('/partner-login/step-1');
+          return;
+        }
+
+        let hotel;
+        
+        if (hotelId) {
+          // If hotelId is in URL, fetch by ID
+          hotel = await getHotelById(hotelId);
+        } else {
+          // Otherwise, fetch by user's Firebase UID
+          hotel = await getHotelByUserDocId(currentUser.uid);
+        }
+
+        if (hotel) {
+          setHotelData(hotel);
+          // Update URL with hotel ID if not present
+          if (!hotelId && hotel.id) {
+            navigate(`/hotel/dashboard/${hotel.id}`, { replace: true });
+          }
+        } else {
+          showToastMessage('error', 'No hotel found for your account. Please register your hotel first.');
+          navigate('/hotel-registration');
+        }
+      } catch (error) {
+        console.error('Error fetching hotel data:', error);
+        showToastMessage('error', 'Failed to load hotel information');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHotelData();
+  }, [hotelId, auth, navigate]);
+
+  if (loading) {
+    return <Spinner />;
+  }
+
+  if (!hotelData) {
+    return (
+      <HotelLayout>
+        <div className="flex items-center justify-center h-96">
+          <p className="text-content-secondary">No hotel data available</p>
+        </div>
+      </HotelLayout>
+    );
+  }
+
   // Sample data
   const recentBookings = [
     {
@@ -114,8 +183,17 @@ export default function HotelDashboard() {
     <HotelLayout>
       <div className="p-6">
         <div className="mb-6">
-          <h1 className="text-2xl font-bold mb-2">Hotel Dashboard</h1>
+          <h1 className="text-2xl font-bold mb-2">{hotelData.hotelName || 'Hotel Dashboard'}</h1>
           <p className="text-content-secondary">Welcome back! Here's what's happening with your hotel today.</p>
+          {hotelData.isVerified ? (
+            <span className="inline-block mt-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
+              ✓ Verified Hotel
+            </span>
+          ) : (
+            <span className="inline-block mt-2 px-3 py-1 bg-yellow-100 text-yellow-800 rounded-full text-sm">
+              ⏳ Pending Verification
+            </span>
+          )}
         </div>
 
         {/* Stats Grid */}
