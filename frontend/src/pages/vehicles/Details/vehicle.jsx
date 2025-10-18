@@ -1,5 +1,4 @@
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { vehicleList } from '../../../core/Lists/vehicles';
 import { useEffect, useState, useContext } from 'react';
 import Main from '../../../components/Main';
 import Title from '../../../components/Title';
@@ -9,9 +8,13 @@ import PrimaryButton from '../../../components/PrimaryButton';
 import { FaCar, FaUsers, FaCogs, FaGasPump, FaUser } from 'react-icons/fa';
 import FormContext from '../../../context/InitialValues';
 import { calculateCompleteTripCost } from '../../../utils/tripCalculator';
+import { getVehicleById } from '../../../api/tourService';
+import Spinner from '../../../components/Spinner';
 
 export default function Vehicle() {
     const [vehicle, setVehicle] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const { id } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
@@ -49,19 +52,73 @@ export default function Vehicle() {
     const withDriverPrice = isTourSelectVehicle ? (baseTripCost + driverTripFee) : ((vehicle.pricePerDay || 0) + driverFee);
 
     useEffect(() => {
-        const matchVehicle = vehicleList.find((v) => v.id.toString() === id);
-        setVehicle(matchVehicle || {});
-        
-        // Calculate trip cost if in tour mode
-        if (matchVehicle && isTourSelectVehicle && formData.itinerary && formData.travelDetails.duration) {
-            const tripCost = calculateCompleteTripCost(
-                matchVehicle,
-                formData.itinerary,
-                formData.travelDetails.duration,
-                formData.travelDetails.location || 'Colombo'
-            );
-            setTripCostData(tripCost);
-        }
+        const fetchVehicle = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                console.log('🚗 Fetching vehicle details for ID:', id);
+                
+                const vehicleData = await getVehicleById(id);
+                console.log('✅ Vehicle data fetched:', vehicleData);
+                
+                // Map backend vehicle data to frontend format
+                const imageUrls = Array.isArray(vehicleData.images) 
+                    ? vehicleData.images.map(img => typeof img === 'string' ? img : img.imageUrl || img.url || '')
+                    : [];
+                
+                const amenityNames = Array.isArray(vehicleData.amenities)
+                    ? vehicleData.amenities.map(amenity => typeof amenity === 'string' ? amenity : amenity.amenityName || amenity.name || '')
+                    : [];
+                
+                const mappedVehicle = {
+                    id: String(vehicleData.id),
+                    name: `${vehicleData.vehicleModel}`,
+                    type: vehicleData.vehicleType || 'Car',
+                    brand: vehicleData.vehicleModel?.split(' ')[0] || 'Unknown',
+                    model: vehicleData.vehicleModel || 'Unknown Model',
+                    pricePerDay: vehicleData.basePrice || 0,
+                    pricePerKm: parseFloat(vehicleData.pricePerKilometer) || 0,
+                    images: imageUrls,
+                    amenities: amenityNames,
+                    seats: vehicleData.capacity || 4,
+                    transmission: 'Automatic', // Default, can be added to model
+                    fuelType: 'Petrol', // Default, can be added to model
+                    rating: 4.5, // Default rating
+                    reviews: 125, // Default reviews
+                    rentalAgency: String(vehicleData.agency?.agencyName || 'Unknown Agency'),
+                    location: vehicleData.agency?.city || 'Sri Lanka',
+                    about: `${vehicleData.vehicleModel} - ${vehicleData.vehicleType}. A reliable vehicle for your journey with comfortable seating and modern amenities.`,
+                    available: vehicleData.availability !== false,
+                    isVerified: vehicleData.isVerified || false,
+                    registrationNo: vehicleData.registrationNo,
+                    vehicleNo: vehicleData.vehicleNo,
+                    insuranceNumber: vehicleData.insuranceNumber,
+                    insuranceExpiryDate: vehicleData.insuranceExpiryDate,
+                    agency: vehicleData.agency
+                };
+                
+                setVehicle(mappedVehicle);
+                
+                // Calculate trip cost if in tour mode
+                if (mappedVehicle && isTourSelectVehicle && formData.itinerary && formData.travelDetails.duration) {
+                    const tripCost = calculateCompleteTripCost(
+                        mappedVehicle,
+                        formData.itinerary,
+                        formData.travelDetails.duration,
+                        formData.travelDetails.location || 'Colombo'
+                    );
+                    setTripCostData(tripCost);
+                }
+            } catch (error) {
+                console.error('❌ Error fetching vehicle:', error);
+                setError('Failed to load vehicle details. Please try again later.');
+                setVehicle({});
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchVehicle();
     }, [id, isTourSelectVehicle, formData.itinerary, formData.travelDetails.duration, formData.travelDetails.location]);
 
     const breadcrumbItems = [
@@ -162,6 +219,21 @@ export default function Vehicle() {
                 <Breadcrumb items={breadcrumbItems} />
             </div>
             
+            {loading ? (
+                <div className="flex justify-center items-center h-64">
+                    <Spinner />
+                </div>
+            ) : error ? (
+                <div className="text-center py-10">
+                    <div className="text-red-500 mb-4">{error}</div>
+                    <button 
+                        onClick={() => window.location.reload()} 
+                        className="px-4 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-primary-dark"
+                    >
+                        Retry
+                    </button>
+                </div>
+            ) : (
             <div className='border rounded-[8px] overflow-hidden pb-4 mt-5'>
                 {/* Vehicle Images */}
                 <div className='w-full flex h-[400px] gap-2'>
@@ -474,6 +546,7 @@ export default function Vehicle() {
                     </div>
                 </div>
             </div>
+            )}
 
             {/* License Modal */}
             {showLicenseModal && (
