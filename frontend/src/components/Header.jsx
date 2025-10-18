@@ -108,12 +108,17 @@ export default function Header() {
                                                 </Link>
                                             </li>
                                             <li>
+                                                <Link to="/trips" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
+                                                    Trips
+                                                </Link>
+                                            </li>
+                                            <li>
                                                 <Link to="/bookings" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
                                                     Bookings
                                                 </Link>
                                             </li>
                                             <li>
-                                                <Link to="/payments" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent rounded-b-xl">
+                                                <Link to="/payments" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
                                                     Payments
                                                 </Link>
                                             </li>
