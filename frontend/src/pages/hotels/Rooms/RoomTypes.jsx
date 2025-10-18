@@ -55,125 +55,9 @@ function RoomTypeCard({ roomType, onEdit, onDelete }) {
   );
 }
 
-function RoomTypeModal({ isOpen, onClose, roomType, onSave }) {
-  const [formData, setFormData] = useState(
-    roomType || {
-      name: '',
-      price: '',
-      capacity: '',
-      size: '',
-      amenities: '',
-      description: ''
-    }
-  );
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    onSave({
-      ...formData,
-      amenities: formData.amenities.split(',').map(item => item.trim())
-    });
-    onClose();
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center">
-      <div className="bg-white rounded-xl p-6 w-full max-w-2xl">
-        <h2 className="text-2xl font-bold mb-4">
-          {roomType ? 'Edit Room Type' : 'Add New Room Type'}
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium mb-1">Room Type Name</label>
-            <input
-              type="text"
-              value={formData.name}
-              onChange={(e) => setFormData({...formData, name: e.target.value})}
-              className="w-full p-2 border rounded-lg"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Price per Night (LKR)</label>
-            <input
-              type="number"
-              value={formData.price}
-              onChange={(e) => setFormData({...formData, price: e.target.value})}
-              className="w-full p-2 border rounded-lg"
-              required
-            />
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-1">Capacity (Guests)</label>
-              <input
-                type="number"
-                value={formData.capacity}
-                onChange={(e) => setFormData({...formData, capacity: e.target.value})}
-                className="w-full p-2 border rounded-lg"
-                required
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium mb-1">Size (sqft)</label>
-              <input
-                type="number"
-                value={formData.size}
-                onChange={(e) => setFormData({...formData, size: e.target.value})}
-                className="w-full p-2 border rounded-lg"
-                required
-              />
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Amenities (comma-separated)</label>
-            <input
-              type="text"
-              value={formData.amenities}
-              onChange={(e) => setFormData({...formData, amenities: e.target.value})}
-              className="w-full p-2 border rounded-lg"
-              placeholder="TV, Air Conditioning, Mini Bar"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-1">Description</label>
-            <textarea
-              value={formData.description}
-              onChange={(e) => setFormData({...formData, description: e.target.value})}
-              className="w-full p-2 border rounded-lg"
-              rows="4"
-              required
-            />
-          </div>
-          <div className="flex justify-end gap-4 mt-6">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 text-gray-600 hover:bg-gray-100 rounded-lg"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="px-4 py-2 bg-brand-primary text-white rounded-lg"
-            >
-              {roomType ? 'Save Changes' : 'Add Room Type'}
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  );
-}
-
 export default function RoomTypes() {
   const navigate = useNavigate();
   const auth = getAuth(app);
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingRoomType, setEditingRoomType] = useState(null);
   const [roomTypes, setRoomTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hotelId, setHotelId] = useState(null);
@@ -243,11 +127,8 @@ export default function RoomTypes() {
   };
 
   const openEditModal = (roomType) => {
-    setEditingRoomType({
-      ...roomType,
-      amenities: roomType.amenities.join(', ')
-    });
-    setIsModalOpen(true);
+    // Navigate to edit page instead of opening modal
+    navigate(`/rooms-edit/${roomType.id}`);
   };
 
   // Show loading state
@@ -305,16 +186,6 @@ export default function RoomTypes() {
             ))}
           </div>
         )}
-
-        <RoomTypeModal
-          isOpen={isModalOpen}
-          onClose={() => {
-            setIsModalOpen(false);
-            setEditingRoomType(null);
-          }}
-          roomType={editingRoomType}
-          onSave={() => {}}
-        />
       </div>
     </HotelLayout>
   );

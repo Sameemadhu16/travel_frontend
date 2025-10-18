@@ -4,6 +4,7 @@ import Search from '../pages/hotels/search/Search';
 import Hotel from '../pages/hotels/Details/Hotel';
 import HotelRegistration from '../pages/hotels/auth/HotelRegistration';
 import RoomsAdd from '../pages/hotels/Rooms/RoomsAdd';
+import RoomEdit from '../pages/hotels/Rooms/RoomEdit';
 import Home from '../pages/home/Home';
 import Details from '../pages/partner/details/Details';
 import SearchVehicles from '../pages/vehicles/search/SearchVehicles';
@@ -190,6 +191,7 @@ export default function AppRoutes() {
                     <Route path='/guide-pending' element={<GuidePending />} />
                     <Route path='/vehicle-agency-pending' element={<VehicleAgencyPending />} />
                     <Route path='/rooms-add' element={<RoomsAdd />} />
+                    <Route path='/rooms-edit/:roomId' element={<RoomEdit />} />
                     <Route path='/partner-details' element={<Details />} />
                     <Route path='/choose-property' element={<ChooseProperty />} />
                     <Route path='/vehicle-registration' element={<VehicleRegistration />} />
