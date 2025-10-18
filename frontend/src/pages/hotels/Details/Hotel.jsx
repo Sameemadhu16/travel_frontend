@@ -1,18 +1,20 @@
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { hotelList } from '../../../core/Lists/hotels';
 import { useEffect, useMemo, useState, useContext } from 'react';
 import Main from '../../../components/Main';
 import Title from '../../../components/Title';
 import Breadcrumb from '../../../components/Breadcrumb';
-import { roomList } from '../../../core/Lists/rooms';
 import RoomCard from './components/RoomCard';
 import FormatText from '../../../components/FormatText';
 import Border from '../../../components/Border';
 import FormContext from '../../../context/InitialValues';
+import { getHotelById } from '../../../api/tourService';
+import Spinner from '../../../components/Spinner';
 
 export default function Hotel() {
     const [hotel, setHotel] = useState({});
     const [rooms, setRooms] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const { id } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
@@ -37,10 +39,65 @@ export default function Hotel() {
     const selectedNightInfo = getSelectedNightInfo();
     
     useEffect(() => {
-        const matchHotel = hotelList.find((hotel) => hotel.id.toString() === id);
-        const matchRooms = roomList.filter((room) => room.hotelId.toString() === id);
-        setHotel(matchHotel);
-        setRooms(matchRooms);
+        const fetchHotelDetails = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                console.log(`🏨 Fetching hotel details for ID: ${id}`);
+                
+                const hotelData = await getHotelById(id);
+                console.log('✅ Hotel data fetched:', hotelData);
+                
+                // Map backend data to frontend format
+                const mappedHotel = {
+                    id: hotelData.id,
+                    name: hotelData.hotelName,
+                    location: hotelData.city,
+                    city: hotelData.city,
+                    district: hotelData.district,
+                    province: hotelData.province,
+                    street: hotelData.street,
+                    rating: 4.5, // Default rating
+                    pricePerNight: hotelData.rooms && hotelData.rooms.length > 0 
+                        ? Math.min(...hotelData.rooms.map(r => r.pricePerNight || 0))
+                        : 0,
+                    images: hotelData.images || [],
+                    amenities: hotelData.amenities || [],
+                    type: hotelData.type || 'Hotel',
+                    description: hotelData.description || '',
+                    isVerified: hotelData.isVerified || false,
+                };
+                
+                // Map rooms data
+                const mappedRooms = (hotelData.rooms || []).map(room => ({
+                    id: room.id,
+                    hotelId: hotelData.id,
+                    roomType: room.roomType,
+                    description: room.description,
+                    pricePerNight: room.pricePerNight,
+                    capacity: room.capacity,
+                    numberOfRooms: room.numberOfRooms,
+                    amenities: room.amenities || [],
+                    images: room.images || [],
+                    isAvailable: room.isAvailable !== false
+                }));
+                
+                console.log('📦 Mapped hotel:', mappedHotel);
+                console.log('🛏️ Mapped rooms:', mappedRooms);
+                
+                setHotel(mappedHotel);
+                setRooms(mappedRooms);
+            } catch (error) {
+                console.error('❌ Error fetching hotel details:', error);
+                setError('Failed to load hotel details. Please try again later.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id) {
+            fetchHotelDetails();
+        }
     }, [id]);
 
     const breadcrumbItems = [
@@ -82,6 +139,35 @@ export default function Hotel() {
             />
         ));
     }, [hotel.amenities]);
+
+    if (loading) {
+        return (
+            <Main>
+                <div className="flex flex-col items-center justify-center min-h-[400px]">
+                    <Spinner />
+                    <p className="mt-4 text-gray-600">Loading hotel details...</p>
+                </div>
+            </Main>
+        );
+    }
+
+    if (error) {
+        return (
+            <Main>
+                <div className="flex flex-col items-center justify-center min-h-[400px]">
+                    <div className="text-center">
+                        <p className="text-red-600 mb-4">{error}</p>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="px-6 py-3 bg-brand-primary text-white rounded-lg font-semibold hover:bg-brand-primary-dark transition"
+                        >
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            </Main>
+        );
+    }
 
     return (
         <Main>
