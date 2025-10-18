@@ -13,6 +13,7 @@ import ImageUploader from "../../../components/ImageUploader";
 import PrimaryButton from "../../../components/PrimaryButton";
 import InputArea from "../../../components/InputArea";
 import { createRoom } from "../../../api/roomService";
+import { getHotelByUserDocId } from "../../../api/hotelService";
 import { showToastMessage } from "../../../utils/toastHelper";
 import { app } from "../../../config/firebase";
 
@@ -118,25 +119,20 @@ export default function RoomsAdd() {
             };
 
             // Call API with user's Firebase UID
-            const createdRoom = await createRoom(submissionData, currentUser.uid);
+            await createRoom(submissionData, currentUser.uid);
             
             showToastMessage("success", "Room added successfully!");
             
-            // Reset form after successful submission
-            setFormData({
-                roomType: "",       
-                description: "",
-                maxGuests: "",       
-                bedTypes: "",            
-                pricePerNight: "",    
-                amenities: [],       
-                images: [],
-                availability: true
-            });
-            setRoomImages([]);
+            // Get hotel data to retrieve hotel ID for navigation
+            const hotelData = await getHotelByUserDocId(currentUser.uid);
             
-            // Optionally navigate to rooms list or dashboard
-            // navigate("/partner/rooms");
+            // Navigate to hotel rooms page
+            if (hotelData && hotelData.id) {
+                navigate(`/hotel/rooms/${hotelData.id}`);
+            } else {
+                // Fallback to rooms page without hotel ID
+                navigate('/hotel/rooms');
+            }
             
         } catch (error) {
             console.error("Error creating room:", error);
