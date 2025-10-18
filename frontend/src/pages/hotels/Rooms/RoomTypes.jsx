@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBed, FaEdit, FaTrash, FaPlus, FaExclamationTriangle } from 'react-icons/fa';
+import { FaBed, FaEdit, FaTrash, FaPlus, FaExclamationTriangle, FaClock, FaCheckCircle } from 'react-icons/fa';
 import { getAuth } from 'firebase/auth';
 import { app } from '../../../config/firebase';
 import { getHotelByUserDocId } from '../../../api/hotelService';
@@ -63,6 +63,131 @@ function DeleteConfirmationModal({ isOpen, onClose, onConfirm, roomName, isDelet
   );
 }
 
+function VerificationPendingUI() {
+  return (
+    <div className="p-6">
+      <div className="max-w-4xl mx-auto">
+        {/* Main Alert */}
+        <div className="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-lg mb-6">
+          <div className="flex items-start">
+            <div className="flex-shrink-0">
+              <FaClock className="h-6 w-6 text-yellow-600" />
+            </div>
+            <div className="ml-4">
+              <h3 className="text-lg font-semibold text-yellow-800 mb-2">
+                Hotel Verification Pending
+              </h3>
+              <p className="text-yellow-700 mb-2">
+                Your hotel registration is currently under admin review. You will be able to manage rooms once your hotel is verified and approved.
+              </p>
+              <p className="text-sm text-yellow-600">
+                Please wait for admin approval before adding room types.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        {/* Status Cards */}
+        <div className="grid md:grid-cols-3 gap-4 mb-6">
+          <div className="bg-white border border-green-200 rounded-lg p-5 shadow-sm">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                <FaCheckCircle className="text-green-600 text-xl" />
+              </div>
+              <h4 className="font-semibold text-gray-800">Submitted</h4>
+            </div>
+            <p className="text-sm text-gray-600">
+              Your hotel registration has been successfully received
+            </p>
+          </div>
+
+          <div className="bg-white border border-yellow-200 rounded-lg p-5 shadow-sm">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                <FaClock className="text-yellow-600 text-xl" />
+              </div>
+              <h4 className="font-semibold text-gray-800">Under Review</h4>
+            </div>
+            <p className="text-sm text-gray-600">
+              Admin is currently reviewing your hotel documentation
+            </p>
+          </div>
+
+          <div className="bg-white border border-gray-200 rounded-lg p-5 shadow-sm">
+            <div className="flex items-center gap-3 mb-3">
+              <div className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center">
+                <FaBed className="text-gray-400 text-xl" />
+              </div>
+              <h4 className="font-semibold text-gray-800">Room Management</h4>
+            </div>
+            <p className="text-sm text-gray-600">
+              Available after verification approval
+            </p>
+          </div>
+        </div>
+
+        {/* Information Box */}
+        <div className="bg-white border border-gray-200 rounded-lg p-6 shadow-sm">
+          <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+            <svg className="w-5 h-5 text-brand-primary" fill="currentColor" viewBox="0 0 20 20">
+              <path fillRule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z" clipRule="evenodd"/>
+            </svg>
+            What happens during verification?
+          </h3>
+          <div className="grid md:grid-cols-2 gap-4">
+            <div className="space-y-3">
+              <div>
+                <h5 className="font-semibold text-gray-700 mb-1">📋 Document Verification</h5>
+                <p className="text-sm text-gray-600">
+                  Our team verifies your tourism board registration and business license
+                </p>
+              </div>
+              <div>
+                <h5 className="font-semibold text-gray-700 mb-1">🏨 Property Review</h5>
+                <p className="text-sm text-gray-600">
+                  Your hotel facilities, amenities, and images are reviewed for quality
+                </p>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <div>
+                <h5 className="font-semibold text-gray-700 mb-1">📧 Email Notification</h5>
+                <p className="text-sm text-gray-600">
+                  You'll receive an email once your application is approved
+                </p>
+              </div>
+              <div>
+                <h5 className="font-semibold text-gray-700 mb-1">✅ Start Managing Rooms</h5>
+                <p className="text-sm text-gray-600">
+                  Once approved, you can add rooms and start accepting bookings
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Timeline */}
+        <div className="mt-6 bg-blue-50 border border-blue-200 rounded-lg p-4 text-center">
+          <h4 className="font-semibold text-blue-900 mb-2">⏰ Estimated Review Time</h4>
+          <p className="text-blue-800">
+            Applications are typically reviewed within <span className="font-bold">2-4 business days</span>
+          </p>
+        </div>
+
+        {/* Contact */}
+        <div className="mt-6 text-center text-sm text-gray-600">
+          <p>
+            Need help? Contact our support team at{' '}
+            <a href="mailto:support@travel.lk" className="text-brand-primary hover:underline font-medium">
+              support@travel.lk
+            </a>
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function RoomTypeCard({ roomType, onEdit, onDelete }) {
   return (
     <div className="bg-white rounded-xl shadow p-6">
@@ -116,6 +241,7 @@ export default function RoomTypes() {
   const [roomTypes, setRoomTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hotelId, setHotelId] = useState(null);
+  const [hotelVerified, setHotelVerified] = useState(null);
   const [deleteModal, setDeleteModal] = useState({
     isOpen: false,
     roomId: null,
@@ -145,24 +271,30 @@ export default function RoomTypes() {
         }
 
         setHotelId(hotelData.id);
-
-        // Get rooms for this hotel
-        const rooms = await getRoomsByHotelId(hotelData.id);
         
-        // Transform backend data to match UI expectations
-        const transformedRooms = rooms.map(room => ({
-          id: room.id,
-          name: room.roomType,
-          price: room.pricePerNight,
-          capacity: room.maxGuests,
-          bedTypes: room.bedTypes,
-          amenities: room.amenities || [],
-          description: room.description,
-          images: room.images || [],
-          availability: room.availability
-        }));
+        // Check if hotel is verified
+        setHotelVerified(hotelData.isVerified);
 
-        setRoomTypes(transformedRooms);
+        // Only fetch rooms if hotel is verified
+        if (hotelData.isVerified) {
+          // Get rooms for this hotel
+          const rooms = await getRoomsByHotelId(hotelData.id);
+          
+          // Transform backend data to match UI expectations
+          const transformedRooms = rooms.map(room => ({
+            id: room.id,
+            name: room.roomType,
+            price: room.pricePerNight,
+            capacity: room.maxGuests,
+            bedTypes: room.bedTypes,
+            amenities: room.amenities || [],
+            description: room.description,
+            images: room.images || [],
+            availability: room.availability
+          }));
+
+          setRoomTypes(transformedRooms);
+        }
       } catch (error) {
         console.error('Error fetching rooms:', error);
         showToastMessage('error', error.message || 'Failed to load rooms');
@@ -269,6 +401,15 @@ export default function RoomTypes() {
             <p className="mt-4 text-content-secondary">Loading rooms...</p>
           </div>
         </div>
+      </HotelLayout>
+    );
+  }
+
+  // Show verification pending UI if hotel is not verified
+  if (hotelVerified === false) {
+    return (
+      <HotelLayout>
+        <VerificationPendingUI />
       </HotelLayout>
     );
   }
