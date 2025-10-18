@@ -75,11 +75,11 @@ export default function Hotel() {
                     roomType: room.roomType,
                     description: room.description,
                     pricePerNight: room.pricePerNight,
-                    capacity: room.capacity,
-                    numberOfRooms: room.numberOfRooms,
+                    maxGuests: parseInt(room.maxGuests) || 2,
+                    bedType: room.bedTypes || 'Standard',
                     amenities: room.amenities || [],
                     images: room.images || [],
-                    isAvailable: room.isAvailable !== false
+                    isAvailable: room.availability !== false
                 }));
                 
                 console.log('📦 Mapped hotel:', mappedHotel);
