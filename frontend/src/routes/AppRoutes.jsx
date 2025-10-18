@@ -108,6 +108,7 @@ import PaymentsPage from '../pages/hotels/payments/PaymentsPage';
 import BasicInfoStep from '../pages/AI-Trip-Create/BasicInfoStep';
 import PreferenceInfoStep from '../pages/AI-Trip-Create/PreferenceInfoStep';
 import AIGenerationStep from '../pages/AI-Trip-Create/AIGenerationStep';
+import ChatUser from '../pages/Chat-User/ChatUser';
 // import { Users } from 'lucide-react';
 
 export default function AppRoutes() {
@@ -122,6 +123,7 @@ export default function AppRoutes() {
             <Route path='/home' element={<Home />} />
             <Route path='/traveler-register' element={<TravelerRegister />} />
             <Route path="/destination/:id" element={<DestinationPage />} />
+            <Route path='user-chat' element={<ChatUser/>} />
 
             {/* Independent Booking Pages */}
             <Route path='/bookings/guides' element={<GuideBooking />} />
