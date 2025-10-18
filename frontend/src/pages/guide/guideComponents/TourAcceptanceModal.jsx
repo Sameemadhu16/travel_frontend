@@ -5,7 +5,7 @@ import PropTypes from 'prop-types';
 import PrimaryButton from '../../../components/PrimaryButton';
 import SecondaryButton from '../../../components/SecondaryButton';
 
-const TourAcceptanceModal = ({ isOpen, onClose, tourData, onConfirmAccept, isAccepted }) => {
+const TourAcceptanceModal = ({ isOpen, onClose, tourData, onConfirmAccept, isAccepted, isLoading, error }) => {
     if (!isOpen) return null;
 
     return (
@@ -69,16 +69,23 @@ const TourAcceptanceModal = ({ isOpen, onClose, tourData, onConfirmAccept, isAcc
 
                             {/* Action Buttons */}
                             <div className="flex space-x-3">
-                                <SecondaryButton 
+                                <SecondaryButton
                                     text='Cancel'
                                     onClick={onClose}
                                     className={"flex-1 px-4 py-2 font-medium text-base hover:bg-gray-50 transition-colors"}
                                 />
-                                <PrimaryButton
-                                    text='Yes, Accept Tour'
+                                <button
                                     onClick={onConfirmAccept}
-                                    className={"flex-1 px-4 py-2 font-medium text-base"}
-                                />
+                                    disabled={isLoading}
+                                    className={isLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                                >
+                                    {isLoading ? 'Accepting...' : 'Confirm Accept'}
+                                </button>
+                                {error && (
+                                    <div className="bg-red-50 border border-red-200 p-3 rounded text-red-700 mb-4">
+                                        {error}
+                                    </div>
+                                )}
                             </div>
                         </>
                     ) : (
@@ -119,7 +126,7 @@ const TourAcceptanceModal = ({ isOpen, onClose, tourData, onConfirmAccept, isAcc
                             </div>
 
                             {/* Action Button */}
-                            <PrimaryButton 
+                            <PrimaryButton
                                 text='Got it, Thanks!'
                                 onClick={onClose}
                                 className={"px-4 py-2 text-base"}
@@ -142,7 +149,7 @@ TourAcceptanceModal.propTypes = {
         tour: PropTypes.shape({
             tour_id: PropTypes.number.isRequired,
             destination: PropTypes.string.isRequired,
-            date: PropTypes.string.isRequired, 
+            date: PropTypes.string.isRequired,
             duration: PropTypes.oneOfType([
                 PropTypes.string,
                 PropTypes.number
@@ -165,6 +172,9 @@ TourAcceptanceModal.propTypes = {
     onClose: PropTypes.func.isRequired,
     onConfirmAccept: PropTypes.func.isRequired,
     isAccepted: PropTypes.bool.isRequired,
+    isLoading: PropTypes.bool,
+    error: PropTypes.string,
+
 };
 
 export default TourAcceptanceModal;

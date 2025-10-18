@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import PrimaryButton from '../../../components/PrimaryButton';
 import SecondaryButton from '../../../components/SecondaryButton';
 
-const TourRejectModal = ({ isOpen, onClose, tourData, onConfirmReject, isRejected }) => {
+const TourRejectModal = ({ isOpen, onClose, tourData, onConfirmReject, isRejected, isLoading, error }) => {
     if (!isOpen) return null;
 
     return (
@@ -78,6 +78,18 @@ const TourRejectModal = ({ isOpen, onClose, tourData, onConfirmReject, isRejecte
                                     onClick={onConfirmReject}
                                     className={"flex-1 px-4 py-2 font-medium text-base bg-red-500 hover:bg-red-600"}
                                 />
+                                <button
+                                    onClick={onConfirmReject}
+                                    disabled={isLoading}
+                                    className={isLoading ? 'opacity-50 cursor-not-allowed' : ''}
+                                >
+                                    {isLoading ? 'Rejecting...' : 'Confirm Reject'}
+                                </button>
+                                {error && (
+                                    <div className="bg-red-50 border border-red-200 p-3 rounded text-red-700 mb-4">
+                                        {error}
+                                    </div>
+                                )}
                             </div>
                         </>
                     ) : (
@@ -127,7 +139,7 @@ TourRejectModal.propTypes = {
         tour: PropTypes.shape({
             tour_id: PropTypes.number.isRequired,
             destination: PropTypes.string.isRequired,
-            date: PropTypes.string.isRequired, 
+            date: PropTypes.string.isRequired,
             duration: PropTypes.oneOfType([
                 PropTypes.string,
                 PropTypes.number
@@ -150,6 +162,9 @@ TourRejectModal.propTypes = {
     onClose: PropTypes.func.isRequired,
     onConfirmReject: PropTypes.func.isRequired,
     isRejected: PropTypes.bool.isRequired,
+    isLoading: PropTypes.bool,
+    error: PropTypes.string,
+
 };
 
 export default TourRejectModal;
