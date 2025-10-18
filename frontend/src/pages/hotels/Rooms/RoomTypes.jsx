@@ -1,12 +1,67 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FaBed, FaEdit, FaTrash, FaPlus } from 'react-icons/fa';
+import { FaBed, FaEdit, FaTrash, FaPlus, FaExclamationTriangle } from 'react-icons/fa';
 import { getAuth } from 'firebase/auth';
 import { app } from '../../../config/firebase';
 import { getHotelByUserDocId } from '../../../api/hotelService';
 import { getRoomsByHotelId, deleteRoom } from '../../../api/roomService';
 import { showToastMessage } from '../../../utils/toastHelper';
 import HotelLayout from '../../../components/hotel/HotelLayout';
+
+function DeleteConfirmationModal({ isOpen, onClose, onConfirm, roomName, isDeleting }) {
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-xl p-6 w-full max-w-md mx-4 shadow-2xl">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+            <FaExclamationTriangle className="text-2xl text-red-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900">Delete Room</h2>
+        </div>
+        
+        <div className="mb-6">
+          <p className="text-gray-700 mb-3">
+            Are you sure you want to delete <span className="font-semibold text-gray-900">"{roomName}"</span>?
+          </p>
+          <p className="text-sm text-gray-600 bg-red-50 border border-red-200 rounded-lg p-3">
+            <strong>Warning:</strong> This action cannot be undone. All room data including images will be permanently deleted.
+          </p>
+        </div>
+
+        <div className="flex justify-end gap-3">
+          <button
+            type="button"
+            onClick={onClose}
+            disabled={isDeleting}
+            className="px-6 py-2 text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Cancel
+          </button>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={isDeleting}
+            className="px-6 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+          >
+            {isDeleting ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                Deleting...
+              </>
+            ) : (
+              <>
+                <FaTrash />
+                Delete
+              </>
+            )}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 function RoomTypeCard({ roomType, onEdit, onDelete }) {
   return (
@@ -61,6 +116,12 @@ export default function RoomTypes() {
   const [roomTypes, setRoomTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [hotelId, setHotelId] = useState(null);
+  const [deleteModal, setDeleteModal] = useState({
+    isOpen: false,
+    roomId: null,
+    roomName: '',
+    isDeleting: false
+  });
 
   // Fetch rooms from backend
   useEffect(() => {
@@ -113,17 +174,84 @@ export default function RoomTypes() {
     fetchRooms();
   }, [auth, navigate]);
 
-  const handleDeleteRoomType = async (id) => {
-    if (window.confirm('Are you sure you want to delete this room type?')) {
-      try {
-        await deleteRoom(id);
-        setRoomTypes(roomTypes.filter(rt => rt.id !== id));
-        showToastMessage('success', 'Room deleted successfully');
-      } catch (error) {
-        console.error('Error deleting room:', error);
-        showToastMessage('error', 'Failed to delete room');
+  const handleDeleteRoomType = (id) => {
+    // Get the room details for confirmation message
+    const roomToDelete = roomTypes.find(rt => rt.id === id);
+    const roomName = roomToDelete ? roomToDelete.name : 'this room';
+    
+    // Open delete confirmation modal
+    setDeleteModal({
+      isOpen: true,
+      roomId: id,
+      roomName: roomName,
+      isDeleting: false
+    });
+  };
+
+  const handleConfirmDelete = async () => {
+    const { roomId, roomName } = deleteModal;
+    
+    try {
+      // Check authentication
+      const currentUser = auth.currentUser;
+      
+      if (!currentUser) {
+        showToastMessage('error', 'Please login to delete rooms');
+        setDeleteModal({ isOpen: false, roomId: null, roomName: '', isDeleting: false });
+        navigate('/partner-login/step-1');
+        return;
+      }
+
+      // Set deleting state
+      setDeleteModal(prev => ({ ...prev, isDeleting: true }));
+
+      // Call API to delete room
+      await deleteRoom(roomId);
+      
+      // Update local state to remove deleted room
+      setRoomTypes(prevRooms => prevRooms.filter(rt => rt.id !== roomId));
+      
+      // Close modal
+      setDeleteModal({ isOpen: false, roomId: null, roomName: '', isDeleting: false });
+      
+      // Show success message
+      showToastMessage('success', `${roomName} deleted successfully`);
+      
+    } catch (error) {
+      console.error('Error deleting room:', error);
+      
+      // Reset deleting state
+      setDeleteModal(prev => ({ ...prev, isDeleting: false }));
+      
+      // Handle specific error cases
+      if (error.response) {
+        const status = error.response.status;
+        if (status === 401) {
+          showToastMessage('error', 'Authentication failed. Please login again.');
+          setDeleteModal({ isOpen: false, roomId: null, roomName: '', isDeleting: false });
+          navigate('/partner-login/step-1');
+        } else if (status === 403) {
+          showToastMessage('error', 'You don\'t have permission to delete this room');
+          setDeleteModal({ isOpen: false, roomId: null, roomName: '', isDeleting: false });
+        } else if (status === 404) {
+          showToastMessage('error', 'Room not found. It may have been already deleted.');
+          // Remove from local state anyway
+          setRoomTypes(prevRooms => prevRooms.filter(rt => rt.id !== roomId));
+          setDeleteModal({ isOpen: false, roomId: null, roomName: '', isDeleting: false });
+        } else if (status === 409) {
+          showToastMessage('error', 'Cannot delete room. There are active bookings for this room.');
+          setDeleteModal({ isOpen: false, roomId: null, roomName: '', isDeleting: false });
+        } else {
+          showToastMessage('error', error.response.data || 'Failed to delete room. Please try again.');
+        }
+      } else {
+        showToastMessage('error', 'Failed to delete room. Please check your connection and try again.');
       }
     }
+  };
+
+  const handleCancelDelete = () => {
+    setDeleteModal({ isOpen: false, roomId: null, roomName: '', isDeleting: false });
   };
 
   const openEditModal = (roomType) => {
@@ -186,6 +314,14 @@ export default function RoomTypes() {
             ))}
           </div>
         )}
+
+        <DeleteConfirmationModal
+          isOpen={deleteModal.isOpen}
+          onClose={handleCancelDelete}
+          onConfirm={handleConfirmDelete}
+          roomName={deleteModal.roomName}
+          isDeleting={deleteModal.isDeleting}
+        />
       </div>
     </HotelLayout>
   );
