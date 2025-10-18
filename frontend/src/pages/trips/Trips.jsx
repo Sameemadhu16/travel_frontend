@@ -1,21 +1,19 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import Main from '../../components/Main';
-import { getUserTripsWithGuideRequests } from '../../api/tripService';
+import { getUserTripsWithGuideRequests, updateTripStatus } from '../../api/tripService';
 import Spinner from '../../components/Spinner';
 import { FaCalendarAlt, FaMapMarkerAlt, FaUsers, FaCheckCircle, FaClock, FaTimesCircle } from 'react-icons/fa';
 
 export default function Trips() {
     const { user } = useSelector((state) => state.auth);
+    const navigate = useNavigate();
     const [trips, setTrips] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-
-    useEffect(() => {
-        if (user?.data?.id) {
-            fetchUserTrips();
-        }
-    }, [user]);
+    const [processingPayment, setProcessingPayment] = useState({});
+    const [statusUpdated, setStatusUpdated] = useState(false);
 
     const fetchUserTrips = async () => {
         try {
@@ -31,6 +29,75 @@ export default function Trips() {
         }
     };
 
+    useEffect(() => {
+        if (user?.data?.id) {
+            fetchUserTrips();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]);
+    
+    const handlePayment = async (tripId) => {
+        try {
+            setProcessingPayment(prev => ({ ...prev, [tripId]: true }));
+            
+            // Navigate to payment page with trip ID
+            navigate('/tour/payment', { state: { tripId } });
+            
+        } catch (err) {
+            console.error('Error processing payment:', err);
+            alert('Failed to process payment. Please try again.');
+        } finally {
+            setProcessingPayment(prev => ({ ...prev, [tripId]: false }));
+        }
+    };
+    
+    const hasApprovedGuide = (trip) => {
+        return trip.guideRequests && trip.guideRequests.some(
+            request => request.status?.toLowerCase() === 'approved'
+        );
+    };
+    
+    const canPay = (trip) => {
+        const tripStatus = trip.tripStatus?.toLowerCase() || 'pending';
+        // Can pay if there's an approved guide and trip is not already paid or completed
+        return hasApprovedGuide(trip) && 
+               (tripStatus === 'pending' || tripStatus === 'approved') &&
+               tripStatus !== 'paid' &&
+               tripStatus !== 'completed';
+    };
+    
+    // Auto-update trip status to "approved" when a guide approves
+    useEffect(() => {
+        const updateApprovedTrips = async () => {
+            let updated = false;
+            
+            for (const trip of trips) {
+                const tripStatus = trip.tripStatus?.toLowerCase() || 'pending';
+                
+                // If trip is pending and has an approved guide, update to approved
+                if (tripStatus === 'pending' && hasApprovedGuide(trip)) {
+                    try {
+                        await updateTripStatus(trip.id, 'approved');
+                        updated = true;
+                    } catch (err) {
+                        console.error('Error updating trip status to approved:', err);
+                    }
+                }
+            }
+            
+            // Refresh trips once if any updates were made
+            if (updated && !statusUpdated) {
+                setStatusUpdated(true);
+                fetchUserTrips();
+            }
+        };
+        
+        if (trips.length > 0 && !statusUpdated) {
+            updateApprovedTrips();
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [trips, statusUpdated]);
+
     const getStatusBadge = (status) => {
         const statusConfig = {
             pending: {
@@ -43,10 +110,20 @@ export default function Trips() {
                 text: 'Approved',
                 className: 'bg-green-100 text-green-800 border-green-300'
             },
+            paid: {
+                icon: <FaCheckCircle className="mr-1" />,
+                text: 'Paid',
+                className: 'bg-blue-100 text-blue-800 border-blue-300'
+            },
             rejected: {
                 icon: <FaTimesCircle className="mr-1" />,
                 text: 'Rejected',
                 className: 'bg-red-100 text-red-800 border-red-300'
+            },
+            completed: {
+                icon: <FaCheckCircle className="mr-1" />,
+                text: 'Completed',
+                className: 'bg-purple-100 text-purple-800 border-purple-300'
             }
         };
 
@@ -126,10 +203,8 @@ export default function Trips() {
                                             <p className="text-sm opacity-90">Trip Code: {trip.tripCode}</p>
                                         </div>
                                         <div className="text-right">
-                                            <div className="text-sm opacity-90">Status</div>
-                                            <div className="mt-1 inline-block bg-white/20 backdrop-blur-sm px-3 py-1 rounded-full text-sm font-semibold">
-                                                {trip.tripStatus || 'Pending'}
-                                            </div>
+                                            <div className="text-sm opacity-90 mb-1">Status</div>
+                                            {getStatusBadge(trip.tripStatus || 'pending')}
                                         </div>
                                     </div>
                                 </div>
@@ -241,6 +316,41 @@ export default function Trips() {
                                             </div>
                                         </div>
                                     )}
+
+                                    {/* Payment Button */}
+                                    <div className="border-t pt-4 mt-6">
+                                        {!hasApprovedGuide(trip) && (
+                                            <div className="mb-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                                                <p className="text-sm text-yellow-800">
+                                                    <strong>Note:</strong> Payment will be available once a tour guide accepts your request.
+                                                </p>
+                                            </div>
+                                        )}
+                                        {(trip.tripStatus?.toLowerCase() === 'paid' || trip.tripStatus?.toLowerCase() === 'completed') && (
+                                            <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                                <p className="text-sm text-green-800">
+                                                    <strong>✓ Payment Completed</strong> - Your trip has been paid and confirmed.
+                                                </p>
+                                            </div>
+                                        )}
+                                        <button 
+                                            onClick={() => handlePayment(trip.id)}
+                                            disabled={!canPay(trip) || processingPayment[trip.id]}
+                                            className={`w-full px-4 py-2 rounded-lg font-semibold transition-all flex items-center justify-center 
+                                            ${canPay(trip) ? 'bg-brand-primary text-white hover:bg-brand-secondary' : 'bg-gray-200 text-gray-500 cursor-not-allowed'}`}
+                                        >
+                                            {processingPayment[trip.id] ? (
+                                                <>
+                                                    <Spinner size="sm" className="mr-2" />
+                                                    Processing...
+                                                </>
+                                            ) : (
+                                                canPay(trip) ? 'Proceed to Payment' : 
+                                                (trip.tripStatus?.toLowerCase() === 'paid' || trip.tripStatus?.toLowerCase() === 'completed') ? 
+                                                'Payment Completed' : 'Waiting for Guide Approval'
+                                            )}
+                                        </button>
+                                    </div>
                                 </div>
                             </div>
                         ))}

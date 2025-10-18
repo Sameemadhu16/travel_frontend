@@ -79,6 +79,22 @@ export const updateGuideRequestStatus = async (requestId, status) => {
 };
 
 /**
+ * Update trip status (e.g., to 'paid' after payment)
+ * @param {number} tripId - The trip ID
+ * @param {string} status - New status (pending/approved/paid/ongoing/completed/cancelled)
+ * @returns {Promise} Updated trip
+ */
+export const updateTripStatus = async (tripId, status) => {
+    try {
+        const response = await axios.put(`${API_BASE_URL}/trips/${tripId}/status`, { status });
+        return response.data;
+    } catch (error) {
+        console.error('Error updating trip status:', error);
+        throw error;
+    }
+};
+
+/**
  * Get trips with guide request details for a user
  * @param {number} userId - The user ID
  * @returns {Promise} Array of trips with their guide requests

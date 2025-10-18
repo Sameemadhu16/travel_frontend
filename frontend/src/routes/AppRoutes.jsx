@@ -36,6 +36,7 @@ import GuideComplaints from '../pages/guide/GuideComplaints';
 import CompleteRequest from '../pages/tour/completeRequest';
 import RequestSent from '../pages/tour/requestSent';
 import Payment from '../pages/tour/payment';
+import PaymentSuccess from '../pages/tour/paymentSuccess';
 import DestinationPage from '../pages/destinations/DestinationPage';
 import GuideNotifications from '../pages/guide/Notifications';
 import GuideReviews from '../pages/guide/Reviews';
@@ -293,6 +294,7 @@ export default function AppRoutes() {
                                     <Route path="complete-request" element={<CompleteRequest/>}/>
                                     <Route path="request-sent" element={<RequestSent />} />
                                     <Route path="payment" element={<Payment/>} />
+                                    <Route path="payment-success" element={<PaymentSuccess/>} />
                                 </Routes>
                             </FormProvider>
                         }
