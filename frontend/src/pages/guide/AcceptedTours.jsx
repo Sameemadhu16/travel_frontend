@@ -1,15 +1,20 @@
-// import React from 'react';
-import Card from './guideComponents/Card'; // Adjust path as needed
+import Card from './guideComponents/Card';
 import Main from '../../components/Main';
 import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
 import { FaCalendar, FaClock, FaUsers } from 'react-icons/fa';
+import { Loader, AlertCircle } from 'lucide-react';
 import NavBar from './guideComponents/NavBar'
 import { useState } from 'react';
 import TourDetailsModal from './guideComponents/TourDetailsModal';
-import { tours } from './assets/acceptedTourData';
+import useAcceptedTours from './hooks/useAcceptedTours';
+import { getUserIdFromStorage } from '../../core/authHelper';
 
 const AcceptedTours = () => {
+    const userId = getUserIdFromStorage();
+    const guideId = userId;
+
+    const { acceptedTours, loading, error } = useAcceptedTours(guideId);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTour, setSelectedTour] = useState(null);
@@ -26,13 +31,12 @@ const AcceptedTours = () => {
 
     let totalEarnings = 0;
 
-    tours.forEach(tour => {
+    acceptedTours.forEach(tour => {
         totalEarnings += Number(tour.payment.totalAmount.replace(/,/g,''));
     });
 
     return (
         <>
-            {/* <div className='mt-24'> */}
             <div className='flex'>
                 <div className='sticky top-0 h-screen'>
                     <NavBar />
@@ -40,24 +44,40 @@ const AcceptedTours = () => {
                 <div className='flex-1'>
                     <Main hasNavbar={true}>
                         {/* Header */}
-                        <div className="flex justify-between items-center">
+                        <div className="flex justify-between items-center mb-6">
                             <div>
                                 <h1 className="text-2xl font-bold mb-1">Accepted Tours</h1>
-                                <p className="text-gray-600 mb-6">Tours awaiting payment confirmation</p>
+                                <p className="text-gray-600">Tours awaiting payment confirmation</p>
                             </div>
                             <div className="flex items-center space-x-4">
                                 <div className="bg-orange-100 text-orange-600 px-4 py-2 rounded-lg text-sm font-medium">
-                                    3 Pending Payments
+                                    {acceptedTours.length} Pending Payments
                                 </div>
                                 <div className="text-gray-700 font-medium border border-gray-300 px-4 py-2 rounded-lg text-sm">
-                                    Total Earnings: <span className="text-green-600">Rs. {totalEarnings}</span>
+                                    Total Earnings: <span className="text-green-600">Rs. {totalEarnings.toLocaleString()}</span>
                                 </div>
                             </div>
                         </div>
 
-                        {/* Tour Cards */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                            {tours.map((tour) => (
+                        {/* Loading State */}
+                        {loading ? (
+                            <div className="flex items-center justify-center py-12">
+                                <Loader className="w-8 h-8 animate-spin text-orange-600 mr-3" />
+                                <span className="text-gray-600">Loading accepted tours...</span>
+                            </div>
+                        ) : error ? (
+                            /* Error State */
+                            <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6 flex gap-3">
+                                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                                <div>
+                                    <h3 className="font-semibold text-red-900">Error Loading Accepted Tours</h3>
+                                    <p className="text-red-700 text-sm mt-1">{error}</p>
+                                </div>
+                            </div>
+                        ) : acceptedTours.length > 0 ? (
+                            /* Tour Cards */
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                                {acceptedTours.map((tour) => (
                                 <Card key={tour.tour.tour_id} className="h-full">
                                     {/* Customer Info */}
                                     <div className="flex items-center mb-4">
@@ -136,9 +156,22 @@ const AcceptedTours = () => {
                                     </div>
                                 </Card>
                             ))}
-                        </div>
+                            </div>
+                        ) : (
+                            /* Empty State */
+                            <div className="text-center py-12">
+                                <div className="mx-auto h-24 w-24 text-gray-400 mb-4">
+                                    <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                                    </svg>
+                                </div>
+                                <h3 className="text-lg font-medium text-gray-900 mb-2">No accepted tours</h3>
+                                <p className="text-gray-600">All accepted tours have been paid for or there are no accepted tours at the moment.</p>
+                            </div>
+                        )}
 
                         {/* Quick Actions */}
+                        {/* {acceptedTours.length > 0 && (
                         <div className="mb-8">
                             <h2 className="text-xl font-semibold text-gray-900 mb-4">Quick Actions</h2>
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -175,7 +208,8 @@ const AcceptedTours = () => {
                                     </div>
                                 </button>
                             </div>
-                        </div>
+                        </div> 
+                        )}*/}
                     </Main>
                 </div>
             </div>

@@ -1,9 +1,9 @@
-// src/pages/guide/hooks/useGuideRequests.js
+// src/pages/guide/hooks/useAcceptedTours.js
 import { useState, useEffect } from 'react';
 import { getRequest, putRequest } from '../../../core/service';
 
-const useGuideRequests = (guideId) => {
-  const [tourRequests, setTourRequests] = useState([]);
+const useAcceptedTours = (guideId) => {
+  const [acceptedTours, setAcceptedTours] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -14,7 +14,7 @@ const useGuideRequests = (guideId) => {
       return;
     }
 
-    const fetchRequests = async () => {
+    const fetchAcceptedTours = async () => {
       try {
         setLoading(true);
         setError(null);
@@ -22,14 +22,17 @@ const useGuideRequests = (guideId) => {
         const response = await getRequest(`/api/guid-requests/guid/${guideId}`);
 
         if (!Array.isArray(response)) {
-          setTourRequests([]);
+          setAcceptedTours([]);
           setLoading(false);
           return;
         }
 
-        const pendingRequests = response.filter((req) => req.status === 'pending');
+        // Filter for accepted tours with pending payment
+        const acceptedRequests = response.filter(
+          (req) => req.status === 'accepted' && req.paymentStatus === 'pending'
+        );
 
-        const transformedRequests = pendingRequests.map((req) => ({
+        const transformedTours = acceptedRequests.map((req) => ({
           requestId: req.id,
           tripId: req.trip?.id,
           customer: {
@@ -59,91 +62,61 @@ const useGuideRequests = (guideId) => {
             ),
             status: 'Pending Payment',
             deadline: calculateDeadline(req.createdAt),
-            due: req.requestedDate ? new Date(req.requestedDate).toLocaleDateString() : 'Not specified',
+            due: req.trip?.tripStartDate ? new Date(req.trip.tripStartDate).toLocaleDateString() : 'Not specified',
+            accepted: req.updatedAt
+              ? new Date(req.updatedAt).toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                })
+              : new Date().toLocaleDateString('en-US', {
+                  month: 'short',
+                  day: 'numeric',
+                  year: 'numeric'
+                }),
           },
           accommodation: transformAccommodation(req.trip?.selectedHotels, req.trip?.selectedRooms),
           transport: transformTransport(req.trip?.selectedVehicle, req.trip?.selectedVehicleAgency),
-          itinerary: (() => {
-            const result = transformItinerary(req.trip?.itineraryJson);
-            // console.log('Raw itineraryJson:', req.trip?.itineraryJson);
-            // console.log('Transformed itinerary:', result);
-            return result;
-          })(),
+          itinerary: transformItinerary(req.trip?.itineraryJson),
           rawData: req,
         }));
 
-        setTourRequests(transformedRequests);
+        setAcceptedTours(transformedTours);
       } catch (err) {
-        setError(err.message || 'Failed to fetch tour requests');
-        console.error('Error fetching requests:', err);
-        setTourRequests([]);
+        setError(err.message || 'Failed to fetch accepted tours');
+        console.error('Error fetching accepted tours:', err);
+        setAcceptedTours([]);
       } finally {
         setLoading(false);
       }
     };
 
-    fetchRequests();
+    fetchAcceptedTours();
   }, [guideId]);
 
-  const acceptRequest = async (requestId, tripId, guideId) => {
+  const sendPaymentReminder = async (requestId) => {
     try {
       setError(null);
-
-      const tripPayload = {
-        selectedGuide: {
-          id: guideId,
-        },
-        tripStatus: 'accepted',
-      };
-
-      await putRequest(`/api/trips/${tripId}`, tripPayload);
-
-      const requestPayload = {
-        status: 'accepted',
-        paymentStatus: 'pending',
-      };
-
-      await putRequest(`/api/guid-requests/${requestId}`, requestPayload);
-
-      setTourRequests((prev) => prev.filter((req) => req.requestId !== requestId));
-
+      // TODO: Implement payment reminder logic
+      console.log('Sending payment reminder for request:', requestId);
+      // You can add an API call here to send email/notification
       return true;
     } catch (err) {
-      setError(err.message || 'Failed to accept request');
-      console.error('Error accepting request:', err);
-      throw err;
-    }
-  };
-
-  const rejectRequest = async (requestId) => {
-    try {
-      setError(null);
-
-      const payload = {
-        status: 'rejected',
-      };
-
-      await putRequest(`/api/guid-requests/${requestId}`, payload);
-
-      setTourRequests((prev) => prev.filter((req) => req.requestId !== requestId));
-
-      return true;
-    } catch (err) {
-      setError(err.message || 'Failed to reject request');
-      console.error('Error rejecting request:', err);
+      setError(err.message || 'Failed to send payment reminder');
+      console.error('Error sending payment reminder:', err);
       throw err;
     }
   };
 
   return {
-    tourRequests,
+    acceptedTours,
     loading,
     error,
-    acceptRequest,
-    rejectRequest,
+    sendPaymentReminder,
   };
 };
 
+// Helper functions
 function formatTripDates(startDate, endDate) {
   if (!startDate || !endDate) return 'Not specified';
 
@@ -224,14 +197,11 @@ function transformItinerary(itineraryJson) {
   try {
     let parsed = itineraryJson;
 
-    // If it's a string, parse it
     if (typeof itineraryJson === 'string') {
-      // Remove any \r\n characters
       const cleaned = itineraryJson.replace(/\r\n/g, '');
       parsed = JSON.parse(cleaned);
     }
 
-    // If it's already an array, return it as-is
     if (Array.isArray(parsed)) {
       return parsed.map((dayItem) => ({
         day: dayItem.day || 0,
@@ -246,4 +216,4 @@ function transformItinerary(itineraryJson) {
   }
 }
 
-export default useGuideRequests;
+export default useAcceptedTours;
