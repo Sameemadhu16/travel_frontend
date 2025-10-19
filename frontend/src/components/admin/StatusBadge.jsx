@@ -6,11 +6,19 @@ export default function StatusBadge({ status }) {
       icon: <FaCheckCircle />,
       className: 'text-green-600',
     },
+    Active: {
+      icon: <FaCheckCircle />,
+      className: 'text-green-600',
+    },
     Pending: {
       icon: <FaClock />,
       className: 'text-yellow-600',
     },
     Rejected: {
+      icon: <FaBan />,
+      className: 'text-red-600',
+    },
+    Banned: {
       icon: <FaBan />,
       className: 'text-red-600',
     },
