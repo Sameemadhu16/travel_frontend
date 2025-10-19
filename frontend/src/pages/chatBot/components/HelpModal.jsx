@@ -51,7 +51,7 @@ export default function HelpModal({ isOpen, onClose }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm">
             <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-hidden animate-fadeIn">
                 {/* Header */}
-                <div className="bg-gradient-to-r from-brand-primary to-blue-600 text-white p-6 relative">
+                <div className="bg-brand-primary text-white p-6 relative">
                     <button
                         onClick={onClose}
                         className="absolute top-4 right-4 p-2 hover:bg-brand-secondary/30 rounded-full transition-colors"
