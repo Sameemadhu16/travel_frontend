@@ -13,71 +13,109 @@ export function createTripRequest(formData, userId) {
         agreedToTerms,
     } = formData;
 
+    // Debug logging to see what we're working with
+    console.log('=== CREATE TRIP REQUEST DEBUG ===');
+    console.log('selectedItems:', selectedItems);
+    console.log('selectedItems.selectedVehicle:', selectedItems?.selectedVehicle);
+    console.log('selectedItems.guides:', selectedItems?.guides);
+    console.log('selectedItems.nightHotels:', selectedItems?.nightHotels);
+    console.log('selectedItems.nightRooms:', selectedItems?.nightRooms);
+    console.log('=================================');
+
     // Extract guide IDs from selected guides
-    const selectedGuideIds = (selectedItems?.guides || []).map(guide => guide.id);
+    const selectedGuideIds = (selectedItems?.guides || []).map(guide => guide.id).filter(Boolean);
     
     // Extract hotel IDs (legacy and night-wise)
-    const selectedHotelIds = (selectedItems?.hotels || []).map(hotel => hotel.id);
+    const selectedHotelIds = (selectedItems?.hotels || []).map(hotel => hotel.id).filter(Boolean);
     const selectedNightHotelIds = (selectedItems?.nightHotels || [])
         .filter(hotel => hotel?.id)
         .map(hotel => hotel.id);
     
     // Extract room IDs (legacy and night-wise)
-    const selectedRoomIds = (selectedItems?.rooms || []).map(room => room.id);
+    const selectedRoomIds = (selectedItems?.rooms || []).map(room => room.id).filter(Boolean);
     const selectedNightRoomIds = (selectedItems?.nightRooms || [])
         .filter(room => room?.id)
         .map(room => room.id);
 
-    return {
-        // Trip code and user
+    // Parse number of travelers from formData structure
+    const numberOfAdults = parseInt(travelDetails?.adults) || 1;
+    const numberOfKids = parseInt(travelDetails?.children) || 0;
+    
+    // Calculate distance from vehicle trip cost data if available
+    const distanceKm = selectedItems?.selectedVehicle?.tripCostData?.cost?.distance || 0;
+
+    // Format time properly - ensure it has seconds
+    const formatTime = (time) => {
+        if (!time) return null;
+        // If time is like "06:16", add ":00" for seconds
+        if (time.split(':').length === 2) {
+            return `${time}:00`;
+        }
+        return time;
+    };
+
+    // Build the trip request object matching backend Trip entity exactly
+    const tripRequest = {
+        // === REQUIRED FIELDS ===
+        
+        // Trip code and user (CRITICAL - must have user with ID)
         tripCode: generateTripCode(),
-        user: { id: userId },
+        user: userId ? { id: userId } : null,
         
         // Basic trip information
-        pickupLocation: travelDetails?.pickupLocation || "",
+        pickupLocation: travelDetails?.location || travelDetails?.pickupLocation || "",
         tripStartDate: travelDetails?.startDate || null,
         tripEndDate: travelDetails?.endDate || null,
-        startTime: travelDetails?.startTime || "08:00:00",
+        startTime: formatTime(travelDetails?.time),
         
-        // Places to visit (will be populated from itinerary if available)
+        // Places to visit
         placesToBeVisit: extractPlaceIds(itinerary),
         
         // Travelers count
-        numberOfAdults: parseInt(travelDetails?.numberOfAdults) || 0,
-        numberOfKids: parseInt(travelDetails?.numberOfKids) || 0,
+        numberOfAdults: numberOfAdults,
+        numberOfKids: numberOfKids,
         
         // Duration and distance
         estimateDuration: travelDetails?.duration || "",
-        distanceKm: parseInt(travelDetails?.distanceKm) || 0,
+        distanceKm: Math.round(distanceKm) || 0,
         
-        // Trip status
+        // Trip status (REQUIRED - must be valid enum value: pending, approved, paid, ongoing, completed, cancelled)
         tripStatus: "pending",
         
-        // Selected vehicle
-        selectedVehicleAgency: selectedItems?.selectedVehicle?.agency?.id
-            ? { id: selectedItems.selectedVehicle.agency.id }
-            : null,
+        // === RELATIONSHIP FIELDS ===
+        
+        // Selected vehicle agency (must be object with id or null)
+        selectedVehicleAgency: selectedItems?.selectedVehicle?.vehicleAgency?.id
+            ? { id: selectedItems.selectedVehicle.vehicleAgency.id }
+            : (selectedItems?.selectedVehicle?.agency?.id
+                ? { id: selectedItems.selectedVehicle.agency.id }
+                : null),
+        
+        // Selected vehicle (must be object with id or null)
         selectedVehicle: selectedItems?.selectedVehicle?.id
-            ? { 
-                id: selectedItems.selectedVehicle.id,
-                isVerified: selectedItems.selectedVehicle.isVerified ?? false 
-              }
+            ? { id: selectedItems.selectedVehicle.id }
             : null,
         
-        // Selected hotel (legacy - first hotel)
-        selectedHotel: selectedHotelIds.length > 0 || selectedNightHotelIds.length > 0
-            ? { id: selectedNightHotelIds[0] || selectedHotelIds[0] }
-            : null,
+        // Selected guide (approved guide - stays NULL until a guide accepts the request)
+        selectedGuide: null,
         
-        // Selected rooms
-        selectedRooms: (selectedRoomIds.length > 0 ? selectedRoomIds : selectedNightRoomIds)
+        // Selected hotels (ManyToMany - array of objects with IDs)
+        selectedHotels: (selectedNightHotelIds.length > 0 ? selectedNightHotelIds : selectedHotelIds)
+            .filter(id => id != null)
+            .map(hotelId => ({ id: hotelId })),
+        
+        // Selected rooms (ManyToMany - array of objects with IDs)
+        selectedRooms: (selectedNightRoomIds.length > 0 ? selectedNightRoomIds : selectedRoomIds)
+            .filter(id => id != null)
             .map(roomId => ({ id: roomId })),
         
-        // Pricing
-        basePrice: parseFloat(bookingSummary?.basePrice) || 0,
+        // === PRICING FIELDS ===
+        
+        basePrice: calculateBasePrice(selectedItems, travelDetails),
         totalFare: parseFloat(bookingSummary?.totalCost) || 0,
         
-        // Contact Information
+        // === CONTACT INFORMATION ===
+        
         fullName: contactInfo?.fullName || "",
         email: contactInfo?.email || "",
         phone: contactInfo?.phone || "",
@@ -90,32 +128,120 @@ export function createTripRequest(formData, userId) {
         travelExperience: contactInfo?.travelExperience || "",
         referralSource: contactInfo?.referralSource || "",
         
-        // Travel preferences
+        // === TRAVEL PREFERENCES ===
+        
         destination: travelDetails?.destination || "",
         duration: travelDetails?.duration || "",
-        travelStyle: tourPreferences?.travelStyle || "",
-        groupType: tourPreferences?.groupType || "",
-        interests: tourPreferences?.interests || [],
-        accommodationPreference: tourPreferences?.accommodationPreference || "",
+        travelStyle: travelDetails?.travelStyle || tourPreferences?.travelStyle || "",
+        groupType: travelDetails?.groupType || tourPreferences?.groupType || "",
+        interests: Array.isArray(tourPreferences?.interests) ? tourPreferences.interests : [],
+        accommodationPreference: tourPreferences?.accommodation || tourPreferences?.accommodationPreference || "",
         budgetRange: tourPreferences?.budgetRange || "",
         activityLevel: tourPreferences?.activityLevel || "",
         diningPreference: tourPreferences?.diningPreference || "",
         
-        // JSON fields for complex data
+        // === JSON STORAGE FIELDS ===
+        
         itineraryJson: itinerary ? JSON.stringify(itinerary) : null,
         travelDetailsJson: travelDetails ? JSON.stringify(travelDetails) : null,
         tourPreferencesJson: tourPreferences ? JSON.stringify(tourPreferences) : null,
         bookingSummaryJson: bookingSummary ? JSON.stringify(bookingSummary) : null,
         
-        // Selected guides, hotels, and rooms (as ID arrays)
-        selectedGuideIds: selectedGuideIds,
-        selectedHotelIds: selectedNightHotelIds.length > 0 ? selectedNightHotelIds : selectedHotelIds,
-        selectedNightHotelIds: selectedNightHotelIds,
-        selectedNightRoomIds: selectedNightRoomIds,
+        // === ID ARRAYS (ElementCollection) ===
         
-        // Terms agreement
-        agreedToTerms: agreedToTerms || false,
+        selectedGuideIds: selectedGuideIds.filter(id => id != null),
+        selectedHotelIds: (selectedNightHotelIds.length > 0 ? selectedNightHotelIds : selectedHotelIds).filter(id => id != null),
+        selectedNightHotelIds: selectedNightHotelIds.filter(id => id != null),
+        selectedNightRoomIds: selectedNightRoomIds.filter(id => id != null),
+        
+        // === DISPLAY FIELDS (for easy database viewing) ===
+        guidesDisplay: selectedGuideIds.filter(id => id != null).join(','),
+        selectedHotelIdsDisplay: (selectedNightHotelIds.length > 0 ? selectedNightHotelIds : selectedHotelIds)
+            .filter(id => id != null)
+            .join(','),
+        
+        // === TERMS AGREEMENT ===
+        
+        agreedToTerms: Boolean(agreedToTerms),
     };
+
+    // Final debug log of the complete trip request
+    console.log('=== FINAL TRIP REQUEST ===');
+    console.log('🔑 Critical Fields:');
+    console.log('  - tripCode:', tripRequest.tripCode);
+    console.log('  - user:', tripRequest.user);
+    console.log('  - tripStatus:', tripRequest.tripStatus);
+    console.log('  - pickupLocation:', tripRequest.pickupLocation);
+    console.log('  - tripStartDate:', tripRequest.tripStartDate);
+    console.log('  - startTime:', tripRequest.startTime);
+    
+    console.log('🚗 Vehicle & Agency:');
+    console.log('  - selectedVehicle:', tripRequest.selectedVehicle);
+    console.log('  - selectedVehicleAgency:', tripRequest.selectedVehicleAgency);
+    
+    console.log('👤 Guide:');
+    console.log('  - selectedGuide (approved guide):', tripRequest.selectedGuide);
+    console.log('  - selectedGuideIds (all requested):', tripRequest.selectedGuideIds);
+    console.log('  - guidesDisplay (for DB):', tripRequest.guidesDisplay);
+    
+    console.log('🏨 Hotels & Rooms:');
+    console.log('  - selectedHotels:', tripRequest.selectedHotels);
+    console.log('  - selectedHotelIds:', tripRequest.selectedHotelIds);
+    console.log('  - selectedHotelIdsDisplay (for DB):', tripRequest.selectedHotelIdsDisplay);
+    console.log('  - selectedNightHotelIds:', tripRequest.selectedNightHotelIds);
+    console.log('  - selectedRooms:', tripRequest.selectedRooms);
+    console.log('  - selectedNightRoomIds:', tripRequest.selectedNightRoomIds);
+    
+    console.log('💰 Pricing:');
+    console.log('  - basePrice:', tripRequest.basePrice);
+    console.log('  - totalFare:', tripRequest.totalFare);
+    
+    console.log('📧 Contact:');
+    console.log('  - fullName:', tripRequest.fullName);
+    console.log('  - email:', tripRequest.email);
+    console.log('  - phone:', tripRequest.phone);
+    
+    console.log('📍 Travel Details:');
+    console.log('  - destination:', tripRequest.destination);
+    console.log('  - duration:', tripRequest.duration);
+    console.log('  - numberOfAdults:', tripRequest.numberOfAdults);
+    console.log('  - numberOfKids:', tripRequest.numberOfKids);
+    
+    console.log('📋 Complete Request Object:');
+    console.log(JSON.stringify(tripRequest, null, 2));
+    console.log('==========================');
+
+    return tripRequest;
+}
+
+/**
+ * Calculate base price from selected items
+ */
+function calculateBasePrice(selectedItems, travelDetails) {
+    let basePrice = 0;
+    const duration = parseInt(travelDetails?.duration?.match(/(\d+)/)?.[1] || '1');
+    
+    // Add guide cost
+    if (selectedItems?.guides && selectedItems.guides.length > 0) {
+        const guidePrice = selectedItems.guides[0].price || selectedItems.guides[0].pricePerDay || 0;
+        basePrice += guidePrice * duration;
+    }
+    
+    // Add hotel cost
+    if (selectedItems?.nightHotels && selectedItems.nightHotels.length > 0) {
+        selectedItems.nightHotels.forEach((hotel, index) => {
+            const room = selectedItems.nightRooms?.[index];
+            const nightCost = room ? (room.price || 0) : (hotel.pricePerNight || hotel.price || 0);
+            basePrice += nightCost;
+        });
+    }
+    
+    // Add vehicle cost
+    if (selectedItems?.selectedVehicle?.tripCostData) {
+        basePrice += selectedItems.selectedVehicle.tripCostData.cost.totalCost || 0;
+    }
+    
+    return basePrice;
 }
 
 /**

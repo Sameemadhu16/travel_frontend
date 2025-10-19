@@ -1,13 +1,41 @@
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FormContext from '../../../context/InitialValues';
+import { getGuideById } from '../../../api/tourService';
 
 export default function SelectedTourGuide() {
     const { formData } = useContext(FormContext);
     const navigate = useNavigate();
+    const [guideDetails, setGuideDetails] = useState([]);
+    const [loading, setLoading] = useState(true);
 
     const selectedItems = formData.selectedItems;
-    const guides = selectedItems.guides || [];
+    const guideIds = (selectedItems.guides || []).map(guide => guide.id).filter(Boolean);
+
+    useEffect(() => {
+        const fetchGuideDetails = async () => {
+            if (guideIds.length === 0) {
+                setLoading(false);
+                return;
+            }
+
+            try {
+                setLoading(true);
+                // Fetch detailed information for each guide using the proper service
+                const guidePromises = guideIds.map(id => getGuideById(id));
+                const fetchedGuides = await Promise.all(guidePromises);
+                setGuideDetails(fetchedGuides);
+            } catch (error) {
+                console.error('Error fetching guide details:', error);
+                // Fallback to selected guides data
+                setGuideDetails(selectedItems.guides || []);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchGuideDetails();
+    }, [guideIds.join(',')]);  // eslint-disable-line react-hooks/exhaustive-deps
 
     const handleEdit = () => {
         navigate('/tour/select-guide');
@@ -26,6 +54,18 @@ export default function SelectedTourGuide() {
         }
         return stars;
     };
+
+    const guides = guideDetails.length > 0 ? guideDetails : (selectedItems.guides || []);
+
+    if (loading) {
+        return (
+            <div className="bg-white rounded-lg border border-brand-primary p-6">
+                <div className="flex items-center justify-center py-8">
+                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-primary"></div>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="bg-white rounded-lg border border-brand-primary p-6">
@@ -60,35 +100,98 @@ export default function SelectedTourGuide() {
                 </div>
             ) : (
                 <div className="space-y-4">
-                    {guides.map((guide, index) => (
-                        <div key={guide.id || index} className="flex items-center justify-between p-4 border border-brand-primary rounded-lg">
-                            <div className="flex items-center gap-4">
-                                <img 
-                                    src={guide.image || '/src/assets/users/user1.jpg'} 
-                                    alt={guide.name}
-                                    className="w-12 h-12 rounded-full object-cover"
-                                />
-                                <div>
-                                    <h3 className="font-semibold text-content-primary">{guide.name}</h3>
-                                    <p className="text-sm text-content-secondary">{guide.specialty || guide.specialization}</p>
-                                    <div className="flex items-center gap-2 mt-1">
-                                        <div className="flex gap-1">
-                                            {renderStars(guide.rating || 4.5)}
+                    {guides.map((guide, index) => {
+                        // Handle both detailed guide objects from API and basic guide objects
+                        const guideUser = guide.user || {};
+                        const firstName = guideUser.firstName || '';
+                        const lastName = guideUser.lastName || '';
+                        const guideName = firstName && lastName 
+                            ? `${firstName} ${lastName}`.trim() 
+                            : guide.name || 'Unknown Guide';
+                        
+                        // Get profile picture from user's profilePictures array (first one) or fallback
+                        const profilePictures = guideUser.profilePictures || [];
+                        const guideImage = profilePictures.length > 0 
+                            ? profilePictures[0] 
+                            : guide.image || guide.profilePicture || '/src/assets/users/user1.jpg';
+                        
+                        const guideRating = guide.rating || 4.5;
+                        const guideTours = guide.tours || guide.toursCompleted || guide.experienceYears || 0;
+                        const guidePrice = guide.price || guide.pricePerDay || guide.hoursRate || 8500;
+                        const guideSpecialty = guide.specialty || guide.specialization || guide.bio?.substring(0, 50) + '...' || 'Professional Guide';
+                        const guideLanguages = guide.languagesSpoken || guide.languages || [];
+                        const guideSpecializations = guide.specialization || guide.specializations || [];
+                        
+                        return (
+                            <div key={guide.id || index} className="border border-brand-primary rounded-lg overflow-hidden">
+                                <div className="flex items-center gap-4 p-4">
+                                    <img 
+                                        src={guideImage} 
+                                        alt={guideName}
+                                        className="w-16 h-16 rounded-full object-cover"
+                                    />
+                                    <div className="flex-1">
+                                        <h3 className="font-semibold text-content-primary">{guideName}</h3>
+                                        <p className="text-sm text-content-secondary">{guideSpecialty}</p>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <div className="flex gap-1">
+                                                {renderStars(guideRating)}
+                                            </div>
+                                            <span className="text-sm text-content-secondary">
+                                                ({guideRating}) • {guideTours}+ tours
+                                            </span>
                                         </div>
-                                        <span className="text-sm text-content-secondary">
-                                            ({guide.rating || 4.5}) • {guide.tours || guide.toursCompleted || 0} tours
-                                        </span>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-lg font-semibold text-brand-primary">
+                                            LKR {guidePrice.toLocaleString()}
+                                        </p>
+                                        <p className="text-sm text-content-secondary">per day</p>
                                     </div>
                                 </div>
+                                
+                                {/* Additional Guide Details */}
+                                {(guideLanguages.length > 0 || guideSpecializations.length > 0 || guide.bio) && (
+                                    <div className="border-t border-gray-200 p-4 bg-gray-50">
+                                        {guide.bio && (
+                                            <p className="text-sm text-content-secondary mb-3">{guide.bio}</p>
+                                        )}
+                                        
+                                        {guideLanguages.length > 0 && (
+                                            <div className="mb-2">
+                                                <span className="text-xs font-semibold text-content-tertiary">Languages: </span>
+                                                <span className="text-sm text-content-secondary">
+                                                    {guideLanguages.join(', ')}
+                                                </span>
+                                            </div>
+                                        )}
+                                        
+                                        {guideSpecializations.length > 0 && (
+                                            <div>
+                                                <span className="text-xs font-semibold text-content-tertiary">Specializations: </span>
+                                                <div className="flex flex-wrap gap-1 mt-1">
+                                                    {guideSpecializations.map((spec, idx) => (
+                                                        <span key={idx} className="text-xs bg-brand-primary/10 text-brand-primary px-2 py-1 rounded">
+                                                            {spec}
+                                                        </span>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        )}
+                                        
+                                        {guide.experienceYears && (
+                                            <div className="mt-2">
+                                                <span className="text-xs font-semibold text-content-tertiary">Experience: </span>
+                                                <span className="text-sm text-content-secondary">
+                                                    {guide.experienceYears} years
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </div>
-                            <div className="text-right">
-                                <p className="text-lg font-semibold text-brand-primary">
-                                    LKR {(guide.price || guide.pricePerDay || 8500).toLocaleString()}
-                                </p>
-                                <p className="text-sm text-content-secondary">per day</p>
-                            </div>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
             )}
         </div>
