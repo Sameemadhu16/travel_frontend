@@ -14,6 +14,7 @@ export default function Trips() {
     const [error, setError] = useState(null);
     const [processingPayment, setProcessingPayment] = useState({});
     const [statusUpdated, setStatusUpdated] = useState(false);
+    const [expandedTrips, setExpandedTrips] = useState({});
 
     const fetchUserTrips = async () => {
         try {
@@ -189,6 +190,13 @@ export default function Trips() {
         const date = new Date(dateString);
         return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
     };
+    
+    const toggleTripExpansion = (tripId) => {
+        setExpandedTrips(prev => ({
+            ...prev,
+            [tripId]: !prev[tripId]
+        }));
+    };
 
     if (loading) {
         return (
@@ -240,7 +248,10 @@ export default function Trips() {
                     </div>
                 ) : (
                     <div className="space-y-6">
-                        {trips.map((trip) => (
+                        {trips.map((trip) => {
+                            const isExpanded = expandedTrips[trip.id] || false;
+                            
+                            return (
                             <div key={trip.id} className="bg-white rounded-lg border border-gray-200 shadow-sm hover:shadow-md transition-shadow overflow-hidden">
                                 {/* Trip Header */}
                                 <div className="bg-gradient-to-r from-brand-primary to-brand-secondary p-6 text-white">
@@ -256,9 +267,9 @@ export default function Trips() {
                                     </div>
                                 </div>
 
-                                {/* Trip Details */}
+                                {/* Trip Summary - Always Visible */}
                                 <div className="p-6">
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                                         <div className="flex items-start">
                                             <FaCalendarAlt className="text-brand-primary mt-1 mr-3" />
                                             <div>
@@ -287,6 +298,174 @@ export default function Trips() {
                                             </div>
                                         </div>
                                     </div>
+
+                                    {/* Show More Button */}
+                                    <button
+                                        onClick={() => toggleTripExpansion(trip.id)}
+                                        className="w-full py-2 px-4 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium text-content-secondary transition-colors flex items-center justify-center gap-2 mb-4"
+                                    >
+                                        {isExpanded ? (
+                                            <>
+                                                <span>Show Less</span>
+                                                <svg className="w-5 h-5 transform rotate-180" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <span>Show More Details</span>
+                                                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                                </svg>
+                                            </>
+                                        )}
+                                    </button>
+
+                                    {/* Expanded Details */}
+                                    {isExpanded && (
+                                        <div className="space-y-6 border-t pt-6">
+                                            {/* Contact Information */}
+                                            {(trip.fullName || trip.email || trip.phone) && (
+                                                <div>
+                                                    <h4 className="text-lg font-semibold text-content-primary mb-3">Contact Information</h4>
+                                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-3 bg-gray-50 p-4 rounded-lg">
+                                                        {trip.fullName && (
+                                                            <div>
+                                                                <span className="text-xs text-content-tertiary">Full Name</span>
+                                                                <div className="font-medium">{trip.fullName}</div>
+                                                            </div>
+                                                        )}
+                                                        {trip.email && (
+                                                            <div>
+                                                                <span className="text-xs text-content-tertiary">Email</span>
+                                                                <div className="font-medium">{trip.email}</div>
+                                                            </div>
+                                                        )}
+                                                        {trip.phone && (
+                                                            <div>
+                                                                <span className="text-xs text-content-tertiary">Phone</span>
+                                                                <div className="font-medium">{trip.phone}</div>
+                                                            </div>
+                                                        )}
+                                                        {trip.country && (
+                                                            <div>
+                                                                <span className="text-xs text-content-tertiary">Country</span>
+                                                                <div className="font-medium">{trip.country}</div>
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Vehicle Information */}
+                                            {trip.selectedVehicle && (
+                                                <div>
+                                                    <h4 className="text-lg font-semibold text-content-primary mb-3">Transportation</h4>
+                                                    <div className="bg-gray-50 p-4 rounded-lg">
+                                                        <div className="flex items-start gap-4">
+                                                            {trip.selectedVehicle.images && trip.selectedVehicle.images.length > 0 && (
+                                                                <img 
+                                                                    src={trip.selectedVehicle.images[0]} 
+                                                                    alt={trip.selectedVehicle.vehicleModel}
+                                                                    className="w-24 h-24 object-cover rounded-lg"
+                                                                />
+                                                            )}
+                                                            <div className="flex-1">
+                                                                <div className="font-semibold text-lg">{trip.selectedVehicle.vehicleModel || 'Vehicle'}</div>
+                                                                <div className="text-sm text-content-secondary">{trip.selectedVehicle.vehicleType || 'N/A'}</div>
+                                                                {trip.selectedVehicle.vehicleNo && (
+                                                                    <div className="text-sm text-content-secondary">Vehicle No: {trip.selectedVehicle.vehicleNo}</div>
+                                                                )}
+                                                                {trip.selectedVehicle.capacity && (
+                                                                    <div className="text-sm text-content-secondary">Capacity: {trip.selectedVehicle.capacity} passengers</div>
+                                                                )}
+                                                                {trip.selectedVehicleAgency && (
+                                                                    <div className="text-sm text-content-secondary mt-2">
+                                                                        Agency: {trip.selectedVehicleAgency.agencyName || 'N/A'}
+                                                                    </div>
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Hotels Information */}
+                                            {trip.selectedHotels && trip.selectedHotels.length > 0 && (
+                                                <div>
+                                                    <h4 className="text-lg font-semibold text-content-primary mb-3">
+                                                        Accommodation ({trip.selectedHotels.length})
+                                                    </h4>
+                                                    <div className="space-y-3">
+                                                        {trip.selectedHotels.map((hotel, index) => (
+                                                            <div key={hotel.id || index} className="bg-gray-50 p-4 rounded-lg">
+                                                                <div className="flex items-start gap-4">
+                                                                    {hotel.images && hotel.images.length > 0 && (
+                                                                        <img 
+                                                                            src={hotel.images[0]} 
+                                                                            alt={hotel.hotelName}
+                                                                            className="w-24 h-24 object-cover rounded-lg"
+                                                                        />
+                                                                    )}
+                                                                    <div className="flex-1">
+                                                                        <div className="font-semibold">{hotel.hotelName || 'Hotel'}</div>
+                                                                        {hotel.address && (
+                                                                            <div className="text-sm text-content-secondary">{hotel.address}</div>
+                                                                        )}
+                                                                        {hotel.city && (
+                                                                            <div className="text-sm text-content-secondary">{hotel.city}</div>
+                                                                        )}
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Rooms Information */}
+                                            {trip.selectedRooms && trip.selectedRooms.length > 0 && (
+                                                <div>
+                                                    <h4 className="text-lg font-semibold text-content-primary mb-3">
+                                                        Selected Rooms ({trip.selectedRooms.length})
+                                                    </h4>
+                                                    <div className="space-y-3">
+                                                        {trip.selectedRooms.map((room, index) => (
+                                                            <div key={room.id || index} className="bg-gray-50 p-4 rounded-lg">
+                                                                <div className="flex justify-between items-start">
+                                                                    <div>
+                                                                        <div className="font-semibold">{room.roomType || 'Room'}</div>
+                                                                        <div className="text-sm text-content-secondary">
+                                                                            {room.bedType && `${room.bedType} • `}
+                                                                            Max {room.maxGuests || 'N/A'} guests
+                                                                        </div>
+                                                                    </div>
+                                                                    {room.pricePerNight && (
+                                                                        <div className="text-right">
+                                                                            <div className="font-semibold text-brand-primary">
+                                                                                LKR {parseFloat(room.pricePerNight).toLocaleString()}
+                                                                            </div>
+                                                                            <div className="text-xs text-content-secondary">per night</div>
+                                                                        </div>
+                                                                    )}
+                                                                </div>
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+
+                                            {/* Special Requests */}
+                                            {trip.specialRequests && (
+                                                <div>
+                                                    <h4 className="text-lg font-semibold text-content-primary mb-3">Special Requests</h4>
+                                                    <div className="bg-gray-50 p-4 rounded-lg">
+                                                        <p className="text-content-secondary">{trip.specialRequests}</p>
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    )}
 
                                     {/* Guide Requests Section */}
                                     {trip.guideRequests && trip.guideRequests.length > 0 && (
@@ -434,7 +613,8 @@ export default function Trips() {
                                     </div>
                                 </div>
                             </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
             </div>
