@@ -1,6 +1,6 @@
 // src/pages/guide/hooks/useAcceptedTours.js
 import { useState, useEffect } from 'react';
-import { getRequest, putRequest } from '../../../core/service';
+import { getRequest } from '../../../core/service';
 
 const useAcceptedTours = (guideId) => {
   const [acceptedTours, setAcceptedTours] = useState([]);
