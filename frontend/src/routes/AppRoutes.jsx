@@ -58,13 +58,18 @@ import VehicleBookingConfirmation from '../pages/bookings/VehicleBookingConfirma
 // Admin imports
 import AdminDashboard from '../pages/admin/Dashboard';
 import Users from '../pages/admin/Users';
+import PartnerManagement from '../pages/admin/PartnerManagement';
+import TourRequests from '../pages/admin/TourRequests';
 import Listings from '../pages/admin/Listings';
 import Reviews from '../pages/admin/Reviews';
 import Reports from '../pages/admin/Reports';
 import Notifications from '../pages/admin/Notifications';
 import Payments from '../pages/admin/Payments';
 import Bookings from '../pages/admin/Bookings';
+import Calendar from '../pages/admin/Calendar';
+import AdminAnalytics from '../pages/admin/Analytics';
 import AdminSettings from '../pages/admin/Settings';
+import AdminHelpCenter from '../pages/admin/HelpCenter';
 
 // Guide Registration imports
 import GuideRegister from '../pages/guide/auth/guideRegister';
@@ -205,13 +210,18 @@ export default function AppRoutes() {
                     {/* Admin routes */}
                     <Route path='/admin/dashboard' element={<AdminDashboard />} />
                     <Route path='/admin/users' element={<Users />} />
+                    <Route path='/admin/partners' element={<PartnerManagement />} />
+                    <Route path='/admin/tour-requests' element={<TourRequests />} />
                     <Route path='/admin/listings' element={<Listings />} />
                     <Route path='/admin/reviews' element={<Reviews />} />
                     <Route path='/admin/reports' element={<Reports />} />
                     <Route path='/admin/notifications' element={<Notifications />} />
                     <Route path='/admin/payments' element={<Payments />} />
                     <Route path='/admin/bookings' element={<Bookings />} />
+                    <Route path='/admin/calendar' element={<Calendar />} />
+                    <Route path='/admin/analytics' element={<AdminAnalytics />} />
                     <Route path='/admin/settings' element={<AdminSettings />} />
+                    <Route path='/admin/help' element={<AdminHelpCenter />} />
                     <Route path='/admin/guide-review' element={<AdminGuideReview />} />
                     <Route path='/admin/hotel-review' element={<AdminHotelReview />} />
                     <Route path='/admin/vehicle-agency-review' element={<AdminVehicleAgencyReview />} />
