@@ -78,7 +78,7 @@ export default function PartnerLoginStep1() {
                                     size="text-[14px]"
                                     font="font-[400]"
                                 />
-                                <Navigate path="/" className="hover:underline text-brand-primary">
+                                <Navigate path="/traveler-register" className="hover:underline text-brand-primary">
                                     <Title 
                                         title="Register now"
                                         size="text-[14px]"

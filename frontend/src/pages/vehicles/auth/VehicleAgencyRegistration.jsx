@@ -1,4 +1,5 @@
-import { useCallback, useState } from "react";
+import { useCallback, useState, useEffect } from "react";
+import { getAuth } from 'firebase/auth';
 import Main from "../../../components/Main";
 import Title from "../../../components/Title";
 import InputField from "../../../components/InputField";
@@ -6,11 +7,14 @@ import InputArea from "../../../components/InputArea";
 import ImageUploader from "../../../components/ImageUploader";
 import PrimaryButton from "../../../components/PrimaryButton";
 import Breadcrumb from "../../../components/Breadcrumb";
-import { handleSelect, postRequest } from "../../../core/service";
+import { handleSelect } from "../../../core/service";
 import { formValidator } from "../../../core/validation";
 import { showToastMessage } from "../../../utils/toastHelper";
 import { navigateTo } from "../../../core/navigateHelper";
 import Spinner from '../../../components/Spinner';
+import { registerVehicleAgency } from '../../../api/vehicleAgencyService';
+import { getUserByDocId } from '../../../api/userService';
+import { app } from '../../../config/firebase';
 
 const breadcrumbItems = [
     { label: "Vehicle Agency Choose", path: "/choose-vehicle-agency" },
@@ -18,33 +22,76 @@ const breadcrumbItems = [
 ];
 
 export default function VehicleAgencyRegistration() {
+    const auth = getAuth(app);
     const [agencyImages, setAgencyImages] = useState([]);
     const [licenseImage, setLicenseImage] = useState([]);
     const [agencyImagesError, setAgencyImagesError] = useState('');
     const [licenseError, setLicenseError] = useState('');
     const [loading, setLoading] = useState(false);
+    const [userEmail, setUserEmail] = useState('');
     const [formData, setFormData] = useState({
-        name: '',
+        agencyName: '',
         street: '',
         city: '',
         district: '',
         province: '',
         registrationNo: '',
         licensePhoto: [],
-        images: [],
         description: '',
-        createdAt: '',
+        userDocId: '', // Firebase UID
     });
     const [error, setError] = useState({});
+
+    // Fetch user email on component mount
+    useEffect(() => {
+        const fetchUserData = async () => {
+            try {
+                const currentUser = auth.currentUser;
+                if (!currentUser) {
+                    showToastMessage('error', 'Please login to register a vehicle agency');
+                    navigateTo('/login');
+                    return;
+                }
+
+                // Get user data to display email
+                const userData = await getUserByDocId(currentUser.uid);
+                if (userData && userData.email) {
+                    setUserEmail(userData.email);
+                }
+
+                // Set user doc ID in form data
+                setFormData(prev => ({
+                    ...prev,
+                    userDocId: currentUser.uid
+                }));
+            } catch (error) {
+                console.error('Error fetching user data:', error);
+                showToastMessage('error', 'Failed to load user information');
+            }
+        };
+
+        fetchUserData();
+    }, [auth]);
 
     const handleSubmit = useCallback(async (e) => {
         try {
             e.preventDefault();
             setLoading(true);
+
+            // Check authentication
+            const currentUser = auth.currentUser;
+            if (!currentUser) {
+                showToastMessage('error', 'Please login to register a vehicle agency');
+                navigateTo('/login');
+                setLoading(false);
+                return;
+            }
+
             const submissionData = {
                 ...formData,
                 licensePhoto: licenseImage,
-                images: agencyImages
+                images: agencyImages,
+                userDocId: currentUser.uid
             };
 
             const customValidations = {
@@ -68,16 +115,24 @@ export default function VehicleAgencyRegistration() {
                 setLoading(false);
                 return;
             }
-            // Call your API
-            await postRequest("/api/vehicleAgencies/register", submissionData);
-            showToastMessage('success', 'Vehicle agency registration submitted successfully!');
+
+            // Call backend API
+            await registerVehicleAgency(submissionData);
+            showToastMessage('success', 'Vehicle agency registration submitted successfully! Awaiting admin approval.');
             navigateTo('/vehicle-agency-pending');
         } catch (error) {
-            console.error(error);
+            console.error('Registration error:', error);
+            if (error.status === 400) {
+                showToastMessage('error', 'Invalid registration data. Please check all fields.');
+            } else if (error.status === 409) {
+                showToastMessage('error', 'A vehicle agency is already registered with this account.');
+            } else {
+                showToastMessage('error', 'Failed to register vehicle agency. Please try again.');
+            }
         } finally {
             setLoading(false);
         }
-    }, [formData, licenseImage, agencyImages, agencyImagesError.length, licenseError.length]);
+    }, [formData, licenseImage, agencyImages, agencyImagesError.length, licenseError.length, auth]);
 
     return (
         <Main>
@@ -109,11 +164,11 @@ export default function VehicleAgencyRegistration() {
                             <InputField
                                 label='Agency Name'
                                 type='text'
-                                name='name'
-                                value={formData.name}
-                                onChange={e => handleSelect(setFormData, 'name', e.target.value)}
-                                placeholder=''
-                                error={error?.errors?.name}
+                                name='agencyName'
+                                value={formData.agencyName}
+                                onChange={e => handleSelect(setFormData, 'agencyName', e.target.value)}
+                                placeholder='Enter your agency name'
+                                error={error?.errors?.agencyName}
                             />
                         </div>
                         <div className="w-1/2">
@@ -176,6 +231,21 @@ export default function VehicleAgencyRegistration() {
                             />
                         </div>
                     </div>
+
+                    {/* Email Display (Read-only from User Table) */}
+                    <div className="w-1/2 mt-4">
+                        <InputField
+                            label='Contact Email'
+                            type='email'
+                            name='email'
+                            value={userEmail}
+                            disabled={true}
+                            placeholder='Loading...'
+                        />
+                        <p className="text-xs text-gray-500 mt-1">
+                            This email is from your account. To change it, please update your account settings.
+                        </p>
+                    </div>
                     
                 </div>
 
@@ -193,6 +263,9 @@ export default function VehicleAgencyRegistration() {
                             error={error?.errors?.licensePhoto || licenseError}
                             setError={setLicenseError}
                         />
+                        <p className="text-xs text-gray-500 mt-1">
+                            Upload a clear photo of your business registration license (Required: 1 image)
+                        </p>
                     </div>
                     
                     {/* Agency Images */}
@@ -205,6 +278,9 @@ export default function VehicleAgencyRegistration() {
                             error={error?.errors?.images || agencyImagesError}
                             setError={setAgencyImagesError}
                         />
+                        <p className="text-xs text-gray-500 mt-1">
+                            Upload photos of your agency office, facilities, and vehicles (Minimum: 1 image)
+                        </p>
                     </div>
 
                     {/* Description */}
@@ -213,9 +289,8 @@ export default function VehicleAgencyRegistration() {
                             label='Description'
                             value={formData.description}
                             onChange={e => handleSelect(setFormData, 'description', e.target.value)}
-                            placeholder=''
+                            placeholder='Provide details about your vehicle agency, services offered, fleet size, etc.'
                             error={error?.errors?.description}
-                            warningHeading={'Important Note: Customize the **Heading** Text Here'}
                         />
                     </div>
 

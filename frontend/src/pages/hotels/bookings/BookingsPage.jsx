@@ -1,4 +1,6 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import { getAuth } from 'firebase/auth';
 import { 
   FaCalendarAlt, 
   FaHotel, 
@@ -7,9 +9,17 @@ import {
   FaSearch,
   FaUser,
   FaPhone,
-  FaEnvelope
+  FaEnvelope,
+  FaExclamationCircle,
+  FaExclamationTriangle,
+  FaBed
 } from 'react-icons/fa';
 import HotelLayout from '../../../components/hotel/HotelLayout';
+import { getHotelByUserDocId, getHotelById } from '../../../api/hotelService';
+import { getRoomsByHotelId } from '../../../api/roomService';
+import { showToastMessage } from '../../../utils/toastHelper';
+import { app } from '../../../config/firebase';
+import Spinner from '../../../components/Spinner';
 
 function StatusBadge({ status }) {
   const statusColors = {
@@ -179,15 +189,13 @@ function BookingCard({ booking }) {
 }
 
 export default function BookingsPage() {
-  const branches = [
-    "Cinnamon Grand Colombo",
-    "Cinnamon Red Colombo",
-    "Cinnamon Lakeside",
-    "Cinnamon Wild Yala",
-    "Cinnamon Bentota Beach",
-    "Trinco Blu by Cinnamon"
-  ];
-
+  const { hotelId } = useParams();
+  const navigate = useNavigate();
+  const auth = getAuth(app);
+  const [hotelData, setHotelData] = useState(null);
+  const [rooms, setRooms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
   const [filters, setFilters] = useState({
     checkInDate: '',
     checkOutDate: '',
@@ -196,59 +204,91 @@ export default function BookingsPage() {
     search: ''
   });
 
-  // Sample bookings data - replace with API call
-  const bookings = [
-    {
-      bookingId: "BK001",
-      guestName: "John Smith",
-      branch: "Cinnamon Grand Colombo",
-      checkIn: "2025-07-25",
-      checkOut: "2025-07-28",
-      totalAmount: "135,000",
-      paymentStatus: "Paid",
-      roomType: "Deluxe Room",
-      guests: "2 Adults",
-      contact: "+94 77 123 4567",
-      email: "john.smith@email.com"
-    },
-    {
-      bookingId: "BK002",
-      guestName: "Sarah Wilson",
-      branch: "Cinnamon Red Colombo",
-      checkIn: "2025-07-22",
-      checkOut: "2025-07-24",
-      totalAmount: "50,000",
-      paymentStatus: "Pending",
-      roomType: "Standard Room",
-      guests: "2 Adults, 1 Child",
-      contact: "+94 76 234 5678",
-      email: "sarah.w@email.com"
-    },
-    {
-      bookingId: "BK003",
-      guestName: "David Brown",
-      branch: "Cinnamon Lakeside",
-      checkIn: "2025-07-21",
-      checkOut: "2025-07-23",
-      totalAmount: "70,000",
-      paymentStatus: "Cancelled",
-      roomType: "Executive Suite",
-      guests: "2 Adults",
-      contact: "+94 75 345 6789",
-      email: "david.b@email.com"
-    }
-  ];
+  // Fetch hotel and room data
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const currentUser = auth.currentUser;
+        
+        if (!currentUser) {
+          showToastMessage('error', 'Please login to access bookings');
+          navigate('/partner-login/step-1');
+          return;
+        }
 
-  // Calculate summary statistics
+        let hotel;
+        
+        if (hotelId) {
+          hotel = await getHotelById(hotelId);
+        } else {
+          hotel = await getHotelByUserDocId(currentUser.uid);
+        }
+
+        if (hotel) {
+          setHotelData(hotel);
+          
+          // Update URL with hotel ID if not present
+          if (!hotelId && hotel.id) {
+            navigate(`/hotel/bookings/${hotel.id}`, { replace: true });
+          }
+
+          // Fetch rooms for this hotel
+          try {
+            const hotelRooms = await getRoomsByHotelId(hotel.id);
+            setRooms(hotelRooms || []);
+          } catch (roomError) {
+            console.error('Error fetching rooms:', roomError);
+          }
+        } else {
+          showToastMessage('error', 'No hotel found for your account');
+          navigate('/hotel-registration');
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        showToastMessage('error', 'Failed to load booking information');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [hotelId, auth, navigate]);
+
+  if (loading) {
+    return <Spinner />;
+  }
+
+  if (!hotelData) {
+    return (
+      <HotelLayout>
+        <div className="flex items-center justify-center h-96">
+          <p className="text-content-secondary">No hotel data available</p>
+        </div>
+      </HotelLayout>
+    );
+  }
+
+  // Sample bookings data - This will be replaced with actual API call when booking system is implemented
+  const bookings = [];
+
+  // Get available rooms to show as bookable inventory
+  const availableRooms = rooms.filter(room => room.availability === true);
+  const occupiedRooms = rooms.filter(room => room.availability === false);
+
+  // Calculate summary statistics based on room data
   const stats = {
-    totalBookings: bookings.length,
-    totalRevenue: bookings
-      .filter(b => b.paymentStatus === 'Paid')
-      .reduce((sum, b) => sum + parseInt(b.totalAmount.replace(/,/g, '')), 0)
-      .toLocaleString(),
-    pendingPayments: bookings.filter(b => b.paymentStatus === 'Pending').length,
-    cancelledBookings: bookings.filter(b => b.paymentStatus === 'Cancelled').length
+    totalBookings: occupiedRooms.length, // Currently occupied rooms as "active bookings"
+    totalRevenue: rooms
+      .filter(r => !r.availability) // Occupied rooms
+      .reduce((sum, r) => sum + (r.pricePerNight || 0), 0)
+      .toLocaleString('en-LK', { minimumFractionDigits: 2 }),
+    pendingPayments: 0, // Will be implemented with booking system
+    cancelledBookings: 0 // Will be implemented with booking system
   };
+
+  // Branches array - for now just the current hotel
+  const branches = hotelData ? [hotelData.hotelName] : [];
 
   return (
     <HotelLayout 
@@ -289,12 +329,108 @@ export default function BookingsPage() {
           branches={branches}
         />
 
-        {/* Bookings List */}
-        <div className="space-y-6">
-          {bookings.map((booking, index) => (
-            <BookingCard key={index} booking={booking} />
-          ))}
+        {/* Booking System Status Banner */}
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-6 mb-6">
+          <div className="flex items-start gap-3">
+            <FaExclamationTriangle className="text-yellow-600 text-xl mt-1" />
+            <div>
+              <h3 className="font-semibold text-yellow-900 mb-2">Booking System Coming Soon</h3>
+              <p className="text-yellow-800 text-sm mb-3">
+                The booking management system is currently under development. Below you can see your room inventory status.
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div className="bg-white rounded-lg p-4 border border-yellow-100">
+                  <p className="text-sm text-gray-600 mb-1">Total Rooms</p>
+                  <p className="text-2xl font-bold text-gray-900">{rooms.length}</p>
+                </div>
+                <div className="bg-white rounded-lg p-4 border border-yellow-100">
+                  <p className="text-sm text-gray-600 mb-1">Currently Occupied</p>
+                  <p className="text-2xl font-bold text-orange-600">{occupiedRooms.length}</p>
+                </div>
+                <div className="bg-white rounded-lg p-4 border border-yellow-100">
+                  <p className="text-sm text-gray-600 mb-1">Available Now</p>
+                  <p className="text-2xl font-bold text-green-600">{availableRooms.length}</p>
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
+
+        {/* Room Inventory Display */}
+        {rooms.length > 0 ? (
+          <div className="space-y-6">
+            <h3 className="text-lg font-semibold text-gray-900">Room Inventory</h3>
+            {rooms.map((room, index) => (
+              <div key={room.id || index} className="bg-white rounded-lg border p-6 shadow-sm">
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <div className="flex items-center gap-3">
+                      <h4 className="text-xl font-semibold text-gray-900">{room.roomType}</h4>
+                      <span className={`px-3 py-1 rounded-full text-sm font-medium ${
+                        room.availability 
+                          ? 'bg-green-100 text-green-700' 
+                          : 'bg-orange-100 text-orange-700'
+                      }`}>
+                        {room.availability ? 'Available' : 'Occupied'}
+                      </span>
+                    </div>
+                    <p className="text-gray-600 mt-2">{room.description}</p>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl font-bold text-brand-primary">
+                      Rs. {room.pricePerNight?.toLocaleString('en-LK')}
+                    </p>
+                    <p className="text-sm text-gray-500">per night</p>
+                  </div>
+                </div>
+                
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 pt-4 border-t">
+                  <div>
+                    <p className="text-sm text-gray-500">Max Guests</p>
+                    <p className="font-medium">{room.maxGuests} persons</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Bed Type</p>
+                    <p className="font-medium">{room.bedTypes}</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Amenities</p>
+                    <p className="font-medium">{room.amenities?.length || 0} available</p>
+                  </div>
+                  <div>
+                    <p className="text-sm text-gray-500">Room ID</p>
+                    <p className="font-medium">#{room.id}</p>
+                  </div>
+                </div>
+
+                {room.amenities && room.amenities.length > 0 && (
+                  <div className="mt-4 pt-4 border-t">
+                    <p className="text-sm text-gray-500 mb-2">Room Amenities:</p>
+                    <div className="flex flex-wrap gap-2">
+                      {room.amenities.map((amenity, idx) => (
+                        <span key={idx} className="px-3 py-1 bg-gray-100 text-gray-700 rounded-full text-sm">
+                          {amenity}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center py-12 bg-gray-50 rounded-lg">
+            <FaBed className="text-gray-400 text-5xl mx-auto mb-4" />
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">No Rooms Found</h3>
+            <p className="text-gray-600 mb-4">Add rooms to your hotel to start managing bookings.</p>
+            <button
+              onClick={() => navigate(`/hotel/rooms/${hotelData.id}`)}
+              className="px-6 py-2 bg-brand-primary text-white rounded-lg hover:bg-brand-secondary transition-colors"
+            >
+              Add Rooms
+            </button>
+          </div>
+        )}
 
         {/* Pagination */}
         <div className="mt-6 flex justify-center">

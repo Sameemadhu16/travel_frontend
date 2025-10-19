@@ -143,7 +143,7 @@ export default function Header() {
                             </h2>
                             <SecondaryButton
                                 text="Get Started"
-                                onClick={() => navigateTo('/partner-register/step-1')}
+                                onClick={() => navigateTo('/traveler-register')}
                                 className="px-4 py-2"
                             />
                         </div>
