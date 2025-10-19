@@ -191,6 +191,31 @@ export default function Trips() {
         return date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' });
     };
     
+    const formatDateTime = (dateTimeString) => {
+        if (!dateTimeString) return 'N/A';
+        const date = new Date(dateTimeString);
+        return date.toLocaleString('en-US', { 
+            year: 'numeric', 
+            month: 'short', 
+            day: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    };
+    
+    const getTimeAgo = (dateTimeString) => {
+        if (!dateTimeString) return '';
+        const date = new Date(dateTimeString);
+        const now = new Date();
+        const seconds = Math.floor((now - date) / 1000);
+        
+        if (seconds < 60) return 'Just now';
+        if (seconds < 3600) return `${Math.floor(seconds / 60)} minutes ago`;
+        if (seconds < 86400) return `${Math.floor(seconds / 3600)} hours ago`;
+        if (seconds < 604800) return `${Math.floor(seconds / 86400)} days ago`;
+        return formatDateTime(dateTimeString);
+    };
+    
     const toggleTripExpansion = (tripId) => {
         setExpandedTrips(prev => ({
             ...prev,
@@ -256,9 +281,14 @@ export default function Trips() {
                                 {/* Trip Header */}
                                 <div className="bg-gradient-to-r from-brand-primary to-brand-secondary p-6 text-white">
                                     <div className="flex justify-between items-start">
-                                        <div>
+                                        <div className="flex-1">
                                             <h3 className="text-xl font-bold mb-2">{trip.destination || 'Trip Destination'}</h3>
                                             <p className="text-sm opacity-90">Trip Code: {trip.tripCode}</p>
+                                            {trip.createdAt && (
+                                                <p className="text-xs opacity-75 mt-1">
+                                                    Created: {getTimeAgo(trip.createdAt)}
+                                                </p>
+                                            )}
                                         </div>
                                         <div className="text-right">
                                             <div className="text-sm opacity-90 mb-1">Status</div>
