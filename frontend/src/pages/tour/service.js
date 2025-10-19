@@ -13,6 +13,15 @@ export function createTripRequest(formData, userId) {
         agreedToTerms,
     } = formData;
 
+    // Debug logging to see what we're working with
+    console.log('=== CREATE TRIP REQUEST DEBUG ===');
+    console.log('selectedItems:', selectedItems);
+    console.log('selectedItems.selectedVehicle:', selectedItems?.selectedVehicle);
+    console.log('selectedItems.guides:', selectedItems?.guides);
+    console.log('selectedItems.nightHotels:', selectedItems?.nightHotels);
+    console.log('selectedItems.nightRooms:', selectedItems?.nightRooms);
+    console.log('=================================');
+
     // Extract guide IDs from selected guides
     const selectedGuideIds = (selectedItems?.guides || []).map(guide => guide.id).filter(Boolean);
     
@@ -45,7 +54,7 @@ export function createTripRequest(formData, userId) {
         return time;
     };
 
-    return {
+    const tripRequest = {
         // Trip code and user
         tripCode: generateTripCode(),
         user: { id: userId },
@@ -70,21 +79,24 @@ export function createTripRequest(formData, userId) {
         // Trip status
         tripStatus: "pending",
         
-        // Selected vehicle - FIX to handle actual structure
-        selectedVehicleAgency: selectedItems?.selectedVehicle?.agency?.id
-            ? { id: selectedItems.selectedVehicle.agency.id }
-            : null,
+        // Selected vehicle - Extract agency ID properly
+        selectedVehicleAgency: selectedItems?.selectedVehicle?.vehicleAgency?.id
+            ? { id: selectedItems.selectedVehicle.vehicleAgency.id }
+            : (selectedItems?.selectedVehicle?.agency?.id
+                ? { id: selectedItems.selectedVehicle.agency.id }
+                : null),
         selectedVehicle: selectedItems?.selectedVehicle?.id
-            ? { 
-                id: selectedItems.selectedVehicle.id,
-                isVerified: selectedItems.selectedVehicle.isVerified ?? false 
-              }
+            ? { id: selectedItems.selectedVehicle.id }
             : null,
         
-        // Selected hotel (legacy - first hotel)
-        selectedHotel: selectedHotelIds.length > 0 || selectedNightHotelIds.length > 0
-            ? { id: selectedNightHotelIds[0] || selectedHotelIds[0] }
+        // Selected guide (single guide for the main relationship)
+        selectedGuid: selectedGuideIds.length > 0
+            ? { id: selectedGuideIds[0] }
             : null,
+        
+        // Selected hotels (as list of hotel objects with IDs)
+        selectedHotels: (selectedNightHotelIds.length > 0 ? selectedNightHotelIds : selectedHotelIds)
+            .map(hotelId => ({ id: hotelId })),
         
         // Selected rooms
         selectedRooms: (selectedRoomIds.length > 0 ? selectedRoomIds : selectedNightRoomIds)
@@ -133,6 +145,19 @@ export function createTripRequest(formData, userId) {
         // Terms agreement
         agreedToTerms: agreedToTerms || false,
     };
+
+    // Final debug log of the complete trip request
+    console.log('=== FINAL TRIP REQUEST ===');
+    console.log('selectedVehicle:', tripRequest.selectedVehicle);
+    console.log('selectedVehicleAgency:', tripRequest.selectedVehicleAgency);
+    console.log('selectedGuid:', tripRequest.selectedGuid);
+    console.log('selectedGuideIds:', tripRequest.selectedGuideIds);
+    console.log('selectedHotels:', tripRequest.selectedHotels);
+    console.log('selectedHotelIds:', tripRequest.selectedHotelIds);
+    console.log('selectedRooms:', tripRequest.selectedRooms);
+    console.log('==========================');
+
+    return tripRequest;
 }
 
 /**
