@@ -874,7 +874,7 @@ export default function HotelDashboard() {
                     View full schedule
                   </div>
                 </div>
-              </div>
+              )}
             </div>
           </div>
         </div>

@@ -1,18 +1,20 @@
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { hotelList } from '../../../core/Lists/hotels';
 import { useEffect, useMemo, useState, useContext } from 'react';
 import Main from '../../../components/Main';
 import Title from '../../../components/Title';
 import Breadcrumb from '../../../components/Breadcrumb';
-import { roomList } from '../../../core/Lists/rooms';
 import RoomCard from './components/RoomCard';
 import FormatText from '../../../components/FormatText';
 import Border from '../../../components/Border';
 import FormContext from '../../../context/InitialValues';
+import { getHotelById } from '../../../api/tourService';
+import Spinner from '../../../components/Spinner';
 
 export default function Hotel() {
     const [hotel, setHotel] = useState({});
     const [rooms, setRooms] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const { id } = useParams();
     const location = useLocation();
     const navigate = useNavigate();

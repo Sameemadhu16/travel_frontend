@@ -4,6 +4,7 @@ import Search from '../pages/hotels/search/Search';
 import Hotel from '../pages/hotels/Details/Hotel';
 import HotelRegistration from '../pages/hotels/auth/HotelRegistration';
 import RoomsAdd from '../pages/hotels/Rooms/RoomsAdd';
+import RoomEdit from '../pages/hotels/Rooms/RoomEdit';
 import Home from '../pages/home/Home';
 import Details from '../pages/partner/details/Details';
 import SearchVehicles from '../pages/vehicles/search/SearchVehicles';
@@ -36,6 +37,7 @@ import GuideComplaints from '../pages/guide/GuideComplaints';
 import CompleteRequest from '../pages/tour/completeRequest';
 import RequestSent from '../pages/tour/requestSent';
 import Payment from '../pages/tour/payment';
+import PaymentSuccess from '../pages/tour/paymentSuccess';
 import DestinationPage from '../pages/destinations/DestinationPage';
 import GuideNotifications from '../pages/guide/Notifications';
 import GuideReviews from '../pages/guide/Reviews';
@@ -112,6 +114,8 @@ import PaymentsPage from '../pages/hotels/payments/PaymentsPage';
 import BasicInfoStep from '../pages/AI-Trip-Create/BasicInfoStep';
 import PreferenceInfoStep from '../pages/AI-Trip-Create/PreferenceInfoStep';
 import AIGenerationStep from '../pages/AI-Trip-Create/AIGenerationStep';
+import Trips from '../pages/trips/Trips';
+import GuideEarnings from '../pages/guide/GuideEarnings';
 // import { Users } from 'lucide-react';
 
 export default function AppRoutes() {
@@ -178,18 +182,22 @@ export default function AppRoutes() {
             <Route path='/guide-notifications' element={<GuideNotifications />} />
             <Route path='/guide-reviews' element={<GuideReviews />} />
             <Route path='/guide-availability' element={<GuideAvailability />} />
+            <Route path='/earnings' element={<GuideEarnings />} />
+            <Route path='/guide-tour-history' element={<GuideTourHistory />} />
 
             {/* Authentication-based conditional routes */}
             {isAuthenticated ? (
                 <>
                     {/* Protected routes for authenticated users */}
                     <Route path='/chat-bot' element={<ChatBot />} />
+                    <Route path='/trips' element={<Trips />} />
                     <Route path='/hotel-registration' element={<HotelRegistration />} />
                     <Route path='/hotel-pending' element={<HotelPending />} />
                     <Route path='/guide-registration' element={<GuideRegister />} />
                     <Route path='/guide-pending' element={<GuidePending />} />
                     <Route path='/vehicle-agency-pending' element={<VehicleAgencyPending />} />
                     <Route path='/rooms-add' element={<RoomsAdd />} />
+                    <Route path='/rooms-edit/:roomId' element={<RoomEdit />} />
                     <Route path='/partner-details' element={<Details />} />
                     <Route path='/choose-property' element={<ChooseProperty />} />
                     <Route path='/vehicle-registration' element={<VehicleRegistration />} />
@@ -220,12 +228,18 @@ export default function AppRoutes() {
                     <Route path='/admin/vehicle-agency-review' element={<AdminVehicleAgencyReview />} />
 
                     {/* Hotel Dashboard routes */}
+                    <Route path='/hotel/dashboard/:hotelId' element={<HotelDashboard />} />
                     <Route path='/hotel/dashboard' element={<HotelDashboard />} />
+                    <Route path='/hotel/listings/:hotelId' element={<HotelListings />} />
                     <Route path='/hotel/listings' element={<HotelListings />} />
+                    <Route path='/hotel/rooms/:hotelId' element={<RoomTypes />} />
                     <Route path='/hotel/rooms' element={<RoomTypes />} />
+                    <Route path='/hotel/bookings/:hotelId' element={<BookingsPage />} />
                     <Route path='/hotel/bookings' element={<BookingsPage />} />
                     <Route path='/hotel/payments' element={<PaymentsPage />} />
+                    <Route path='/hotel/reviews/:hotelId' element={<HotelReviews />} />
                     <Route path='/hotel/reviews' element={<HotelReviews />} />
+                    <Route path='/hotel/reports/:hotelId' element={<HotelReports />} />
                     <Route path='/hotel/reports' element={<HotelReports />} />
                     <Route path='/hotel/analytics' element={<HotelReports />} />
                     <Route path='/hotel/settings' element={<HotelSettings />} />
@@ -303,6 +317,7 @@ export default function AppRoutes() {
                                     <Route path="complete-request" element={<CompleteRequest/>}/>
                                     <Route path="request-sent" element={<RequestSent />} />
                                     <Route path="payment" element={<Payment/>} />
+                                    <Route path="payment-success" element={<PaymentSuccess/>} />
                                 </Routes>
                             </FormProvider>
                         }

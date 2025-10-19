@@ -25,6 +25,9 @@ import {
 } from 'react-icons/fa';
 import HotelLayout from '../../../components/hotel/HotelLayout';
 import ImageUploader from '../../../components/ImageUploader';
+import { getHotelByUserDocId, updateHotel } from '../../../api/hotelService';
+import { getUserByDocId } from '../../../api/userService';
+import { showToastMessage } from '../../../utils/toastHelper';
 
 // Enhanced Statistics Card Component (matching dashboard style)
 function EnhancedStatsCard({ icon, title, value, change, changeType, subtitle, bgColor }) {
@@ -198,7 +201,8 @@ export default function HotelSettings() {
     }
   };
 
-  const [hotelInfo, setHotelInfo] = useState(branchSettings[selectedBranch]);
+    fetchHotelData();
+  }, [auth, navigate]);
 
   const handleInfoChange = (field, value) => {
     setHotelInfo(prev => ({
@@ -207,15 +211,83 @@ export default function HotelSettings() {
     }));
   };
 
-  const handleSave = () => {
-    // Update the branch settings
-    branchSettings[selectedBranch] = hotelInfo;
-    console.log('Saving hotel settings for branch:', selectedBranch, hotelInfo);
-    
-    // TODO: Send to backend API
-    // Show success message
-    alert('Settings saved successfully for ' + selectedBranch);
+  const handleSave = async () => {
+    try {
+      // Validate required fields
+      if (!hotelInfo.hotelName || !hotelInfo.street || !hotelInfo.city) {
+        showToastMessage('error', 'Please fill in all required fields');
+        return;
+      }
+
+      // Check authentication
+      const currentUser = auth.currentUser;
+      if (!currentUser) {
+        showToastMessage('error', 'Please login to save settings');
+        navigate('/partner-login/step-1');
+        return;
+      }
+
+      setSaving(true);
+
+      // Prepare data for update (email is excluded as it comes from user table)
+      const updateData = {
+        hotelName: hotelInfo.hotelName,
+        phone: hotelInfo.phone,
+        street: hotelInfo.street,
+        city: hotelInfo.city,
+        district: hotelInfo.district,
+        province: hotelInfo.province,
+        registrationNo: hotelInfo.registrationNo,
+        type: hotelInfo.type,
+        description: hotelInfo.description,
+        pricePerNight: hotelInfo.pricePerNight ? Number(hotelInfo.pricePerNight) : null,
+        amenities: hotelInfo.amenities,
+        images: hotelImages,
+        checkInTime: hotelInfo.checkInTime,
+        checkOutTime: hotelInfo.checkOutTime
+      };
+
+      // Call API to update hotel
+      await updateHotel(hotelId, updateData);
+      
+      showToastMessage('success', 'Hotel settings saved successfully!');
+      
+    } catch (error) {
+      console.error('Error saving hotel settings:', error);
+      
+      if (error.response) {
+        const status = error.response.status;
+        if (status === 401) {
+          showToastMessage('error', 'Authentication failed. Please login again.');
+          navigate('/partner-login/step-1');
+        } else if (status === 403) {
+          showToastMessage('error', 'You don\'t have permission to update this hotel');
+        } else if (status === 404) {
+          showToastMessage('error', 'Hotel not found');
+        } else {
+          showToastMessage('error', error.response.data || 'Failed to save settings');
+        }
+      } else {
+        showToastMessage('error', 'Failed to save settings. Please check your connection.');
+      }
+    } finally {
+      setSaving(false);
+    }
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <HotelLayout>
+        <div className="p-6 flex items-center justify-center min-h-screen">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mx-auto"></div>
+            <p className="mt-4 text-content-secondary">Loading hotel settings...</p>
+          </div>
+        </div>
+      </HotelLayout>
+    );
+  }
 
   return (
     <HotelLayout>
@@ -340,7 +412,7 @@ export default function HotelSettings() {
                 <div>
                   <label className="block text-sm font-medium mb-2 text-gray-700">Property Name</label>
                   <div className="relative">
-                    <FaUser className="absolute left-3 top-3 text-gray-400" />
+                    <FaBuilding className="absolute left-3 top-3 text-gray-400" />
                     <input
                       type="text"
                       value={hotelInfo.name}
@@ -407,6 +479,29 @@ export default function HotelSettings() {
                       placeholder="www.ceylonheritage.com"
                     />
                   </div>
+
+                  <div>
+                    <label className="block text-sm font-medium mb-2">Province</label>
+                    <input
+                      type="text"
+                      value={hotelInfo.province}
+                      onChange={(e) => handleInfoChange('province', e.target.value)}
+                      className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+                      placeholder="Enter province"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium mb-2">Price Per Night (LKR)</label>
+                  <input
+                    type="number"
+                    value={hotelInfo.pricePerNight}
+                    onChange={(e) => handleInfoChange('pricePerNight', e.target.value)}
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+                    placeholder="Enter price per night"
+                    min="0"
+                  />
                 </div>
               </div>
             </div>

@@ -806,6 +806,9 @@ export default function BookingsPage() {
     setTimeout(() => setShowSuccessMessage(false), 5000);
   };
 
+  // Branches array - for now just the current hotel
+  const branches = hotelData ? [hotelData.hotelName] : [];
+
   return (
     <HotelLayout>
       <div className="p-6">

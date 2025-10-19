@@ -12,13 +12,13 @@ import {
     vehiclePropertyTypes,
     vehicleFilterOptions
 } from '../../../core/constant';
-import { vehicleList } from '../../../core/Lists/vehicles';
 import CustomSelector from '../../../components/CustomSelector';
 import CheckboxGroup from '../../hotels/components/CheckboxGroup';
-import { useContext, useMemo, useState } from 'react';
+import { useContext, useMemo, useState, useEffect } from 'react';
 import VehicleCard from '../components/VehicleCard.jsx';
 import FormContext from '../../../context/InitialValues.js';
 import { calculateCompleteTripCost, getDaysFromDuration } from '../../../utils/tripCalculator.js';
+import { getAllVehicles } from '../../../api/tourService';
 
 const breadcrumbItems = [
     { label: "Home", path: "/home" },
@@ -29,8 +29,9 @@ const breadcrumbItems = [
 export default function SearchVehicles() {
     const location = useLocation();
     const { formData } = useContext(FormContext);
-    const [loading] = useState(false);
-    const [error] = useState(null);
+    const [vehicleList, setVehicleList] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     const travelDetails = formData.travelDetails;
     const isTourSelectVehicle = location.pathname === '/tour/select-vehicle';
@@ -41,20 +42,101 @@ export default function SearchVehicles() {
     const [selectedFuelPolicies, setSelectedFuelPolicies] = useState([]);
     const [selectedInsuranceOptions, setSelectedInsuranceOptions] = useState([]);
     const [selectedPickupOptions, setSelectedPickupOptions] = useState([]);
+    const [searchTerm, setSearchTerm] = useState('');
 
-    // Filter vehicles based on travel details if available
+    // Fetch vehicles from backend API
+    useEffect(() => {
+        const fetchVehicles = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                console.log('🚗 Fetching vehicles from API...');
+                const vehicles = await getAllVehicles();
+                console.log('✅ Vehicles fetched successfully:', vehicles);
+                console.log('📊 Number of vehicles:', vehicles.length);
+                
+                // Map backend vehicle data to frontend format
+                const mappedVehicles = vehicles.map(vehicle => {
+                    // Transform images array from objects to strings
+                    const imageUrls = Array.isArray(vehicle.images) 
+                        ? vehicle.images.map(img => typeof img === 'string' ? img : img.imageUrl || img.url || '')
+                        : [];
+                    
+                    // Transform amenities array from objects to strings
+                    const amenityNames = Array.isArray(vehicle.amenities)
+                        ? vehicle.amenities.map(amenity => typeof amenity === 'string' ? amenity : amenity.amenityName || amenity.name || '')
+                        : [];
+                    
+                    return {
+                        id: String(vehicle.id), // Convert to string for PropTypes
+                        name: `${vehicle.vehicleModel}`,
+                        type: vehicle.vehicleType || 'Car',
+                        brand: vehicle.vehicleModel?.split(' ')[0] || 'Unknown',
+                        model: vehicle.vehicleModel || 'Unknown Model',
+                        pricePerDay: vehicle.basePrice || 0,
+                        pricePerKm: parseFloat(vehicle.pricePerKilometer) || 0,
+                        images: imageUrls,
+                        amenities: amenityNames,
+                        seats: vehicle.capacity || 4,
+                        transmission: 'Automatic', // Default, can be added to model
+                        fuelType: 'Petrol', // Default, can be added to model
+                        rating: 4.5, // Default rating
+                        reviews: 0,
+                        rentalAgency: String(vehicle.agency?.agencyName || 'Unknown Agency'), // Ensure string
+                        location: vehicle.agency?.city || 'Sri Lanka',
+                        about: `${vehicle.vehicleModel} - ${vehicle.vehicleType}`,
+                        available: vehicle.availability !== false,
+                        isVerified: vehicle.isVerified || false,
+                        registrationNo: vehicle.registrationNo,
+                        vehicleNo: vehicle.vehicleNo,
+                        insuranceNumber: vehicle.insuranceNumber,
+                        insuranceExpiryDate: vehicle.insuranceExpiryDate,
+                        agency: vehicle.agency
+                    };
+                });
+                
+                console.log('📦 Mapped vehicles:', mappedVehicles);
+                setVehicleList(mappedVehicles);
+            } catch (error) {
+                console.error('❌ Error fetching vehicles:', error);
+                setError('Failed to load vehicles. Please try again later.');
+                setVehicleList([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchVehicles();
+    }, []);
+
+    // Filter vehicles based on travel details and search term
     const filteredVehicles = useMemo(() => {
-        if (!isTourSelectVehicle || !travelDetails?.adults) {
-            return vehicleList;
+        let filtered = [...vehicleList];
+
+        // Apply search filter
+        if (searchTerm) {
+            const search = searchTerm.trim().toLowerCase();
+            filtered = filtered.filter(vehicle => 
+                vehicle.name?.toLowerCase().includes(search) ||
+                vehicle.model?.toLowerCase().includes(search) ||
+                vehicle.brand?.toLowerCase().includes(search) ||
+                vehicle.type?.toLowerCase().includes(search) ||
+                vehicle.rentalAgency?.toLowerCase().includes(search) ||
+                vehicle.location?.toLowerCase().includes(search) ||
+                vehicle.about?.toLowerCase().includes(search)
+            );
         }
-        
-        const totalPassengers = (travelDetails.adults || 0) + (travelDetails.children || 0);
-        
-        // Filter vehicles by passenger capacity
-        return vehicleList.filter(vehicle => 
-            vehicle.seats >= totalPassengers
-        );
-    }, [isTourSelectVehicle, travelDetails?.adults, travelDetails?.children]);
+
+        // If in tour mode, filter by passenger capacity
+        if (isTourSelectVehicle && travelDetails?.adults) {
+            const totalPassengers = (travelDetails.adults || 0) + (travelDetails.children || 0);
+            filtered = filtered.filter(vehicle => 
+                vehicle.seats >= totalPassengers
+            );
+        }
+
+        return filtered;
+    }, [isTourSelectVehicle, travelDetails?.adults, travelDetails?.children, vehicleList, searchTerm]);
 
     const vehiclesContainer = useMemo(() => {
             return filteredVehicles.map((vehicle) => {
@@ -148,7 +230,38 @@ export default function SearchVehicles() {
                             </div>
                         </div>
 
-                        <div className='flex gap-2 mt-5'>
+                        {/* Search Bar */}
+                        <div className="mt-5 mb-4 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                            <div className="flex gap-4 items-end">
+                                <div className="flex-1">
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Search Vehicles
+                                    </label>
+                                    <input
+                                        type="text"
+                                        placeholder="Search by name, type, brand, agency, or location..."
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                        className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+                                    />
+                                </div>
+                                {searchTerm && (
+                                    <button
+                                        onClick={() => setSearchTerm('')}
+                                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition whitespace-nowrap"
+                                    >
+                                        Clear Search
+                                    </button>
+                                )}
+                            </div>
+                            {searchTerm && (
+                                <div className="mt-3 text-sm text-gray-600">
+                                    Showing {filteredVehicles.length} vehicles matching &quot;{searchTerm}&quot;
+                                </div>
+                            )}
+                        </div>
+
+                        <div className='flex gap-2'>
                             {/* for filter */}
                             <div className='w-1/4 h-full overflow-y-auto sticky top-[100px] scrollbar-hide'>
                                 <div className='flex flex-col gap-2 border rounded-[8px]'>
