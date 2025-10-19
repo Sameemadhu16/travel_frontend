@@ -114,6 +114,7 @@ import PaymentsPage from '../pages/hotels/payments/PaymentsPage';
 import BasicInfoStep from '../pages/AI-Trip-Create/BasicInfoStep';
 import PreferenceInfoStep from '../pages/AI-Trip-Create/PreferenceInfoStep';
 import AIGenerationStep from '../pages/AI-Trip-Create/AIGenerationStep';
+import GuideEarnings from '../pages/guide/GuideEarnings';
 // import { Users } from 'lucide-react';
 
 export default function AppRoutes() {
@@ -184,6 +185,8 @@ export default function AppRoutes() {
             <Route path='/guide-notifications' element={<GuideNotifications />} />
             <Route path='/guide-reviews' element={<GuideReviews />} />
             <Route path='/guide-availability' element={<GuideAvailability />} />
+            <Route path='/earnings' element={<GuideEarnings />} />
+            <Route path='/guide-tour-history' element={<GuideTourHistory />} />
 
             {/* Authentication-based conditional routes */}
             {isAuthenticated ? (
