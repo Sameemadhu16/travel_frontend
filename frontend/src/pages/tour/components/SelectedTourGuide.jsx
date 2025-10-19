@@ -7,8 +7,33 @@ export default function SelectedTourGuide() {
     const navigate = useNavigate();
 
     const selectedItems = formData.selectedItems;
-    const guides = selectedItems.guides || [];
-
+    let guides = selectedItems.guides || [];
+    
+    // Add dummy guide data from database
+    const dummyGuide = {
+        id: 1,
+        bio: "Passionate city guide specializing in Colombo's culture, history, and street food.",
+        created_at: "2025-10-06 10:48:45.942808",
+        experience_years: 5,
+        hours_rate: 25,
+        is_available: true,
+        is_verified: true,
+        nic_number: "200301602035",
+        slta_license_expiry: "2027-01-07 00:00:00",
+        slta_license_id: "SL-2045-8752",
+        user_id: 1,
+        // Additional display fields
+        name: "Colombo City Guide",
+        specialty: "Culture, History & Street Food",
+        rating: 4.8,
+        tours: 150,
+        image: '/src/assets/users/user1.jpg',
+        pricePerDay: 25 * 8 // hours_rate * 8 hours = 200 per day
+    };
+    
+    // Merge dummy guide with existing guides
+    guides = [...guides, dummyGuide];
+    
     const handleEdit = () => {
         navigate('/tour/select-guide');
     };
@@ -86,6 +111,15 @@ export default function SelectedTourGuide() {
                                     LKR {(guide.price || guide.pricePerDay || 8500).toLocaleString()}
                                 </p>
                                 <p className="text-sm text-content-secondary">per day</p>
+                                <button
+                                    onClick={() => navigate(`/user-chat/${guide.user_id || guide.id}`)}
+                                    className="mt-2 text-xs bg-brand-primary text-white px-3 py-1.5 rounded-lg hover:bg-brand-secondary transition flex items-center gap-1"
+                                >
+                                    <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                    </svg>
+                                    Chat
+                                </button>
                             </div>
                         </div>
                     ))}
