@@ -39,14 +39,14 @@ export default function Hotel() {
     useEffect(() => {
         const matchHotel = hotelList.find((hotel) => hotel.id.toString() === id);
         const matchRooms = roomList.filter((room) => room.hotelId.toString() === id);
-        setHotel(matchHotel);
-        setRooms(matchRooms);
+        setHotel(matchHotel || {});
+        setRooms(matchRooms || []);
     }, [id]);
 
     const breadcrumbItems = [
         { label: "Home", path: "/home" },
         { label: "Hotels", path: isTourSelectHotel ? "/tour/select-hotel" : "/hotels-search" },
-        { label: hotel.name || "Hotel", path: isTourSelectHotel ? `/tour/select-hotel/${id}` : `/hotel/${id}` },
+        { label: hotel?.name || "Hotel", path: isTourSelectHotel ? `/tour/select-hotel/${id}` : `/hotel/${id}` },
     ];
 
     const handleContinue = () => {
@@ -82,6 +82,17 @@ export default function Hotel() {
             />
         ));
     }, [hotel.amenities]);
+
+    // Show loading or return early if hotel data is not loaded yet
+    if (!hotel || Object.keys(hotel).length === 0) {
+        return (
+            <Main>
+                <div className="flex justify-center items-center h-64">
+                    <div className="text-lg text-gray-600">Loading hotel details...</div>
+                </div>
+            </Main>
+        );
+    }
 
     return (
         <Main>
@@ -142,10 +153,10 @@ export default function Hotel() {
             <div className='flex gap-2 mt-5'>
                 <div className='flex-1'>
                     <Title
-                        title={hotel.name || ''}
+                        title={hotel?.name || ''}
                     />
                     <Title
-                        title={hotel.location || ''}
+                        title={hotel?.location || ''}
                         color='text-brand-primary'
                     />
                     {selectedNightInfo && (
@@ -182,7 +193,7 @@ export default function Hotel() {
                         <div className='flex items-center gap-2 text-sm text-content-secondary'>
                             <span>Starting from</span>
                             <span className='text-lg font-bold text-brand-primary'>
-                                LKR {hotel.pricePerNight?.toLocaleString()} / night
+                                LKR {hotel?.pricePerNight?.toLocaleString() || '0'} / night
                             </span>
                         </div>
                         <div className='flex gap-2'>
@@ -200,7 +211,7 @@ export default function Hotel() {
                 { amenityList }
             </div>
             <div className='flex flex-wrap'>
-                <FormatText text={hotel.about}/>
+                <FormatText text={hotel?.about || ''}/>
             </div>
             <Border/>
             <div className='w-full mt-5'>
