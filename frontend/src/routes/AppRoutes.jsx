@@ -4,6 +4,7 @@ import Search from '../pages/hotels/search/Search';
 import Hotel from '../pages/hotels/Details/Hotel';
 import HotelRegistration from '../pages/hotels/auth/HotelRegistration';
 import RoomsAdd from '../pages/hotels/Rooms/RoomsAdd';
+import RoomEdit from '../pages/hotels/Rooms/RoomEdit';
 import Home from '../pages/home/Home';
 import Details from '../pages/partner/details/Details';
 import SearchVehicles from '../pages/vehicles/search/SearchVehicles';
@@ -195,6 +196,7 @@ export default function AppRoutes() {
                     <Route path='/guide-pending' element={<GuidePending />} />
                     <Route path='/vehicle-agency-pending' element={<VehicleAgencyPending />} />
                     <Route path='/rooms-add' element={<RoomsAdd />} />
+                    <Route path='/rooms-edit/:roomId' element={<RoomEdit />} />
                     <Route path='/partner-details' element={<Details />} />
                     <Route path='/choose-property' element={<ChooseProperty />} />
                     <Route path='/vehicle-registration' element={<VehicleRegistration />} />
@@ -225,14 +227,23 @@ export default function AppRoutes() {
                     <Route path='/admin/vehicle-agency-review' element={<AdminVehicleAgencyReview />} />
 
                     {/* Hotel Dashboard routes */}
+                    <Route path='/hotel/dashboard/:hotelId' element={<HotelDashboard />} />
                     <Route path='/hotel/dashboard' element={<HotelDashboard />} />
+                    <Route path='/hotel/listings/:hotelId' element={<HotelListings />} />
                     <Route path='/hotel/listings' element={<HotelListings />} />
+                    <Route path='/hotel/rooms/:hotelId' element={<RoomTypes />} />
                     <Route path='/hotel/rooms' element={<RoomTypes />} />
+                    <Route path='/hotel/bookings/:hotelId' element={<BookingsPage />} />
                     <Route path='/hotel/bookings' element={<BookingsPage />} />
+                    <Route path='/hotel/calendar/:hotelId' element={<HotelCalendar />} />
                     <Route path='/hotel/calendar' element={<HotelCalendar />} />
+                    <Route path='/hotel/payments/:hotelId' element={<PaymentsPage />} />
                     <Route path='/hotel/payments' element={<PaymentsPage />} />
+                    <Route path='/hotel/reviews/:hotelId' element={<HotelReviews />} />
                     <Route path='/hotel/reviews' element={<HotelReviews />} />
+                    <Route path='/hotel/reports/:hotelId' element={<HotelReports />} />
                     <Route path='/hotel/reports' element={<HotelReports />} />
+                    <Route path='/hotel/settings/:hotelId' element={<HotelSettings />} />
                     <Route path='/hotel/settings' element={<HotelSettings />} />
                     <Route path='/hotel/branch/:id' element={<HotelDetails />} />
 

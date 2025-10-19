@@ -1,6 +1,6 @@
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { getAuth } from "firebase/auth";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CustomSelector from "../../../components/CustomSelector";
 import Main from "../../../components/Main";
 import Title from "../../../components/Title";
@@ -12,28 +12,73 @@ import Checkbox from "../../../components/CheckBox";
 import ImageUploader from "../../../components/ImageUploader";
 import PrimaryButton from "../../../components/PrimaryButton";
 import InputArea from "../../../components/InputArea";
-import { createRoom } from "../../../api/roomService";
+import { getRoomById, updateRoom } from "../../../api/roomService";
 import { getHotelByUserDocId } from "../../../api/hotelService";
 import { showToastMessage } from "../../../utils/toastHelper";
 import { app } from "../../../config/firebase";
 
-export default function RoomsAdd() {
+export default function RoomEdit() {
+    const { roomId } = useParams();
     const [roomImages, setRoomImages] = useState([]);
     const [imageError, setImageError] = useState("");
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [loading, setLoading] = useState(true);
     const [formData, setFormData] = useState({
         roomType: "",       
         description: "",
         maxGuests: "",       
-        bedTypes: "",  // Changed from bedType to match backend field name            
+        bedTypes: "",            
         pricePerNight: "",    
         amenities: [],       
         images: [],
-        availability: true  // Default availability
+        availability: true
     });
     
     const navigate = useNavigate();
     const auth = getAuth(app);
+
+    // Fetch existing room data
+    useEffect(() => {
+        const fetchRoomData = async () => {
+            try {
+                setLoading(true);
+                const currentUser = auth.currentUser;
+
+                if (!currentUser) {
+                    showToastMessage("error", "Please login to edit rooms");
+                    navigate("/partner-login/step-1");
+                    return;
+                }
+
+                // Fetch the room data
+                const roomData = await getRoomById(roomId);
+                
+                // Set form data with existing room data
+                setFormData({
+                    roomType: roomData.roomType || "",
+                    description: roomData.description || "",
+                    maxGuests: roomData.maxGuests || "",
+                    bedTypes: roomData.bedTypes || "",
+                    pricePerNight: roomData.pricePerNight || "",
+                    amenities: roomData.amenities || [],
+                    images: roomData.images || [],
+                    availability: roomData.availability !== undefined ? roomData.availability : true
+                });
+
+                // Set existing images
+                setRoomImages(roomData.images || []);
+
+            } catch (error) {
+                console.error("Error fetching room data:", error);
+                showToastMessage("error", "Failed to load room data");
+                navigate("/hotel/rooms");
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchRoomData();
+    }, [roomId, auth, navigate]);
 
     const handleRoomTypeChange = (selectedId) => {
         const selectedRoom = roomTypes.find(room => room.id === Number(selectedId));
@@ -58,6 +103,10 @@ export default function RoomsAdd() {
 
             return { ...prev, amenities: updatedAmenities };
         });
+    };
+
+    const handleAvailabilityChange = (e) => {
+        setFormData(prev => ({ ...prev, availability: e.target.checked }));
     };
 
     const validateForm = () => {
@@ -95,16 +144,14 @@ export default function RoomsAdd() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         
-        // Validate form
         if (!validateForm()) {
             return;
         }
 
-        // Check if user is authenticated
         const currentUser = auth.currentUser;
         if (!currentUser) {
-            showToastMessage("error", "Please login to add rooms");
-            navigate("/partner/login");
+            showToastMessage("error", "Please login to update rooms");
+            navigate("/partner-login/step-1");
             return;
         }
 
@@ -114,39 +161,41 @@ export default function RoomsAdd() {
             const submissionData = {
                 ...formData,
                 images: roomImages,
-                maxGuests: String(formData.maxGuests), // Convert to string to match backend
-                pricePerNight: Number(formData.pricePerNight) // Ensure it's a number
+                maxGuests: String(formData.maxGuests),
+                pricePerNight: Number(formData.pricePerNight)
             };
 
-            // Call API with user's Firebase UID
-            await createRoom(submissionData, currentUser.uid);
+            // Call API to update room
+            await updateRoom(roomId, submissionData);
             
-            showToastMessage("success", "Room added successfully!");
+            showToastMessage("success", "Room updated successfully!");
             
-            // Get hotel data to retrieve hotel ID for navigation
+            // Get hotel data to navigate back to rooms page
             const hotelData = await getHotelByUserDocId(currentUser.uid);
             
-            // Navigate to hotel rooms page
             if (hotelData && hotelData.id) {
                 navigate(`/hotel/rooms/${hotelData.id}`);
             } else {
-                // Fallback to rooms page without hotel ID
                 navigate('/hotel/rooms');
             }
             
         } catch (error) {
-            console.error("Error creating room:", error);
+            console.error("Error updating room:", error);
             
-            // Handle specific error cases
-            if (error.status === 401) {
-                showToastMessage("error", "Authentication failed. Please login again.");
-                navigate("/partner/login");
-            } else if (error.status === 403) {
-                showToastMessage("error", "Your hotel must be verified by admin before adding rooms");
-            } else if (error.status === 404) {
-                showToastMessage("error", "No hotel found for your account. Please register your hotel first.");
+            if (error.response) {
+                const status = error.response.status;
+                if (status === 401) {
+                    showToastMessage("error", "Authentication failed. Please login again.");
+                    navigate("/partner-login/step-1");
+                } else if (status === 403) {
+                    showToastMessage("error", "You don't have permission to update this room");
+                } else if (status === 404) {
+                    showToastMessage("error", "Room not found");
+                } else {
+                    showToastMessage("error", error.response.data || "Failed to update room. Please try again.");
+                }
             } else {
-                showToastMessage("error", typeof error.message === 'string' ? error.message : "Failed to add room. Please try again.");
+                showToastMessage("error", "Failed to update room. Please try again.");
             }
         } finally {
             setIsSubmitting(false);
@@ -175,11 +224,24 @@ export default function RoomsAdd() {
         });
     }, [formData.amenities]);
 
+    if (loading) {
+        return (
+            <Main>
+                <div className="flex items-center justify-center min-h-screen">
+                    <div className="text-center">
+                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-brand-primary mx-auto"></div>
+                        <p className="mt-4 text-content-secondary">Loading room data...</p>
+                    </div>
+                </div>
+            </Main>
+        );
+    }
+
     return (
         <Main>
             <form onSubmit={handleSubmit} className="flex w-full flex-col items-center">
                 <Title 
-                    title="Add Rooms" 
+                    title="Edit Room" 
                     size="text-[48px]" 
                     font="font-[600]" 
                 />
@@ -238,8 +300,19 @@ export default function RoomsAdd() {
                             warningHeading={'Important Note: Customize the **Heading** Text Here'}
                         />
                     </div>
+                    <div className="mt-2">
+                        <label className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                checked={formData.availability}
+                                onChange={handleAvailabilityChange}
+                                className="w-5 h-5 text-brand-primary"
+                            />
+                            <span className="text-gray-700 font-medium">Room Available for Booking</span>
+                        </label>
+                    </div>
                     <div className="mt-4">
-                        <Title title="Add Facilities" size="text-[24px]" />
+                        <Title title="Edit Facilities" size="text-[24px]" />
                         <div className="flex flex-wrap mt-3">
                             {amenityList}
                         </div>
@@ -258,10 +331,20 @@ export default function RoomsAdd() {
                         </p>
                     </div>
                 </div>
-                <div className="w-full flex">
+                <div className="w-full flex gap-4">
+                    <div className="w-1/4 mt-5">
+                        <button
+                            type="button"
+                            onClick={() => navigate(-1)}
+                            className="w-full px-4 py-2 bg-gray-200 text-gray-700 rounded-lg hover:bg-gray-300"
+                            disabled={isSubmitting}
+                        >
+                            Cancel
+                        </button>
+                    </div>
                     <div className="w-1/4 mt-5">
                         <PrimaryButton 
-                            text={isSubmitting ? "Adding Room..." : "Add Room"} 
+                            text={isSubmitting ? "Updating Room..." : "Update Room"} 
                             type={'submit'}
                             isDisabled={isSubmitting}
                         />
