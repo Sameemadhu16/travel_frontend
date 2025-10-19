@@ -10,6 +10,7 @@ export default function BookingSummary({tripData}) {
     const { formData, setFormData } = useContext(FormContext);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitError, setSubmitError] = useState(null);
+    const [showDebug, setShowDebug] = useState(false);
     
     // Safety check
     if (!formData || !formData.selectedItems) {
@@ -37,15 +38,26 @@ export default function BookingSummary({tripData}) {
 
     const isTourComplete = () => {
         // Check if all required fields are filled
-        return (
-            travelDetails?.destination &&
-            travelDetails?.duration &&
-            travelDetails?.startDate &&
-            contactInfo?.fullName &&
-            contactInfo?.email &&
-            contactInfo?.phone &&
-            selectedItems?.guides?.length > 0
-        );
+        const checks = {
+            hasDuration: Boolean(travelDetails?.duration),
+            hasStartDate: Boolean(travelDetails?.startDate),
+            hasFullName: Boolean(contactInfo?.fullName?.trim()),
+            hasEmail: Boolean(contactInfo?.email?.trim()),
+            hasPhone: Boolean(contactInfo?.phone?.trim()),
+            hasGuides: Boolean(selectedItems?.guides?.length > 0)
+        };
+        
+        console.log('Tour completion checks:', {
+            checks,
+            travelDetails,
+            contactInfo,
+            selectedItems
+        });
+        
+        const isComplete = Object.values(checks).every(check => check === true);
+        
+        console.log('Tour complete status:', isComplete);
+        return isComplete;
     };
     const handleCompleteRequest = async() => {
         if (!agreedToTerms) {
@@ -346,6 +358,16 @@ export default function BookingSummary({tripData}) {
         <div className="bg-white rounded-lg border border-brand-primary p-6 sticky top-6">
             <h2 className="text-lg font-semibold text-content-primary mb-4">Booking Summary</h2>
             
+            {/* Debug section */}
+            {showDebug && (
+                <div className="mb-4 p-4 bg-gray-100 border border-gray-300 rounded-lg">
+                    <h3 className="text-md font-semibold text-content-primary mb-2">Debug Info</h3>
+                    <pre className="text-xs text-gray-700 whitespace-pre-wrap">
+                        {JSON.stringify(formData, null, 2)}
+                    </pre>
+                </div>
+            )}
+            
             {individualCosts.length > 0 ? (
                 <div className="space-y-6">
                     {individualCosts.map((guideCost, index) => (
@@ -507,6 +529,38 @@ export default function BookingSummary({tripData}) {
             </div>
 
             <div className="border-t border-border-light pt-4 mb-6">
+                {/* Debug Panel - Toggle on/off */}
+                <button 
+                    onClick={() => setShowDebug(!showDebug)}
+                    className="mb-4 text-xs text-blue-600 hover:underline"
+                >
+                    {showDebug ? '▼ Hide Debug Info' : '▶ Show Debug Info'}
+                </button>
+                
+                {showDebug && (
+                    <div className="mb-4 p-3 bg-gray-100 border border-gray-300 rounded text-xs overflow-auto max-h-60">
+                        <p className="font-semibold mb-2">FormData Debug:</p>
+                        <pre className="whitespace-pre-wrap">
+                            {JSON.stringify({
+                                travelDetails: {
+                                    destination: travelDetails?.destination,
+                                    duration: travelDetails?.duration,
+                                    startDate: travelDetails?.startDate,
+                                },
+                                contactInfo: {
+                                    fullName: contactInfo?.fullName,
+                                    email: contactInfo?.email,
+                                    phone: contactInfo?.phone,
+                                },
+                                selectedItems: {
+                                    guidesCount: selectedItems?.guides?.length || 0,
+                                    guides: selectedItems?.guides
+                                }
+                            }, null, 2)}
+                        </pre>
+                    </div>
+                )}
+                
                 <div className="flex items-center gap-2 mb-4">
                     <input 
                         type="checkbox" 
@@ -535,10 +589,10 @@ export default function BookingSummary({tripData}) {
                 <button 
                     disabled={!agreedToTerms || !isTourComplete() || isSubmitting}
                     onClick={handleCompleteRequest}
-                    className={`w-full py-3 px-4 rounded-lg font-semibold transition flex items-center justify-center ${
+                    className={`w-full py-3 px-4 rounded-lg font-semibold transition flex items-center justify-center shadow-md ${
                         agreedToTerms && isTourComplete() && !isSubmitting
-                            ? 'bg-brand-primary text-white hover:bg-warning' 
-                            : 'bg-border-light text-content-disabled cursor-not-allowed'
+                            ? 'bg-brand-primary text-white hover:bg-brand-secondary hover:shadow-lg' 
+                            : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-60'
                     }`}
                 >
                     {isSubmitting ? (
@@ -559,9 +613,34 @@ export default function BookingSummary({tripData}) {
                     )}
                 </button>
                 
+                {/* Help text when button is disabled */}
+                {(!agreedToTerms || !isTourComplete()) && !isSubmitting && (
+                    <div className="text-xs text-center text-red-600 bg-red-50 p-2 rounded">
+                        {!agreedToTerms && "⚠️ Please agree to terms and conditions"}
+                        {agreedToTerms && !isTourComplete() && (
+                            <div>
+                                <p className="font-semibold mb-1">⚠️ Missing required information:</p>
+                                <ul className="text-left list-disc list-inside">
+                                    {!travelDetails?.duration && <li>Duration not selected</li>}
+                                    {!travelDetails?.startDate && <li>Start date not selected</li>}
+                                    {!contactInfo?.fullName?.trim() && <li>Full name not provided</li>}
+                                    {!contactInfo?.email?.trim() && <li>Email not provided</li>}
+                                    {!contactInfo?.phone?.trim() && <li>Phone number not provided</li>}
+                                    {(!selectedItems?.guides || selectedItems.guides.length === 0) && <li>No tour guide selected</li>}
+                                </ul>
+                                <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-blue-800">
+                                    <p className="text-xs">
+                                        <strong>Debug Info:</strong> Check browser console for detailed validation data
+                                    </p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )}
+                
                 <button 
                     onClick={handleSaveAsDraft}
-                    className="w-full py-2 px-4 border border-border-light rounded-lg font-medium text-content-secondary hover:bg-surface-secondary transition flex items-center justify-center gap-2"
+                    className="w-full py-2 px-4 border-2 border-border-medium rounded-lg font-medium text-content-secondary hover:bg-surface-secondary hover:border-brand-primary transition flex items-center justify-center gap-2"
                 >
                     <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"/>
