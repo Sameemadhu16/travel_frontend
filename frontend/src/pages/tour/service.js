@@ -97,7 +97,7 @@ export function createTripRequest(formData, userId) {
             : null,
         
         // Selected guide (approved guide - stays NULL until a guide accepts the request)
-        selectedGuid: null,
+        selectedGuide: null,
         
         // Selected hotels (ManyToMany - array of objects with IDs)
         selectedHotels: (selectedNightHotelIds.length > 0 ? selectedNightHotelIds : selectedHotelIds)
@@ -180,7 +180,7 @@ export function createTripRequest(formData, userId) {
     console.log('  - selectedVehicleAgency:', tripRequest.selectedVehicleAgency);
     
     console.log('👤 Guide:');
-    console.log('  - selectedGuid (approved guide):', tripRequest.selectedGuid);
+    console.log('  - selectedGuide (approved guide):', tripRequest.selectedGuide);
     console.log('  - selectedGuideIds (all requested):', tripRequest.selectedGuideIds);
     console.log('  - guidesDisplay (for DB):', tripRequest.guidesDisplay);
     
