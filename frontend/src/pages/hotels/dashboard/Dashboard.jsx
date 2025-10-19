@@ -47,6 +47,7 @@ export default function HotelDashboard() {
     averageRating: 0,
     totalReviews: 0
   });
+  const [todaySchedule, setTodaySchedule] = useState([]);
 
   useEffect(() => {
     const fetchHotelData = async () => {
@@ -93,6 +94,58 @@ export default function HotelDashboard() {
               availableRooms: available,
               maintenanceRooms: 0 // TODO: Add maintenance status to room model
             }));
+
+            // Generate today's schedule based on room status
+            // Note: This is a simplified version. Replace with actual booking data when booking system is implemented
+            const schedule = [];
+            const currentHour = new Date().getHours();
+            
+            // Add check-in schedules (occupied rooms)
+            hotelRooms.filter(r => !r.availability).slice(0, 3).forEach((room, index) => {
+              schedule.push({
+                id: `checkin-${room.id}`,
+                type: 'check-in',
+                roomType: room.roomType,
+                roomId: room.id,
+                time: `${14 + index}:00`, // Sample check-in times starting from 2 PM
+                status: currentHour >= (14 + index) ? 'completed' : 'upcoming',
+                guestName: 'Guest', // Placeholder - will be replaced with real booking data
+              });
+            });
+
+            // Add check-out schedules (occupied rooms)
+            hotelRooms.filter(r => !r.availability).slice(0, 2).forEach((room, index) => {
+              schedule.push({
+                id: `checkout-${room.id}`,
+                type: 'check-out',
+                roomType: room.roomType,
+                roomId: room.id,
+                time: `${10 + index}:00`, // Sample check-out times starting from 10 AM
+                status: currentHour >= (10 + index) ? 'completed' : 'upcoming',
+                guestName: 'Guest', // Placeholder
+              });
+            });
+
+            // Add cleaning schedules
+            if (hotelRooms.length > 0) {
+              schedule.push({
+                id: 'cleaning-1',
+                type: 'cleaning',
+                roomType: 'Multiple Rooms',
+                time: '13:00',
+                status: currentHour >= 13 ? 'completed' : 'upcoming',
+                details: `Rooms ${hotelRooms.slice(0, 3).map(r => r.id).join(', ')}`
+              });
+            }
+
+            // Sort schedule by time
+            schedule.sort((a, b) => {
+              const timeA = parseInt(a.time.split(':')[0]);
+              const timeB = parseInt(b.time.split(':')[0]);
+              return timeA - timeB;
+            });
+
+            setTodaySchedule(schedule);
           } catch (roomError) {
             console.error('Error fetching rooms:', roomError);
             // Continue even if rooms fail to load
@@ -273,11 +326,86 @@ export default function HotelDashboard() {
           <div className="bg-white rounded-xl shadow p-6">
             <h2 className="text-xl font-semibold mb-4">Today&apos;s Schedule</h2>
             <div className="space-y-4">
-              <div className="p-8 text-center text-content-secondary">
-                <FaClock className="text-4xl mx-auto mb-3 opacity-50" />
-                <p>Booking and scheduling system coming soon!</p>
-                <p className="text-sm mt-2">Check-ins, check-outs, and room cleaning schedules will appear here.</p>
-              </div>
+              {todaySchedule.length > 0 ? (
+                <>
+                  {todaySchedule.map((item) => (
+                    <div 
+                      key={item.id} 
+                      className={`flex items-center gap-4 p-4 rounded-lg ${
+                        item.status === 'completed' ? 'bg-gray-100' : 'bg-blue-50'
+                      }`}
+                    >
+                      <div className="flex-shrink-0">
+                        {item.type === 'check-in' && (
+                          <FaCalendarCheck className={`text-2xl ${
+                            item.status === 'completed' ? 'text-gray-400' : 'text-green-600'
+                          }`} />
+                        )}
+                        {item.type === 'check-out' && (
+                          <FaClock className={`text-2xl ${
+                            item.status === 'completed' ? 'text-gray-400' : 'text-orange-600'
+                          }`} />
+                        )}
+                        {item.type === 'cleaning' && (
+                          <FaBed className={`text-2xl ${
+                            item.status === 'completed' ? 'text-gray-400' : 'text-blue-600'
+                          }`} />
+                        )}
+                      </div>
+                      <div className="flex-grow">
+                        <div className="flex items-center gap-2">
+                          <p className={`font-medium ${
+                            item.status === 'completed' ? 'text-gray-500 line-through' : 'text-gray-900'
+                          }`}>
+                            {item.type === 'check-in' && `Check-in: ${item.roomType}`}
+                            {item.type === 'check-out' && `Check-out: ${item.roomType}`}
+                            {item.type === 'cleaning' && `Room Cleaning: ${item.roomType}`}
+                          </p>
+                          {item.status === 'completed' && (
+                            <span className="text-xs px-2 py-1 bg-gray-200 text-gray-600 rounded-full">
+                              Completed
+                            </span>
+                          )}
+                          {item.status === 'upcoming' && (
+                            <span className="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded-full">
+                              Scheduled
+                            </span>
+                          )}
+                        </div>
+                        <p className="text-sm text-content-secondary mt-1">
+                          {item.type === 'check-in' && `Guest: ${item.guestName} - ${item.time}`}
+                          {item.type === 'check-out' && `Guest: ${item.guestName} - ${item.time}`}
+                          {item.type === 'cleaning' && `${item.details} - ${item.time}`}
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <p className={`text-sm font-medium ${
+                          item.status === 'completed' ? 'text-gray-400' : 'text-brand-primary'
+                        }`}>
+                          {item.time}
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="pt-4 border-t">
+                    <p className="text-sm text-content-secondary text-center">
+                      💡 Note: This is based on current room status. Real booking data will be shown once the booking system is implemented.
+                    </p>
+                  </div>
+                </>
+              ) : (
+                <div className="p-8 text-center text-content-secondary">
+                  <FaClock className="text-4xl mx-auto mb-3 opacity-50" />
+                  <p>No activities scheduled for today!</p>
+                  <p className="text-sm mt-2">
+                    {rooms.length === 0 
+                      ? 'Add rooms to your hotel to start managing schedules.'
+                      : stats.occupiedRooms === 0
+                      ? 'All rooms are available. Check-ins will appear here once rooms are booked.'
+                      : 'Schedule data will appear here once you have bookings.'}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
