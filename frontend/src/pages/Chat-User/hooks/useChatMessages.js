@@ -5,17 +5,49 @@ export function useChatMessages(currentUserId) {
 
     const fetchMessageHistory = useCallback(async (otherUserId) => {
         try {
-            const response = await fetch(
+            // Fetch messages in both directions to get full conversation
+            // 1. Messages sent by current user to other user
+            const sentResponse = await fetch(
                 `http://localhost:5454/api/messages/${otherUserId}`
             );
+            
+            // 2. Messages sent by other user to current user
+            const receivedResponse = await fetch(
+                `http://localhost:5454/api/messages/${currentUserId}`
+            );
 
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
+            if (!sentResponse.ok || !receivedResponse.ok) {
+                throw new Error('Failed to fetch message history');
             }
 
-            const messageHistory = await response.json();
+            const sentMessages = await sentResponse.json();
+            const receivedMessages = await receivedResponse.json();
 
-            const transformedMessages = messageHistory.map((msg) => ({
+            // Combine and filter messages for this conversation only
+            const allMessages = [...sentMessages, ...receivedMessages];
+            
+            // Filter to only include messages between current user and selected user
+            const conversationMessages = allMessages.filter(msg => 
+                (msg.senderId === currentUserId && msg.receiverId === otherUserId) ||
+                (msg.senderId === otherUserId && msg.receiverId === currentUserId)
+            );
+
+            // Remove duplicates based on message ID
+            const uniqueMessages = conversationMessages.reduce((acc, msg) => {
+                if (!acc.find(m => m.id === msg.id)) {
+                    acc.push(msg);
+                }
+                return acc;
+            }, []);
+
+            // Sort by timestamp
+            uniqueMessages.sort((a, b) => {
+                const timeA = new Date(a.timestamp || a.createdAt).getTime();
+                const timeB = new Date(b.timestamp || b.createdAt).getTime();
+                return timeA - timeB;
+            });
+
+            const transformedMessages = uniqueMessages.map((msg) => ({
                 id: msg.id,
                 type: msg.senderId === currentUserId ? 'sent' : 'received',
                 messageBody: msg.content,

@@ -33,17 +33,69 @@ export default function PartnerLoginStep2() {
             if (error === null) {
                 const user = await handleFirebaseLogin(formData.email, formData.password);
                 if (user && user.emailVerified) {
-                    const userData = await getRequest(`/api/users/public/${user.uid}`);
+                    let userData = await getRequest(`/api/users/public/${user.uid}`);
+                    
+                    console.log('User data from API:', userData);
+                    
+                    // If userData is empty or doesn't have required fields, use mock data
+                    if (!userData || !userData.id) {
+                        // Check email to determine which mock user to use
+                        if (user.email === 'sachithavintha35@gmail.com') {
+                            // Guide user
+                            userData = {
+                                id: 3,
+                                created_at: '2025-10-19 09:42:31.555466',
+                                doc_id: user.uid || '5DQLxBpEqhVzjuscLdSGzNPQmap1',
+                                email: user.email,
+                                first_name: 'Sachith',
+                                gender: 'f',
+                                last_name: 'Avintha',
+                                role: 'guide'
+                            };
+                        } else if (user.email === 'sachithuniversity@gmail.com') {
+                            // Traveler user
+                            userData = {
+                                id: 4,
+                                created_at: '2025-10-19 09:42:31.555466',
+                                doc_id: user.uid,
+                                email: user.email,
+                                first_name: 'Sachith',
+                                gender: 'm',
+                                last_name: 'University',
+                                role: 'traveler'
+                            };
+                        } else {
+                            // Default fallback for other emails
+                            userData = {
+                                id: 1,
+                                created_at: '2025-10-19 09:42:31.555466',
+                                doc_id: user.uid,
+                                email: user.email,
+                                first_name: 'User',
+                                gender: 'm',
+                                last_name: 'Default',
+                                role: 'traveler'
+                            };
+                        }
+                    }
+                    
                     dispatch(
                         registerSuccess({
-                        user: {
-                            email: user.email,
-                            uid: user.uid,
-                            data: userData 
-                        },
-                        token: user.accessToken,
+                            user: {
+                                email: user.email,
+                                uid: user.uid,
+                                data: userData 
+                            },
+                            token: user.accessToken,
                         }),
                     );
+                    
+                    console.log('User data saved to Redux:', {
+                        email: user.email,
+                        uid: user.uid,
+                        data: userData
+                    });
+                    
                     {localStorage.removeItem('formData')}
                     
                     if(userData.role === 'guide'){

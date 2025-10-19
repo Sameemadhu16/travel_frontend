@@ -6,7 +6,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { checkTokenExpiration } from '../core/authChecker';
 import { resetAuth } from '../redux/slices/authSlice';
 import { useState, useRef, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ReserveDropdown from './ReserveDropdown';
 import PrimaryButton from './PrimaryButton';
 import SecondaryButton from './SecondaryButton';
@@ -16,6 +16,7 @@ export default function Header() {
     const { user, token } = useSelector((state) => state.auth);
     const isExpired = checkTokenExpiration(token);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [showProfileMenu, setShowProfileMenu] = useState(false);
     const menuRef = useRef(null);
     const role = user?.data?.role || '';
@@ -75,6 +76,21 @@ export default function Header() {
                                     />
                                 </Navigate>
                             )}
+                            {/* Chat Button */}
+                            <div
+                                onClick={() => navigate('/user-chat')}
+                                className='p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px] relative'
+                            >
+                                <svg 
+                                    className="w-6 h-6 text-brand-primary" 
+                                    fill="none" 
+                                    stroke="currentColor" 
+                                    strokeWidth="2" 
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+                                </svg>
+                            </div>
                             <div className='flex items-center gap-2 p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
                                 <div onClick={() => setShowProfileMenu((v) => !v)} className='h-[40px] w-[40px] border-2 border-brand-primary rounded-full overflow-hidden'>
                                     <img src={room} alt="room" className='h-full w-full object-cover' />

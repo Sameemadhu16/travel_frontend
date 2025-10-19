@@ -62,13 +62,16 @@ export function useWebSocket(currentUserId, selectedUser) {
             }
         }
 
+        // Subscribe to messages sent TO the current user
         const topic = `/topic/messages/${userId}`;
 
         try {
             subscriptionRef.current = stompClientRef.current.subscribe(topic, (message) => {
                 const receivedMessage = JSON.parse(message.body);
                 
-                if (receivedMessage.senderId !== currentUserId) {
+                // Only show messages where current user is the receiver
+                // This prevents showing the same message in both browsers
+                if (receivedMessage.receiverId === currentUserId) {
                     onMessageReceived(receivedMessage);
                 }
             });

@@ -123,6 +123,7 @@ export default function AppRoutes() {
             <Route path='/home' element={<Home />} />
             <Route path='/traveler-register' element={<TravelerRegister />} />
             <Route path="/destination/:id" element={<DestinationPage />} />
+            <Route path='user-chat' element={<ChatUser/>} />
             <Route path='user-chat/:userId' element={<ChatUser/>} />
 
             {/* Independent Booking Pages */}
