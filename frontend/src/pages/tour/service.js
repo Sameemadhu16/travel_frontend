@@ -54,59 +54,68 @@ export function createTripRequest(formData, userId) {
         return time;
     };
 
+    // Build the trip request object matching backend Trip entity exactly
     const tripRequest = {
-        // Trip code and user
+        // === REQUIRED FIELDS ===
+        
+        // Trip code and user (CRITICAL - must have user with ID)
         tripCode: generateTripCode(),
-        user: { id: userId },
+        user: userId ? { id: userId } : null,
         
-        // Basic trip information - FIX field names to match formData structure
-        pickupLocation: travelDetails?.location || "",  // Changed from pickupLocation
+        // Basic trip information
+        pickupLocation: travelDetails?.location || travelDetails?.pickupLocation || "",
         tripStartDate: travelDetails?.startDate || null,
-        tripEndDate: null,  // Not collected in current flow
-        startTime: formatTime(travelDetails?.time),  // Format time with seconds
+        tripEndDate: travelDetails?.endDate || null,
+        startTime: formatTime(travelDetails?.time),
         
-        // Places to visit (will be populated from itinerary if available)
+        // Places to visit
         placesToBeVisit: extractPlaceIds(itinerary),
         
-        // Travelers count - FIX field names
+        // Travelers count
         numberOfAdults: numberOfAdults,
         numberOfKids: numberOfKids,
         
         // Duration and distance
         estimateDuration: travelDetails?.duration || "",
-        distanceKm: distanceKm,
+        distanceKm: Math.round(distanceKm) || 0,
         
-        // Trip status
+        // Trip status (REQUIRED - must be valid enum value: pending, approved, paid, ongoing, completed, cancelled)
         tripStatus: "pending",
         
-        // Selected vehicle - Extract agency ID properly
+        // === RELATIONSHIP FIELDS ===
+        
+        // Selected vehicle agency (must be object with id or null)
         selectedVehicleAgency: selectedItems?.selectedVehicle?.vehicleAgency?.id
             ? { id: selectedItems.selectedVehicle.vehicleAgency.id }
             : (selectedItems?.selectedVehicle?.agency?.id
                 ? { id: selectedItems.selectedVehicle.agency.id }
                 : null),
+        
+        // Selected vehicle (must be object with id or null)
         selectedVehicle: selectedItems?.selectedVehicle?.id
             ? { id: selectedItems.selectedVehicle.id }
             : null,
         
-        // Selected guide (single guide for the main relationship)
-        selectedGuid: selectedGuideIds.length > 0
-            ? { id: selectedGuideIds[0] }
-            : null,
+        // Selected guide (approved guide - stays NULL until a guide accepts the request)
+        selectedGuid: null,
         
-        // Selected hotels (as list of hotel objects with IDs)
+        // Selected hotels (ManyToMany - array of objects with IDs)
         selectedHotels: (selectedNightHotelIds.length > 0 ? selectedNightHotelIds : selectedHotelIds)
+            .filter(id => id != null)
             .map(hotelId => ({ id: hotelId })),
         
-        // Selected rooms
-        selectedRooms: (selectedRoomIds.length > 0 ? selectedRoomIds : selectedNightRoomIds)
+        // Selected rooms (ManyToMany - array of objects with IDs)
+        selectedRooms: (selectedNightRoomIds.length > 0 ? selectedNightRoomIds : selectedRoomIds)
+            .filter(id => id != null)
             .map(roomId => ({ id: roomId })),
         
-        // Pricing - FIX to calculate from bookingSummary
+        // === PRICING FIELDS ===
+        
         basePrice: calculateBasePrice(selectedItems, travelDetails),
         totalFare: parseFloat(bookingSummary?.totalCost) || 0,
         
-        // Contact Information
+        // === CONTACT INFORMATION ===
+        
         fullName: contactInfo?.fullName || "",
         email: contactInfo?.email || "",
         phone: contactInfo?.phone || "",
@@ -119,42 +128,87 @@ export function createTripRequest(formData, userId) {
         travelExperience: contactInfo?.travelExperience || "",
         referralSource: contactInfo?.referralSource || "",
         
-        // Travel preferences - FIX to match formData structure
+        // === TRAVEL PREFERENCES ===
+        
         destination: travelDetails?.destination || "",
         duration: travelDetails?.duration || "",
-        travelStyle: travelDetails?.travelStyle || tourPreferences?.travelStyle || "",  // Check both locations
-        groupType: travelDetails?.groupType || tourPreferences?.groupType || "",  // Check both locations
-        interests: tourPreferences?.interests || [],
-        accommodationPreference: tourPreferences?.accommodation || "",  // Changed from accommodationPreference
+        travelStyle: travelDetails?.travelStyle || tourPreferences?.travelStyle || "",
+        groupType: travelDetails?.groupType || tourPreferences?.groupType || "",
+        interests: Array.isArray(tourPreferences?.interests) ? tourPreferences.interests : [],
+        accommodationPreference: tourPreferences?.accommodation || tourPreferences?.accommodationPreference || "",
         budgetRange: tourPreferences?.budgetRange || "",
         activityLevel: tourPreferences?.activityLevel || "",
         diningPreference: tourPreferences?.diningPreference || "",
         
-        // JSON fields for complex data
+        // === JSON STORAGE FIELDS ===
+        
         itineraryJson: itinerary ? JSON.stringify(itinerary) : null,
         travelDetailsJson: travelDetails ? JSON.stringify(travelDetails) : null,
         tourPreferencesJson: tourPreferences ? JSON.stringify(tourPreferences) : null,
         bookingSummaryJson: bookingSummary ? JSON.stringify(bookingSummary) : null,
         
-        // Selected guides, hotels, and rooms (as ID arrays)
-        selectedGuideIds: selectedGuideIds,
-        selectedHotelIds: selectedNightHotelIds.length > 0 ? selectedNightHotelIds : selectedHotelIds,
-        selectedNightHotelIds: selectedNightHotelIds,
-        selectedNightRoomIds: selectedNightRoomIds,
+        // === ID ARRAYS (ElementCollection) ===
         
-        // Terms agreement
-        agreedToTerms: agreedToTerms || false,
+        selectedGuideIds: selectedGuideIds.filter(id => id != null),
+        selectedHotelIds: (selectedNightHotelIds.length > 0 ? selectedNightHotelIds : selectedHotelIds).filter(id => id != null),
+        selectedNightHotelIds: selectedNightHotelIds.filter(id => id != null),
+        selectedNightRoomIds: selectedNightRoomIds.filter(id => id != null),
+        
+        // === DISPLAY FIELDS (for easy database viewing) ===
+        guidesDisplay: selectedGuideIds.filter(id => id != null).join(','),
+        selectedHotelIdsDisplay: (selectedNightHotelIds.length > 0 ? selectedNightHotelIds : selectedHotelIds)
+            .filter(id => id != null)
+            .join(','),
+        
+        // === TERMS AGREEMENT ===
+        
+        agreedToTerms: Boolean(agreedToTerms),
     };
 
     // Final debug log of the complete trip request
     console.log('=== FINAL TRIP REQUEST ===');
-    console.log('selectedVehicle:', tripRequest.selectedVehicle);
-    console.log('selectedVehicleAgency:', tripRequest.selectedVehicleAgency);
-    console.log('selectedGuid:', tripRequest.selectedGuid);
-    console.log('selectedGuideIds:', tripRequest.selectedGuideIds);
-    console.log('selectedHotels:', tripRequest.selectedHotels);
-    console.log('selectedHotelIds:', tripRequest.selectedHotelIds);
-    console.log('selectedRooms:', tripRequest.selectedRooms);
+    console.log('🔑 Critical Fields:');
+    console.log('  - tripCode:', tripRequest.tripCode);
+    console.log('  - user:', tripRequest.user);
+    console.log('  - tripStatus:', tripRequest.tripStatus);
+    console.log('  - pickupLocation:', tripRequest.pickupLocation);
+    console.log('  - tripStartDate:', tripRequest.tripStartDate);
+    console.log('  - startTime:', tripRequest.startTime);
+    
+    console.log('🚗 Vehicle & Agency:');
+    console.log('  - selectedVehicle:', tripRequest.selectedVehicle);
+    console.log('  - selectedVehicleAgency:', tripRequest.selectedVehicleAgency);
+    
+    console.log('👤 Guide:');
+    console.log('  - selectedGuid (approved guide):', tripRequest.selectedGuid);
+    console.log('  - selectedGuideIds (all requested):', tripRequest.selectedGuideIds);
+    console.log('  - guidesDisplay (for DB):', tripRequest.guidesDisplay);
+    
+    console.log('🏨 Hotels & Rooms:');
+    console.log('  - selectedHotels:', tripRequest.selectedHotels);
+    console.log('  - selectedHotelIds:', tripRequest.selectedHotelIds);
+    console.log('  - selectedHotelIdsDisplay (for DB):', tripRequest.selectedHotelIdsDisplay);
+    console.log('  - selectedNightHotelIds:', tripRequest.selectedNightHotelIds);
+    console.log('  - selectedRooms:', tripRequest.selectedRooms);
+    console.log('  - selectedNightRoomIds:', tripRequest.selectedNightRoomIds);
+    
+    console.log('💰 Pricing:');
+    console.log('  - basePrice:', tripRequest.basePrice);
+    console.log('  - totalFare:', tripRequest.totalFare);
+    
+    console.log('📧 Contact:');
+    console.log('  - fullName:', tripRequest.fullName);
+    console.log('  - email:', tripRequest.email);
+    console.log('  - phone:', tripRequest.phone);
+    
+    console.log('📍 Travel Details:');
+    console.log('  - destination:', tripRequest.destination);
+    console.log('  - duration:', tripRequest.duration);
+    console.log('  - numberOfAdults:', tripRequest.numberOfAdults);
+    console.log('  - numberOfKids:', tripRequest.numberOfKids);
+    
+    console.log('📋 Complete Request Object:');
+    console.log(JSON.stringify(tripRequest, null, 2));
     console.log('==========================');
 
     return tripRequest;
