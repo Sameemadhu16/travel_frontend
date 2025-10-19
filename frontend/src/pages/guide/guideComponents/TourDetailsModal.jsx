@@ -17,7 +17,7 @@ const TourDetailsModal = ({ isOpen, onClose, tourData, tourAccepted = false, onA
     // const [selectedTour, setSelectedTour] = useState(null);
     const [isAccepted, setIsAccepted] = useState(false);
     const [isRejected, setIsRejected] = useState(false);
-    
+
     if (!isOpen) return null;
 
     const handleAcceptTour = () => {
@@ -193,25 +193,81 @@ const TourDetailsModal = ({ isOpen, onClose, tourData, tourAccepted = false, onA
                         </Card>
 
                         {/* Itinerary Overview */}
+                        {/* // Replace the Itinerary Overview section in your TourDetailsModal.jsx with this: */}
+
+                        {/* Itinerary Overview */}
                         <Card>
                             <div className="flex items-center justify-between mb-4">
                                 <h4 className="text-lg font-semibold text-gray-900">Itinerary Overview</h4>
                             </div>
-                            {tourData.itinerary.map((day, index) => (
-                                <div key={index}>
-                                    <div className="space-y-4">
-                                        <div className="flex items-start space-x-4">
-                                            <div className="bg-orange-100 text-orange-800 rounded-lg w-fit p-2 h-6 flex items-center justify-center text-sm font-semibold">
-                                                day {index + 1}
+
+                            {/* {console.log('Modal itinerary prop:', tourData.itinerary)} */}
+
+                            {tourData.itinerary && tourData.itinerary.length > 0 ? (
+                                <div className="space-y-6">
+                                    {tourData.itinerary.map((dayItem, dayIndex) => (
+                                        <div key={dayIndex} className="pb-6 border-b border-gray-200 last:border-b-0">
+                                            {/* Day Header */}
+                                            <div className="bg-orange-100 text-orange-800 rounded-lg px-3 py-2 text-sm font-semibold inline-block mb-4">
+                                                Day {dayItem.day || dayIndex + 1}
                                             </div>
-                                            <div className="flex-1">
-                                                <h5 className="font-medium text-gray-900">{day.title}</h5>
-                                                <p className="text-gray-600 text-sm">{day.description}</p>
-                                            </div>
+
+                                            {/* Activities */}
+                                            {dayItem.activities && dayItem.activities.length > 0 ? (
+                                                <div className="space-y-3 mt-3">
+                                                    {dayItem.activities.map((activity, actIdx) => {
+                                                        // Check if activity has any meaningful content
+                                                        const hasContent = activity.title || activity.description || activity.customActivity
+
+                                                        return (
+                                                            <div key={actIdx} className="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                                                {/* Activity Title and Time */}
+                                                                {activity.title ? (
+                                                                    <div className="flex items-start justify-between mb-2">
+                                                                        <h5 className="font-semibold text-gray-900">{activity.title}</h5>
+                                                                        {activity.time && (
+                                                                            <span className="text-xs bg-orange-100 text-orange-800 px-2 py-1 rounded whitespace-nowrap ml-2">
+                                                                                {activity.time}
+                                                                            </span>
+                                                                        )}
+                                                                    </div>
+                                                                ) : null}
+
+                                                                {/* Activity Description */}
+                                                                {activity.description && (
+                                                                    <p className="text-gray-600 text-sm">{activity.description}</p>
+                                                                )}
+
+                                                                {/* Custom Activity */}
+                                                                {activity.customActivity && (
+                                                                    <p className="text-sm text-gray-700 mt-2 italic border-l-4 border-orange-400 pl-2">
+                                                                        {activity.customActivity}
+                                                                    </p>
+                                                                )}
+
+                                                                {/* Attraction/District Info - Always show */}
+                                                                <div className={`${hasContent ? 'mt-3 pt-3 border-t border-gray-300' : 'mt-1'}`}>
+                                                                    <p className="text-xs text-gray-600">
+                                                                        {activity.districtId && `📍 District: ${activity.districtId}`}
+                                                                        {activity.districtId && activity.attractionId && ' • '}
+                                                                        {activity.attractionId && `🎯 Attraction: ${activity.attractionId}`}
+                                                                    </p>
+                                                                </div>
+                                                            </div>
+                                                        )
+                                                    })}
+                                                </div>
+                                            ) : (
+                                                <p className="text-gray-500 text-sm italic mt-3">No activities planned for this day</p>
+                                            )}
                                         </div>
-                                    </div>
+                                    ))}
                                 </div>
-                            ))}
+                            ) : (
+                                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                                    <p className="text-yellow-800 text-sm">No itinerary has been planned for this tour yet.</p>
+                                </div>
+                            )}
                         </Card>
 
                         {/* Payment Summary */}
