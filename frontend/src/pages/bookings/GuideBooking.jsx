@@ -94,7 +94,7 @@ const GuideBooking = () => {
     const isGuideSelected = (id) => selectedGuides.some(g => g.id === id);
 
     const handleBookGuide = (guideId) => {
-        navigate(`/bookings/guide/${guideId}/confirm`);
+        navigate(`/bookings/guide/${guideId}/details`);
     };
 
     const filteredGuides = guides.filter(guide => {
@@ -172,19 +172,61 @@ const GuideBooking = () => {
                                 isSelected={isGuideSelected(guide.id)}
                                 onSelect={() => handleGuideSelection(guide)}
                                 disabled={selectedGuides.length >= MAX_GUIDES && !isGuideSelected(guide.id)}
-                            >
-                                <div className="mt-4 flex justify-between items-center">
-                                    <div>
-                                        <span className="text-2xl font-bold text-brand-primary">LKR {guide.price?.toLocaleString() || '—'}</span>
-                                        <span className="text-gray-600"> per day</span>
-                                    </div>
-                                    <div className="flex items-center gap-2">
-                                        <button onClick={() => handleBookGuide(guide.id)} className="bg-orange-500 hover:bg-orange-600 text-white px-4 py-2 rounded-lg font-semibold">Book Now</button>
-                                    </div>
-                                </div>
-                            </GuideCard>
+                            />
                         ))}
                     </div>
+
+                    {/* Sticky Proceed Button */}
+                    {selectedGuides.length > 0 && (
+                        <div className="fixed bottom-0 left-0 right-0 bg-white shadow-2xl border-t-4 border-brand-primary z-50">
+                            <div className="container mx-auto px-4 py-4">
+                                <div className="flex items-center justify-between max-w-6xl mx-auto">
+                                    <div className="flex items-center gap-4">
+                                        <div className="bg-brand-primary text-white rounded-full w-12 h-12 flex items-center justify-center font-bold text-lg">
+                                            {selectedGuides.length}
+                                        </div>
+                                        <div>
+                                            <h3 className="text-lg font-semibold text-content-primary">
+                                                {selectedGuides.length} Guide{selectedGuides.length > 1 ? 's' : ''} Selected
+                                            </h3>
+                                            <p className="text-sm text-content-secondary">
+                                                {selectedGuides.length === 1 
+                                                    ? 'Proceed to booking details' 
+                                                    : `You can select up to ${MAX_GUIDES} guides`}
+                                            </p>
+                                        </div>
+                                    </div>
+                                    <div className="flex items-center gap-3">
+                                        <button
+                                            onClick={() => setSelectedGuides([])}
+                                            className="px-6 py-3 border-2 border-gray-300 text-content-secondary rounded-lg font-semibold hover:bg-gray-100 transition"
+                                        >
+                                            Clear Selection
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                                // Navigate to booking details with selected guides
+                                                if (selectedGuides.length === 1) {
+                                                    // Single guide booking
+                                                    navigate(`/bookings/guide/${selectedGuides[0].id}/details`);
+                                                } else {
+                                                    // Multiple guides - pass all selected guide IDs
+                                                    const guideIds = selectedGuides.map(g => g.id).join(',');
+                                                    navigate(`/bookings/guide/multiple/details?guides=${guideIds}`);
+                                                }
+                                            }}
+                                            className="px-8 py-3 bg-brand-primary hover:bg-warning text-white rounded-lg font-semibold transition shadow-lg flex items-center gap-2"
+                                        >
+                                            <span>Proceed to Book</span>
+                                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             </div>
             </Main>

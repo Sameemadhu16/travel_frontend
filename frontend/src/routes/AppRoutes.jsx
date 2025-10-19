@@ -48,12 +48,18 @@ import GuideTourHistory from '../pages/guide/TourHistory';
 
 // Booking pages
 import GuideBooking from '../pages/bookings/GuideBooking';
+import GuideBookingDetails from '../pages/bookings/GuideBookingDetails';
+import MyGuideBookingsGrouped from '../pages/bookings/MyGuideBookingsGrouped'; // New grouped view
 import HotelBooking from '../pages/bookings/HotelBooking';
 import VehicleBooking from '../pages/bookings/VehicleBooking';
 import VehicleDeal from '../pages/bookings/VehicleDeal';
 import VehicleProtection from '../pages/bookings/VehicleProtection';
 import VehicleCheckout from '../pages/bookings/VehicleCheckout';
 import VehicleBookingConfirmation from '../pages/bookings/VehicleBookingConfirmation';
+
+// Debug pages
+import DebugAuth from '../pages/DebugAuth';
+import DebugBookings from '../pages/DebugBookings';
 
 
 // Admin imports
@@ -133,6 +139,9 @@ export default function AppRoutes() {
             <Route path="/destination/:id" element={<DestinationPage />} />
 
             {/* Independent Booking Pages */}
+            <Route path='/bookings/guide' element={<GuideBooking />} />
+            <Route path='/bookings/guide/:guideId/details' element={<GuideBookingDetails />} />
+            <Route path='/my-bookings/guides' element={<MyGuideBookingsGrouped />} />
             <Route path='/bookings/guides' element={<GuideBooking />} />
             <Route path='/bookings/hotels' element={<HotelBooking />} />
             <Route path='/bookings/vehicles' element={<VehicleBooking />} />
@@ -140,6 +149,10 @@ export default function AppRoutes() {
             <Route path='/bookings/vehicle/:id/protection' element={<VehicleProtection />} />
             <Route path='/bookings/vehicle/:id/checkout' element={<VehicleCheckout />} />
             <Route path='/bookings/vehicle/:id/confirmation' element={<VehicleBookingConfirmation />} />
+            
+            {/* Debug pages - remove in production */}
+            <Route path='/debug-auth' element={<DebugAuth />} />
+            <Route path='/debug-bookings' element={<DebugBookings />} />
 
             {/* Partner login routes */}
             <Route
@@ -187,7 +200,6 @@ export default function AppRoutes() {
             <Route path='/guide-notifications' element={<GuideNotifications />} />
             <Route path='/guide-reviews' element={<GuideReviews />} />
             <Route path='/guide-availability' element={<GuideAvailability />} />
-            <Route path='/earnings' element={<GuideEarnings />} />
             <Route path='/guide-tour-history' element={<GuideTourHistory />} />
 
             {/* Authentication-based conditional routes */}
