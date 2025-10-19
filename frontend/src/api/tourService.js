@@ -6,9 +6,9 @@ import { getRequest, postRequest } from '../core/service';
  */
 
 // Guide APIs
-export const getAllGuides = async () => {
+export const getAllGuides = async (params = {}) => {
     try {
-        const guides = await getRequest('/api/guides');
+        const guides = await getRequest('/api/guides', params);
         return guides;
     } catch (error) {
         console.error('Error fetching guides:', error);

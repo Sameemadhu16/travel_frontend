@@ -111,7 +111,7 @@ const HotelBooking = () => {
     ];
 
     const amenitiesList = [
-        "Free WiFi", "Swimming Pool", "Fitness Center", "Spa", "Restaurant", 
+        "Free WiFi", "Swimming Pool", "Fitness Center", "Spa", "Restaurant",
         "Room Service", "Parking", "Pet Friendly", "Business Center", "Laundry"
     ];
 
@@ -142,7 +142,7 @@ const HotelBooking = () => {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <div className="bg-blue-600 text-white py-6">
+            <div className="bg-brand-primary text-white py-8">
                 <div className="container mx-auto px-4">
                     <h1 className="text-3xl font-bold mb-4">Find Your Perfect Stay</h1>
                     

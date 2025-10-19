@@ -1,5 +1,5 @@
-import { FaHome, FaBed, FaCalendarAlt, FaUsers, FaMoneyBillWave, FaStar, FaChartBar, FaCog } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { FaHome, FaBed, FaCalendarAlt, FaMoneyBillWave, FaStar, FaChartBar, FaCog } from 'react-icons/fa';
+import { Link, useParams } from 'react-router-dom';
 
 function SidebarLink({ to, icon: Icon, label, isActive }) {
   return (
@@ -18,16 +18,18 @@ function SidebarLink({ to, icon: Icon, label, isActive }) {
 }
 
 export default function HotelSidebar({ activePage }) {
+  const { hotelId } = useParams();
+  
   const navigationItems = [
-    { to: '/hotel/dashboard', id: 'dashboard', icon: FaHome, label: 'Dashboard' },
-    { to: '/hotel/listings', id: 'listings', icon: FaBed, label: 'Hotel Listings' },
-    { to: '/hotel/rooms', id: 'rooms', icon: FaBed, label: 'Rooms' },
-    { to: '/hotel/bookings', id: 'bookings', icon: FaCalendarAlt, label: 'Bookings' },
-    { to: '/hotel/calendar', id: 'calendar', icon: FaCalendarAlt, label: 'Calendar' },
-    { to: '/hotel/payments', id: 'payments', icon: FaMoneyBillWave, label: 'Payments' },
-    { to: '/hotel/reviews', id: 'reviews', icon: FaStar, label: 'Reviews' },
-    { to: '/hotel/reports', id: 'reports', icon: FaChartBar, label: 'Reports' },
-    { to: '/hotel/settings', id: 'settings', icon: FaCog, label: 'Settings' }
+    { to: hotelId ? `/hotel/dashboard/${hotelId}` : '/hotel/dashboard', id: 'dashboard', icon: FaHome, label: 'Dashboard' },
+    { to: hotelId ? `/hotel/listings/${hotelId}` : '/hotel/listings', id: 'listings', icon: FaBed, label: 'Hotel Listings' },
+    { to: hotelId ? `/hotel/rooms/${hotelId}` : '/hotel/rooms', id: 'rooms', icon: FaBed, label: 'Rooms' },
+    { to: hotelId ? `/hotel/bookings/${hotelId}` : '/hotel/bookings', id: 'bookings', icon: FaCalendarAlt, label: 'Bookings' },
+    { to: hotelId ? `/hotel/calendar/${hotelId}` : '/hotel/calendar', id: 'calendar', icon: FaCalendarAlt, label: 'Calendar' },
+    { to: hotelId ? `/hotel/payments/${hotelId}` : '/hotel/payments', id: 'payments', icon: FaMoneyBillWave, label: 'Payments' },
+    { to: hotelId ? `/hotel/reviews/${hotelId}` : '/hotel/reviews', id: 'reviews', icon: FaStar, label: 'Reviews' },
+    { to: hotelId ? `/hotel/reports/${hotelId}` : '/hotel/reports', id: 'reports', icon: FaChartBar, label: 'Reports' },
+    { to: hotelId ? `/hotel/settings/${hotelId}` : '/hotel/settings', id: 'settings', icon: FaCog, label: 'Settings' }
   ];
 
   return (

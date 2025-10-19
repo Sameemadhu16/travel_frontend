@@ -39,6 +39,7 @@ export default function HotelRegistration() {
         type: '',
         description: '',
         amenities: [],
+        pricePerNight: 0,
     });
     const [error,setError] = useState({});
 
@@ -255,6 +256,17 @@ export default function HotelRegistration() {
                             placeholder="Hotel Type"
                             onChange={value => handleSelect(setFormData, 'type', value)}
                             error={error?.errors?.type}
+                        />
+                    </div>
+                    <div className="w-1/2 mt-2">
+                        <InputField
+                            label='Starting Price per Night (LKR)'
+                            type='number'
+                            name='pricePerNight'
+                            value={formData.pricePerNight}
+                            onChange={e => handleSelect(setFormData, 'pricePerNight', parseFloat(e.target.value || 0))}
+                            placeholder='e.g., 2500'
+                            error={error?.errors?.pricePerNight}
                         />
                     </div>
                     <div className="w-1/2">

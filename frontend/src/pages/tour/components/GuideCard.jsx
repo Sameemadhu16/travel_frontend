@@ -1,4 +1,5 @@
-import React from 'react';
+import PropTypes from 'prop-types';
+import defaultGuideImg from '../../../assets/users/user1.jpg';
 
 export default function GuideCard({ guide, isSelected, onSelect, disabled }) {
     // Map backend fields to frontend display
@@ -21,7 +22,7 @@ export default function GuideCard({ guide, isSelected, onSelect, disabled }) {
     const profilePictures = guide.user?.profilePictures || [];
     const image = profilePictures.length > 0 
         ? profilePictures[0] 
-        : guide.image || '/src/assets/users/user1.jpg';
+        : guide.image || defaultGuideImg;
     
     const available = guide.isAvailable !== undefined ? guide.isAvailable : guide.available !== undefined ? guide.available : true;
 
@@ -174,3 +175,10 @@ export default function GuideCard({ guide, isSelected, onSelect, disabled }) {
         </div>
     );
 }
+
+GuideCard.propTypes = {
+    guide: PropTypes.object.isRequired,
+    isSelected: PropTypes.bool,
+    onSelect: PropTypes.func,
+    disabled: PropTypes.bool
+};

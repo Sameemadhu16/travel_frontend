@@ -1,14 +1,14 @@
 import Main from '../../components/Main'
 import { Clock, Paperclip, TimerReset, User, ForwardIcon, Check } from 'lucide-react'
 import Card from './guideComponents/Card'
-import { Link } from 'react-router-dom'
-// import { FaCalendar, FaFilter } from 'react-icons/fa'
 import PrimaryButton from '../../components/PrimaryButton'
 import NavBar from './guideComponents/NavBar'
+import { useState } from 'react'
+import NewComplaintForm from './guideComponents/NewComplaintForm'
 
 const GuideComplaints = () => {
     // Data array for complaints
-    const complaintsData = [
+    const [complaintsData, setComplaintsData] = useState([
         {
             id: 1,
             title: "Payment delay for October tours",
@@ -54,7 +54,9 @@ const GuideComplaints = () => {
             attachments: 1,
             timeAgo: "2 days ago"
         }
-    ]
+    ])
+
+    const [selectedComplaint, setSelectedComplaint] = useState(null);
 
     // Function to get status badge styling
     const getStatusBadge = (status, statusColor, StatusIcon) => {
@@ -71,6 +73,10 @@ const GuideComplaints = () => {
             </p>
         )
     }
+
+    const [showForm, setShowForm] = useState(false);
+
+
 
     return (
         <>
@@ -91,8 +97,9 @@ const GuideComplaints = () => {
                                 <div className="flex items-center space-x-3">
                                     <PrimaryButton
                                         text="+ &nbsp; New Complaint"
-                                        type={'button'}
+                                        type="button"
                                         className={'text-base'}
+                                        onClick={() => setShowForm(true)}
                                     />
                                 </div>
                             </div>
@@ -142,7 +149,12 @@ const GuideComplaints = () => {
                                                     </div>
                                                 </div>
                                                 <div className='text-orange-600 hover:text-orange-800'>
-                                                    <Link to={'/guide-earnings'}>View details</Link>
+                                                    <button
+                                                        onClick={() => setSelectedComplaint(complaint)}
+                                                        className="text-orange-600 hover:text-orange-800"
+                                                    >
+                                                        View details
+                                                    </button>
                                                 </div>
                                             </div>
                                         </div>
@@ -150,6 +162,59 @@ const GuideComplaints = () => {
                                 ))}
                             </div>
                         </div>
+
+                        {showForm && (
+                            <NewComplaintForm
+                                onSubmit={(formData) => {
+                                    const newEntry = {
+                                        ...formData,
+                                        id: complaintsData.length + 1,
+                                        submittedDate: new Date().toLocaleDateString(),
+                                        status: "Pending",
+                                        statusColor: "yellow",
+                                        statusIcon: Clock,
+                                        attachments: 0,
+                                        timeAgo: "Just now",
+                                        adminResponse: null,
+                                    };
+                                    setComplaintsData([newEntry, ...complaintsData]);
+                                    setShowForm(false);
+                                }}
+                                onClose={() => setShowForm(false)}
+                            />
+                        )}
+
+                        {selectedComplaint && (
+                            <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+                                <div className="bg-white rounded-lg p-6 w-[500px] max-h-[80vh] overflow-y-auto shadow-lg">
+                                    <h2 className="text-lg font-semibold mb-2">{selectedComplaint.title}</h2>
+                                    <p className="text-sm text-gray-600 mb-1">
+                                        <strong>Category:</strong> {selectedComplaint.category}
+                                    </p>
+                                    <p className="text-sm text-gray-600 mb-3">
+                                        <strong>Status:</strong> {selectedComplaint.status}
+                                    </p>
+                                    <p className="mb-4">{selectedComplaint.description}</p>
+
+                                    {selectedComplaint.adminResponse && (
+                                        <div className="bg-orange-100 p-4 rounded-md border-l-4 border-orange-500 mb-4">
+                                            <p className="font-medium mb-1">Admin Response:</p>
+                                            <p>{selectedComplaint.adminResponse.message}</p>
+                                        </div>
+                                    )}
+
+                                    <div className="flex justify-end">
+                                        <button
+                                            onClick={() => setSelectedComplaint(null)}
+                                            className="px-4 py-2 bg-orange-500 text-white rounded-md hover:bg-orange-600"
+                                        >
+                                            Close
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
                     </Main>
                 </div>
             </div>

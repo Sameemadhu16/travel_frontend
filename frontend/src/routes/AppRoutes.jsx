@@ -4,6 +4,7 @@ import Search from '../pages/hotels/search/Search';
 import Hotel from '../pages/hotels/Details/Hotel';
 import HotelRegistration from '../pages/hotels/auth/HotelRegistration';
 import RoomsAdd from '../pages/hotels/Rooms/RoomsAdd';
+import RoomEdit from '../pages/hotels/Rooms/RoomEdit';
 import Home from '../pages/home/Home';
 import Details from '../pages/partner/details/Details';
 import SearchVehicles from '../pages/vehicles/search/SearchVehicles';
@@ -58,13 +59,18 @@ import VehicleBookingConfirmation from '../pages/bookings/VehicleBookingConfirma
 // Admin imports
 import AdminDashboard from '../pages/admin/Dashboard';
 import Users from '../pages/admin/Users';
+import PartnerManagement from '../pages/admin/PartnerManagement';
+import TourRequests from '../pages/admin/TourRequests';
 import Listings from '../pages/admin/Listings';
 import Reviews from '../pages/admin/Reviews';
 import Reports from '../pages/admin/Reports';
 import Notifications from '../pages/admin/Notifications';
 import Payments from '../pages/admin/Payments';
 import Bookings from '../pages/admin/Bookings';
+import Calendar from '../pages/admin/Calendar';
+import AdminAnalytics from '../pages/admin/Analytics';
 import AdminSettings from '../pages/admin/Settings';
+import AdminHelpCenter from '../pages/admin/HelpCenter';
 
 // Guide Registration imports
 import GuideRegister from '../pages/guide/auth/guideRegister';
@@ -110,6 +116,7 @@ import BasicInfoStep from '../pages/AI-Trip-Create/BasicInfoStep';
 import PreferenceInfoStep from '../pages/AI-Trip-Create/PreferenceInfoStep';
 import AIGenerationStep from '../pages/AI-Trip-Create/AIGenerationStep';
 import Trips from '../pages/trips/Trips';
+import GuideEarnings from '../pages/guide/GuideEarnings';
 // import { Users } from 'lucide-react';
 
 export default function AppRoutes() {
@@ -180,6 +187,8 @@ export default function AppRoutes() {
             <Route path='/guide-notifications' element={<GuideNotifications />} />
             <Route path='/guide-reviews' element={<GuideReviews />} />
             <Route path='/guide-availability' element={<GuideAvailability />} />
+            <Route path='/earnings' element={<GuideEarnings />} />
+            <Route path='/guide-tour-history' element={<GuideTourHistory />} />
 
             {/* Authentication-based conditional routes */}
             {isAuthenticated ? (
@@ -193,6 +202,7 @@ export default function AppRoutes() {
                     <Route path='/guide-pending' element={<GuidePending />} />
                     <Route path='/vehicle-agency-pending' element={<VehicleAgencyPending />} />
                     <Route path='/rooms-add' element={<RoomsAdd />} />
+                    <Route path='/rooms-edit/:roomId' element={<RoomEdit />} />
                     <Route path='/partner-details' element={<Details />} />
                     <Route path='/choose-property' element={<ChooseProperty />} />
                     <Route path='/vehicle-registration' element={<VehicleRegistration />} />
@@ -206,26 +216,40 @@ export default function AppRoutes() {
                     {/* Admin routes */}
                     <Route path='/admin/dashboard' element={<AdminDashboard />} />
                     <Route path='/admin/users' element={<Users />} />
+                    <Route path='/admin/partners' element={<PartnerManagement />} />
+                    <Route path='/admin/tour-requests' element={<TourRequests />} />
                     <Route path='/admin/listings' element={<Listings />} />
                     <Route path='/admin/reviews' element={<Reviews />} />
                     <Route path='/admin/reports' element={<Reports />} />
                     <Route path='/admin/notifications' element={<Notifications />} />
                     <Route path='/admin/payments' element={<Payments />} />
                     <Route path='/admin/bookings' element={<Bookings />} />
+                    <Route path='/admin/calendar' element={<Calendar />} />
+                    <Route path='/admin/analytics' element={<AdminAnalytics />} />
                     <Route path='/admin/settings' element={<AdminSettings />} />
+                    <Route path='/admin/help' element={<AdminHelpCenter />} />
                     <Route path='/admin/guide-review' element={<AdminGuideReview />} />
                     <Route path='/admin/hotel-review' element={<AdminHotelReview />} />
                     <Route path='/admin/vehicle-agency-review' element={<AdminVehicleAgencyReview />} />
 
                     {/* Hotel Dashboard routes */}
+                    <Route path='/hotel/dashboard/:hotelId' element={<HotelDashboard />} />
                     <Route path='/hotel/dashboard' element={<HotelDashboard />} />
+                    <Route path='/hotel/listings/:hotelId' element={<HotelListings />} />
                     <Route path='/hotel/listings' element={<HotelListings />} />
+                    <Route path='/hotel/rooms/:hotelId' element={<RoomTypes />} />
                     <Route path='/hotel/rooms' element={<RoomTypes />} />
+                    <Route path='/hotel/bookings/:hotelId' element={<BookingsPage />} />
                     <Route path='/hotel/bookings' element={<BookingsPage />} />
+                    <Route path='/hotel/calendar/:hotelId' element={<HotelCalendar />} />
                     <Route path='/hotel/calendar' element={<HotelCalendar />} />
+                    <Route path='/hotel/payments/:hotelId' element={<PaymentsPage />} />
                     <Route path='/hotel/payments' element={<PaymentsPage />} />
+                    <Route path='/hotel/reviews/:hotelId' element={<HotelReviews />} />
                     <Route path='/hotel/reviews' element={<HotelReviews />} />
+                    <Route path='/hotel/reports/:hotelId' element={<HotelReports />} />
                     <Route path='/hotel/reports' element={<HotelReports />} />
+                    <Route path='/hotel/settings/:hotelId' element={<HotelSettings />} />
                     <Route path='/hotel/settings' element={<HotelSettings />} />
                     <Route path='/hotel/branch/:id' element={<HotelDetails />} />
 
