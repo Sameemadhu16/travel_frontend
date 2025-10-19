@@ -14,46 +14,63 @@ export function createTripRequest(formData, userId) {
     } = formData;
 
     // Extract guide IDs from selected guides
-    const selectedGuideIds = (selectedItems?.guides || []).map(guide => guide.id);
+    const selectedGuideIds = (selectedItems?.guides || []).map(guide => guide.id).filter(Boolean);
     
     // Extract hotel IDs (legacy and night-wise)
-    const selectedHotelIds = (selectedItems?.hotels || []).map(hotel => hotel.id);
+    const selectedHotelIds = (selectedItems?.hotels || []).map(hotel => hotel.id).filter(Boolean);
     const selectedNightHotelIds = (selectedItems?.nightHotels || [])
         .filter(hotel => hotel?.id)
         .map(hotel => hotel.id);
     
     // Extract room IDs (legacy and night-wise)
-    const selectedRoomIds = (selectedItems?.rooms || []).map(room => room.id);
+    const selectedRoomIds = (selectedItems?.rooms || []).map(room => room.id).filter(Boolean);
     const selectedNightRoomIds = (selectedItems?.nightRooms || [])
         .filter(room => room?.id)
         .map(room => room.id);
+
+    // Parse number of travelers from formData structure
+    const numberOfAdults = parseInt(travelDetails?.adults) || 1;
+    const numberOfKids = parseInt(travelDetails?.children) || 0;
+    
+    // Calculate distance from vehicle trip cost data if available
+    const distanceKm = selectedItems?.selectedVehicle?.tripCostData?.cost?.distance || 0;
+
+    // Format time properly - ensure it has seconds
+    const formatTime = (time) => {
+        if (!time) return null;
+        // If time is like "06:16", add ":00" for seconds
+        if (time.split(':').length === 2) {
+            return `${time}:00`;
+        }
+        return time;
+    };
 
     return {
         // Trip code and user
         tripCode: generateTripCode(),
         user: { id: userId },
         
-        // Basic trip information
-        pickupLocation: travelDetails?.pickupLocation || "",
+        // Basic trip information - FIX field names to match formData structure
+        pickupLocation: travelDetails?.location || "",  // Changed from pickupLocation
         tripStartDate: travelDetails?.startDate || null,
-        tripEndDate: travelDetails?.endDate || null,
-        startTime: travelDetails?.startTime || "08:00:00",
+        tripEndDate: null,  // Not collected in current flow
+        startTime: formatTime(travelDetails?.time),  // Format time with seconds
         
         // Places to visit (will be populated from itinerary if available)
         placesToBeVisit: extractPlaceIds(itinerary),
         
-        // Travelers count
-        numberOfAdults: parseInt(travelDetails?.numberOfAdults) || 0,
-        numberOfKids: parseInt(travelDetails?.numberOfKids) || 0,
+        // Travelers count - FIX field names
+        numberOfAdults: numberOfAdults,
+        numberOfKids: numberOfKids,
         
         // Duration and distance
         estimateDuration: travelDetails?.duration || "",
-        distanceKm: parseInt(travelDetails?.distanceKm) || 0,
+        distanceKm: distanceKm,
         
         // Trip status
         tripStatus: "pending",
         
-        // Selected vehicle
+        // Selected vehicle - FIX to handle actual structure
         selectedVehicleAgency: selectedItems?.selectedVehicle?.agency?.id
             ? { id: selectedItems.selectedVehicle.agency.id }
             : null,
@@ -73,8 +90,8 @@ export function createTripRequest(formData, userId) {
         selectedRooms: (selectedRoomIds.length > 0 ? selectedRoomIds : selectedNightRoomIds)
             .map(roomId => ({ id: roomId })),
         
-        // Pricing
-        basePrice: parseFloat(bookingSummary?.basePrice) || 0,
+        // Pricing - FIX to calculate from bookingSummary
+        basePrice: calculateBasePrice(selectedItems, travelDetails),
         totalFare: parseFloat(bookingSummary?.totalCost) || 0,
         
         // Contact Information
@@ -90,13 +107,13 @@ export function createTripRequest(formData, userId) {
         travelExperience: contactInfo?.travelExperience || "",
         referralSource: contactInfo?.referralSource || "",
         
-        // Travel preferences
+        // Travel preferences - FIX to match formData structure
         destination: travelDetails?.destination || "",
         duration: travelDetails?.duration || "",
-        travelStyle: tourPreferences?.travelStyle || "",
-        groupType: tourPreferences?.groupType || "",
+        travelStyle: travelDetails?.travelStyle || tourPreferences?.travelStyle || "",  // Check both locations
+        groupType: travelDetails?.groupType || tourPreferences?.groupType || "",  // Check both locations
         interests: tourPreferences?.interests || [],
-        accommodationPreference: tourPreferences?.accommodationPreference || "",
+        accommodationPreference: tourPreferences?.accommodation || "",  // Changed from accommodationPreference
         budgetRange: tourPreferences?.budgetRange || "",
         activityLevel: tourPreferences?.activityLevel || "",
         diningPreference: tourPreferences?.diningPreference || "",
@@ -116,6 +133,36 @@ export function createTripRequest(formData, userId) {
         // Terms agreement
         agreedToTerms: agreedToTerms || false,
     };
+}
+
+/**
+ * Calculate base price from selected items
+ */
+function calculateBasePrice(selectedItems, travelDetails) {
+    let basePrice = 0;
+    const duration = parseInt(travelDetails?.duration?.match(/(\d+)/)?.[1] || '1');
+    
+    // Add guide cost
+    if (selectedItems?.guides && selectedItems.guides.length > 0) {
+        const guidePrice = selectedItems.guides[0].price || selectedItems.guides[0].pricePerDay || 0;
+        basePrice += guidePrice * duration;
+    }
+    
+    // Add hotel cost
+    if (selectedItems?.nightHotels && selectedItems.nightHotels.length > 0) {
+        selectedItems.nightHotels.forEach((hotel, index) => {
+            const room = selectedItems.nightRooms?.[index];
+            const nightCost = room ? (room.price || 0) : (hotel.pricePerNight || hotel.price || 0);
+            basePrice += nightCost;
+        });
+    }
+    
+    // Add vehicle cost
+    if (selectedItems?.selectedVehicle?.tripCostData) {
+        basePrice += selectedItems.selectedVehicle.tripCostData.cost.totalCost || 0;
+    }
+    
+    return basePrice;
 }
 
 /**
