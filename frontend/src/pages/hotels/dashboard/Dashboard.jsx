@@ -2,22 +2,11 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { getAuth } from 'firebase/auth';
 import { 
-  FaBed, FaCalendarCheck, FaStar, FaWallet, 
-  FaUsers, FaCheck, FaClock 
+  FaBed, FaCalendarCheck, FaStar, FaWallet, FaClock, FaCog
 } from 'react-icons/fa';
 import HotelLayout from '../../../components/hotel/HotelLayout';
-import { 
-  DashboardCard, 
-  PageHeader, 
-  RoomStatusCard, 
-  BookingItem,
-  ScheduleItem,
-  CardContainer,
-  QuickAction
-} from '../../../components/hotel/DashboardComponents';
-import AdminLayout from '../../../components/admin/AdminLayout';
-import StatusBadge from '../../../components/admin/StatusBadge';
 import { getHotelByUserDocId, getHotelById } from '../../../api/hotelService';
+import { getRoomsByHotelId } from '../../../api/roomService';
 import { showToastMessage } from '../../../utils/toastHelper';
 import { app } from '../../../config/firebase';
 import Spinner from '../../../components/Spinner';
@@ -41,49 +30,23 @@ function DashboardMetricCard({ icon, label, value, subValue, color }) {
   );
 }
 
-function RecentBooking({ booking }) {
-  return (
-    <div className="flex items-center gap-4 p-4 border-b last:border-0">
-      <img 
-        src={booking.userImage} 
-        alt={booking.userName} 
-        className="w-10 h-10 rounded-full object-cover"
-      />
-      <div className="flex-grow">
-        <h4 className="font-medium">{booking.userName}</h4>
-        <p className="text-sm text-content-secondary">{booking.roomType} - {booking.duration}</p>
-      </div>
-      <div className="text-right">
-        <p className="font-medium">LKR {booking.amount}</p>
-        <StatusBadge status={booking.status} />
-      </div>
-    </div>
-  );
-}
-
-function RoomStatusDisplay({ room }) {
-  return (
-    <div className="bg-white p-4 rounded-lg border">
-      <div className="flex items-center gap-3 mb-2">
-        <div className={`w-3 h-3 rounded-full ${
-          room.status === 'Occupied' ? 'bg-red-500' :
-          room.status === 'Available' ? 'bg-green-500' :
-          'bg-yellow-500'
-        }`} />
-        <h4 className="font-medium">{room.number}</h4>
-      </div>
-      <p className="text-sm text-content-secondary mb-1">{room.type}</p>
-      <p className="text-sm text-content-secondary">{room.status}</p>
-    </div>
-  );
-}
-
 export default function HotelDashboard() {
   const { hotelId } = useParams();
   const navigate = useNavigate();
   const auth = getAuth(app);
   const [hotelData, setHotelData] = useState(null);
+  const [rooms, setRooms] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [stats, setStats] = useState({
+    totalRooms: 0,
+    occupiedRooms: 0,
+    availableRooms: 0,
+    maintenanceRooms: 0,
+    todayBookings: 0,
+    monthlyRevenue: 0,
+    averageRating: 0,
+    totalReviews: 0
+  });
 
   useEffect(() => {
     const fetchHotelData = async () => {
@@ -112,6 +75,27 @@ export default function HotelDashboard() {
           // Update URL with hotel ID if not present
           if (!hotelId && hotel.id) {
             navigate(`/hotel/dashboard/${hotel.id}`, { replace: true });
+          }
+
+          // Fetch rooms for this hotel
+          try {
+            const hotelRooms = await getRoomsByHotelId(hotel.id);
+            setRooms(hotelRooms || []);
+
+            // Calculate room statistics
+            const occupied = hotelRooms.filter(r => r.availability === false).length;
+            const available = hotelRooms.filter(r => r.availability === true).length;
+            
+            setStats(prev => ({
+              ...prev,
+              totalRooms: hotelRooms.length,
+              occupiedRooms: occupied,
+              availableRooms: available,
+              maintenanceRooms: 0 // TODO: Add maintenance status to room model
+            }));
+          } catch (roomError) {
+            console.error('Error fetching rooms:', roomError);
+            // Continue even if rooms fail to load
           }
         } else {
           showToastMessage('error', 'No hotel found for your account. Please register your hotel first.');
@@ -142,49 +126,12 @@ export default function HotelDashboard() {
     );
   }
 
-  // Sample data
-  const recentBookings = [
-    {
-      userName: "John Smith",
-      userImage: "/src/assets/users/user1.jpg",
-      roomType: "Deluxe Room",
-      duration: "3 nights",
-      amount: "45,000",
-      status: "Confirmed"
-    },
-    {
-      userName: "Sarah Wilson",
-      userImage: "/src/assets/users/user2.avif",
-      roomType: "Suite",
-      duration: "2 nights",
-      amount: "65,000",
-      status: "Pending"
-    },
-    {
-      userName: "Mike Johnson",
-      userImage: "/src/assets/users/user3.avif",
-      roomType: "Standard Room",
-      duration: "1 night",
-      amount: "25,000",
-      status: "Completed"
-    }
-  ];
-
-  const rooms = [
-    { number: "101", type: "Deluxe Room", status: "Occupied" },
-    { number: "102", type: "Suite", status: "Available" },
-    { number: "103", type: "Standard Room", status: "Maintenance" },
-    { number: "104", type: "Deluxe Room", status: "Available" },
-    { number: "105", type: "Suite", status: "Occupied" },
-    { number: "106", type: "Standard Room", status: "Available" }
-  ];
-
   return (
     <HotelLayout>
       <div className="p-6">
         <div className="mb-6">
           <h1 className="text-2xl font-bold mb-2">{hotelData.hotelName || 'Hotel Dashboard'}</h1>
-          <p className="text-content-secondary">Welcome back! Here's what's happening with your hotel today.</p>
+          <p className="text-content-secondary">Welcome back! Here&apos;s what&apos;s happening with your hotel today.</p>
           {hotelData.isVerified ? (
             <span className="inline-block mt-2 px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm">
               ✓ Verified Hotel
@@ -201,29 +148,29 @@ export default function HotelDashboard() {
           <DashboardMetricCard
             icon={<FaBed />}
             label="Total Rooms"
-            value="24"
-            subValue="18 Occupied, 6 Available"
+            value={stats.totalRooms.toString()}
+            subValue={`${stats.occupiedRooms} Occupied, ${stats.availableRooms} Available`}
             color="bg-brand-primary"
           />
           <DashboardMetricCard
             icon={<FaCalendarCheck />}
-            label="Today's Bookings"
-            value="12"
-            subValue="4 Check-ins, 3 Check-outs"
+            label="Today&apos;s Bookings"
+            value={stats.todayBookings.toString()}
+            subValue="Booking system coming soon"
             color="bg-green-500"
           />
           <DashboardMetricCard
             icon={<FaWallet />}
             label="Revenue (This Month)"
-            value="LKR 845,000"
-            subValue="+15.3% from last month"
+            value={`LKR ${stats.monthlyRevenue.toLocaleString()}`}
+            subValue="Booking system coming soon"
             color="bg-blue-500"
           />
           <DashboardMetricCard
             icon={<FaStar />}
             label="Average Rating"
-            value="4.8"
-            subValue="From 236 reviews"
+            value={stats.averageRating > 0 ? stats.averageRating.toFixed(1) : 'N/A'}
+            subValue={stats.totalReviews > 0 ? `From ${stats.totalReviews} reviews` : 'No reviews yet'}
             color="bg-yellow-500"
           />
         </div>
@@ -236,31 +183,35 @@ export default function HotelDashboard() {
               <div className="p-6 border-b">
                 <h2 className="text-xl font-semibold">Recent Bookings</h2>
               </div>
-              <div className="divide-y">
-                {recentBookings.map((booking, index) => (
-                  <RecentBooking key={index} booking={booking} />
-                ))}
-              </div>
-              <div className="p-4 border-t text-center">
-                <button className="text-brand-primary hover:underline">
-                  View All Bookings
-                </button>
+              <div className="p-8 text-center text-content-secondary">
+                <FaCalendarCheck className="text-4xl mx-auto mb-3 opacity-50" />
+                <p>Booking system coming soon!</p>
+                <p className="text-sm mt-2">Recent hotel bookings will appear here.</p>
               </div>
             </div>
 
             {/* Quick Actions */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-              <button className="p-4 bg-white rounded-xl shadow text-center hover:bg-gray-50">
-                <FaCalendarCheck className="text-2xl text-brand-primary mx-auto mb-2" />
-                <span className="text-sm font-medium">New Booking</span>
+              <button 
+                onClick={() => navigate(`/hotel/rooms/${hotelData.id}`)}
+                className="p-4 bg-white rounded-xl shadow text-center hover:bg-gray-50 transition"
+              >
+                <FaBed className="text-2xl text-brand-primary mx-auto mb-2" />
+                <span className="text-sm font-medium">Manage Rooms</span>
               </button>
-              <button className="p-4 bg-white rounded-xl shadow text-center hover:bg-gray-50">
-                <FaUsers className="text-2xl text-green-500 mx-auto mb-2" />
-                <span className="text-sm font-medium">Guest Check-in</span>
+              <button 
+                onClick={() => navigate(`/hotel/bookings/${hotelData.id}`)}
+                className="p-4 bg-white rounded-xl shadow text-center hover:bg-gray-50 transition"
+              >
+                <FaCalendarCheck className="text-2xl text-green-500 mx-auto mb-2" />
+                <span className="text-sm font-medium">View Bookings</span>
               </button>
-              <button className="p-4 bg-white rounded-xl shadow text-center hover:bg-gray-50">
-                <FaCheck className="text-2xl text-blue-500 mx-auto mb-2" />
-                <span className="text-sm font-medium">Guest Check-out</span>
+              <button 
+                onClick={() => navigate(`/hotel/settings/${hotelData.id}`)}
+                className="p-4 bg-white rounded-xl shadow text-center hover:bg-gray-50 transition"
+              >
+                <FaCog className="text-2xl text-blue-500 mx-auto mb-2" />
+                <span className="text-sm font-medium">Hotel Settings</span>
               </button>
             </div>
           </div>
@@ -270,14 +221,48 @@ export default function HotelDashboard() {
             <div className="p-6 border-b">
               <h2 className="text-xl font-semibold">Room Status</h2>
             </div>
-            <div className="p-4 grid grid-cols-2 gap-4">
-              {rooms.map((room, index) => (
-                <RoomStatusDisplay key={index} room={room} />
-              ))}
+            <div className="p-4">
+              {rooms.length > 0 ? (
+                <>
+                  <div className="grid grid-cols-2 gap-4 max-h-96 overflow-y-auto">
+                    {rooms.slice(0, 10).map((room) => (
+                      <div key={room.id} className="bg-white p-4 rounded-lg border">
+                        <div className="flex items-center gap-3 mb-2">
+                          <div className={`w-3 h-3 rounded-full ${
+                            !room.availability ? 'bg-red-500' : 'bg-green-500'
+                          }`} />
+                          <h4 className="font-medium">{room.roomType}</h4>
+                        </div>
+                        <p className="text-sm text-content-secondary mb-1">
+                          Max Guests: {room.maxGuests}
+                        </p>
+                        <p className="text-sm font-medium text-brand-primary">
+                          LKR {room.pricePerNight?.toLocaleString()}/night
+                        </p>
+                        <p className="text-xs text-content-secondary mt-1">
+                          {room.availability ? '✓ Available' : '✗ Occupied'}
+                        </p>
+                      </div>
+                    ))}
+                  </div>
+                  {rooms.length > 10 && (
+                    <p className="text-sm text-content-secondary mt-2 text-center">
+                      Showing 10 of {rooms.length} rooms
+                    </p>
+                  )}
+                </>
+              ) : (
+                <p className="text-content-secondary text-center py-8">
+                  No rooms added yet. Add your first room to get started!
+                </p>
+              )}
             </div>
             <div className="p-4 border-t text-center">
-              <button className="text-brand-primary hover:underline">
-                View All Rooms
+              <button 
+                onClick={() => navigate(`/hotel/rooms/${hotelData.id}`)}
+                className="text-brand-primary hover:underline"
+              >
+                {rooms.length > 0 ? 'Manage All Rooms' : 'Add Your First Room'}
               </button>
             </div>
           </div>
@@ -286,28 +271,12 @@ export default function HotelDashboard() {
         {/* Upcoming Section */}
         <div className="mt-6">
           <div className="bg-white rounded-xl shadow p-6">
-            <h2 className="text-xl font-semibold mb-4">Today's Schedule</h2>
+            <h2 className="text-xl font-semibold mb-4">Today&apos;s Schedule</h2>
             <div className="space-y-4">
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                <FaClock className="text-brand-primary" />
-                <div>
-                  <p className="font-medium">Check-in: Room 204</p>
-                  <p className="text-sm text-content-secondary">Guest: David Miller - 2:00 PM</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                <FaClock className="text-brand-primary" />
-                <div>
-                  <p className="font-medium">Check-out: Room 305</p>
-                  <p className="text-sm text-content-secondary">Guest: Sarah Johnson - 11:00 AM</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
-                <FaClock className="text-brand-primary" />
-                <div>
-                  <p className="font-medium">Room Cleaning: 401-405</p>
-                  <p className="text-sm text-content-secondary">Scheduled: 1:00 PM - 3:00 PM</p>
-                </div>
+              <div className="p-8 text-center text-content-secondary">
+                <FaClock className="text-4xl mx-auto mb-3 opacity-50" />
+                <p>Booking and scheduling system coming soon!</p>
+                <p className="text-sm mt-2">Check-ins, check-outs, and room cleaning schedules will appear here.</p>
               </div>
             </div>
           </div>
