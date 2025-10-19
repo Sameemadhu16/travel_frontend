@@ -7,121 +7,11 @@ import AdminCard from '../../components/admin/AdminCard';
 import AdminSidebar from '../../components/admin/AdminSidebar';
 import PrimaryButton from '../../components/PrimaryButton';
 import SecondaryButton from '../../components/SecondaryButton';
+import Spinner from '../../components/Spinner';
+import { getAdminDashboardStats } from '../../api/adminDashboardService';
+import { showToastMessage } from '../../utils/toastHelper';
 import user4 from '../../assets/users/user4.jpg';
 import user5 from '../../assets/users/user5.jpg';
-
-// Mock data for Sri Lankan travel platform
-const sriLankanActivities = [
-  {
-    id: 1,
-    type: 'booking',
-    customerName: 'Tharindu Perera',
-    customerAvatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop&crop=center',
-    action: 'New cultural tour booking',
-    details: 'Anuradhapura to Polonnaruwa - 2 days heritage tour',
-    amount: 'Rs. 45,000',
-    time: '3 minutes ago',
-    status: 'New',
-    location: 'Colombo'
-  },
-  {
-    id: 2,
-    type: 'payment',
-    customerName: 'Sachini Fernando',
-    customerAvatar: 'https://images.unsplash.com/photo-1494790108755-2616b4e8e4f8?w=100&h=100&fit=crop&crop=center',
-    action: 'Payment received for Ayurveda package',
-    details: 'Booking #TLK-2024-156 - Bentota retreat',
-    amount: 'Rs. 125,000',
-    time: '12 minutes ago',
-    status: 'Payment',
-    location: 'Kandy'
-  },
-  {
-    id: 3,
-    type: 'partner',
-    customerName: 'Chamara Rathnayake',
-    customerAvatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop&crop=center',
-    action: 'New hotel partnership request',
-    details: 'Lagoon Paradise Resort - Negombo',
-    amount: '',
-    time: '25 minutes ago',
-    status: 'Pending',
-    location: 'Negombo'
-  },
-  {
-    id: 4,
-    type: 'complaint',
-    customerName: 'Malini Silva',
-    customerAvatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop&crop=center',
-    action: 'Service complaint submitted',
-    details: 'Late pickup for Yala safari tour',
-    amount: '',
-    time: '1 hour ago',
-    status: 'Issue',
-    location: 'Tissamaharama'
-  },
-  {
-    id: 5,
-    type: 'booking',
-    customerName: 'Kasun Wickramasinghe',
-    customerAvatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&h=100&fit=crop&crop=center',
-    action: 'Hill country tour completed',
-    details: 'Nuwara Eliya tea plantation tour - 3 days',
-    amount: 'Rs. 75,000',
-    time: '2 hours ago',
-    status: 'Completed',
-    location: 'Nuwara Eliya'
-  }
-];
-
-const topPerformers = [
-  {
-    rank: 1,
-    name: 'Ceylon Heritage Tours',
-    type: 'Tour Operator',
-    rating: 4.9,
-    tours: 187,
-    revenue: 'Rs. 2.8M',
-    location: 'Kandy'
-  },
-  {
-    rank: 2,
-    name: 'Cinnamon Hotels & Resorts',
-    type: 'Hotel Chain',
-    rating: 4.8,
-    bookings: 312,
-    revenue: 'Rs. 4.2M',
-    location: 'Colombo'
-  },
-  {
-    rank: 3,
-    name: 'Lanka Safari Adventures',
-    type: 'Safari Operator',
-    rating: 4.7,
-    tours: 156,
-    revenue: 'Rs. 1.9M',
-    location: 'Yala'
-  },
-  {
-    rank: 4,
-    name: 'Ayurveda Wellness Retreats',
-    type: 'Wellness Center',
-    rating: 4.9,
-    packages: 98,
-    revenue: 'Rs. 3.1M',
-    location: 'Bentota'
-  }
-];
-
-const systemStats = {
-  activeTours: 73,
-  registeredPartners: 456,
-  totalUsers: 18347,
-  systemUptime: 99.8,
-  pendingApprovals: 28,
-  activeBookings: 234,
-  monthlyGrowth: 15.8
-};
 
 // Enhanced Statistics Card Component
 function EnhancedStatsCard({ icon, title, value, change, changeType, color, subtitle, onClick }) {
@@ -210,7 +100,19 @@ function ActivityItem({ activity }) {
 
 export default function AdminDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
-  const [recentActivities] = useState(sriLankanActivities);
+  const [loading, setLoading] = useState(true);
+  const [dashboardData, setDashboardData] = useState(null);
+  const [recentActivities, setRecentActivities] = useState([]);
+  const [topPerformers, setTopPerformers] = useState([]);
+  const [systemStats, setSystemStats] = useState({
+    activeTours: 0,
+    registeredPartners: 0,
+    totalUsers: 0,
+    systemUptime: 99.8,
+    pendingApprovals: 0,
+    activeBookings: 0,
+    monthlyGrowth: 0
+  });
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -218,6 +120,26 @@ export default function AdminDashboard() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const data = await getAdminDashboardStats();
+      setDashboardData(data);
+      setRecentActivities(data.recentActivities || []);
+      setTopPerformers(data.topPerformers || []);
+      setSystemStats(data.systemStats || systemStats);
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error);
+      showToastMessage('error', 'Failed to load dashboard data');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const formatDateTime = (date) => {
     return date.toLocaleDateString('en-US', {
@@ -229,6 +151,23 @@ export default function AdminDashboard() {
       minute: '2-digit'
     });
   };
+
+  if (loading) {
+    return (
+      <div className='flex'>
+        <div className='sticky top-0 h-fit'>
+          <AdminSidebar />
+        </div>
+        <div className='flex-1'>
+          <Main hasNavbar={true}>
+            <div className="flex justify-center items-center h-screen">
+              <Spinner />
+            </div>
+          </Main>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='flex'>
@@ -254,8 +193,8 @@ export default function AdminDashboard() {
             <div className="bg-gradient-to-r from-orange-50 to-orange-100 border border-orange-200 rounded-lg p-4 flex items-center gap-3">
               <FaBell className="text-orange-500 text-xl" />
               <div>
-                <p className="font-semibold text-orange-800">28 partner requests awaiting approval</p>
-                <p className="text-sm text-orange-700">New hotels and tour operators from Galle, Kandy, and Nuwara Eliya regions</p>
+                <p className="font-semibold text-orange-800">{systemStats.pendingApprovals} partner requests awaiting approval</p>
+                <p className="text-sm text-orange-700">New hotels and tour operators from various regions</p>
               </div>
               <Link 
                 to="/admin/partners" 
@@ -270,43 +209,43 @@ export default function AdminDashboard() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <EnhancedStatsCard
               icon={<FaClipboardList className="text-orange-500 text-xl" />}
-              title="Partner Requests"
-              value="28"
-              change="12%"
-              changeType="positive"
+              title={dashboardData?.partnerRequests?.title || "Partner Requests"}
+              value={dashboardData?.partnerRequests?.value || "0"}
+              change={dashboardData?.partnerRequests?.change || "0%"}
+              changeType={dashboardData?.partnerRequests?.changeType || "positive"}
               color="bg-orange-100"
-              subtitle="Hotels, guides & drivers"
+              subtitle={dashboardData?.partnerRequests?.subtitle || "Hotels, guides & drivers"}
               onClick={() => window.location.href = '/admin/partners'}
             />
 
             <EnhancedStatsCard
               icon={<FaUsers className="text-blue-500 text-xl" />}
-              title="Active Travelers"
-              value="18,347"
-              change="15.8%"
-              changeType="positive"
+              title={dashboardData?.activeTravelers?.title || "Active Travelers"}
+              value={dashboardData?.activeTravelers?.value || "0"}
+              change={dashboardData?.activeTravelers?.change || "0%"}
+              changeType={dashboardData?.activeTravelers?.changeType || "positive"}
               color="bg-blue-100"
-              subtitle="Monthly active users"
+              subtitle={dashboardData?.activeTravelers?.subtitle || "Monthly active users"}
             />
 
             <EnhancedStatsCard
               icon={<FaRupeeSign className="text-green-500 text-xl" />}
-              title="Monthly Revenue"
-              value="Rs. 12.4M"
-              change="22.5%"
-              changeType="positive"
+              title={dashboardData?.monthlyRevenue?.title || "Monthly Revenue"}
+              value={dashboardData?.monthlyRevenue?.value || "Rs. 0"}
+              change={dashboardData?.monthlyRevenue?.change || "0%"}
+              changeType={dashboardData?.monthlyRevenue?.changeType || "positive"}
               color="bg-green-100"
-              subtitle="October 2024 earnings"
+              subtitle={dashboardData?.monthlyRevenue?.subtitle || "Monthly earnings"}
             />
 
             <EnhancedStatsCard
               icon={<FaCalendarCheck className="text-purple-500 text-xl" />}
-              title="Active Bookings"
-              value="234"
-              change="8.3%"
-              changeType="positive"
+              title={dashboardData?.activeBookings?.title || "Active Bookings"}
+              value={dashboardData?.activeBookings?.value || "0"}
+              change={dashboardData?.activeBookings?.change || "0%"}
+              changeType={dashboardData?.activeBookings?.changeType || "positive"}
               color="bg-purple-100"
-              subtitle="Currently in progress"
+              subtitle={dashboardData?.activeBookings?.subtitle || "Currently in progress"}
             />
           </div>
 
@@ -316,16 +255,16 @@ export default function AdminDashboard() {
               <div className="text-center p-4">
                 <FaChartBar className="text-4xl text-green-500 mx-auto mb-3" />
                 <h3 className="text-lg font-semibold mb-2">Platform Growth</h3>
-                <p className="text-3xl font-bold text-green-600 mb-1">+{systemStats.monthlyGrowth}%</p>
+                <p className="text-3xl font-bold text-green-600 mb-1">+{systemStats.monthlyGrowth?.toFixed(1)}%</p>
                 <p className="text-sm text-gray-600">Compared to last month</p>
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>New Registrations</span>
-                    <span className="font-medium">+2,847</span>
+                    <span className="font-medium">+{systemStats.newRegistrations}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Partner Sign-ups</span>
-                    <span className="font-medium">+156</span>
+                    <span className="font-medium">+{systemStats.partnerSignups}</span>
                   </div>
                 </div>
               </div>
@@ -335,16 +274,16 @@ export default function AdminDashboard() {
               <div className="text-center p-4">
                 <FaMapMarkerAlt className="text-4xl text-orange-500 mx-auto mb-3" />
                 <h3 className="text-lg font-semibold mb-2">Coverage Areas</h3>
-                <p className="text-3xl font-bold text-orange-600 mb-1">25</p>
+                <p className="text-3xl font-bold text-orange-600 mb-1">{dashboardData?.performanceMetrics?.coveredDistricts || 25}</p>
                 <p className="text-sm text-gray-600">Districts covered</p>
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>Western Province</span>
-                    <span className="font-medium">156 partners</span>
+                    <span className="font-medium">{dashboardData?.performanceMetrics?.westernProvincePartners || 0} partners</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Central Province</span>
-                    <span className="font-medium">89 partners</span>
+                    <span className="font-medium">{dashboardData?.performanceMetrics?.centralProvincePartners || 0} partners</span>
                   </div>
                 </div>
               </div>
@@ -354,16 +293,16 @@ export default function AdminDashboard() {
               <div className="text-center p-4">
                 <FaStar className="text-4xl text-yellow-500 mx-auto mb-3" />
                 <h3 className="text-lg font-semibold mb-2">Service Quality</h3>
-                <p className="text-3xl font-bold text-yellow-600 mb-1">4.8</p>
+                <p className="text-3xl font-bold text-yellow-600 mb-1">{dashboardData?.performanceMetrics?.averageRating?.toFixed(1) || "4.8"}</p>
                 <p className="text-sm text-gray-600">Average rating</p>
                 <div className="mt-4 space-y-2">
                   <div className="flex justify-between text-sm">
                     <span>5-star reviews</span>
-                    <span className="font-medium">78%</span>
+                    <span className="font-medium">{dashboardData?.performanceMetrics?.fiveStarPercentage?.toFixed(0) || "78"}%</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span>Response time</span>
-                    <span className="font-medium">&lt; 2 hours</span>
+                    <span className="font-medium">{dashboardData?.performanceMetrics?.averageResponseTime || "< 2 hours"}</span>
                   </div>
                 </div>
               </div>
@@ -542,7 +481,7 @@ export default function AdminDashboard() {
                 </SecondaryButton>
               </div>
               <div className="space-y-4">
-                {topPerformers.map((performer) => (
+                {topPerformers.length > 0 ? topPerformers.map((performer) => (
                   <div key={performer.rank} className="flex items-center gap-4 p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
                     <div className={`w-10 h-10 rounded-full flex items-center justify-center text-white font-bold text-sm ${
                       performer.rank === 1 ? 'bg-yellow-500' : 
@@ -564,13 +503,15 @@ export default function AdminDashboard() {
                     </div>
                     <div className="text-right">
                       <p className="text-sm font-bold">
-                        {performer.tours ? `${performer.tours} tours` : 
-                         performer.bookings ? `${performer.bookings} bookings` : 
-                         `${performer.packages} packages`}
+                        {performer.count} {performer.countLabel}
                       </p>
                     </div>
                   </div>
-                ))}
+                )) : (
+                  <div className="text-center text-gray-500 py-8">
+                    <p>No top performers data available yet</p>
+                  </div>
+                )}
               </div>
             </AdminCard>
           </div>
