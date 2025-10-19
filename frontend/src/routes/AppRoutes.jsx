@@ -110,7 +110,6 @@ import BookingsPage from '../pages/hotels/bookings/BookingsPage';
 import HotelReviews from '../pages/hotels/reviews/HotelReviews';
 import HotelReports from '../pages/hotels/reports/HotelReports';
 import HotelSettings from '../pages/hotels/settings/HotelSettings';
-import HotelCalendar from '../pages/hotels/calendar/HotelCalendar';
 import PaymentsPage from '../pages/hotels/payments/PaymentsPage';
 import BasicInfoStep from '../pages/AI-Trip-Create/BasicInfoStep';
 import PreferenceInfoStep from '../pages/AI-Trip-Create/PreferenceInfoStep';
@@ -170,11 +169,7 @@ export default function AppRoutes() {
                     <Vehicle />
                 </FormProvider>
             } />
-            <Route path='/hotel/:id' element={
-                <FormProvider initialValues={initialTripFormData.formData}>
-                    <Hotel />
-                </FormProvider>
-            } />
+
 
             {/* Guide-related routes - available to all users */}
             <Route path='/guide-profile' element={<GuideProfile />} />
@@ -241,17 +236,21 @@ export default function AppRoutes() {
                     <Route path='/hotel/rooms' element={<RoomTypes />} />
                     <Route path='/hotel/bookings/:hotelId' element={<BookingsPage />} />
                     <Route path='/hotel/bookings' element={<BookingsPage />} />
-                    <Route path='/hotel/calendar/:hotelId' element={<HotelCalendar />} />
-                    <Route path='/hotel/calendar' element={<HotelCalendar />} />
-                    <Route path='/hotel/payments/:hotelId' element={<PaymentsPage />} />
                     <Route path='/hotel/payments' element={<PaymentsPage />} />
                     <Route path='/hotel/reviews/:hotelId' element={<HotelReviews />} />
                     <Route path='/hotel/reviews' element={<HotelReviews />} />
                     <Route path='/hotel/reports/:hotelId' element={<HotelReports />} />
                     <Route path='/hotel/reports' element={<HotelReports />} />
-                    <Route path='/hotel/settings/:hotelId' element={<HotelSettings />} />
+                    <Route path='/hotel/analytics' element={<HotelReports />} />
                     <Route path='/hotel/settings' element={<HotelSettings />} />
                     <Route path='/hotel/branch/:id' element={<HotelDetails />} />
+                    
+                    {/* Hotel detail route - must come after specific hotel dashboard routes */}
+                    <Route path='/hotel/:id' element={
+                        <FormProvider initialValues={initialTripFormData.formData}>
+                            <Hotel />
+                        </FormProvider>
+                    } />
 
                     {/* Partner Dashboard routes */}
                     <Route path='/partner/dashboard' element={<Dashboard />} />
