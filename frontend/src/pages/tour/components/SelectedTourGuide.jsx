@@ -1,7 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import FormContext from '../../../context/InitialValues';
-import axios from 'axios';
+import { getGuideById } from '../../../api/tourService';
 
 export default function SelectedTourGuide() {
     const { formData } = useContext(FormContext);
@@ -21,12 +21,9 @@ export default function SelectedTourGuide() {
 
             try {
                 setLoading(true);
-                // Fetch detailed information for each guide
-                const guidePromises = guideIds.map(id =>
-                    axios.get(`http://localhost:8080/api/guides/${id}`)
-                );
-                const responses = await Promise.all(guidePromises);
-                const fetchedGuides = responses.map(response => response.data);
+                // Fetch detailed information for each guide using the proper service
+                const guidePromises = guideIds.map(id => getGuideById(id));
+                const fetchedGuides = await Promise.all(guidePromises);
                 setGuideDetails(fetchedGuides);
             } catch (error) {
                 console.error('Error fetching guide details:', error);

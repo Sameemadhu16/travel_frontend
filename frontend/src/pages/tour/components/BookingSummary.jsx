@@ -75,6 +75,8 @@ export default function BookingSummary({tripData}) {
         
         try {
             console.log('Submitting trip data:', tripData);
+            console.log('Trip data structure:', JSON.stringify(tripData, null, 2));
+            
             const response = await createTrip(tripData);
             console.log('Trip created successfully:', response);
             
@@ -84,12 +86,36 @@ export default function BookingSummary({tripData}) {
             // Navigate to success page
             navigate('/tour/request-sent', { state: { tripData: response } });
         } catch (error) {
-            console.error('Error creating trip:', error);
-            setSubmitError(
-                error.response?.data?.message || 
-                error.message || 
-                'Failed to submit tour request. Please try again.'
-            );
+            console.error('Error creating trip - Full error:', error);
+            console.error('Error response:', error.response);
+            console.error('Error data:', error.response?.data);
+            
+            // Build detailed error message
+            let errorMessage = 'Failed to submit tour request. ';
+            
+            if (error.response) {
+                // Server responded with error
+                const serverError = error.response.data;
+                if (typeof serverError === 'string') {
+                    errorMessage += serverError;
+                } else if (serverError.message) {
+                    errorMessage += serverError.message;
+                } else if (serverError.error) {
+                    errorMessage += serverError.error;
+                } else {
+                    errorMessage += `Server error (${error.response.status})`;
+                }
+            } else if (error.request) {
+                // Request made but no response
+                errorMessage += 'No response from server. Please check if backend is running.';
+            } else {
+                // Error in request setup
+                errorMessage += error.message || 'Unknown error occurred.';
+            }
+            
+            errorMessage += ' Please try again.';
+            
+            setSubmitError(errorMessage);
         } finally {
             setIsSubmitting(false);
         }
