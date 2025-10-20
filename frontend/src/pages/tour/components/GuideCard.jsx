@@ -3,7 +3,12 @@ import defaultGuideImg from '../../../assets/users/user1.jpg';
 
 export default function GuideCard({ guide, isSelected, onSelect, disabled }) {
     // Map backend fields to frontend display
-    const name = guide.user?.fullName || guide.name || 'Unknown Guide';
+    const firstName = guide.user?.firstName || '';
+    const lastName = guide.user?.lastName || '';
+    const name = firstName && lastName 
+        ? `${firstName} ${lastName}`.trim() 
+        : guide.name || 'Unknown Guide';
+    
     const rating = guide.rating || 4.5;
     const reviews = guide.reviews || guide.reviewCount || 0;
     const experience = guide.experienceYears 
@@ -12,7 +17,13 @@ export default function GuideCard({ guide, isSelected, onSelect, disabled }) {
     const languages = guide.languagesSpoken || guide.languages || [];
     const specialties = guide.specialization || guide.specialties || [];
     const price = guide.hoursRate || guide.price || guide.pricePerDay || 8500;
-    const image = guide.user?.profilePicture || guide.image || defaultGuideImg;
+    
+    // Get profile picture from user's profilePictures array (first one) or fallback
+    const profilePictures = guide.user?.profilePictures || [];
+    const image = profilePictures.length > 0 
+        ? profilePictures[0] 
+        : guide.image || defaultGuideImg;
+    
     const available = guide.isAvailable !== undefined ? guide.isAvailable : guide.available !== undefined ? guide.available : true;
 
     const renderStars = (rating) => {

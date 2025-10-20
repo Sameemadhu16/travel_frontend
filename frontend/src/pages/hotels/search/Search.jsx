@@ -4,12 +4,13 @@ import CustomSelector from '../../../components/CustomSelector'
 import Main from '../../../components/Main'
 import Title from '../../../components/Title'
 import { amenities, hotelFilterOptions, mealOptions, priceRanges, propertyTypes } from '../../../core/constant'
-import { hotelList } from '../../../core/Lists/hotels'
 import { districts, provinces } from '../../../core/Lists/location'
 import HotelCard from '../components/HotelCard'
 import CheckboxGroup from '../components/CheckboxGroup'
 import Breadcrumb from '../../../components/Breadcrumb'
 import FormContext from '../../../context/InitialValues'
+import { getAllHotels } from '../../../api/tourService'
+import Spinner from '../../../components/Spinner'
 
 const breadcrumbItems = [
     { label: "Home", path: "/home" },
@@ -25,6 +26,12 @@ export default function Search() {
     const [selectedFacilities, setSelectedFacilities] = useState([]);
     const [selectedPriceRanges, setSelectedPriceRanges] = useState([]);
     const [currentNightIndex, setCurrentNightIndex] = useState(0);
+    const [hotelList, setHotelList] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [searchTerm, setSearchTerm] = useState('');
+    const [selectedDistrict, setSelectedDistrict] = useState('');
+    const [selectedProvince, setSelectedProvince] = useState('');
     const { formData, setFormData } = useContext(FormContext);
     const { travelDetails, itinerary, selectedItems } = formData;
 
@@ -37,6 +44,70 @@ export default function Search() {
     };
 
     const numberOfNights = getNightsFromDuration(travelDetails.duration);
+
+    // Fetch hotels from backend API
+    useEffect(() => {
+        const fetchHotels = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                console.log('🏨 Fetching hotels from API...');
+                const hotels = await getAllHotels();
+                console.log('✅ Hotels fetched successfully:', hotels);
+                console.log('📊 Number of hotels:', hotels.length);
+                
+                // Log hotels with rooms
+                hotels.forEach(hotel => {
+                    console.log(`Hotel: ${hotel.hotelName}, Rooms:`, hotel.rooms?.length || 0);
+                });
+                
+                // Map backend hotel data to frontend format
+                const mappedHotels = hotels.map(hotel => ({
+                    id: hotel.id,
+                    name: hotel.hotelName,
+                    location: hotel.city,
+                    city: hotel.city,
+                    district: hotel.district,
+                    province: hotel.province,
+                    street: hotel.street,
+                    rating: 4.5, // Default rating, can be calculated from reviews
+                    pricePerNight: hotel.rooms && hotel.rooms.length > 0 
+                        ? Math.min(...hotel.rooms.map(r => r.pricePerNight || 0))
+                        : 0,
+                    images: hotel.images || [],
+                    amenities: hotel.amenities || [],
+                    type: hotel.type || 'Hotel',
+                    leftRooms: hotel.rooms?.length || 0,
+                    reviews: 0, // Can be updated when reviews are implemented
+                    rooms: hotel.rooms || [], // Include rooms data
+                    description: hotel.description || '',
+                    isVerified: hotel.isVerified || false,
+                    // Map province name to provinceId for filtering
+                    provinceId: getProvinceIdByName(hotel.province)
+                }));
+                
+                console.log('📦 Mapped hotels:', mappedHotels);
+                setHotelList(mappedHotels);
+            } catch (error) {
+                console.error('❌ Error fetching hotels:', error);
+                setError('Failed to load hotels. Please try again later.');
+                setHotelList([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchHotels();
+    }, []);
+
+    // Helper function to map province name to ID
+    const getProvinceIdByName = (provinceName) => {
+        if (!provinceName) return null;
+        const province = provinces.find(p => 
+            p.value.toLowerCase() === provinceName.toLowerCase()
+        );
+        return province ? province.id : null;
+    };
 
     // Debug logging for formData and selections
     useEffect(() => {
@@ -105,36 +176,74 @@ export default function Search() {
         return nights;
     }, [itinerary, numberOfNights, selectedItems.nightHotels]);
 
-    // Get hotels for current night
+    // Get hotels for current night with filtering
     const filteredHotels = useMemo(() => {
+        let filtered = [...hotelList];
+
         if (!isTourSelectHotel) {
-            // Regular hotel search
-            if (!travelDetails?.destination) {
-                return hotelList;
+            // Regular hotel search mode - apply search filters
+            if (searchTerm) {
+                const search = searchTerm.trim().toLowerCase();
+                filtered = filtered.filter(hotel => 
+                    hotel.name?.toLowerCase().includes(search) ||
+                    hotel.location?.toLowerCase().includes(search) ||
+                    hotel.city?.toLowerCase().includes(search) ||
+                    hotel.district?.toLowerCase().includes(search) ||
+                    hotel.province?.toLowerCase().includes(search)
+                );
             }
-            const dest = travelDetails.destination.trim().toLowerCase();
-            const filtered = hotelList.filter(hotel => 
-                hotel.location?.toLowerCase().includes(dest) ||
-                hotel.city?.toLowerCase().includes(dest)
-            );
-            return filtered.length > 0 ? filtered : hotelList;
+
+            // Filter by selected district
+            if (selectedDistrict) {
+                filtered = filtered.filter(hotel => 
+                    hotel.district?.toLowerCase() === selectedDistrict.toLowerCase()
+                );
+            }
+
+            // Filter by selected province
+            if (selectedProvince) {
+                filtered = filtered.filter(hotel => 
+                    hotel.province?.toLowerCase() === selectedProvince.toLowerCase()
+                );
+            }
+
+            return filtered;
         }
 
-        // Tour hotel selection
+        // Tour hotel selection mode - show ALL hotels initially
         if (numberOfNights === 0 || !nightProvinces[currentNightIndex]) {
-            return [];
+            return filtered;
         }
 
-        const currentNight = nightProvinces[currentNightIndex];
-        if (currentNight.provinces.length === 0) {
-            return hotelList; // Show all hotels if no provinces selected
+        // Apply search filter if user is searching
+        if (searchTerm) {
+            const search = searchTerm.trim().toLowerCase();
+            filtered = filtered.filter(hotel => 
+                hotel.name?.toLowerCase().includes(search) ||
+                hotel.location?.toLowerCase().includes(search) ||
+                hotel.city?.toLowerCase().includes(search) ||
+                hotel.district?.toLowerCase().includes(search) ||
+                hotel.province?.toLowerCase().includes(search)
+            );
         }
 
-        // Filter hotels by provinces visited on the current day
-        return hotelList.filter(hotel => 
-            currentNight.provinces.includes(hotel.provinceId)
-        );
-    }, [isTourSelectHotel, travelDetails?.destination, currentNightIndex, nightProvinces, numberOfNights]);
+        // Filter by selected district if specified
+        if (selectedDistrict) {
+            filtered = filtered.filter(hotel => 
+                hotel.district?.toLowerCase() === selectedDistrict.toLowerCase()
+            );
+        }
+
+        // Filter by selected province if specified
+        if (selectedProvince) {
+            filtered = filtered.filter(hotel => 
+                hotel.province?.toLowerCase() === selectedProvince.toLowerCase()
+            );
+        }
+
+        // If no filters applied, show all hotels
+        return filtered;
+    }, [isTourSelectHotel, searchTerm, selectedDistrict, selectedProvince, currentNightIndex, nightProvinces, numberOfNights, hotelList]);
 
     const handleHotelSelect = useCallback((hotel) => {
         console.log('=== HOTEL SELECTION EVENT ===');
@@ -270,42 +379,6 @@ export default function Search() {
         console.log('Selected:', value);
     };
 
-    // Debug function to log complete formData
-    const debugFormData = () => {
-        console.log('🔍 === COMPLETE FORMDATA DEBUG ===');
-        console.log('Raw formData object:', JSON.stringify(formData, null, 2));
-        console.log('');
-        console.log('📅 Travel Details:');
-        console.log('- Duration:', travelDetails.duration);
-        console.log('- Start Date:', travelDetails.startDate);
-        console.log('- End Date:', travelDetails.endDate);
-        console.log('- Number of Nights:', numberOfNights);
-        console.log('');
-        console.log('🏨 Hotel Selections by Night:');
-        for (let i = 0; i < numberOfNights; i++) {
-            const nightHotel = selectedItems.nightHotels?.[i];
-            const nightRoom = selectedItems.nightRooms?.[i];
-            console.log(`Night ${i + 1}:`);
-            console.log('  Hotel:', nightHotel === 'skip' ? 'SKIPPED' : (nightHotel?.name || 'Not selected'));
-            console.log('  Hotel ID:', nightHotel === 'skip' ? 'N/A' : (nightHotel?.id || 'N/A'));
-            console.log('  Room Type:', nightRoom?.roomType || 'Not selected');
-            console.log('  Room ID:', nightRoom?.id || 'N/A');
-            console.log('  Room Price:', nightRoom?.price || 'N/A');
-        }
-        console.log('');
-        console.log('🗺️ Itinerary Summary:');
-        itinerary?.forEach((day, index) => {
-            console.log(`Day ${index + 1}:`, day.activities?.map(a => a.name).join(', ') || 'No activities');
-        });
-        console.log('');
-        console.log('📊 Arrays State:');
-        console.log('- nightHotels array length:', selectedItems.nightHotels?.length || 0);
-        console.log('- nightRooms array length:', selectedItems.nightRooms?.length || 0);
-        console.log('- nightHotels array:', selectedItems.nightHotels);
-        console.log('- nightRooms array:', selectedItems.nightRooms);
-        console.log('🔍 === END FORMDATA DEBUG ===');
-    };
-
     // Tour mode UI
     if (isTourSelectHotel) {
         if (numberOfNights === 0) {
@@ -322,6 +395,35 @@ export default function Search() {
                                 className="px-6 py-3 bg-brand-primary text-white rounded-lg font-semibold hover:bg-brand-primary-dark transition"
                             >
                                 Continue to Vehicle Selection
+                            </button>
+                        </div>
+                    </div>
+                </Main>
+            );
+        }
+
+        if (loading) {
+            return (
+                <Main>
+                    <div className="flex flex-col items-center justify-center min-h-[400px]">
+                        <Spinner />
+                        <p className="mt-4 text-gray-600">Loading hotels...</p>
+                    </div>
+                </Main>
+            );
+        }
+
+        if (error) {
+            return (
+                <Main>
+                    <div className="flex flex-col items-center justify-center min-h-[400px]">
+                        <div className="text-center">
+                            <p className="text-red-600 mb-4">{error}</p>
+                            <button
+                                onClick={() => window.location.reload()}
+                                className="px-6 py-3 bg-brand-primary text-white rounded-lg font-semibold hover:bg-brand-primary-dark transition"
+                            >
+                                Retry
                             </button>
                         </div>
                     </div>
@@ -427,21 +529,102 @@ export default function Search() {
                         </div>
                     </div>
 
+                    {/* Search and Filter Section */}
+                    <div className="mb-6 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                        <div className="flex flex-col md:flex-row gap-4">
+                            {/* Search Bar */}
+                            <div className="flex-1">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Search Hotels
+                                </label>
+                                <input
+                                    type="text"
+                                    placeholder="Search by name, city, district, or province..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+                                />
+                            </div>
+
+                            {/* District Filter */}
+                            <div className="w-full md:w-1/4">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    District
+                                </label>
+                                <select
+                                    value={selectedDistrict}
+                                    onChange={(e) => setSelectedDistrict(e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+                                >
+                                    <option value="">All Districts</option>
+                                    {districts.map((district) => (
+                                        <option key={district.id} value={district.value}>
+                                            {district.value}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Province Filter */}
+                            <div className="w-full md:w-1/4">
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Province
+                                </label>
+                                <select
+                                    value={selectedProvince}
+                                    onChange={(e) => setSelectedProvince(e.target.value)}
+                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+                                >
+                                    <option value="">All Provinces</option>
+                                    {provinces.map((province) => (
+                                        <option key={province.id} value={province.value}>
+                                            {province.value}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+
+                            {/* Clear Filters Button */}
+                            {(searchTerm || selectedDistrict || selectedProvince) && (
+                                <div className="flex items-end">
+                                    <button
+                                        onClick={() => {
+                                            setSearchTerm('');
+                                            setSelectedDistrict('');
+                                            setSelectedProvince('');
+                                        }}
+                                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition whitespace-nowrap"
+                                    >
+                                        Clear Filters
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Results Summary */}
+                        <div className="mt-3 text-sm text-gray-600">
+                            Showing {filteredHotels.length} hotels
+                            {searchTerm && ` matching "${searchTerm}"`}
+                            {selectedDistrict && ` in ${selectedDistrict}`}
+                            {selectedProvince && ` in ${selectedProvince}`}
+                        </div>
+                    </div>
+
                     {/* Province Information */}
-                    {nightProvinces[currentNightIndex] && (
+                    {nightProvinces[currentNightIndex] && nightProvinces[currentNightIndex].provinces.length > 0 && (
                         <div className="mb-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
                             <h3 className="font-semibold text-blue-900 mb-2">
-                                Hotels available for Night {currentNightIndex + 1}
+                                📍 Recommended Hotels for Night {currentNightIndex + 1}
                             </h3>
                             <p className="text-blue-800 text-sm">
                                 Based on your Day {nightProvinces[currentNightIndex].dayNumber} itinerary, 
-                                showing hotels in: {' '}
+                                we recommend hotels in: {' '}
                                 {nightProvinces[currentNightIndex].provinces.map(pId => 
                                     provinces.find(p => p.id === pId)?.value
-                                ).join(', ') || 'All provinces (no specific activities selected)'}
+                                ).join(', ')}
                             </p>
                             <p className="text-blue-700 text-xs mt-1">
-                                Found {filteredHotels.length} suitable hotels
+                                You can use the search above to find hotels in any district
                             </p>
                         </div>
                     )}
@@ -704,6 +887,35 @@ export default function Search() {
     }
 
     // Regular hotel search UI
+    if (loading) {
+        return (
+            <Main>
+                <div className="flex flex-col items-center justify-center min-h-[400px]">
+                    <Spinner />
+                    <p className="mt-4 text-gray-600">Loading hotels...</p>
+                </div>
+            </Main>
+        );
+    }
+
+    if (error) {
+        return (
+            <Main>
+                <div className="flex flex-col items-center justify-center min-h-[400px]">
+                    <div className="text-center">
+                        <p className="text-red-600 mb-4">{error}</p>
+                        <button
+                            onClick={() => window.location.reload()}
+                            className="px-6 py-3 bg-brand-primary text-white rounded-lg font-semibold hover:bg-brand-primary-dark transition"
+                        >
+                            Retry
+                        </button>
+                    </div>
+                </div>
+            </Main>
+        );
+    }
+
     return (
         <>
             <Main>
@@ -731,7 +943,88 @@ export default function Search() {
                 </div>
             </Main>
             <Main>
-                <div className='flex gap-2 mt-5'>
+                {/* Search and Filter Bar */}
+                <div className="mt-5 mb-4 p-4 bg-white border border-gray-200 rounded-lg shadow-sm">
+                    <div className="flex flex-col md:flex-row gap-4">
+                        {/* Search Bar */}
+                        <div className="flex-1">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Search Hotels
+                            </label>
+                            <input
+                                type="text"
+                                placeholder="Search by name, city, district, or province..."
+                                value={searchTerm}
+                                onChange={(e) => setSearchTerm(e.target.value)}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+                            />
+                        </div>
+
+                        {/* District Filter */}
+                        <div className="w-full md:w-1/5">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                District
+                            </label>
+                            <select
+                                value={selectedDistrict}
+                                onChange={(e) => setSelectedDistrict(e.target.value)}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+                            >
+                                <option value="">All Districts</option>
+                                {districts.map((district) => (
+                                    <option key={district.id} value={district.value}>
+                                        {district.value}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Province Filter */}
+                        <div className="w-full md:w-1/5">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                Province
+                            </label>
+                            <select
+                                value={selectedProvince}
+                                onChange={(e) => setSelectedProvince(e.target.value)}
+                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-brand-primary focus:border-transparent"
+                            >
+                                <option value="">All Provinces</option>
+                                {provinces.map((province) => (
+                                    <option key={province.id} value={province.value}>
+                                        {province.value}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        {/* Clear Filters Button */}
+                        {(searchTerm || selectedDistrict || selectedProvince) && (
+                            <div className="flex items-end">
+                                <button
+                                    onClick={() => {
+                                        setSearchTerm('');
+                                        setSelectedDistrict('');
+                                        setSelectedProvince('');
+                                    }}
+                                    className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition whitespace-nowrap"
+                                >
+                                    Clear Filters
+                                </button>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Results Summary */}
+                    <div className="mt-3 text-sm text-gray-600">
+                        Showing {filteredHotels.length} hotels
+                        {searchTerm && ` matching "${searchTerm}"`}
+                        {selectedDistrict && ` in ${selectedDistrict}`}
+                        {selectedProvince && ` in ${selectedProvince}`}
+                    </div>
+                </div>
+
+                <div className='flex gap-2'>
                     {/* Filter Section */}
                     <div className='w-1/4 h-full overflow-y-auto sticky top-[100px] scrollbar-hide'>
                         <div className='flex flex-col gap-2 border rounded-[8px]'>

@@ -15,7 +15,8 @@ import { showToastMessage } from '../../../utils/toastHelper';
 import FormContext from '../../../context/InitialValues';
 import { handleFirebaseLogin } from '../../../core/Firebase/service';
 import Spinner from '../../../components/Spinner';
-import { registerStart, registerSuccess } from '../../../redux/slices/authSlice';
+import { registerStart, registerSuccess, registerFailure } from '../../../redux/slices/authSlice';
+import { getHotelByUserDocId } from '../../../api/hotelService';
 
 export default function PartnerLoginStep2() {
     const { formData, setFormData } = useContext(FormContext);
@@ -89,41 +90,58 @@ export default function PartnerLoginStep2() {
                             token: user.accessToken,
                         }),
                     );
-                    
-                    console.log('User data saved to Redux:', {
-                        email: user.email,
-                        uid: user.uid,
-                        data: userData
-                    });
-                    
-                    {localStorage.removeItem('formData')}
-                    
-                    if(userData.role === 'guide'){
-                        navigateTo('/guide-dashboard');
-                    }else if(userData.role === 'agency'){
-                        navigateTo('/partner/dashboard')
-                    }else if(userData.role === 'hotel'){
-                        navigateTo('/hotel/dashboard')
-                    }else if(userData.role === 'admin'){
-                        navigateTo('/admin/dashboard')
-                    }else{
-                        navigateTo('/home')
-                    };
-                    showToastMessage('success', 'Welcome back! You’ve logged in successfully.');
-                }else if (user && !user.emailVerified) {
+                   
+                    // Navigate based on user role and partner type
+                    if (userData.role === 'admin') {
+                        showToastMessage('success', 'Welcome back Admin!');
+                        navigateTo('/admin/dashboard');
+                    } else if (userData.role === 'partner') {
+                        // Check what type of partner (hotel, guide, or vehicle agency)
+                        try {
+                            // Try to fetch hotel data
+                            const hotelData = await getHotelByUserDocId(user.uid);
+                            if (hotelData && hotelData.id) {
+                                showToastMessage('success', 'Welcome back to your hotel dashboard!');
+                                navigateTo(`/hotel/dashboard/${hotelData.id}`);
+                            }
+                        } catch (hotelError) {
+                            // If no hotel found, check if it's a guide
+                            console.log('No hotel found for user, checking for guide:', hotelError.message || hotelError);
+                            try {
+                                const guideData = await getRequest(`/api/guides/docId/${user.uid}`);
+                                if (guideData && guideData.id) {
+                                    showToastMessage('success', 'Welcome back Guide!');
+                                    navigateTo('/guide-dashboard');
+                                }
+                            } catch (guideError) {
+                                // If no guide found, assume it's a vehicle agency
+                                console.log('No guide found for user, defaulting to vehicle agency:', guideError.message || guideError);
+                                showToastMessage('success', 'Welcome back Partner!');
+                                navigateTo('/partner/dashboard');
+                            }
+                        }
+                    } else if (userData.role === 'traveler') {
+                        showToastMessage('success', 'Welcome back!');
+                        navigateTo('/home');
+                    } else {
+                        showToastMessage('success', 'Welcome back!');
+                        navigateTo('/home');
+                    }
+                } else if (user && !user.emailVerified) {
                     showToastMessage('warning', 'Your email is not verified. Please check your inbox or resend the verification email.');
                 } else {
                     showToastMessage('error', 'Login failed. Please try again.');
                     dispatch(registerFailure('Login failed'));
                 }
             }
-        } catch (e) {
-            showToastMessage('error', 'Registration failed. Please try again.');
-            navigateTo('/partner-login/step-1')
-        }finally{
+        } catch (error) {
+            console.error('Login error:', error);
+            showToastMessage('error', 'Login failed. Please check your credentials and try again.');
+            dispatch(registerFailure('Login failed'));
+        } finally {
             setLoading(false);
         }
-    }, [formData]);
+    }, [formData, dispatch]);
 
     return (
         <AnimatePresence>

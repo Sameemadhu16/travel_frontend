@@ -1,18 +1,20 @@
 import { useParams, useLocation, useNavigate } from 'react-router-dom';
-import { hotelList } from '../../../core/Lists/hotels';
 import { useEffect, useMemo, useState, useContext } from 'react';
 import Main from '../../../components/Main';
 import Title from '../../../components/Title';
 import Breadcrumb from '../../../components/Breadcrumb';
-import { roomList } from '../../../core/Lists/rooms';
 import RoomCard from './components/RoomCard';
 import FormatText from '../../../components/FormatText';
 import Border from '../../../components/Border';
 import FormContext from '../../../context/InitialValues';
+import { getHotelById } from '../../../api/tourService';
+import Spinner from '../../../components/Spinner';
 
 export default function Hotel() {
     const [hotel, setHotel] = useState({});
     const [rooms, setRooms] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
     const { id } = useParams();
     const location = useLocation();
     const navigate = useNavigate();
@@ -39,14 +41,14 @@ export default function Hotel() {
     useEffect(() => {
         const matchHotel = hotelList.find((hotel) => hotel.id.toString() === id);
         const matchRooms = roomList.filter((room) => room.hotelId.toString() === id);
-        setHotel(matchHotel);
-        setRooms(matchRooms);
+        setHotel(matchHotel || {});
+        setRooms(matchRooms || []);
     }, [id]);
 
     const breadcrumbItems = [
         { label: "Home", path: "/home" },
         { label: "Hotels", path: isTourSelectHotel ? "/tour/select-hotel" : "/hotels-search" },
-        { label: hotel.name || "Hotel", path: isTourSelectHotel ? `/tour/select-hotel/${id}` : `/hotel/${id}` },
+        { label: hotel?.name || "Hotel", path: isTourSelectHotel ? `/tour/select-hotel/${id}` : `/hotel/${id}` },
     ];
 
     const roomsList = useMemo(() => {
@@ -75,6 +77,17 @@ export default function Hotel() {
             />
         ));
     }, [hotel.amenities]);
+
+    // Show loading or return early if hotel data is not loaded yet
+    if (!hotel || Object.keys(hotel).length === 0) {
+        return (
+            <Main>
+                <div className="flex justify-center items-center h-64">
+                    <div className="text-lg text-gray-600">Loading hotel details...</div>
+                </div>
+            </Main>
+        );
+    }
 
     return (
         <Main>
@@ -169,7 +182,7 @@ export default function Hotel() {
                 { amenityList }
             </div>
             <div className='flex flex-wrap'>
-                <FormatText text={hotel.about}/>
+                <FormatText text={hotel?.about || ''}/>
             </div>
             <Border/>
             <div className='w-full mt-5'>

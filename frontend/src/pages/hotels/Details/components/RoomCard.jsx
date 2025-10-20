@@ -88,12 +88,15 @@ export default function RoomCard({ room, isTourMode = false, hotel = {} }) {
                 </div>
 
                 <div className='w-full flex flex-wrap gap-2 mt-2'>
-                    {room.amenities.map((amenity, index) => {
-                        const Icon = amenity.icon;
+                    {(room.amenities || []).map((amenity, index) => {
+                        // Handle both string amenities and object amenities with icon
+                        const amenityValue = typeof amenity === 'string' ? amenity : amenity.value;
+                        const Icon = typeof amenity === 'object' && amenity.icon ? amenity.icon : null;
+                        
                         return (
                             <div className='flex gap-1 items-center' key={index}>
-                                <Icon className='text-brand-primary' />
-                                <span className="text-brand-primary">{amenity.value}</span>
+                                {Icon && <Icon className='text-brand-primary' />}
+                                <span className="text-brand-primary">{amenityValue}</span>
                             </div>
                         );
                     })}

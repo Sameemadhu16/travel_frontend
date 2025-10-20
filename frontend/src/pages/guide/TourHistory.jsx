@@ -9,8 +9,8 @@ import user4 from '../../assets/users/user4.jpg';
 
 const TourHistory = () => {
     const statsData = [
-        { icon: <FaRoute className='text-orange-600' />, label: 'Total Tours', value: '127', bgColor: 'bg-orange-50' },
-        { icon: <FaDollarSign className='text-orange-600' />, label: 'Total Earnings', value: '$24,680', bgColor: 'bg-yellow-50' },
+        { icon: <FaRoute className='text-orange-600' />, label: 'Total Tours', value: '6', bgColor: 'bg-orange-50' },
+        { icon: <FaDollarSign className='text-orange-600' />, label: 'Total Earnings', value: 'Rs. 268,000', bgColor: 'bg-yellow-50' },
         { icon: <FaStar className='text-orange-600' />, label: 'Avg Rating', value: '4.8', bgColor: 'bg-orange-50' },
         { icon: <FaCalendar className='text-orange-600' />, label: 'This Month', value: '12', bgColor: 'bg-orange-50' }
     ];
@@ -18,43 +18,63 @@ const TourHistory = () => {
     const tourData = [
         {
             id: 1,
-            name: 'Sarah Rishan',
+            name: 'Sarah Perera',
             avatar: user4,
             destination: 'Kandy',
             tourDate: 'July 15, 2025',
             duration: '3 days',
             status: 'Completed',
-            earnings: 'Rs. 17500'
+            earnings: 'Rs. 52,500'
         },
         {
             id: 2,
             name: 'Nimal Fernando',
             avatar: user1,
-            destination: 'Galle',
+            destination: 'Galle Fort',
             tourDate: 'June 14, 2025',
             duration: '4 Days',
             status: 'Completed',
-            earnings: 'Rs.32000'
+            earnings: 'Rs. 96,000'
         },
         {
             id: 3,
-            name: 'Arul Kumar',
+            name: 'Arjun Silva',
             avatar: user3,
-            destination: 'Pottuvil',
+            destination: 'Arugam Bay',
             tourDate: 'June 10, 2025',
             duration: '2 Days',
             status: 'Completed',
-            earnings: 'Rs.12000'
+            earnings: 'Rs. 36,000'
         },
         {
             id: 4,
-            name: 'Sampath',
+            name: 'Sampath Wijesinghe',
             avatar: user2,
-            destination: 'Jaffna',
+            destination: 'Jaffna Peninsula',
             tourDate: 'June 8, 2025',
             duration: '1 Day',
             status: 'Completed',
-            earnings: 'Rs.22000'
+            earnings: 'Rs. 66,000'
+        },
+        {
+            id: 5,
+            name: 'Kumara Dissanayake',
+            avatar: user1,
+            destination: 'Sigiriya',
+            tourDate: 'May 30, 2025',
+            duration: '2 Days',
+            status: 'Completed',
+            earnings: 'Rs. 72,000'
+        },
+        {
+            id: 6,
+            name: 'Anushka de Silva',
+            avatar: user3,
+            destination: 'Ella & Tea Plantations',
+            tourDate: 'May 22, 2025',
+            duration: '3 Days',
+            status: 'Completed',
+            earnings: 'Rs. 84,000'
         }
     ];
 
@@ -69,7 +89,7 @@ const TourHistory = () => {
                         {/* Header */}
                         <div className="">
                             <h1 className="text-2xl font-bold mb-1">Tour History</h1>
-                            <p className="text-gray-600 mb-6">Track your completed tours and earnings</p>
+                            <p className="text-gray-600 mb-6">Track your completed tours and earnings from around Sri Lanka</p>
                         </div>
 
                         {/* Stats Cards */}
@@ -97,11 +117,11 @@ const TourHistory = () => {
                                         {/* Left side - Tourist info */}
                                         <div className="flex items-center space-x-4 flex-1">
                                             <div className="w-12 h-12 flex items-center justify-center">
-                                                <img src={tour.avatar} alt="" className='w-full h-full object-cover rounded-lg' />
+                                                <img src={tour.avatar} alt={tour.name} className='w-full h-full object-cover rounded-lg' />
                                             </div>
                                             <div className="min-w-0">
                                                 <h3 className="font-semibold text-gray-900">{tour.name}</h3>
-                                                <p className="text-sm text-gray-600">{tour.type}</p>
+                                                <p className="text-sm text-gray-600">Tourist</p>
                                             </div>
                                         </div>
 
