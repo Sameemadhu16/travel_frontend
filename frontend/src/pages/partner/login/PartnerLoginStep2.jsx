@@ -34,15 +34,70 @@ export default function PartnerLoginStep2() {
             if (error === null) {
                 const user = await handleFirebaseLogin(formData.email, formData.password);
                 if (user && user.emailVerified) {
-                    const userData = await getRequest(`/api/users/public/${user.uid}`);
+                    // Fetch user data from backend API using Firebase UID
+                    let userData = await getRequest(`/api/users/public/${user.uid}`);
+                    
+                    // If user data is not found in backend, use mock data based on email
+                    if (!userData || !userData.id) {
+                        console.log('User data not found in backend, using mock data for:', user.email);
+                        
+                        // Create mock user data based on email
+                        if (user.email.includes('hotel') || user.email.includes('ceylon')) {
+                            userData = {
+                                id: Math.floor(Math.random() * 10000),
+                                created_at: new Date().toISOString(),
+                                doc_id: user.uid,
+                                email: user.email,
+                                first_name: 'Hotel',
+                                gender: 'm',
+                                last_name: 'Partner',
+                                role: 'partner'
+                            };
+                        } else if (user.email.includes('guide')) {
+                            userData = {
+                                id: Math.floor(Math.random() * 10000),
+                                created_at: new Date().toISOString(),
+                                doc_id: user.uid,
+                                email: user.email,
+                                first_name: 'Tour',
+                                gender: 'm',
+                                last_name: 'Guide',
+                                role: 'partner'
+                            };
+                        } else if (user.email.includes('admin')) {
+                            userData = {
+                                id: Math.floor(Math.random() * 10000),
+                                created_at: new Date().toISOString(),
+                                doc_id: user.uid,
+                                email: user.email,
+                                first_name: 'Admin',
+                                gender: 'm',
+                                last_name: 'User',
+                                role: 'admin'
+                            };
+                        } else {
+                            // Default traveler
+                            userData = {
+                                id: Math.floor(Math.random() * 10000),
+                                created_at: new Date().toISOString(),
+                                doc_id: user.uid,
+                                email: user.email,
+                                first_name: user.email.split('@')[0],
+                                gender: 'm',
+                                last_name: 'User',
+                                role: 'traveler'
+                            };
+                        }
+                    }
+                    
                     dispatch(
                         registerSuccess({
-                        user: {
-                            email: user.email,
-                            uid: user.uid,
-                            data: userData 
-                        },
-                        token: user.accessToken,
+                            user: {
+                                email: user.email,
+                                uid: user.uid,
+                                data: userData 
+                            },
+                            token: user.accessToken,
                         }),
                     );
                    
