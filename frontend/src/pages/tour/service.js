@@ -44,6 +44,31 @@ export function createTripRequest(formData, userId) {
     // Calculate distance from vehicle trip cost data if available
     const distanceKm = selectedItems?.selectedVehicle?.tripCostData?.cost?.distance || 0;
 
+    // Calculate end date from start date + duration if not provided
+    const calculateEndDate = (startDate, duration) => {
+        if (!startDate || !duration) {
+            console.log('⚠️ Cannot calculate end date - missing startDate or duration:', { startDate, duration });
+            return null;
+        }
+        
+        // Extract number of days from duration string (e.g., "2-days" -> 2)
+        const daysMatch = duration.match(/(\d+)-day/);
+        if (!daysMatch) {
+            console.log('⚠️ Cannot parse duration:', duration);
+            return null;
+        }
+        
+        const numberOfDays = parseInt(daysMatch[1]);
+        const start = new Date(startDate);
+        const end = new Date(start);
+        end.setDate(start.getDate() + numberOfDays - 1); // -1 because start date counts as day 1
+        
+        // Format as YYYY-MM-DD
+        const endDateStr = end.toISOString().split('T')[0];
+        console.log(`✅ Calculated end date: ${startDate} + ${numberOfDays} days = ${endDateStr}`);
+        return endDateStr;
+    };
+
     // Format time properly - ensure it has seconds
     const formatTime = (time) => {
         if (!time) return null;
@@ -53,6 +78,18 @@ export function createTripRequest(formData, userId) {
         }
         return time;
     };
+
+    // Calculate end date BEFORE building the trip request
+    console.log('🔍 End Date Calculation Debug:');
+    console.log('  - travelDetails.endDate:', travelDetails?.endDate);
+    console.log('  - travelDetails.startDate:', travelDetails?.startDate);
+    console.log('  - travelDetails.duration:', travelDetails?.duration);
+    
+    const calculatedEndDate = calculateEndDate(travelDetails?.startDate, travelDetails?.duration);
+    const finalEndDate = travelDetails?.endDate || calculatedEndDate;
+    
+    console.log('  - calculatedEndDate:', calculatedEndDate);
+    console.log('  - finalEndDate:', finalEndDate);
 
     // Build the trip request object matching backend Trip entity exactly
     const tripRequest = {
@@ -65,7 +102,7 @@ export function createTripRequest(formData, userId) {
         // Basic trip information
         pickupLocation: travelDetails?.location || travelDetails?.pickupLocation || "",
         tripStartDate: travelDetails?.startDate || null,
-        tripEndDate: travelDetails?.endDate || null,
+        tripEndDate: finalEndDate,
         startTime: formatTime(travelDetails?.time),
         
         // Places to visit
@@ -112,7 +149,7 @@ export function createTripRequest(formData, userId) {
         // === PRICING FIELDS ===
         
         basePrice: calculateBasePrice(selectedItems, travelDetails),
-        totalFare: parseFloat(bookingSummary?.totalCost) || 0,
+        totalFare: parseFloat(bookingSummary?.totalCost) || calculateBasePrice(selectedItems, travelDetails) || 0,
         
         // === CONTACT INFORMATION ===
         
@@ -173,6 +210,7 @@ export function createTripRequest(formData, userId) {
     console.log('  - tripStatus:', tripRequest.tripStatus);
     console.log('  - pickupLocation:', tripRequest.pickupLocation);
     console.log('  - tripStartDate:', tripRequest.tripStartDate);
+    console.log('  - tripEndDate:', tripRequest.tripEndDate);
     console.log('  - startTime:', tripRequest.startTime);
     
     console.log('🚗 Vehicle & Agency:');
