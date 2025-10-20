@@ -16,20 +16,30 @@ export default function Header() {
     const isExpired = checkTokenExpiration(token);
     const dispatch = useDispatch();
     const [showProfileMenu, setShowProfileMenu] = useState(false);
-    const [profilePicture, setProfilePicture] = useState(user?.data?.profilePicture || defaultAvatar);
+    // Handle both login structure (user.data.profilePicture) and registration structure (user.profilePicture)
+    const [profilePicture, setProfilePicture] = useState(user?.data?.profilePicture || user?.profilePicture || defaultAvatar);
     const menuRef = useRef(null);
-    const role = user?.data?.role || '';
+    // Handle both login structure (user.data.role) and registration structure (user.role)
+    const role = user?.data?.role || user?.role || '';
+    
+    // Debug: Log user data and role
+    useEffect(() => {
+        console.log('Header Debug - User:', user);
+        console.log('Header Debug - Role:', role);
+        console.log('Header Debug - User Data:', user?.data);
+    }, [user, role]);
     
     // Check if user is authenticated (has valid token)
     const isAuthenticated = token && !isExpired;
     
     // Update profile picture when user data changes
     useEffect(() => {
-        if (user?.data?.profilePicture) {
+        const newProfilePic = user?.data?.profilePicture || user?.profilePicture;
+        if (newProfilePic) {
             console.log('Header: Profile picture updated from Redux');
-            setProfilePicture(user.data.profilePicture);
+            setProfilePicture(newProfilePic);
         }
-    }, [user?.data?.profilePicture]);
+    }, [user?.data?.profilePicture, user?.profilePicture]);
     
     // Close menu on outside click
     
@@ -67,12 +77,12 @@ export default function Header() {
                     
                     {isAuthenticated ? (
                         <div className='flex gap-4 items-center'>
-                            {/* Show Reserve dropdown for traveler role */}
-                            {role === 'traveler' && (
+                            {/* Show Reserve dropdown for traveler role or if role is not set */}
+                            {(!role || role === '' || role === 'traveler') && (
                                 <ReserveDropdown />
                             )}
-                            {/* Show List Property for traveler role */}
-                            {role === 'traveler' && (
+                            {/* Show List Property for traveler role or if role is not set */}
+                            {(!role || role === '' || role === 'traveler') && (
                                 <Navigate
                                     path={'/partner-details'}
                                     className='p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'
@@ -98,7 +108,7 @@ export default function Header() {
                                 </div>
                                 <div className='flex flex-col overflow-hidden' onClick={() => setShowProfileMenu((v) => !v)}>
                                     <Title
-                                        title={user?.data?.email}
+                                        title={user?.email || user?.data?.email || 'User'}
                                         size='text-[16px]'
                                         font='font-[600]'
                                     />
