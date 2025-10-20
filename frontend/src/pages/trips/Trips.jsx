@@ -53,16 +53,22 @@ export default function Trips() {
     };
     
     const hasApprovedGuide = (trip) => {
-        return trip.guideRequests && trip.guideRequests.some(
-            request => request.status?.toLowerCase() === 'approved'
-        );
+        if (!trip.guideRequests || trip.guideRequests.length === 0) {
+            return false;
+        }
+        
+        return trip.guideRequests.some(request => {
+            const status = request.status?.toLowerCase().trim();
+            // Check for both 'approved' and 'accepted' statuses
+            return status === 'approved' || status === 'accepted';
+        });
     };
     
     const canPay = (trip) => {
         const tripStatus = trip.tripStatus?.toLowerCase() || 'pending';
         
-        // Cannot pay if already paid or completed
-        if (tripStatus === 'paid' || tripStatus === 'completed') {
+        // Cannot pay if already paid, completed, or cancelled
+        if (tripStatus === 'paid' || tripStatus === 'completed' || tripStatus === 'cancelled') {
             return false;
         }
         
@@ -71,50 +77,11 @@ export default function Trips() {
             return false;
         }
         
-        // Check if within 24 hours of guide approval
-        const approvedRequest = trip.guideRequests?.find(
-            request => request.status?.toLowerCase() === 'approved'
-        );
-        
-        if (approvedRequest && approvedRequest.updatedAt) {
-            const approvalTime = new Date(approvedRequest.updatedAt);
-            const now = new Date();
-            const hoursSinceApproval = (now - approvalTime) / (1000 * 60 * 60);
-            
-            // Must pay within 24 hours
-            if (hoursSinceApproval > 24) {
-                return false;
-            }
-        }
-        
-        return (tripStatus === 'pending' || tripStatus === 'approved');
+        // Can pay if status is accepted, approved, or pending (with approved guide)
+        return true;
     };
     
-    const getPaymentTimeRemaining = (trip) => {
-        const approvedRequest = trip.guideRequests?.find(
-            request => request.status?.toLowerCase() === 'approved'
-        );
-        
-        if (!approvedRequest || !approvedRequest.updatedAt) {
-            return null;
-        }
-        
-        const approvalTime = new Date(approvedRequest.updatedAt);
-        const now = new Date();
-        const hoursSinceApproval = (now - approvalTime) / (1000 * 60 * 60);
-        const hoursRemaining = 24 - hoursSinceApproval;
-        
-        if (hoursRemaining <= 0) {
-            return { expired: true, hours: 0, minutes: 0 };
-        }
-        
-        const hours = Math.floor(hoursRemaining);
-        const minutes = Math.floor((hoursRemaining - hours) * 60);
-        
-        return { expired: false, hours, minutes };
-    };
-    
-    // Auto-update trip status to "approved" when a guide approves
+    // Auto-update trip status to "accepted" when a guide approves
     useEffect(() => {
         const updateApprovedTrips = async () => {
             let updated = false;
@@ -122,13 +89,14 @@ export default function Trips() {
             for (const trip of trips) {
                 const tripStatus = trip.tripStatus?.toLowerCase() || 'pending';
                 
-                // If trip is pending and has an approved guide, update to approved
+                // If trip has an approved/accepted guide but status is still pending, update to accepted
                 if (tripStatus === 'pending' && hasApprovedGuide(trip)) {
                     try {
-                        await updateTripStatus(trip.id, 'approved');
+                        console.log(`Auto-updating trip ${trip.id} status to 'accepted'`);
+                        await updateTripStatus(trip.id, 'accepted');
                         updated = true;
                     } catch (err) {
-                        console.error('Error updating trip status to approved:', err);
+                        console.error('Error updating trip status to accepted:', err);
                     }
                 }
             }
@@ -136,7 +104,7 @@ export default function Trips() {
             // Refresh trips once if any updates were made
             if (updated && !statusUpdated) {
                 setStatusUpdated(true);
-                fetchUserTrips();
+                await fetchUserTrips();
             }
         };
         
@@ -583,27 +551,13 @@ export default function Trips() {
                                             </div>
                                         )}
                                         
-                                        {hasApprovedGuide(trip) && trip.tripStatus?.toLowerCase() !== 'paid' && trip.tripStatus?.toLowerCase() !== 'completed' && (() => {
-                                            const timeRemaining = getPaymentTimeRemaining(trip);
-                                            if (timeRemaining && !timeRemaining.expired) {
-                                                return (
-                                                    <div className="mb-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                                                        <p className="text-sm text-blue-800">
-                                                            <strong>⏰ Payment Window:</strong> {timeRemaining.hours}h {timeRemaining.minutes}m remaining to complete payment
-                                                        </p>
-                                                    </div>
-                                                );
-                                            } else if (timeRemaining && timeRemaining.expired) {
-                                                return (
-                                                    <div className="mb-3 p-3 bg-red-50 border border-red-200 rounded-lg">
-                                                        <p className="text-sm text-red-800">
-                                                            <strong>⚠️ Payment Window Expired:</strong> The 24-hour payment window has expired. Please contact support.
-                                                        </p>
-                                                    </div>
-                                                );
-                                            }
-                                            return null;
-                                        })()}
+                                        {hasApprovedGuide(trip) && canPay(trip) && (
+                                            <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                                                <p className="text-sm text-green-800">
+                                                    <strong>✓ Guide Approved:</strong> Your tour guide has accepted the request. You can now proceed with payment.
+                                                </p>
+                                            </div>
+                                        )}
                                         
                                         {(trip.tripStatus?.toLowerCase() === 'paid' || trip.tripStatus?.toLowerCase() === 'completed') && (
                                             <div className="mb-3 p-3 bg-green-50 border border-green-200 rounded-lg">
@@ -629,12 +583,11 @@ export default function Trips() {
                                                     if (trip.tripStatus?.toLowerCase() === 'paid' || trip.tripStatus?.toLowerCase() === 'completed') {
                                                         return 'Payment Completed';
                                                     }
+                                                    if (trip.tripStatus?.toLowerCase() === 'cancelled') {
+                                                        return 'Trip Cancelled';
+                                                    }
                                                     if (!hasApprovedGuide(trip)) {
                                                         return 'Waiting for Guide Approval';
-                                                    }
-                                                    const timeRemaining = getPaymentTimeRemaining(trip);
-                                                    if (timeRemaining && timeRemaining.expired) {
-                                                        return 'Payment Window Expired';
                                                     }
                                                     return 'Proceed to Payment';
                                                 })()
