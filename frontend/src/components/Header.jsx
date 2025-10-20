@@ -112,11 +112,6 @@ export default function Header() {
                                         size='text-[16px]'
                                         font='font-[600]'
                                     />
-                                    <Title
-                                        title='Level 1'
-                                        size='text-[14px]'
-                                        font='font-[300]'
-                                    />
                                 </div>
                                 {showProfileMenu && (
                                     <div
