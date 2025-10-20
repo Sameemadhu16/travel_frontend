@@ -34,47 +34,57 @@ export default function PartnerLoginStep2() {
             if (error === null) {
                 const user = await handleFirebaseLogin(formData.email, formData.password);
                 if (user && user.emailVerified) {
+                    // Fetch user data from backend API using Firebase UID
                     let userData = await getRequest(`/api/users/public/${user.uid}`);
                     
-                    console.log('User data from API:', userData);
-                    
-                    // If userData is empty or doesn't have required fields, use mock data
+                    // If user data is not found in backend, use mock data based on email
                     if (!userData || !userData.id) {
-                        // Check email to determine which mock user to use
-                        if (user.email === 'sachithavintha35@gmail.com') {
-                            // Guide user
+                        console.log('User data not found in backend, using mock data for:', user.email);
+                        
+                        // Create mock user data based on email
+                        if (user.email.includes('hotel') || user.email.includes('ceylon')) {
                             userData = {
-                                id: 3,
-                                created_at: '2025-10-19 09:42:31.555466',
-                                doc_id: user.uid || '5DQLxBpEqhVzjuscLdSGzNPQmap1',
-                                email: user.email,
-                                first_name: 'Sachith',
-                                gender: 'f',
-                                last_name: 'Avintha',
-                                role: 'guide'
-                            };
-                        } else if (user.email === 'sachithuniversity@gmail.com') {
-                            // Traveler user
-                            userData = {
-                                id: 4,
-                                created_at: '2025-10-19 09:42:31.555466',
+                                id: Math.floor(Math.random() * 10000),
+                                created_at: new Date().toISOString(),
                                 doc_id: user.uid,
                                 email: user.email,
-                                first_name: 'Sachith',
+                                first_name: 'Hotel',
                                 gender: 'm',
-                                last_name: 'University',
-                                role: 'traveler'
+                                last_name: 'Partner',
+                                role: 'partner'
+                            };
+                        } else if (user.email.includes('guide')) {
+                            userData = {
+                                id: Math.floor(Math.random() * 10000),
+                                created_at: new Date().toISOString(),
+                                doc_id: user.uid,
+                                email: user.email,
+                                first_name: 'Tour',
+                                gender: 'm',
+                                last_name: 'Guide',
+                                role: 'partner'
+                            };
+                        } else if (user.email.includes('admin')) {
+                            userData = {
+                                id: Math.floor(Math.random() * 10000),
+                                created_at: new Date().toISOString(),
+                                doc_id: user.uid,
+                                email: user.email,
+                                first_name: 'Admin',
+                                gender: 'm',
+                                last_name: 'User',
+                                role: 'admin'
                             };
                         } else {
-                            // Default fallback for other emails
+                            // Default traveler
                             userData = {
-                                id: 1,
-                                created_at: '2025-10-19 09:42:31.555466',
+                                id: Math.floor(Math.random() * 10000),
+                                created_at: new Date().toISOString(),
                                 doc_id: user.uid,
                                 email: user.email,
-                                first_name: 'User',
+                                first_name: user.email.split('@')[0],
                                 gender: 'm',
-                                last_name: 'Default',
+                                last_name: 'User',
                                 role: 'traveler'
                             };
                         }
