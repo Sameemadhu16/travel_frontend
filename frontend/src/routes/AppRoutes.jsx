@@ -26,6 +26,9 @@ import { checkTokenExpiration } from '../core/authChecker';
 import Vehicle from '../pages/vehicles/Details/vehicle';
 import VehicleRegistration from '../pages/vehicles/auth/VehicleRegistration';
 import VehicleAgencyRegistration from '../pages/vehicles/auth/VehicleAgencyRegistration';
+import VehicleBookingPage from '../pages/vehicles/booking/VehicleBooking';
+import VehiclePaymentPage from '../pages/vehicles/payment/VehiclePayment';
+import VehicleBookingSuccessPage from '../pages/vehicles/success/VehicleBookingSuccess';
 import CreateTour from '../pages/tour/createTour';
 import SelectGuide from '../pages/tour/selectGuide';
 import TourRequest from '../pages/guide/TourRequest';
@@ -194,6 +197,9 @@ export default function AppRoutes() {
                     <Vehicle />
                 </FormProvider>
             } />
+            <Route path='/book-vehicle' element={<VehicleBookingPage />} />
+            <Route path='/vehicle-payment' element={<VehiclePaymentPage />} />
+            <Route path='/vehicle-booking-success' element={<VehicleBookingSuccessPage />} />
             <Route path='/hotel/:id' element={
                 <FormProvider initialValues={initialTripFormData.formData}>
                     <Hotel />

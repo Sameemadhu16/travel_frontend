@@ -91,3 +91,98 @@ export const deleteVehicle = async (id) => {
     throw error;
   }
 };
+
+/**
+ * Create a vehicle booking
+ * @param {Object} bookingData - Booking details
+ * @returns {Promise} - Created booking data
+ */
+export const createVehicleBooking = async (bookingData) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.post(
+      `${API_BASE_URL}/api/bookings/vehicles`,
+      bookingData,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error creating vehicle booking:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get vehicle bookings by user ID
+ * @param {number} userId - User ID
+ * @returns {Promise} - List of bookings
+ */
+export const getVehicleBookingsByUserId = async (userId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(
+      `${API_BASE_URL}/api/bookings/vehicles/user/${userId}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching vehicle bookings:', error);
+    throw error;
+  }
+};
+
+/**
+ * Get vehicle booking by ID
+ * @param {number} bookingId - Booking ID
+ * @returns {Promise} - Booking data
+ */
+export const getVehicleBookingById = async (bookingId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.get(
+      `${API_BASE_URL}/api/bookings/vehicles/${bookingId}`,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error fetching vehicle booking:', error);
+    throw error;
+  }
+};
+
+/**
+ * Cancel vehicle booking
+ * @param {number} bookingId - Booking ID
+ * @returns {Promise} - API response
+ */
+export const cancelVehicleBooking = async (bookingId) => {
+  try {
+    const token = localStorage.getItem('token');
+    const response = await axios.put(
+      `${API_BASE_URL}/api/bookings/vehicles/${bookingId}/cancel`,
+      {},
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      }
+    );
+    return response.data;
+  } catch (error) {
+    console.error('Error cancelling vehicle booking:', error);
+    throw error;
+  }
+};

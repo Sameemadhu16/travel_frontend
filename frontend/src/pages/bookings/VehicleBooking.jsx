@@ -1,5 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { getAllVehicles } from '../../api/tourService';
+import toast from 'react-hot-toast';
 
 const VehicleBooking = () => {
     const navigate = useNavigate();
@@ -31,6 +33,11 @@ const VehicleBooking = () => {
     const dropoffInputRef = useRef(null);
     const dropdownRef = useRef(null);
     const dropoffDropdownRef = useRef(null);
+    
+    // State for vehicles from backend
+    const [vehicles, setVehicles] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
 
     // Dummy location data for search
     const locationData = [
@@ -307,141 +314,86 @@ const VehicleBooking = () => {
         }
     };
 
-    // Dummy vehicle data based on booking.com cars style
-    const vehicles = [
-        {
-            id: 1,
-            name: "Perodua Axia",
-            category: "Small car",
-            seats: 4,
-            largeBags: 1,
-            transmission: "Automatic",
-            mileage: "Unlimited mileage",
-            supplier: "Europcar",
-            rating: 7.8,
-            reviewScore: "Good",
-            reviews: 2,
-            price: 47991,
-            period: "3 days",
-            location: "Colombo Downtown",
-            distance: "11.2 km from center",
-            features: ["Free cancellation", "4 seats", "1 Large bag", "Automatic", "Unlimited mileage"],
-            image: "/src/assets/vehicles/suzukiSwift.jpg",
-            pickupInfo: "Colombo Downtown",
-            fuel: "Petrol",
-            doors: 4
-        },
-        {
-            id: 2,
-            name: "Toyota Prius",
-            category: "Medium car",
-            seats: 5,
-            largeBags: 2,
-            transmission: "Automatic",
-            mileage: "Unlimited mileage",
-            supplier: "Budget",
-            rating: 8.2,
-            reviewScore: "Very Good",
-            reviews: 45,
-            price: 55500,
-            period: "3 days",
-            location: "Bandaranaike International Airport",
-            distance: "1.2 km from center",
-            features: ["Free cancellation", "5 seats", "2 Large bags", "Automatic", "Hybrid", "GPS included"],
-            image: "/src/assets/vehicles/toyotaPrius.jpg",
-            pickupInfo: "Airport Terminal",
-            fuel: "Hybrid",
-            doors: 4
-        },
-        {
-            id: 3,
-            name: "Honda Civic",
-            category: "Medium car",
-            seats: 5,
-            largeBags: 2,
-            transmission: "Manual",
-            mileage: "Unlimited mileage",
-            supplier: "Avis",
-            rating: 8.5,
-            reviewScore: "Very Good",
-            reviews: 67,
-            price: 62000,
-            period: "3 days",
-            location: "Colombo City Center",
-            distance: "0.5 km from center",
-            features: ["Free cancellation", "5 seats", "2 Large bags", "Manual", "Air conditioning"],
-            image: "/src/assets/vehicles/hondaCivic.jpg",
-            pickupInfo: "City Center",
-            fuel: "Petrol",
-            doors: 4
-        },
-        {
-            id: 4,
-            name: "BMW X5",
-            category: "SUV",
-            seats: 7,
-            largeBags: 4,
-            transmission: "Automatic",
-            mileage: "Unlimited mileage",
-            supplier: "Hertz",
-            rating: 9.1,
-            reviewScore: "Excellent",
-            reviews: 23,
-            price: 125000,
-            period: "3 days",
-            location: "Colombo Premium",
-            distance: "2.1 km from center",
-            features: ["Premium vehicle", "7 seats", "4 Large bags", "Automatic", "Leather seats", "GPS"],
-            image: "/src/assets/vehicles/BMWX5.jpg",
-            pickupInfo: "Premium Location",
-            fuel: "Petrol",
-            doors: 5
-        },
-        {
-            id: 5,
-            name: "Mercedes-Benz E-Class",
-            category: "Luxury",
-            seats: 5,
-            largeBags: 3,
-            transmission: "Automatic",
-            mileage: "Unlimited mileage",
-            supplier: "Sixt",
-            rating: 9.3,
-            reviewScore: "Excellent",
-            reviews: 18,
-            price: 150000,
-            period: "3 days",
-            location: "Colombo Luxury Fleet",
-            distance: "1.8 km from center",
-            features: ["Luxury vehicle", "5 seats", "3 Large bags", "Automatic", "Premium interior", "Chauffeur available"],
-            image: "/src/assets/vehicles/mercedesBenz.jpg",
-            pickupInfo: "Luxury Fleet Center",
-            fuel: "Petrol",
-            doors: 4
-        },
-        {
-            id: 6,
-            name: "Hyundai Tucson",
-            category: "SUV",
-            seats: 5,
-            largeBags: 3,
-            transmission: "Automatic",
-            mileage: "Unlimited mileage",
-            supplier: "National",
-            rating: 8.0,
-            reviewScore: "Very Good",
-            reviews: 34,
-            price: 85000,
-            period: "3 days",
-            location: "Colombo Airport",
-            distance: "35 km from center",
-            features: ["Free cancellation", "5 seats", "3 Large bags", "Automatic", "4WD available"],
-            image: "/src/assets/vehicles/hyundaiTucson.jpg",
-            pickupInfo: "Airport Pickup",
-            fuel: "Petrol",
-            doors: 5
-        }
-    ];
+    // Fetch vehicles from backend API
+    useEffect(() => {
+        const fetchVehicles = async () => {
+            try {
+                setLoading(true);
+                setError(null);
+                console.log('🚗 Fetching vehicles from API...');
+                const backendVehicles = await getAllVehicles();
+                console.log('✅ Vehicles fetched successfully:', backendVehicles);
+                
+                // Map backend vehicle data to match the component's expected format
+                const mappedVehicles = backendVehicles.map(vehicle => {
+                    const imageUrls = Array.isArray(vehicle.images) 
+                        ? vehicle.images.map(img => typeof img === 'string' ? img : img.imageUrl || img.url || '')
+                        : [];
+                    
+                    const amenityNames = Array.isArray(vehicle.amenities)
+                        ? vehicle.amenities.map(amenity => typeof amenity === 'string' ? amenity : amenity.amenityName || amenity.name || '')
+                        : [];
+                    
+                    // Map vehicle type to category
+                    const categoryMap = {
+                        'Sedan': 'Medium car',
+                        'Van': 'Large car',
+                        'SUV': 'SUV',
+                        'Jeep': 'SUV',
+                        'Luxury': 'Luxury'
+                    };
+                    
+                    return {
+                        id: vehicle.id,
+                        name: vehicle.vehicleModel || 'Unknown Vehicle',
+                        category: categoryMap[vehicle.vehicleType] || 'Medium car',
+                        seats: vehicle.capacity || 4,
+                        largeBags: Math.floor((vehicle.capacity || 4) / 2),
+                        transmission: 'Automatic', // Default, can be added to model
+                        mileage: 'Unlimited mileage',
+                        supplier: vehicle.agency?.agencyName || 'Unknown Agency',
+                        rating: 8.0,
+                        reviewScore: "Good",
+                        reviews: 0,
+                        price: vehicle.basePrice || 0,
+                        pricePerDay: vehicle.basePrice || 0, // Add pricePerDay for booking form
+                        period: '3 days',
+                        location: vehicle.agency?.city || 'Sri Lanka',
+                        distance: `${vehicle.agency?.district || 'Location'} area`,
+                        features: amenityNames.slice(0, 5),
+                        image: imageUrls[0] || '/placeholder-vehicle.jpg',
+                        pickupInfo: vehicle.agency?.city || 'Location',
+                        fuel: 'Petrol', // Default, can be added to model
+                        doors: 4,
+                        // Additional backend fields
+                        vehicleType: vehicle.vehicleType,
+                        vehicleNo: vehicle.vehicleNo,
+                        registrationNo: vehicle.registrationNo,
+                        basePrice: vehicle.basePrice,
+                        pricePerKilometer: vehicle.pricePerKilometer,
+                        insuranceNumber: vehicle.insuranceNumber,
+                        insuranceExpiryDate: vehicle.insuranceExpiryDate,
+                        isVerified: vehicle.isVerified,
+                        availability: vehicle.availability,
+                        agency: vehicle.agency,
+                        allImages: imageUrls,
+                        allAmenities: amenityNames
+                    };
+                });
+                
+                console.log('📦 Mapped vehicles:', mappedVehicles);
+                setVehicles(mappedVehicles);
+            } catch (error) {
+                console.error('❌ Error fetching vehicles:', error);
+                setError('Failed to load vehicles. Please try again later.');
+                setVehicles([]);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchVehicles();
+    }, []);
 
     const vehicleCategories = [
         { type: "small", label: "Small car", icon: "🚗" },
@@ -456,7 +408,19 @@ const VehicleBooking = () => {
     };
 
     const handleBookVehicle = (vehicleId) => {
-        navigate(`/bookings/vehicle/${vehicleId}/deal`);
+        // Find the vehicle from the real data
+        const selectedVehicle = vehicles.find(v => v.id === vehicleId);
+        
+        if (selectedVehicle) {
+            // Store the real vehicle data in localStorage
+            localStorage.setItem('selectedVehicle', JSON.stringify(selectedVehicle));
+            
+            // Navigate to the booking form with the vehicle data
+            navigate('/book-vehicle', { state: { vehicle: selectedVehicle } });
+        } else {
+            console.error('Vehicle not found:', vehicleId);
+            toast.error('Vehicle not found. Please try again.');
+        }
     };
 
     const handleImportantInfo = (vehicle) => {
@@ -801,7 +765,30 @@ const VehicleBooking = () => {
 
                         {/* Vehicle Cards */}
                         <div className="space-y-6">
-                            {filteredVehicles.map((vehicle) => (
+                            {loading ? (
+                                <div className="flex justify-center items-center py-12">
+                                    <div className="text-center">
+                                        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+                                        <p className="text-gray-600">Loading vehicles...</p>
+                                    </div>
+                                </div>
+                            ) : error ? (
+                                <div className="text-center py-12">
+                                    <div className="text-red-500 mb-4">{error}</div>
+                                    <button 
+                                        onClick={() => window.location.reload()} 
+                                        className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                    >
+                                        Retry
+                                    </button>
+                                </div>
+                            ) : filteredVehicles.length === 0 ? (
+                                <div className="text-center py-12">
+                                    <p className="text-gray-600 mb-2">No vehicles found matching your criteria</p>
+                                    <p className="text-gray-500 text-sm">Try adjusting your filters or search parameters</p>
+                                </div>
+                            ) : (
+                                filteredVehicles.map((vehicle) => (
                                 <div key={vehicle.id} className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
                                     <div className="flex flex-col md:flex-row">
                                         {/* Vehicle Image */}
@@ -912,7 +899,8 @@ const VehicleBooking = () => {
                                         </div>
                                     </div>
                                 </div>
-                            ))}
+                            ))
+                            )}
                         </div>
                     </div>
                 </div>

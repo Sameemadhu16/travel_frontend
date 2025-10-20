@@ -184,11 +184,17 @@ const StripePaymentComponent = ({
       setLoading(true);
       setError(null);
 
-      const endpoint = bookingType === 'HOTEL' 
-        ? `${apiBaseUrl}/api/hotel-bookings/create-payment-intent`
-        : `${apiBaseUrl}/api/payments/create-payment-intent`;
+      // Determine endpoint based on booking type
+      let endpoint;
+      if (bookingType === 'HOTEL') {
+        endpoint = `${apiBaseUrl}/api/hotel-bookings/create-payment-intent`;
+      } else if (bookingType === 'VEHICLE') {
+        endpoint = `${apiBaseUrl}/api/bookings/vehicles/create-payment-intent`;
+      } else {
+        endpoint = `${apiBaseUrl}/api/payments/create-payment-intent`;
+      }
 
-      console.log('Creating payment intent:', { amount, currency, bookingId });
+      console.log('Creating payment intent:', { amount, currency, bookingId, bookingType, endpoint });
 
       const response = await axios.post(endpoint, {
         amount,
