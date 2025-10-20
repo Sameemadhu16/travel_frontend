@@ -1,54 +1,88 @@
 import React, { useState } from 'react';
 import PartnerLayout from '../../../components/partner/PartnerLayout';
+import ActiveBookingCard from '../../../components/partner/ActiveBookingCard';
 
 const activeBookings = [
   {
     id: 1,
     user: {
-      name: 'Sarah Johnson',
-      image: 'https://randomuser.me/api/portraits/women/1.jpg',
+      name: 'Chaminda Wickramasinghe',
+      image: 'https://randomuser.me/api/portraits/men/15.jpg',
       phone: '+94 71 234 5678',
-      email: 'sarah.j@email.com'
+      email: 'chaminda.w@email.lk'
     },
-    bookingId: '#BK87234',
+    bookingId: '#BK10234',
     tripDetails: {
-      destination: 'Kandy',
-      startDate: '15 Aug, 2025',
-      endDate: '20 Aug, 2025',
+      destination: 'Kandy Sacred City',
+      startDate: '15 Feb, 2025',
+      endDate: '20 Feb, 2025',
       duration: '5 Days',
       groupSize: '3 People'
     },
     vehicle: {
       name: 'Toyota Axio',
-      regNumber: 'CAR-2345',
+      regNumber: 'WP CAR-2345',
       type: 'Car'
     },
-    paymentStatus: 'Paid',
-    amount: 25000
+    paymentStatus: 'Pending Payment',
+    paymentDeadline: 'Jan 25, 2025',
+    paymentDue: '3 days remaining',
+    acceptedDate: 'Jan 15, 2025',
+    amount: 42500
   },
   {
     id: 2,
     user: {
-      name: 'Mike Chen',
-      image: 'https://randomuser.me/api/portraits/men/2.jpg',
+      name: 'Thilini Rathnayake',
+      image: 'https://randomuser.me/api/portraits/women/22.jpg',
       phone: '+94 76 345 6789',
-      email: 'mike.c@email.com'
+      email: 'thilini.r@email.lk'
     },
-    bookingId: '#BK87235',
+    bookingId: '#BK10235',
     tripDetails: {
-      destination: 'Galle',
-      startDate: '18 Aug, 2025',
-      endDate: '25 Aug, 2025',
+      destination: 'Galle Fort & Bentota',
+      startDate: '28 Feb, 2025',
+      endDate: '7 Mar, 2025',
       duration: '7 Days',
       groupSize: '4 People'
     },
     vehicle: {
-      name: 'Toyota KDH',
-      regNumber: 'VAN-3456',
+      name: 'Toyota KDH Van',
+      regNumber: 'SP VAN-3456',
       type: 'Van'
     },
-    paymentStatus: 'Pending',
-    amount: 35000
+    paymentStatus: 'Pending Payment',
+    paymentDeadline: 'Feb 5, 2025',
+    paymentDue: '5 days remaining',
+    acceptedDate: 'Jan 18, 2025',
+    amount: 84000
+  },
+  {
+    id: 3,
+    user: {
+      name: 'Ruwan De Silva',
+      image: 'https://randomuser.me/api/portraits/men/28.jpg',
+      phone: '+94 77 456 7890',
+      email: 'ruwan.ds@email.lk'
+    },
+    bookingId: '#BK10236',
+    tripDetails: {
+      destination: 'Yala National Park',
+      startDate: '10 Feb, 2025',
+      endDate: '13 Feb, 2025',
+      duration: '3 Days',
+      groupSize: '2 People'
+    },
+    vehicle: {
+      name: 'Suzuki Alto',
+      regNumber: 'CP CAR-7890',
+      type: 'Car'
+    },
+    paymentStatus: 'Pending Payment',
+    paymentDeadline: 'Feb 1, 2025',
+    paymentDue: '8 days remaining',
+    acceptedDate: 'Jan 20, 2025',
+    amount: 19500
   }
 ];
 
@@ -125,11 +159,8 @@ const BookingDetailsModal = ({ booking, onClose }) => {
               <p className="text-sm text-gray-500">Booking ID</p>
               <p className="font-semibold text-lg">{booking.bookingId}</p>
             </div>
-            <span className={`px-3 py-1 rounded-full text-sm ${
-              booking.paymentStatus === 'Paid' 
-                ? 'bg-green-100 text-green-700' 
-                : 'bg-yellow-100 text-yellow-700'
-            }`}>
+            <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm flex items-center">
+              <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
               {booking.paymentStatus}
             </span>
           </div>
@@ -190,11 +221,8 @@ const BookingDetailsModal = ({ booking, onClose }) => {
                   <p className="text-sm text-gray-500">Total Amount</p>
                   <p className="font-semibold text-lg">Rs. {booking.amount.toLocaleString()}</p>
                 </div>
-                <span className={`px-3 py-1 rounded-full text-sm ${
-                  booking.paymentStatus === 'Paid' 
-                    ? 'bg-green-100 text-green-700' 
-                    : 'bg-yellow-100 text-yellow-700'
-                }`}>
+                <span className="bg-orange-100 text-orange-600 px-3 py-1 rounded-full text-sm flex items-center">
+                  <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
                   {booking.paymentStatus}
                 </span>
               </div>
@@ -229,84 +257,37 @@ export default function ActiveBookings() {
     setShowDetailsModal(true);
   };
 
+  // Calculate total earnings
+  const totalEarnings = activeBookings.reduce((total, booking) => total + booking.amount, 0);
+
   return (
     <PartnerLayout activePage="active bookings">
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-2xl font-bold">Active Bookings</h1>
-          <p className="text-gray-600">View and manage your ongoing bookings</p>
+      <div className="p-6 pt-0">
+        {/* Header */}
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-2xl font-bold mb-1">Active Bookings</h1>
+            <p className="text-gray-600">Bookings awaiting payment confirmation</p>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="bg-orange-100 text-orange-600 px-4 py-2 rounded-lg text-sm font-medium">
+              {activeBookings.length} Pending Payments
+            </div>
+            <div className="text-gray-700 font-medium border border-gray-300 px-4 py-2 rounded-lg text-sm">
+              Total Earnings: <span className="text-green-600">Rs. {totalEarnings.toLocaleString()}</span>
+            </div>
+          </div>
         </div>
 
-        <div className="grid grid-cols-1 gap-4">
+        {/* Booking Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {activeBookings.map((booking) => (
-            <div key={booking.id} className="bg-white rounded-lg p-6 shadow-sm">
-              <div className="flex justify-between items-start">
-                {/* Left: Customer Info */}
-                <div className="flex items-center gap-4">
-                  <img 
-                    src={booking.user.image} 
-                    alt={booking.user.name}
-                    className="w-12 h-12 rounded-full"
-                  />
-                  <div>
-                    <h3 className="font-semibold">{booking.user.name}</h3>
-                    <p className="text-sm text-gray-500">Booking ID: {booking.bookingId}</p>
-                  </div>
-                </div>
-
-                {/* Right: Status and Amount */}
-                <div className="text-right">
-                  <span className={`inline-block px-3 py-1 rounded-full text-sm ${
-                    booking.paymentStatus === 'Paid' 
-                      ? 'bg-green-100 text-green-700' 
-                      : 'bg-yellow-100 text-yellow-700'
-                  }`}>
-                    {booking.paymentStatus}
-                  </span>
-                  <p className="mt-1 font-semibold">Rs. {booking.amount.toLocaleString()}</p>
-                </div>
-              </div>
-
-              {/* Trip Details */}
-              <div className="grid grid-cols-5 gap-6 mt-6 mb-6">
-                <div>
-                  <p className="text-sm text-gray-500">Destination</p>
-                  <p className="font-medium">{booking.tripDetails.destination}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Start Date</p>
-                  <p className="font-medium">{booking.tripDetails.startDate}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">End Date</p>
-                  <p className="font-medium">{booking.tripDetails.endDate}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Duration</p>
-                  <p className="font-medium">{booking.tripDetails.duration}</p>
-                </div>
-                <div>
-                  <p className="text-sm text-gray-500">Vehicle</p>
-                  <p className="font-medium">{booking.vehicle.name}</p>
-                </div>
-              </div>
-
-              {/* Actions */}
-              <div className="flex justify-end gap-3">
-                <button
-                  onClick={() => handleContact(booking)}
-                  className="px-4 py-2 text-orange-500 bg-orange-50 rounded-lg hover:bg-orange-100"
-                >
-                  Contact
-                </button>
-                <button
-                  onClick={() => handleViewDetails(booking)}
-                  className="px-4 py-2 text-orange-500 bg-orange-50 rounded-lg hover:bg-orange-100"
-                >
-                  View Details
-                </button>
-              </div>
-            </div>
+            <ActiveBookingCard
+              key={booking.id}
+              booking={booking}
+              onContact={handleContact}
+              onViewDetails={handleViewDetails}
+            />
           ))}
         </div>
       </div>

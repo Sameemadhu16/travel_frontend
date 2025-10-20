@@ -144,11 +144,15 @@ const Messages = () => {
 
   return (
     <PartnerLayout>
-      <div className="h-[calc(100vh-120px)] flex">
-        {/* Conversations List */}
-        <div className="w-1/3 border-r bg-white">
-          <div className="p-4 border-b">
-            <h1 className="text-2xl font-bold mb-4">Messages</h1>
+      <div className="p-6 pt-0">
+        <div>
+          <h1 className="text-2xl font-bold mb-1">Messages</h1>
+          <p className="text-gray-600 mb-6">Communicate with your customers and manage inquiries.</p>
+        </div>
+        <div className="h-[calc(100vh-220px)] flex border border-orange-400 rounded-lg overflow-hidden">
+          {/* Conversations List */}
+          <div className="w-1/3 border-r bg-white">
+            <div className="p-4 border-b">
             <div className="relative">
               <input
                 type="text"
@@ -159,9 +163,9 @@ const Messages = () => {
               />
               <i className="fas fa-search absolute left-3 top-3 text-gray-400"></i>
             </div>
-          </div>
-          
-          <div className="overflow-y-auto h-[calc(100%-88px)]">
+            </div>
+
+          <div className="overflow-y-auto h-[calc(100%-72px)]">
             {filteredConversations.map(conversation => (
               <MessageCard
                 key={conversation.id}
@@ -245,6 +249,7 @@ const Messages = () => {
             </div>
           </div>
         )}
+        </div>
       </div>
     </PartnerLayout>
   );

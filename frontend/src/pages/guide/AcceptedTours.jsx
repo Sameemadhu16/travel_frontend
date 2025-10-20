@@ -8,13 +8,26 @@ import NavBar from './guideComponents/NavBar'
 import { useState } from 'react';
 import TourDetailsModal from './guideComponents/TourDetailsModal';
 import useAcceptedTours from './hooks/useAcceptedTours';
+import useGuideProfile from './hooks/useGuideProfile';
 import { getUserIdFromStorage } from '../../core/authHelper';
 
 const AcceptedTours = () => {
+    // Get the current user's ID from storage
     const userId = getUserIdFromStorage();
-    const guideId = userId;
 
-    const { acceptedTours, loading, error } = useAcceptedTours(guideId);
+    // Fetch the guide profile to get the actual guide ID
+    const { guideData, loading: profileLoading, error: profileError } = useGuideProfile(userId);
+
+    // Get the guide ID from the guide profile
+    const guideId = guideData?.guideId;
+
+    const { acceptedTours, loading: toursLoading, error: toursError } = useAcceptedTours(guideId);
+
+    // Combine loading states
+    const loading = profileLoading || toursLoading;
+
+    // Combine error states
+    const error = profileError || toursError;
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [selectedTour, setSelectedTour] = useState(null);

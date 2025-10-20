@@ -79,10 +79,11 @@ export default function Vehicles() {
 
 	return (
 		<PartnerLayout activePage="my vehicles">
+			<div className="p-6 pt-0">
 			<div className="mb-6 flex justify-between items-center">
 				<div>
-					<h1 className="text-2xl font-bold">My Vehicles</h1>
-					<p className="text-gray-500">Manage your vehicles</p>
+					<h1 className="text-2xl font-bold mb-1">My Vehicles</h1>
+					<p className="text-gray-600">Manage your vehicle fleet and availability.</p>
 				</div>
 				<button
 					onClick={() => setShowAddForm(true)}
@@ -142,6 +143,7 @@ export default function Vehicles() {
 			{showAddForm && (
 				<AddVehicleForm onClose={() => setShowAddForm(false)} />
 			)}
+			</div>
 		</PartnerLayout>
 	);
 }

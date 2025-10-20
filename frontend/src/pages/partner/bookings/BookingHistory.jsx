@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import PartnerLayout from '../../../components/partner/PartnerLayout';
+import Card from '../../../components/partner/Card';
 import FilterModal from '../../../components/partner/FilterModal';
 import Calendar from 'react-calendar';
 import 'react-calendar/dist/Calendar.css';
@@ -33,8 +34,8 @@ const BookingCard = ({ booking }) => {
   };
 
   return (
-    <div className="bg-white rounded-lg overflow-hidden shadow-sm border">
-      <div className="p-6 border-b">
+    <Card className="overflow-hidden">
+      <div className="border-b pb-4 mb-4">
         <div className="flex justify-between items-start mb-4">
           <div>
             <h3 className="text-xl font-semibold mb-1">{booking.tourName}</h3>
@@ -45,10 +46,10 @@ const BookingCard = ({ booking }) => {
             {booking.status.charAt(0).toUpperCase() + booking.status.slice(1)}
           </span>
         </div>
-        
+
         <div className="flex items-center gap-3 mb-4">
-          <img 
-            src={booking.customer.image} 
+          <img
+            src={booking.customer.image}
             alt={booking.customer.name}
             className="w-10 h-10 rounded-full"
           />
@@ -83,36 +84,38 @@ const BookingCard = ({ booking }) => {
         </div>
       </div>
 
-      <div className="px-6 py-4 bg-gray-50 flex justify-between items-center">
+      <div className="flex justify-between items-center pt-2">
         <div className="text-sm text-gray-600">
           Booking ID: {booking.id}
         </div>
-        <button 
-          className="text-orange-500 hover:text-orange-600"
+        <button
+          className="text-orange-500 hover:text-orange-600 font-medium"
           onClick={() => window.location.href = `/partner/bookings/details/${booking.id}`}
         >
           View Details
         </button>
       </div>
-    </div>
+    </Card>
   );
 };
 
 const StatsCard = ({ icon, label, value, type }) => (
-  <div className="bg-white p-4 rounded-lg flex items-center gap-4 shadow-sm">
-    <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-      type === "completed" ? "bg-green-100 text-green-500" :
-      type === "cancelled" ? "bg-red-100 text-red-500" :
-      type === "revenue" ? "bg-orange-100 text-orange-500" :
-      "bg-purple-100 text-purple-500"
-    }`}>
-      <i className={`fas ${icon} text-xl`}></i>
+  <Card>
+    <div className="flex items-center gap-4">
+      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
+        type === "completed" ? "bg-green-100 text-green-500" :
+        type === "cancelled" ? "bg-red-100 text-red-500" :
+        type === "revenue" ? "bg-orange-100 text-orange-500" :
+        "bg-purple-100 text-purple-500"
+      }`}>
+        <i className={`fas ${icon} text-xl`}></i>
+      </div>
+      <div>
+        <h4 className="text-2xl font-bold">{value}</h4>
+        <p className="text-gray-600">{label}</p>
+      </div>
     </div>
-    <div>
-      <h4 className="text-2xl font-bold">{value}</h4>
-      <p className="text-gray-600">{label}</p>
-    </div>
-  </div>
+  </Card>
 );
 
 const BookingHistory = () => {
@@ -128,44 +131,72 @@ const BookingHistory = () => {
   const bookings = [
     {
       id: "BK-2024-001",
-      tourName: "Swiss Alps Adventure",
-      date: "March 15, 2024",
+      tourName: "Sigiriya & Dambulla Cultural Tour",
+      date: "December 15, 2024",
       customer: {
-        name: "Sarah Johnson",
-        email: "sarah.j@example.com",
-        image: "/src/assets/users/user1.jpg"
+        name: "Nuwan Samarasinghe",
+        email: "nuwan.s@email.lk",
+        image: "https://randomuser.me/api/portraits/men/35.jpg"
       },
       duration: "3 days",
       travelers: 2,
-      amount: 12000,
+      amount: 27000,
       status: "completed"
     },
     {
       id: "BK-2024-002",
-      tourName: "Paris City Tour",
-      date: "March 18, 2024",
+      tourName: "Colombo City & Shopping Tour",
+      date: "December 18, 2024",
       customer: {
-        name: "Mike Chen",
-        email: "mike.c@example.com",
-        image: "/src/assets/users/user2.avif"
+        name: "Anjali Wijesinghe",
+        email: "anjali.w@email.lk",
+        image: "https://randomuser.me/api/portraits/women/38.jpg"
       },
       duration: "2 days",
       travelers: 4,
-      amount: 8000,
+      amount: 18000,
       status: "cancelled"
     },
     {
       id: "BK-2024-003",
-      tourName: "Tokyo Explorer",
-      date: "March 20, 2024",
+      tourName: "Ella & Udawalawe Safari",
+      date: "December 20, 2024",
       customer: {
-        name: "Emma Rodriguez",
-        email: "emma.r@example.com",
-        image: "/src/assets/users/user3.avif"
+        name: "Pradeep Gunasekara",
+        email: "pradeep.g@email.lk",
+        image: "https://randomuser.me/api/portraits/men/42.jpg"
       },
       duration: "4 days",
+      travelers: 3,
+      amount: 48000,
+      status: "completed"
+    },
+    {
+      id: "BK-2024-004",
+      tourName: "Mirissa Beach & Whale Watching",
+      date: "December 22, 2024",
+      customer: {
+        name: "Sanduni Rajapaksha",
+        email: "sanduni.r@email.lk",
+        image: "https://randomuser.me/api/portraits/women/48.jpg"
+      },
+      duration: "2 days",
       travelers: 2,
       amount: 16000,
+      status: "completed"
+    },
+    {
+      id: "BK-2024-005",
+      tourName: "Trincomalee Beach Tour",
+      date: "December 25, 2024",
+      customer: {
+        name: "Lasith Malinga",
+        email: "lasith.m@email.lk",
+        image: "https://randomuser.me/api/portraits/men/55.jpg"
+      },
+      duration: "5 days",
+      travelers: 5,
+      amount: 75000,
       status: "refunded"
     }
   ];
@@ -226,12 +257,12 @@ const BookingHistory = () => {
 
   return (
     <PartnerLayout>
-      <div className="space-y-6">
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold">Booking History</h1>
-            <p className="text-gray-600">View and manage your past bookings</p>
-          </div>
+      <div className="p-6 pt-0 space-y-6">
+        <div>
+          <h1 className="text-2xl font-bold mb-1">Booking History</h1>
+          <p className="text-gray-600 mb-6">View and manage your past bookings and completed tours.</p>
+        </div>
+        <div className="flex justify-end items-center">
           <div className="flex gap-3">
             <button 
               className={`px-4 py-2 rounded-lg ${
@@ -290,7 +321,7 @@ const BookingHistory = () => {
             ))}
           </div>
         ) : (
-          <div className="bg-white p-6 rounded-lg shadow-sm">
+          <Card>
             <Calendar
               onChange={setSelectedDate}
               value={selectedDate}
@@ -317,7 +348,7 @@ const BookingHistory = () => {
                 }
               }}
             />
-          </div>
+          </Card>
         )}
       </div>
 

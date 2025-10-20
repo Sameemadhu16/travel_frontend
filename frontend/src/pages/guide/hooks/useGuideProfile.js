@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { getRequest, putRequest } from '../../../core/service'; // Adjust path to your service.js
+import { updateUser } from '../../../api/userService'; // Import user service for updating user data
 // import { getUserIdFromStorage } from '../../../core/authHelper'; // Import helper if using it
 
 const useGuideProfile = (userId) => {
@@ -28,6 +29,7 @@ const useGuideProfile = (userId) => {
                 // Transform the response to match your component's needs
                 const transformedData = {
                     guideId: response.id,
+                    userId: response.user?.id || null, // Store user ID for updates
                     firstName: response.user?.firstName || '',
                     lastName: response.user?.lastName || '',
                     email: response.user?.email || '',
@@ -46,6 +48,7 @@ const useGuideProfile = (userId) => {
                     profilePicture: response.user?.profilePictures?.[0] || null,
                     nicPhotoFront: response.nicPhotoFront?.[0] || null,
                     sltaLicensePhoto: response.sltaLicensePhoto?.[0] || null,
+                    createdAt: response.createdAt || new Date().toISOString(),
                 };
 
                 setGuideData(transformedData);
@@ -66,7 +69,15 @@ const useGuideProfile = (userId) => {
             setLoading(true);
             setError(null);
 
-            const payload = {
+            // Separate user data from guide data
+            const userFields = {
+                firstName: updatedData.firstName,
+                lastName: updatedData.lastName,
+                phone: updatedData.phoneNumber,
+                email: updatedData.businessEmail, // Update business email if different from main email
+            };
+
+            const guideFields = {
                 id: guideData.guideId,
                 bio: updatedData.bio,
                 languagesSpoken: updatedData.languages,
@@ -77,14 +88,19 @@ const useGuideProfile = (userId) => {
                 sltaLicenseId: updatedData.licenseNumber,
             };
 
-            const response = await putRequest(`/guides/${guideData.guideId}`, payload);
-            
+            // Update both user and guide data in parallel
+            const [userResponse, guideResponse] = await Promise.all([
+                updateUser(guideData.userId, userFields),
+                putRequest(`/api/guides/${guideData.guideId}`, guideFields)
+            ]);
+
+            // Update local state with the new data
             setGuideData(prev => ({
                 ...prev,
                 ...updatedData
             }));
 
-            return response;
+            return { user: userResponse, guide: guideResponse };
         } catch (err) {
             setError(err.message || 'Failed to update guide profile');
             console.error('Error updating guide profile:', err);

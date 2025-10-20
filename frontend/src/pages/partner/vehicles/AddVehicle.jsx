@@ -270,36 +270,37 @@ export default function AddVehicle() {
 
   return (
     <PartnerLayout activePage="my vehicles">
-      <div className="bg-white rounded-lg shadow-sm p-6 max-w-4xl mx-auto">
+      <div className="p-6 pt-0">
         <div className="mb-6">
-          <h2 className="text-xl font-semibold">Add New Vehicle</h2>
-          <p className="text-gray-600 text-sm mt-1">Fill in the details below to add a new vehicle to your fleet</p>
+          <h1 className="text-2xl font-bold mb-1">Add New Vehicle</h1>
+          <p className="text-gray-600">Fill in the details below to add a new vehicle to your fleet.</p>
         </div>
 
+        <div className="bg-white border border-orange-400 rounded-lg shadow p-6 max-w-4xl mx-auto">
         {/* Agency Information Display */}
         {agencyData && (
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
             <div className="flex items-start gap-3">
               <div className="flex-shrink-0">
-                <i className="fas fa-building text-blue-600 text-xl"></i>
+                <i className="fas fa-building text-orange-600 text-xl"></i>
               </div>
               <div className="flex-1">
-                <h3 className="font-semibold text-blue-900 mb-1">Agency Information</h3>
+                <h3 className="font-semibold text-orange-900 mb-1">Agency Information</h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-sm">
                   <div>
-                    <span className="text-blue-700 font-medium">Agency Name:</span>{' '}
-                    <span className="text-blue-900">{agencyData.agencyName}</span>
+                    <span className="text-orange-700 font-medium">Agency Name:</span>{' '}
+                    <span className="text-orange-900">{agencyData.agencyName}</span>
                   </div>
                   <div>
-                    <span className="text-blue-700 font-medium">Agency ID:</span>{' '}
-                    <span className="text-blue-900">#{agencyData.id}</span>
+                    <span className="text-orange-700 font-medium">Agency ID:</span>{' '}
+                    <span className="text-orange-900">#{agencyData.id}</span>
                   </div>
                   <div>
-                    <span className="text-blue-700 font-medium">Registration:</span>{' '}
-                    <span className="text-blue-900">{agencyData.registrationNumber}</span>
+                    <span className="text-orange-700 font-medium">Registration:</span>{' '}
+                    <span className="text-orange-900">{agencyData.registrationNumber}</span>
                   </div>
                   <div>
-                    <span className="text-blue-700 font-medium">Status:</span>{' '}
+                    <span className="text-orange-700 font-medium">Status:</span>{' '}
                     <span className={`font-semibold ${agencyData.isVerified ? 'text-green-600' : 'text-orange-600'}`}>
                       {agencyData.isVerified ? '✓ Verified' : '⏳ Pending Verification'}
                     </span>
@@ -696,6 +697,7 @@ export default function AddVehicle() {
             </button>
           </div>
         </form>
+        </div>
       </div>
     </PartnerLayout>
   );

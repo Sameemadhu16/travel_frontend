@@ -1,6 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import SockJS from 'sockjs-client';
-import { Stomp } from '@stomp/stompjs';
+
 
 export function useWebSocket(currentUserId, selectedUser) {
     const [isConnected, setIsConnected] = useState(false);

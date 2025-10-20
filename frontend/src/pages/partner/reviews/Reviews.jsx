@@ -1,325 +1,252 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
+import PropTypes from 'prop-types';
 import PartnerLayout from '../../../components/partner/PartnerLayout';
+import Card from '../../../components/partner/Card';
+import { FaUser } from 'react-icons/fa';
 
-const ReviewCard = ({ review, isSelected, onClick }) => {
-  const getStarRating = (rating) => {
-    return [...Array(5)].map((_, index) => (
-      <i 
-        key={index}
-        className={`fas fa-star ${index < rating ? 'text-yellow-400' : 'text-gray-300'}`}
-      />
-    ));
-  };
-
-  return (
-    <div 
-      className={`p-4 border-b cursor-pointer hover:bg-gray-50 ${isSelected ? 'bg-orange-50' : ''}`}
-      onClick={onClick}
-    >
-      <div className="flex gap-4">
-        <img 
-          src={review.customer.image} 
-          alt={review.customer.name}
-          className="w-12 h-12 rounded-full"
-        />
-        <div className="flex-1">
-          <div className="flex justify-between items-start mb-1">
-            <h4 className="font-semibold">{review.customer.name}</h4>
-            <span className="text-xs text-gray-500">{review.date}</span>
-          </div>
-          <div className="flex items-center gap-1 mb-1">
-            {getStarRating(review.rating)}
-            <span className="text-sm text-gray-600 ml-1">{review.rating}.0</span>
-          </div>
-          <p className="text-sm text-gray-600 line-clamp-2">{review.comment}</p>
-          {!review.replied && (
-            <span className="inline-block bg-orange-100 text-orange-700 text-xs px-2 py-1 rounded-full mt-2">
-              Needs Response
+// Star Rating Component
+const StarRating = ({ rating, showNumber = false }) => {
+    const stars = [];
+    for (let i = 1; i <= 5; i++) {
+        stars.push(
+            <span
+                key={i}
+                className={`text-lg ${i <= rating ? 'text-orange-400' : 'text-gray-300'}`}
+            >
+                ★
             </span>
-          )}
+        );
+    }
+    return (
+        <div className="flex items-center gap-1">
+            {stars}
+            {showNumber && <span className="ml-1 text-sm text-gray-600">({rating})</span>}
         </div>
-      </div>
-    </div>
-  );
+    );
+};
+
+StarRating.propTypes = {
+    rating: PropTypes.number.isRequired,
+    showNumber: PropTypes.bool,
+};
+
+// Rating Bar Component
+const RatingBar = ({ rating, count, total }) => {
+    const percentage = (count / total) * 100;
+
+    return (
+        <div className="flex items-center gap-2 mb-1">
+            <span className="text-sm text-gray-600 w-2">{rating}</span>
+            <span className="text-orange-400 text-sm">★</span>
+            <div className="flex-1 bg-gray-200 rounded-full h-2">
+                <div
+                    className="bg-orange-400 h-2 rounded-full"
+                    style={{ width: `${percentage}%` }}
+                ></div>
+            </div>
+            <span className="text-sm text-gray-600 w-8 text-right">{count}</span>
+        </div>
+    );
+};
+
+RatingBar.propTypes = {
+    rating: PropTypes.number.isRequired,
+    count: PropTypes.number.isRequired,
+    total: PropTypes.number.isRequired,
 };
 
 const Reviews = () => {
-  const [selectedReview, setSelectedReview] = useState(null);
-  const [filterRating, setFilterRating] = useState('all');
-  const [filterStatus, setFilterStatus] = useState('all');
-  const [searchTerm, setSearchTerm] = useState('');
-  const [replyText, setReplyText] = useState('');
+    const [replyingTo, setReplyingTo] = useState(null);
+    const [replyText, setReplyText] = useState('');
 
-  // Sample data - Replace with your API data
-  const reviews = [
-    {
-      id: 1,
-      customer: {
-        name: "Sarah Johnson",
-        image: "/src/assets/users/user1.jpg",
-        tourCount: 3
-      },
-      tourName: "Swiss Alps Adventure",
-      date: "July 15, 2024",
-      rating: 5,
-      comment: "Amazing experience! Our guide was incredibly knowledgeable and made sure we got the best photos at every spot. The trek was well-paced and the views were breathtaking.",
-      replied: false,
-      images: [
-        "/src/assets/places/1.jpg",
-        "/src/assets/places/2.jpg"
-      ]
-    },
-    {
-      id: 2,
-      customer: {
-        name: "Mike Chen",
-        image: "/src/assets/users/user2.avif",
-        tourCount: 1
-      },
-      tourName: "Paris City Tour",
-      date: "July 14, 2024",
-      rating: 4,
-      comment: "Great tour overall. The historical information was fascinating. Would have appreciated more time at some locations, but understand the schedule constraints.",
-      replied: true,
-      reply: "Thank you for your feedback, Mike! We're glad you enjoyed the historical aspects of the tour. We'll consider adjusting the timing at key locations for future tours.",
-      images: [
-        "/src/assets/places/3.jpg"
-      ]
-    }
-  ];
+    const reviewsData = [
+        {
+            id: 1,
+            name: "Sarah Johnson",
+            avatar: "https://randomuser.me/api/portraits/women/1.jpg",
+            rating: 5,
+            tourType: "Kandy Tour - Toyota Prius",
+            timeAgo: "2 days ago",
+            comment: "Excellent service! The car was clean and well-maintained. Driver was very professional and knew all the tourist spots around Kandy. Highly recommend for anyone visiting Sri Lanka.",
+            hasReply: false
+        },
+        {
+            id: 2,
+            name: "Mike Chen",
+            avatar: "https://randomuser.me/api/portraits/men/2.jpg",
+            rating: 4,
+            tourType: "Galle Tour - Toyota KDH",
+            timeAgo: "5 days ago",
+            comment: "Good experience overall. The vehicle was comfortable for our family trip to Galle. Only minor issue was the pickup was slightly delayed, but the driver made up for it with great service.",
+            hasReply: true,
+            reply: "Thank you for your feedback! We apologize for the delay and have addressed this with our team. We're glad you enjoyed the rest of your journey!"
+        },
+        {
+            id: 3,
+            name: "Emma Rodriguez",
+            avatar: "https://randomuser.me/api/portraits/women/3.jpg",
+            rating: 5,
+            tourType: "Nuwara Eliya Tour - Suzuki Alto",
+            timeAgo: "1 week ago",
+            comment: "Amazing experience! The vehicle was perfect for our needs and the driver was incredibly friendly and knowledgeable about the local area. Will definitely book again!",
+            hasReply: false
+        }
+    ];
 
-  const handleReply = (e) => {
-    e.preventDefault();
-    if (!replyText.trim()) return;
+    const ratingStats = [
+        { rating: 5, count: 162 },
+        { rating: 4, count: 62 },
+        { rating: 3, count: 19 },
+        { rating: 2, count: 3 },
+        { rating: 1, count: 2 }
+    ];
 
-    selectedReview.replied = true;
-    selectedReview.reply = replyText;
-    setReplyText('');
-  };
+    const totalReviews = ratingStats.reduce((sum, stat) => sum + stat.count, 0);
+    const averageRating = (
+        ratingStats.reduce((sum, stat) => sum + stat.rating * stat.count, 0) / totalReviews
+    ).toFixed(1);
 
-  const stats = {
-    totalReviews: reviews.length,
-    averageRating: (reviews.reduce((sum, review) => sum + review.rating, 0) / reviews.length).toFixed(1),
-    pendingResponses: reviews.filter(r => !r.replied).length,
-    fiveStarReviews: reviews.filter(r => r.rating === 5).length
-  };
+    const handleReply = (reviewId) => {
+        if (!replyText.trim()) return;
 
-  const filteredReviews = reviews.filter(review => {
-    const matchesRating = filterRating === 'all' || review.rating === parseInt(filterRating);
-    const matchesStatus = filterStatus === 'all' || 
-      (filterStatus === 'pending' && !review.replied) ||
-      (filterStatus === 'responded' && review.replied);
-    const matchesSearch = 
-      review.customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      review.comment.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      review.tourName.toLowerCase().includes(searchTerm.toLowerCase());
-    return matchesRating && matchesStatus && matchesSearch;
-  });
+        // Here you would typically send the reply to your backend
+        console.log(`Reply to review ${reviewId}:`, replyText);
 
-  const StatsCard = ({ icon, label, value, type }) => (
-    <div className="bg-white p-4 rounded-lg flex items-center gap-4 shadow-sm">
-      <div className={`w-12 h-12 rounded-full flex items-center justify-center ${
-        type === "rating" ? "bg-yellow-100 text-yellow-600" :
-        type === "reviews" ? "bg-blue-100 text-blue-500" :
-        type === "pending" ? "bg-orange-100 text-orange-500" :
-        "bg-green-100 text-green-500"
-      }`}>
-        <i className={`fas ${icon} text-xl`}></i>
-      </div>
-      <div>
-        <h4 className="text-2xl font-bold">{value}</h4>
-        <p className="text-gray-600">{label}</p>
-      </div>
-    </div>
-  );
+        // Reset form
+        setReplyText('');
+        setReplyingTo(null);
+    };
 
-  return (
-    <PartnerLayout>
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="flex justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold">Reviews & Ratings</h1>
-            <p className="text-gray-600">Manage and respond to customer reviews</p>
-          </div>
-        </div>
+    const handleCancelReply = () => {
+        setReplyText('');
+        setReplyingTo(null);
+    };
 
-        {/* Stats */}
-        <div className="grid grid-cols-4 gap-4">
-          <StatsCard 
-            icon="fa-star" 
-            label="Average Rating" 
-            value={stats.averageRating}
-            type="rating"
-          />
-          <StatsCard 
-            icon="fa-comments" 
-            label="Total Reviews" 
-            value={stats.totalReviews}
-            type="reviews"
-          />
-          <StatsCard 
-            icon="fa-reply" 
-            label="Pending Responses" 
-            value={stats.pendingResponses}
-            type="pending"
-          />
-          <StatsCard 
-            icon="fa-award" 
-            label="5-Star Reviews" 
-            value={stats.fiveStarReviews}
-            type="five-star"
-          />
-        </div>
-
-        {/* Main Content */}
-        <div className="grid grid-cols-3 gap-6 h-[calc(100vh-300px)]">
-          {/* Reviews List */}
-          <div className="col-span-1 bg-white rounded-lg shadow-sm border overflow-hidden">
-            <div className="p-4 border-b">
-              <div className="relative mb-4">
-                <input
-                  type="text"
-                  placeholder="Search reviews..."
-                  className="w-full pl-10 pr-4 py-2 border rounded-lg"
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                />
-                <i className="fas fa-search absolute left-3 top-3 text-gray-400"></i>
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <select
-                  className="w-full p-2 border rounded-lg"
-                  value={filterRating}
-                  onChange={(e) => setFilterRating(e.target.value)}
-                >
-                  <option value="all">All Ratings</option>
-                  <option value="5">5 Stars</option>
-                  <option value="4">4 Stars</option>
-                  <option value="3">3 Stars</option>
-                  <option value="2">2 Stars</option>
-                  <option value="1">1 Star</option>
-                </select>
-                <select
-                  className="w-full p-2 border rounded-lg"
-                  value={filterStatus}
-                  onChange={(e) => setFilterStatus(e.target.value)}
-                >
-                  <option value="all">All Status</option>
-                  <option value="pending">Needs Response</option>
-                  <option value="responded">Responded</option>
-                </select>
-              </div>
-            </div>
-            <div className="overflow-y-auto h-[calc(100%-155px)]">
-              {filteredReviews.map(review => (
-                <ReviewCard
-                  key={review.id}
-                  review={review}
-                  isSelected={selectedReview?.id === review.id}
-                  onClick={() => setSelectedReview(review)}
-                />
-              ))}
-            </div>
-          </div>
-
-          {/* Review Details */}
-          {selectedReview ? (
-            <div className="col-span-2 bg-white rounded-lg shadow-sm border overflow-hidden">
-              <div className="p-6 border-b">
-                <div className="flex justify-between items-start mb-4">
-                  <div className="flex items-center gap-4">
-                    <img 
-                      src={selectedReview.customer.image}
-                      alt={selectedReview.customer.name}
-                      className="w-16 h-16 rounded-full"
-                    />
-                    <div>
-                      <h2 className="text-xl font-semibold mb-1">{selectedReview.customer.name}</h2>
-                      <p className="text-gray-600">Completed {selectedReview.customer.tourCount} tours</p>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-yellow-400 text-xl mb-1">
-                      {[...Array(selectedReview.rating)].map((_, i) => (
-                        <i key={i} className="fas fa-star"></i>
-                      ))}
-                    </div>
-                    <p className="text-sm text-gray-500">{selectedReview.date}</p>
-                  </div>
+    return (
+        <PartnerLayout>
+            <div className="space-y-6">
+                <div>
+                    <h1 className="text-2xl font-bold mb-1">Reviews & Feedback</h1>
+                    <p className="text-gray-600 mb-6">See what travelers are saying about their experiences</p>
                 </div>
 
-                <div className="mb-4">
-                  <h3 className="font-medium mb-2">Tour</h3>
-                  <p className="text-gray-700">{selectedReview.tourName}</p>
-                </div>
-
-                <div className="mb-4">
-                  <h3 className="font-medium mb-2">Review</h3>
-                  <p className="text-gray-700">{selectedReview.comment}</p>
-                </div>
-
-                {selectedReview.images?.length > 0 && (
-                  <div>
-                    <h3 className="font-medium mb-2">Photos</h3>
-                    <div className="flex gap-4">
-                      {selectedReview.images.map((image, index) => (
-                        <img 
-                          key={index}
-                          src={image}
-                          alt="Review"
-                          className="w-24 h-24 rounded-lg object-cover"
-                        />
-                      ))}
+                {/* Overall Rating Card */}
+                <Card>
+                    <div className="flex justify-between items-start mb-4">
+                        <h2 className="text-lg font-semibold text-gray-800">Overall Rating</h2>
                     </div>
-                  </div>
-                )}
-              </div>
 
-              <div className="p-6">
-                <h3 className="font-semibold mb-4">Response</h3>
-                {selectedReview.replied ? (
-                  <div className="bg-gray-50 p-4 rounded-lg">
-                    <div className="flex items-center gap-3 mb-2">
-                      <i className="fas fa-reply text-gray-400"></i>
-                      <span className="text-sm text-gray-500">Your response</span>
+                    <div className="flex gap-8">
+                        {/* Rating Score */}
+                        <div className="flex flex-col items-center">
+                            <div className="text-4xl font-bold text-gray-800 mb-1">{averageRating}</div>
+                            <StarRating rating={Math.round(parseFloat(averageRating))} />
+                            <div className="text-sm text-gray-500 mt-1">Based on {totalReviews} reviews</div>
+                        </div>
+
+                        {/* Rating Bars */}
+                        <div className="flex-1">
+                            {ratingStats.map((stat) => (
+                                <RatingBar
+                                    key={stat.rating}
+                                    rating={stat.rating}
+                                    count={stat.count}
+                                    total={totalReviews}
+                                />
+                            ))}
+                        </div>
                     </div>
-                    <p className="text-gray-700">{selectedReview.reply}</p>
-                  </div>
-                ) : (
-                  <form onSubmit={handleReply}>
-                    <textarea
-                      placeholder="Write your response..."
-                      className="w-full p-3 border rounded-lg mb-3"
-                      rows="4"
-                      value={replyText}
-                      onChange={(e) => setReplyText(e.target.value)}
-                    ></textarea>
-                    <div className="flex justify-end">
-                      <button 
-                        type="submit"
-                        className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600"
-                        disabled={!replyText.trim()}
-                      >
-                        Post Response
-                      </button>
-                    </div>
-                  </form>
-                )}
-              </div>
+                </Card>
+
+                {/* Individual Reviews */}
+                {reviewsData.map((review) => (
+                    <Card key={review.id}>
+                        <div className="flex gap-3">
+                            {/* Avatar */}
+                            <img
+                                src={review.avatar}
+                                alt={review.name}
+                                className="w-10 h-10 rounded-full object-cover"
+                            />
+
+                            {/* Review Content */}
+                            <div className="flex-1">
+                                <div className="flex justify-between items-start mb-2">
+                                    <div>
+                                        <h3 className="font-semibold text-gray-800">{review.name}</h3>
+                                        <div className="flex items-center gap-2 mt-1">
+                                            <StarRating rating={review.rating} />
+                                            <span className="text-sm text-gray-600">{review.tourType}</span>
+                                        </div>
+                                    </div>
+                                    <span className="text-sm text-gray-500">{review.timeAgo}</span>
+                                </div>
+
+                                {/* Review Text */}
+                                <p className="text-gray-700 text-sm mb-3 leading-relaxed">
+                                    {review.comment}
+                                </p>
+
+                                {/* Action Buttons */}
+                                {!review.hasReply && replyingTo !== review.id && (
+                                    <div className="flex items-center gap-4 text-sm">
+                                        <button
+                                            className="flex items-center gap-1 text-orange-500 hover:text-orange-600"
+                                            onClick={() => setReplyingTo(review.id)}
+                                        >
+                                            Reply
+                                        </button>
+                                        <button className="flex items-center gap-1 text-gray-500 hover:text-gray-600">
+                                            Report
+                                        </button>
+                                    </div>
+                                )}
+
+                                {/* Reply Form */}
+                                {!review.hasReply && replyingTo === review.id && (
+                                    <div className="mt-3">
+                                        <textarea
+                                            placeholder="Write your response..."
+                                            className="w-full p-3 border border-gray-300 rounded-lg mb-2 focus:outline-none focus:ring-2 focus:ring-orange-400"
+                                            rows="3"
+                                            value={replyText}
+                                            onChange={(e) => setReplyText(e.target.value)}
+                                        ></textarea>
+                                        <div className="flex justify-end gap-2">
+                                            <button
+                                                className="px-4 py-2 text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200"
+                                                onClick={handleCancelReply}
+                                            >
+                                                Cancel
+                                            </button>
+                                            <button
+                                                className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                                                onClick={() => handleReply(review.id)}
+                                                disabled={!replyText.trim()}
+                                            >
+                                                Post Response
+                                            </button>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {/* Company Reply */}
+                                {review.hasReply && (
+                                    <div className="mt-4 p-3 bg-orange-50 rounded-lg border-l-4 border-orange-400">
+                                        <div className="flex items-center gap-2 mb-2">
+                                            <span className="text-sm"><FaUser /></span>
+                                            <span className="font-medium text-sm">Your Reply</span>
+                                        </div>
+                                        <p className="text-sm text-gray-700">{review.reply}</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div>
+                    </Card>
+                ))}
             </div>
-          ) : (
-            <div className="col-span-2 bg-white rounded-lg shadow-sm border flex items-center justify-center">
-              <div className="text-center">
-                <i className="far fa-star text-5xl text-gray-400 mb-2"></i>
-                <p className="text-gray-500">Select a review to view details</p>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-    </PartnerLayout>
-  );
+        </PartnerLayout>
+    );
 };
 
 export default Reviews;

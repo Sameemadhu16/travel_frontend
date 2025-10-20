@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import PartnerLayout from '../../../components/partner/PartnerLayout'
-import Title from '../../../components/Title'
+import Card from '../../../components/partner/Card'
 import InputField from '../../../components/InputField'
 import InputArea from '../../../components/InputArea'
 import PrimaryButton from '../../../components/PrimaryButton'
@@ -73,10 +73,10 @@ export default function HelpCenter() {
 
     return (
         <PartnerLayout>
-            <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                    <Title text="Help Center" />
-                    
+            <div className="p-6 pt-0">
+                <div>
+                    <h1 className="text-2xl font-bold mb-1">Help Center</h1>
+                    <p className="text-gray-600 mb-6">Find answers, get support, and learn how to use the platform.</p>
                 </div>
 
                 {/* Search Bar */}
@@ -100,7 +100,7 @@ export default function HelpCenter() {
                                 onClick={() => setActiveTab(tab)}
                                 className={`${
                                     activeTab === tab
-                                        ? 'border-blue-500 text-blue-600'
+                                        ? 'border-orange-500 text-orange-600'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm uppercase`}
                             >
@@ -115,7 +115,7 @@ export default function HelpCenter() {
                     <div className="grid grid-cols-12 gap-6">
                         {/* FAQ Categories */}
                         <div className="col-span-3">
-                            <div className="bg-white rounded-lg shadow p-4">
+                            <Card>
                                 <h3 className="text-lg font-medium text-gray-900 mb-4">Categories</h3>
                                 <div className="space-y-2">
                                     {Object.keys(helpData.faqs).map((category) => (
@@ -124,7 +124,7 @@ export default function HelpCenter() {
                                             onClick={() => setSelectedCategory(category)}
                                             className={`w-full text-left px-3 py-2 rounded-md text-sm ${
                                                 selectedCategory === category
-                                                    ? 'bg-blue-50 text-blue-700'
+                                                    ? 'bg-orange-50 text-orange-700'
                                                     : 'text-gray-600 hover:bg-gray-50'
                                             }`}
                                         >
@@ -132,20 +132,18 @@ export default function HelpCenter() {
                                         </button>
                                     ))}
                                 </div>
-                            </div>
-                            <div className='flex w-full justify-start mt-5'>
-                                <div className=''>
+                                <div className='flex w-full justify-start mt-5'>
                                     <PrimaryButton
                                         text="Submit a Ticket"
                                         onClick={() => setShowTicketModal(true)}
                                     />
                                 </div>
-                            </div>
+                            </Card>
                         </div>
 
                         {/* FAQ Content */}
                         <div className="col-span-9">
-                            <div className="bg-white rounded-lg shadow">
+                            <Card>
                                 <div className="p-6">
                                     <h2 className="text-xl font-medium text-gray-900 mb-6 capitalize">
                                         {selectedCategory} FAQs
@@ -161,7 +159,7 @@ export default function HelpCenter() {
                                         ))}
                                     </div>
                                 </div>
-                            </div>
+                            </Card>
                         </div>
                     </div>
                 )}
@@ -170,21 +168,19 @@ export default function HelpCenter() {
                 {activeTab === 'articles' && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {helpData.articles.map((article) => (
-                            <div key={article.id} className="bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow">
-                                <div className="p-6">
+                            <Card key={article.id} className="hover:shadow-lg transition-shadow">
                                     <div className="flex items-center justify-between mb-4">
-                                        <span className="text-sm font-medium text-blue-600 bg-blue-50 px-3 py-1 rounded-full">
+                                        <span className="text-sm font-medium text-orange-600 bg-orange-50 px-3 py-1 rounded-full">
                                             {article.category}
                                         </span>
                                         <span className="text-sm text-gray-500">{article.readTime}</span>
                                     </div>
                                     <h3 className="text-lg font-medium text-gray-900 mb-2">{article.title}</h3>
                                     <p className="text-gray-600 mb-4">{article.excerpt}</p>
-                                    <button className="text-blue-600 hover:text-blue-800 text-sm font-medium">
+                                    <button className="text-orange-600 hover:text-orange-800 text-sm font-medium">
                                         Read More →
                                     </button>
-                                </div>
-                            </div>
+                            </Card>
                         ))}
                     </div>
                 )}
@@ -192,14 +188,14 @@ export default function HelpCenter() {
                 {/* Contact Section */}
                 {activeTab === 'contact' && (
                     <div className="max-w-3xl mx-auto">
-                        <div className="bg-white rounded-lg shadow-md">
+                        <Card>
                             <div className="p-6">
                                 <h2 className="text-xl font-medium text-gray-900 mb-6">Contact Support</h2>
                                 <div className="grid grid-cols-1 gap-6">
                                     <div className="border-b border-gray-200 pb-6">
                                         <h3 className="text-lg font-medium text-gray-900 mb-2">Email Support</h3>
                                         <p className="text-gray-600 mb-4">
-                                            Send us an email and we'll get back to you within 24 hours.
+                                            Send us an email and we&apos;ll get back to you within 24 hours.
                                         </p>
                                         <a
                                             href="mailto:support@example.com"
@@ -231,7 +227,7 @@ export default function HelpCenter() {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </Card>
                     </div>
                 )}
 

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import PartnerLayout from '../../../components/partner/PartnerLayout'
-import Title from '../../../components/Title'
+import Card from '../../../components/partner/Card'
 import InputField from '../../../components/InputField'
 import PrimaryButton from '../../../components/PrimaryButton'
 import ImageUploader from '../../../components/ImageUploader'
@@ -11,13 +11,13 @@ export default function Settings() {
     // Sample user data - replace with actual data from your backend
     const [userData, setUserData] = useState({
         profile: {
-            name: 'John Doe',
-            email: 'john.doe@example.com',
-            phone: '+94 71 234 5678',
-            address: 'No 123, Sample Street, Colombo',
-            businessName: 'JD Tours & Travels',
-            businessRegNo: 'BRN123456',
-            profileImage: '/path/to/profile.jpg'
+            name: 'Sandun Wickramasinghe',
+            email: 'sandun.w@slvehiclerental.lk',
+            phone: '+94 77 123 4567',
+            address: 'No 45/2, Galle Road, Dehiwala, Colombo',
+            businessName: 'Lanka Vehicle Rentals & Tours',
+            businessRegNo: 'PV00012345',
+            profileImage: 'https://randomuser.me/api/portraits/men/60.jpg'
         },
         notifications: {
             emailNotifications: true,
@@ -28,7 +28,7 @@ export default function Settings() {
         },
         security: {
             twoFactorAuth: false,
-            lastPasswordChange: '2025-06-15',
+            lastPasswordChange: '2025-01-10',
             loginAlerts: true
         }
     })
@@ -55,11 +55,14 @@ export default function Settings() {
 
     return (
         <PartnerLayout>
-            <div className="p-6">
-                <Title text="Settings" />
+            <div className="p-6 pt-0">
+                <div>
+                    <h1 className="text-2xl font-bold mb-1">Settings</h1>
+                    <p className="text-gray-600 mb-6">Manage your account settings and preferences.</p>
+                </div>
 
                 {/* Settings Navigation */}
-                <div className="flex mt-6 border-b border-gray-200">
+                <div className="flex border-b border-gray-200">
                     <nav className="-mb-px flex space-x-8">
                         {['profile', 'notifications', 'security', 'billing'].map((tab) => (
                             <button
@@ -67,7 +70,7 @@ export default function Settings() {
                                 onClick={() => setActiveTab(tab)}
                                 className={`${
                                     activeTab === tab
-                                        ? 'border-blue-500 text-blue-600'
+                                        ? 'border-orange-500 text-orange-600'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm capitalize`}
                             >
@@ -79,7 +82,7 @@ export default function Settings() {
 
                 {/* Profile Settings */}
                 {activeTab === 'profile' && (
-                    <div className="mt-6 bg-white shadow rounded-lg">
+                    <Card className="mt-6">
                         <div className="p-6">
                             <h2 className="text-xl font-medium text-gray-900 mb-6">Profile Information</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -131,12 +134,12 @@ export default function Settings() {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </Card>
                 )}
 
                 {/* Notification Settings */}
                 {activeTab === 'notifications' && (
-                    <div className="mt-6 bg-white shadow rounded-lg">
+                    <Card className="mt-6">
                         <div className="p-6">
                             <h2 className="text-xl font-medium text-gray-900 mb-6">Notification Preferences</h2>
                             <div className="space-y-6">
@@ -153,7 +156,7 @@ export default function Settings() {
                                         <button
                                             onClick={() => handleNotificationToggle(key)}
                                             className={`${
-                                                value ? 'bg-blue-600' : 'bg-gray-200'
+                                                value ? 'bg-orange-600' : 'bg-gray-200'
                                             } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out`}
                                         >
                                             <span
@@ -166,12 +169,12 @@ export default function Settings() {
                                 ))}
                             </div>
                         </div>
-                    </div>
+                    </Card>
                 )}
 
                 {/* Security Settings */}
                 {activeTab === 'security' && (
-                    <div className="mt-6 bg-white shadow rounded-lg">
+                    <Card className="mt-6">
                         <div className="p-6">
                             <h2 className="text-xl font-medium text-gray-900 mb-6">Security Settings</h2>
                             <div className="space-y-6">
@@ -214,7 +217,7 @@ export default function Settings() {
                                                 <button
                                                     onClick={() => handleSecurityToggle(key)}
                                                     className={`${
-                                                        value ? 'bg-blue-600' : 'bg-gray-200'
+                                                        value ? 'bg-orange-600' : 'bg-gray-200'
                                                     } relative inline-flex h-6 w-11 flex-shrink-0 cursor-pointer rounded-full transition-colors duration-200 ease-in-out`}
                                                 >
                                                     <span
@@ -229,12 +232,12 @@ export default function Settings() {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </Card>
                 )}
 
                 {/* Billing Settings */}
                 {activeTab === 'billing' && (
-                    <div className="mt-6 bg-white shadow rounded-lg">
+                    <Card className="mt-6">
                         <div className="p-6">
                             <h2 className="text-xl font-medium text-gray-900 mb-6">Billing Information</h2>
                             <div className="space-y-6">
@@ -293,7 +296,7 @@ export default function Settings() {
                                 </div>
                             </div>
                         </div>
-                    </div>
+                    </Card>
                 )}
             </div>
         </PartnerLayout>

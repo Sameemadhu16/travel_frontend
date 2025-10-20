@@ -9,19 +9,27 @@ import TourDetailsModal from './guideComponents/TourDetailsModal'
 import TourAcceptanceModal from './guideComponents/TourAcceptanceModal'
 import TourRejectModal from './guideComponents/TourRejectModal'
 import useGuideRequests from './hooks/useGuideRequests'
+import useGuideProfile from './hooks/useGuideProfile'
 import { getUserIdFromStorage } from '../../core/authHelper'
 import { Loader, AlertCircle } from 'lucide-react'
 
 const TourRequest = () => {
-    // Get the current guide's ID from their user profile
-    // You'll need to fetch the guide record from user ID
+    // Get the current user's ID from storage
     const userId = getUserIdFromStorage()
-    
-    // TODO: Get guideId from user. For now, assuming userId matches guideId
-    // You may need to fetch guide profile first to get guide ID
-    const guideId = userId
-    
-    const { tourRequests, loading, error, acceptRequest, rejectRequest } = useGuideRequests(guideId)
+
+    // Fetch the guide profile to get the actual guide ID
+    const { guideData, loading: profileLoading, error: profileError } = useGuideProfile(userId)
+
+    // Get the guide ID from the guide profile
+    const guideId = guideData?.guideId
+
+    const { tourRequests, loading: requestsLoading, error: requestsError, acceptRequest, rejectRequest } = useGuideRequests(guideId)
+
+    // Combine loading states - show loading if either profile or requests are loading
+    const loading = profileLoading || requestsLoading
+
+    // Combine error states - show profile error first, then requests error
+    const error = profileError || requestsError
     
     const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false)
     const [isAcceptanceModalOpen, setIsAcceptanceModalOpen] = useState(false)

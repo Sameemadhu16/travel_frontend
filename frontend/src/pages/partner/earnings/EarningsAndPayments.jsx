@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import PartnerLayout from '../../../components/partner/PartnerLayout'
-import Title from '../../../components/Title'
+import Card from '../../../components/partner/Card'
 import StatusBadge from '../../../components/admin/StatusBadge'
 
 export default function EarningsAndPayments() {
@@ -45,23 +45,26 @@ export default function EarningsAndPayments() {
 
     return (
         <PartnerLayout>
-            <div className="p-6">
-                <Title text="Earnings & Payments" />
+            <div className="p-6 pt-0">
+                <div>
+                    <h1 className="text-2xl font-bold mb-1">Earnings & Payments</h1>
+                    <p className="text-gray-600 mb-6">Track your revenue, payments, and financial transactions.</p>
+                </div>
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-                    <div className="bg-white rounded-lg shadow p-6">
+                    <Card>
                         <h3 className="text-gray-500 text-sm mb-2">Total Earnings</h3>
                         <p className="text-2xl font-semibold text-green-600">{formatCurrency(earningsData.totalEarnings)}</p>
-                    </div>
-                    <div className="bg-white rounded-lg shadow p-6">
+                    </Card>
+                    <Card>
                         <h3 className="text-gray-500 text-sm mb-2">Pending Payments</h3>
                         <p className="text-2xl font-semibold text-yellow-600">{formatCurrency(earningsData.pendingPayments)}</p>
-                    </div>
-                    <div className="bg-white rounded-lg shadow p-6">
+                    </Card>
+                    <Card>
                         <h3 className="text-gray-500 text-sm mb-2">Completed Payments</h3>
-                        <p className="text-2xl font-semibold text-blue-600">{formatCurrency(earningsData.completedPayments)}</p>
-                    </div>
+                        <p className="text-2xl font-semibold text-orange-600">{formatCurrency(earningsData.completedPayments)}</p>
+                    </Card>
                 </div>
 
                 {/* Tabs */}
@@ -72,7 +75,7 @@ export default function EarningsAndPayments() {
                                 onClick={() => setActiveTab('earnings')}
                                 className={`${
                                     activeTab === 'earnings'
-                                        ? 'border-blue-500 text-blue-600'
+                                        ? 'border-orange-500 text-orange-600'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
                             >
@@ -82,7 +85,7 @@ export default function EarningsAndPayments() {
                                 onClick={() => setActiveTab('payment-history')}
                                 className={`${
                                     activeTab === 'payment-history'
-                                        ? 'border-blue-500 text-blue-600'
+                                        ? 'border-orange-500 text-orange-600'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
                             >
@@ -94,7 +97,7 @@ export default function EarningsAndPayments() {
 
                 {/* Tab Content */}
                 {activeTab === 'earnings' ? (
-                    <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                    <Card>
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
@@ -143,13 +146,13 @@ export default function EarningsAndPayments() {
                                 ))}
                             </tbody>
                         </table>
-                    </div>
+                    </Card>
                 ) : (
-                    <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                    <Card>
                         <div className="p-4 border-b border-gray-200">
                             <div className="flex justify-between items-center mb-4">
                                 <h3 className="text-lg font-medium text-gray-900">Payment History</h3>
-                                <select className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <select className="rounded-md border-orange-400 shadow-sm focus:border-orange-500 focus:ring-orange-500">
                                     <option value="all">All Time</option>
                                     <option value="month">This Month</option>
                                     <option value="year">This Year</option>
@@ -226,7 +229,7 @@ export default function EarningsAndPayments() {
                                 ))}
                             </tbody>
                         </table>
-                    </div>
+                    </Card>
                 )}
             </div>
         </PartnerLayout>

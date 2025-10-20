@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import PartnerLayout from '../../../components/partner/PartnerLayout'
-import Title from '../../../components/Title'
+import Card from '../../../components/partner/Card'
 
 export default function Analytics() {
     const [timeRange, setTimeRange] = useState('month')
@@ -37,13 +37,16 @@ export default function Analytics() {
 
     return (
         <PartnerLayout>
-            <div className="p-6">
+            <div className="p-6 pt-0">
                 <div className="flex justify-between items-center mb-6">
-                    <Title text="Analytics Dashboard" />
+                    <div>
+                        <h1 className="text-2xl font-bold mb-1">Analytics Dashboard</h1>
+                        <p className="text-gray-600">Track your performance and insights.</p>
+                    </div>
                     <select
                         value={timeRange}
                         onChange={(e) => setTimeRange(e.target.value)}
-                        className="rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500"
+                        className="rounded-md border-orange-400 shadow-sm focus:border-orange-500 focus:ring-orange-500 px-4 py-2"
                     >
                         <option value="week">Last Week</option>
                         <option value="month">Last Month</option>
@@ -53,59 +56,59 @@ export default function Analytics() {
 
                 {/* Key Metrics */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-white rounded-lg shadow p-6">
+                    <Card>
                         <h3 className="text-gray-500 text-sm mb-2">Total Bookings</h3>
-                        <p className="text-2xl font-semibold text-blue-600">{analyticsData.totalBookings}</p>
+                        <p className="text-2xl font-semibold text-orange-600">{analyticsData.totalBookings}</p>
                         <p className="text-sm text-green-600 mt-2">↑ 12% from last month</p>
-                    </div>
-                    <div className="bg-white rounded-lg shadow p-6">
+                    </Card>
+                    <Card>
                         <h3 className="text-gray-500 text-sm mb-2">Total Earnings</h3>
                         <p className="text-2xl font-semibold text-green-600">
                             {formatCurrency(analyticsData.totalEarnings)}
                         </p>
                         <p className="text-sm text-green-600 mt-2">↑ 8% from last month</p>
-                    </div>
-                    <div className="bg-white rounded-lg shadow p-6">
+                    </Card>
+                    <Card>
                         <h3 className="text-gray-500 text-sm mb-2">Average Rating</h3>
                         <p className="text-2xl font-semibold text-yellow-600">
                             {analyticsData.averageRating} / 5
                         </p>
                         <p className="text-sm text-green-600 mt-2">↑ 0.2 from last month</p>
-                    </div>
-                    <div className="bg-white rounded-lg shadow p-6">
+                    </Card>
+                    <Card>
                         <h3 className="text-gray-500 text-sm mb-2">Completion Rate</h3>
-                        <p className="text-2xl font-semibold text-indigo-600">
+                        <p className="text-2xl font-semibold text-orange-600">
                             {analyticsData.bookingCompletionRate}%
                         </p>
                         <p className="text-sm text-green-600 mt-2">↑ 3% from last month</p>
-                    </div>
+                    </Card>
                 </div>
 
                 {/* Charts Section */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
                     {/* Monthly Booking Trends */}
-                    <div className="bg-white rounded-lg shadow p-6">
+                    <Card>
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Monthly Booking Trends</h3>
-                        <div className="h-64 bg-gray-50 rounded flex items-center justify-center">
+                        <div className="h-64 bg-orange-50 border border-orange-200 rounded flex items-center justify-center">
                             {/* Replace with actual chart component */}
                             <p className="text-gray-500">Booking Trends Chart</p>
                         </div>
-                    </div>
+                    </Card>
 
                     {/* Revenue Analytics */}
-                    <div className="bg-white rounded-lg shadow p-6">
+                    <Card>
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Revenue Analytics</h3>
-                        <div className="h-64 bg-gray-50 rounded flex items-center justify-center">
+                        <div className="h-64 bg-orange-50 border border-orange-200 rounded flex items-center justify-center">
                             {/* Replace with actual chart component */}
                             <p className="text-gray-500">Revenue Chart</p>
                         </div>
-                    </div>
+                    </Card>
                 </div>
 
                 {/* Popular Services & Customer Satisfaction */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {/* Popular Services */}
-                    <div className="bg-white rounded-lg shadow p-6">
+                    <Card>
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Popular Services</h3>
                         <div className="space-y-4">
                             {analyticsData.popularServices.map((service) => (
@@ -114,7 +117,7 @@ export default function Analytics() {
                                         <p className="text-sm font-medium text-gray-900">{service.name}</p>
                                         <div className="mt-1 w-full bg-gray-200 rounded-full h-2">
                                             <div
-                                                className="bg-blue-600 h-2 rounded-full"
+                                                className="bg-orange-500 h-2 rounded-full"
                                                 style={{
                                                     width: `${(service.bookings / analyticsData.totalBookings) * 100}%`
                                                 }}
@@ -125,10 +128,10 @@ export default function Analytics() {
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    </Card>
 
                     {/* Customer Satisfaction */}
-                    <div className="bg-white rounded-lg shadow p-6">
+                    <Card>
                         <h3 className="text-lg font-medium text-gray-900 mb-4">Customer Satisfaction</h3>
                         <div className="space-y-4">
                             {Object.entries(analyticsData.customerSatisfaction).map(([rating, percentage]) => (
@@ -141,7 +144,7 @@ export default function Analytics() {
                                                     rating === 'excellent'
                                                         ? 'bg-green-600'
                                                         : rating === 'good'
-                                                        ? 'bg-blue-600'
+                                                        ? 'bg-orange-500'
                                                         : rating === 'average'
                                                         ? 'bg-yellow-600'
                                                         : 'bg-red-600'
@@ -154,7 +157,7 @@ export default function Analytics() {
                                 </div>
                             ))}
                         </div>
-                    </div>
+                    </Card>
                 </div>
             </div>
         </PartnerLayout>

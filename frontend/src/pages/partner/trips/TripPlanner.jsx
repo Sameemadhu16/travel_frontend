@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import PartnerLayout from '../../../components/partner/PartnerLayout'
-import Title from '../../../components/Title'
+import Card from '../../../components/partner/Card'
 import InputField from '../../../components/InputField'
 import InputArea from '../../../components/InputArea'
 import PrimaryButton from '../../../components/PrimaryButton'
@@ -51,9 +51,10 @@ export default function TripPlanner() {
 
     return (
         <PartnerLayout>
-            <div className="p-6">
-                <div className="flex justify-between items-center mb-6">
-                    <Title text="Trip Planner" />
+            <div className="p-6 pt-0">
+                <div>
+                    <h1 className="text-2xl font-bold mb-1">Trip Planner</h1>
+                    <p className="text-gray-600 mb-6">Create and manage your trip packages and itineraries.</p>
                 </div>
 
                 {/* Tabs */}
@@ -64,7 +65,7 @@ export default function TripPlanner() {
                                 onClick={() => setActiveTab('my-trips')}
                                 className={`${
                                     activeTab === 'my-trips'
-                                        ? 'border-blue-500 text-blue-600'
+                                        ? 'border-orange-500 text-orange-600'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
                             >
@@ -74,7 +75,7 @@ export default function TripPlanner() {
                                 onClick={() => setActiveTab('drafts')}
                                 className={`${
                                     activeTab === 'drafts'
-                                        ? 'border-blue-500 text-blue-600'
+                                        ? 'border-orange-500 text-orange-600'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
                             >
@@ -84,7 +85,7 @@ export default function TripPlanner() {
                                 onClick={() => setActiveTab('templates')}
                                 className={`${
                                     activeTab === 'templates'
-                                        ? 'border-blue-500 text-blue-600'
+                                        ? 'border-orange-500 text-orange-600'
                                         : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
                                 } whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm`}
                             >
@@ -96,7 +97,7 @@ export default function TripPlanner() {
 
                 {/* Active Trips Table */}
                 {activeTab === 'my-trips' && (
-                    <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                    <Card>
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
@@ -151,7 +152,7 @@ export default function TripPlanner() {
                                             />
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <button className="text-blue-600 hover:text-blue-800 mr-3">
+                                            <button className="text-orange-600 hover:text-orange-800 mr-3">
                                                 Edit
                                             </button>
                                             <button className="text-red-600 hover:text-red-800">
@@ -162,12 +163,12 @@ export default function TripPlanner() {
                                 ))}
                             </tbody>
                         </table>
-                    </div>
+                    </Card>
                 )}
 
                 {/* Drafts Table */}
                 {activeTab === 'drafts' && (
-                    <div className="bg-white shadow-md rounded-lg overflow-hidden">
+                    <Card>
                         <table className="min-w-full divide-y divide-gray-200">
                             <thead className="bg-gray-50">
                                 <tr>
@@ -204,7 +205,7 @@ export default function TripPlanner() {
                                             {trip.lastEdited}
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                            <button className="text-blue-600 hover:text-blue-800 mr-3">
+                                            <button className="text-orange-600 hover:text-orange-800 mr-3">
                                                 Edit
                                             </button>
                                             <button className="text-green-600 hover:text-green-800 mr-3">
@@ -218,14 +219,14 @@ export default function TripPlanner() {
                                 ))}
                             </tbody>
                         </table>
-                    </div>
+                    </Card>
                 )}
 
                 {/* Templates Tab */}
                 {activeTab === 'templates' && (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {/* Template Cards */}
-                        <div className="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow">
+                        <Card className="hover:shadow-lg transition-shadow">
                             <h3 className="text-lg font-medium text-gray-900 mb-2">City Explorer</h3>
                             <p className="text-gray-500 text-sm mb-4">
                                 Perfect for urban adventures and city tours
@@ -235,12 +236,12 @@ export default function TripPlanner() {
                                 <li>• Cultural activities</li>
                                 <li>• Local cuisine experience</li>
                             </ul>
-                            <button className="w-full bg-blue-50 text-blue-600 py-2 px-4 rounded-md hover:bg-blue-100">
+                            <button className="w-full bg-orange-50 text-orange-600 py-2 px-4 rounded-md hover:bg-orange-100">
                                 Use Template
                             </button>
-                        </div>
+                        </Card>
 
-                        <div className="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow">
+                        <Card className="hover:shadow-lg transition-shadow">
                             <h3 className="text-lg font-medium text-gray-900 mb-2">Beach Getaway</h3>
                             <p className="text-gray-500 text-sm mb-4">
                                 Ideal for coastal adventures and beach activities
@@ -250,12 +251,12 @@ export default function TripPlanner() {
                                 <li>• Water sports</li>
                                 <li>• Sunset cruises</li>
                             </ul>
-                            <button className="w-full bg-blue-50 text-blue-600 py-2 px-4 rounded-md hover:bg-blue-100">
+                            <button className="w-full bg-orange-50 text-orange-600 py-2 px-4 rounded-md hover:bg-orange-100">
                                 Use Template
                             </button>
-                        </div>
+                        </Card>
 
-                        <div className="bg-white shadow-md rounded-lg p-6 hover:shadow-lg transition-shadow">
+                        <Card className="hover:shadow-lg transition-shadow">
                             <h3 className="text-lg font-medium text-gray-900 mb-2">Adventure Trek</h3>
                             <p className="text-gray-500 text-sm mb-4">
                                 For nature lovers and adventure seekers
@@ -265,10 +266,10 @@ export default function TripPlanner() {
                                 <li>• Camping spots</li>
                                 <li>• Nature activities</li>
                             </ul>
-                            <button className="w-full bg-blue-50 text-blue-600 py-2 px-4 rounded-md hover:bg-blue-100">
+                            <button className="w-full bg-orange-50 text-orange-600 py-2 px-4 rounded-md hover:bg-orange-100">
                                 Use Template
                             </button>
-                        </div>
+                        </Card>
                     </div>
                 )}
                 <div className='flex justify-start w-full mt-5'>
