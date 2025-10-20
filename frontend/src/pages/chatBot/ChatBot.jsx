@@ -7,7 +7,6 @@ import QuickActions from './components/QuickActions';
 
 export default function ChatBot() {
     const messagesEndRef = useRef(null);
-    const [isInitialLoad, setIsInitialLoad] = useState(true);
     const [messages, setMessages] = useState([
     {
         id: 1,
@@ -23,18 +22,25 @@ export default function ChatBot() {
         messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     };
 
-    const handleSendMessage = () => {
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
+
+    const handleSendMessage = async () => {
         if (inputMessage.trim() === ''){
             setError("Please enter a message before sending.");
             return;
         };
         setError('');
+        
+        const userMessage = inputMessage;
+        
         // Add user message
         setMessages(prev => [
             ...prev,
             {
                 id: prev.length + 1,
-                text: inputMessage,
+                text: userMessage,
                 sender: 'user',
                 timestamp: new Date(),
             }
@@ -42,18 +48,66 @@ export default function ChatBot() {
     
         setInputMessage('');
         
-        // Simulate bot response after a delay
-        setTimeout(() => {
-            setMessages(prev => [
-                ...prev,
-                {
-                    id: prev.length + 1,
-                    text: "Under construction...",
-                    sender: 'bot',
-                    timestamp: new Date(),
-                }
-            ]);
-        }, 1000);
+        // Add typing indicator
+        setMessages(prev => [
+            ...prev,
+            {
+                id: prev.length + 1,
+                text: "Typing...",
+                sender: 'bot',
+                timestamp: new Date(),
+                isTyping: true,
+            }
+        ]);
+
+        try {
+            // Call backend AI assistant API
+            const response = await fetch('http://localhost:5454/api/ai-assistant/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message: userMessage,
+                    userId: localStorage.getItem('userId') || 'guest'
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error('Failed to get response');
+            }
+
+            const data = await response.json();
+            
+            // Remove typing indicator and add actual response
+            setMessages(prev => {
+                const filtered = prev.filter(msg => !msg.isTyping);
+                return [
+                    ...filtered,
+                    {
+                        id: filtered.length + 1,
+                        text: data.message,
+                        sender: 'bot',
+                        timestamp: new Date(data.timestamp),
+                    }
+                ];
+            });
+        } catch (error) {
+            console.error('Error getting AI response:', error);
+            // Remove typing indicator and show error message
+            setMessages(prev => {
+                const filtered = prev.filter(msg => !msg.isTyping);
+                return [
+                    ...filtered,
+                    {
+                        id: filtered.length + 1,
+                        text: "I apologize, but I'm having trouble connecting. Please try again or contact support.",
+                        sender: 'bot',
+                        timestamp: new Date(),
+                    }
+                ];
+            });
+        }
     };
 
     const messageContainer = useMemo(()=>{

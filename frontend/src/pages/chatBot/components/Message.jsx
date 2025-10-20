@@ -20,7 +20,15 @@ export default function Message({message}) {
                     {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                 </span>
             </div>
-                <p className='text-sm sm:text-base leading-relaxed break-words'>{message.text}</p>
+                {message.isTyping ? (
+                    <div className='flex items-center gap-1'>
+                        <div className='w-2 h-2 bg-brand-primary rounded-full animate-bounce' style={{animationDelay: '0ms'}}></div>
+                        <div className='w-2 h-2 bg-brand-primary rounded-full animate-bounce' style={{animationDelay: '150ms'}}></div>
+                        <div className='w-2 h-2 bg-brand-primary rounded-full animate-bounce' style={{animationDelay: '300ms'}}></div>
+                    </div>
+                ) : (
+                    <p className='text-sm sm:text-base leading-relaxed break-words whitespace-pre-line'>{message.text}</p>
+                )}
             </div>
         </div>
     )
