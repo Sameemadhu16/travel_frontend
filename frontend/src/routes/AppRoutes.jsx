@@ -57,6 +57,11 @@ import VehicleProtection from '../pages/bookings/VehicleProtection';
 import VehicleCheckout from '../pages/bookings/VehicleCheckout';
 import VehicleBookingConfirmation from '../pages/bookings/VehicleBookingConfirmation';
 
+// Hotel Stays Pages
+import HotelsList from '../pages/hotels/HotelsList';
+import HotelDetailsBooking from '../pages/hotels/HotelDetails';
+import HotelBookingPage from '../pages/hotels/HotelBooking';
+
 // Debug pages
 import DebugAuth from '../pages/DebugAuth';
 import DebugBookings from '../pages/DebugBookings';
@@ -143,12 +148,16 @@ export default function AppRoutes() {
             <Route path='/bookings/guide/:guideId/details' element={<GuideBookingDetails />} />
             <Route path='/my-bookings/guides' element={<MyGuideBookingsGrouped />} />
             <Route path='/bookings/guides' element={<GuideBooking />} />
-            <Route path='/bookings/hotels' element={<HotelBooking />} />
             <Route path='/bookings/vehicles' element={<VehicleBooking />} />
             <Route path='/bookings/vehicle/:id/deal' element={<VehicleDeal />} />
             <Route path='/bookings/vehicle/:id/protection' element={<VehicleProtection />} />
             <Route path='/bookings/vehicle/:id/checkout' element={<VehicleCheckout />} />
             <Route path='/bookings/vehicle/:id/confirmation' element={<VehicleBookingConfirmation />} />
+            
+            {/* Hotel Booking Routes */}
+            <Route path='/bookings/hotels' element={<HotelsList />} />
+            <Route path='/bookings/hotels/:hotelId' element={<HotelDetailsBooking />} />
+            <Route path='/bookings/hotels/:hotelId/room/:roomId/book' element={<HotelBookingPage />} />
             
             {/* Debug pages - remove in production */}
             <Route path='/debug-auth' element={<DebugAuth />} />
