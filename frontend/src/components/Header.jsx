@@ -97,11 +97,11 @@ export default function Header() {
                                         className="absolute top-14 right-0 w-56 bg-white rounded-xl shadow-xl border z-50 animate-fade-in"
                                     >
                                         <ul className="py-2">
-                                            <li>
+                                            {/* <li>
                                                 <Link to="/settings/general" className="block px-5 py-3 text-sm font-semibold text-brand-primary bg-brand-accent hover:bg-brand-secondary rounded-t-xl">
                                                     General Settings
                                                 </Link>
-                                            </li>
+                                            </li> */}
                                             <li>
                                                 <Link to="/settings/profile" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
                                                     Profile Settings
@@ -112,11 +112,11 @@ export default function Header() {
                                                     Trips
                                                 </Link>
                                             </li>
-                                            <li>
+                                            {/* <li>
                                                 <Link to="/bookings" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
                                                     Bookings
                                                 </Link>
-                                            </li>
+                                            </li> */}
                                             <li>
                                                 <Link to="/my-bookings/guides" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
                                                     Guide Bookings
@@ -132,11 +132,11 @@ export default function Header() {
                                                     Vehicle Bookings
                                                 </Link>
                                             </li>
-                                            <li>
+                                            {/* <li>
                                                 <Link to="/payments" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
                                                     Payments
                                                 </Link>
-                                            </li>
+                                            </li> */}
                                             <li>
                                                 <Link to="/partner-login/step-1" onClick={() => dispatch(resetAuth())} className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent rounded-b-xl">
                                                     Log Out
