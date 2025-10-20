@@ -10,7 +10,7 @@ const reserveOptions = [
         id: 1,
         name: 'Guide',
         icon: FaUser,
-        path: '/create-tour',
+        path: '/bookings/guide',
         description: 'Find expert local guides'
     },
     {

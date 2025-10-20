@@ -56,7 +56,7 @@ export default function RoomCard({ room, isTourMode = false, hotel = {} }) {
     };
 
     const handleReserve = () => {
-        navigate(`/hotel/${room.hotelId}/room/${room.id}/book`);
+        navigate(`/bookings/hotels/${room.hotelId}/room/${room.id}/book`);
     };
 
     return (
