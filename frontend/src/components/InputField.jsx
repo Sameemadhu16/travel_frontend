@@ -17,6 +17,7 @@ import { FaEye, FaEyeSlash } from "react-icons/fa";
 const InputField = ({
     label,
     type = 'text',
+    name = '',
     value = '',
     onChange = () => {},
     placeholder = '',
@@ -39,6 +40,7 @@ const InputField = ({
             <div className="relative w-full">
                 <input
                     type={visibility ? "text" : type}
+                    name={name}
                     className={`border-2 w-full py-2 px-4 rounded-md ${
                         error ? 'border-danger' : 'border-b-2'
                     } focus:border-brand-primary focus:outline-none ${
@@ -64,6 +66,7 @@ const InputField = ({
 InputField.propTypes = {
     label: PropTypes.string.isRequired,
     type: PropTypes.string,
+    name: PropTypes.string,
     value: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     onChange: PropTypes.func,
     placeholder: PropTypes.string,

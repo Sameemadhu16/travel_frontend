@@ -133,6 +133,7 @@ import PreferenceInfoStep from '../pages/AI-Trip-Create/PreferenceInfoStep';
 import AIGenerationStep from '../pages/AI-Trip-Create/AIGenerationStep';
 import Trips from '../pages/trips/Trips';
 import GuideEarnings from '../pages/guide/GuideEarnings';
+import ProfileSettings from '../pages/settings/ProfileSettings';
 // import { Users } from 'lucide-react';
 
 export default function AppRoutes() {
@@ -225,6 +226,7 @@ export default function AppRoutes() {
             {isAuthenticated ? (
                 <>
                     {/* Protected routes for authenticated users */}
+                    <Route path='/settings/profile' element={<ProfileSettings />} />
                     <Route path='/chat-bot' element={<ChatBot />} />
                     <Route path='/trips' element={<Trips />} />
                     <Route path='/hotel-registration' element={<HotelRegistration />} />

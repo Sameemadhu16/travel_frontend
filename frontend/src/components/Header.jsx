@@ -1,5 +1,5 @@
 import Title from '../components/Title';
-import room from '../assets/rooms/room1.png';
+import defaultAvatar from '../assets/users/user1.jpg';
 import Navigate from './Navigate';
 import logo from '../assets/logo/logo1.png'
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,7 +8,6 @@ import { resetAuth } from '../redux/slices/authSlice';
 import { useState, useRef, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import ReserveDropdown from './ReserveDropdown';
-import PrimaryButton from './PrimaryButton';
 import SecondaryButton from './SecondaryButton';
 import { navigateTo } from '../core/navigateHelper';
 
@@ -17,11 +16,21 @@ export default function Header() {
     const isExpired = checkTokenExpiration(token);
     const dispatch = useDispatch();
     const [showProfileMenu, setShowProfileMenu] = useState(false);
+    const [profilePicture, setProfilePicture] = useState(user?.data?.profilePicture || defaultAvatar);
     const menuRef = useRef(null);
     const role = user?.data?.role || '';
     
     // Check if user is authenticated (has valid token)
     const isAuthenticated = token && !isExpired;
+    
+    // Update profile picture when user data changes
+    useEffect(() => {
+        if (user?.data?.profilePicture) {
+            console.log('Header: Profile picture updated from Redux');
+            setProfilePicture(user.data.profilePicture);
+        }
+    }, [user?.data?.profilePicture]);
+    
     // Close menu on outside click
     
     useEffect(() => {
@@ -76,8 +85,16 @@ export default function Header() {
                                 </Navigate>
                             )}
                             <div className='flex items-center gap-2 p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px]'>
-                                <div onClick={() => setShowProfileMenu((v) => !v)} className='h-[40px] w-[40px] border-2 border-brand-primary rounded-full overflow-hidden'>
-                                    <img src={room} alt="room" className='h-full w-full object-cover' />
+                                <div onClick={() => setShowProfileMenu((v) => !v)} className='h-[40px] w-[40px] border-2 border-brand-primary rounded-full overflow-hidden bg-white'>
+                                    <img 
+                                        src={profilePicture} 
+                                        alt="profile" 
+                                        className='h-full w-full object-cover' 
+                                        onError={(e) => {
+                                            console.error('Header: Failed to load profile picture');
+                                            e.target.src = defaultAvatar;
+                                        }}
+                                    />
                                 </div>
                                 <div className='flex flex-col overflow-hidden' onClick={() => setShowProfileMenu((v) => !v)}>
                                     <Title
