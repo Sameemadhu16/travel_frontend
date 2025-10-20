@@ -157,7 +157,7 @@ const StripePaymentForm = ({
  */
 const StripePaymentComponent = ({
   amount,
-  currency = 'LKR',
+  currency = 'USD', // Changed from LKR to USD for better Stripe compatibility
   description,
   bookingId,
   bookingType,
@@ -169,10 +169,15 @@ const StripePaymentComponent = ({
   const [clientSecret, setClientSecret] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [paymentIntentCreated, setPaymentIntentCreated] = useState(false);
 
   useEffect(() => {
-    createPaymentIntent();
-  }, [amount, bookingId]);
+    // Only create payment intent once
+    // Don't require bookingId anymore - payment intent can be created without it
+    if (!paymentIntentCreated) {
+      createPaymentIntent();
+    }
+  }, []); // Empty dependency array - only run once
 
   const createPaymentIntent = async () => {
     try {
@@ -183,6 +188,8 @@ const StripePaymentComponent = ({
         ? `${apiBaseUrl}/api/hotel-bookings/create-payment-intent`
         : `${apiBaseUrl}/api/payments/create-payment-intent`;
 
+      console.log('Creating payment intent:', { amount, currency, bookingId });
+
       const response = await axios.post(endpoint, {
         amount,
         currency,
@@ -191,8 +198,11 @@ const StripePaymentComponent = ({
         bookingType
       });
 
+      console.log('Payment intent created:', response.data);
       setClientSecret(response.data.clientSecret);
+      setPaymentIntentCreated(true);
     } catch (err) {
+      console.error('Payment intent creation error:', err);
       setError(err.response?.data?.error || 'Failed to initialize payment');
       toast.error('Failed to initialize payment');
     } finally {

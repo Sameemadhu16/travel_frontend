@@ -30,6 +30,7 @@ const HotelBooking = () => {
   const [userPhone, setUserPhone] = useState('');
   
   const [bookingId, setBookingId] = useState(null);
+  const [bookingData, setBookingData] = useState(null); // Store booking data before payment
   const [totalAmount, setTotalAmount] = useState(0);
   const [numberOfNights, setNumberOfNights] = useState(0);
   const [confirmedBooking, setConfirmedBooking] = useState(null);
@@ -142,13 +143,13 @@ const HotelBooking = () => {
       return;
     }
     
-    console.log('Creating booking for user ID:', userId);
+    console.log('Preparing booking for user ID:', userId);
 
     try {
       setLoading(true);
 
-      // Create booking
-      const bookingData = {
+      // Store booking data temporarily (DON'T create booking yet - only after payment)
+      const tempBookingData = {
         userId: userId,
         userEmail,
         userName,
@@ -161,16 +162,14 @@ const HotelBooking = () => {
         specialRequests
       };
 
-      const response = await axios.post(`${API_BASE_URL}/api/hotel-bookings`, bookingData);
+      setBookingData(tempBookingData);
       
-      console.log('Booking created successfully:', response.data);
-      setBookingId(response.data.id);
+      console.log('Booking data prepared, proceeding to payment:', tempBookingData);
       setStep(2); // Move to payment step
-      toast.success('Booking created! Please complete payment.');
+      toast.success('Please complete payment to confirm your booking.');
     } catch (error) {
-      console.error('Error creating booking:', error);
-      console.error('Error response:', error.response?.data);
-      toast.error(error.response?.data?.error || 'Failed to create booking');
+      console.error('Error preparing booking:', error);
+      toast.error('Failed to prepare booking');
     } finally {
       setLoading(false);
     }
@@ -178,20 +177,26 @@ const HotelBooking = () => {
 
   const handlePaymentSuccess = async (paymentIntent) => {
     try {
-      console.log('Payment successful, confirming with backend:', paymentIntent.id);
+      console.log('Payment successful! Creating booking now with payment intent:', paymentIntent.id);
       
-      // Confirm payment with backend
+      // NOW create the booking with the payment intent ID
+      const bookingDataWithPayment = {
+        ...bookingData,
+        stripePaymentIntentId: paymentIntent.id
+      };
+
       const response = await axios.post(
-        `${API_BASE_URL}/api/hotel-bookings/confirm-payment/${paymentIntent.id}`
+        `${API_BASE_URL}/api/hotel-bookings/create-with-payment`,
+        bookingDataWithPayment
       );
       
-      console.log('Payment confirmed:', response.data);
+      console.log('Booking created successfully after payment:', response.data);
       setConfirmedBooking(response.data);
       setStep(3); // Move to confirmation step
       toast.success('Payment successful! Booking confirmed.');
     } catch (error) {
-      console.error('Error confirming payment:', error);
-      toast.error('Payment was successful but confirmation failed. Please contact support.');
+      console.error('Error creating booking after payment:', error);
+      toast.error('Payment was successful but booking creation failed. Please contact support with payment ID: ' + paymentIntent.id);
     }
   };
 
@@ -455,12 +460,12 @@ const HotelBooking = () => {
             )}
 
             {/* Step 2: Payment */}
-            {step === 2 && bookingId && (
+            {step === 2 && bookingData && (
               <StripePaymentComponent
                 amount={totalAmount}
-                currency="LKR"
+                currency="USD"
                 description={`Booking for ${room.roomType} at ${hotel.hotelName}`}
-                bookingId={bookingId}
+                bookingId={null}
                 bookingType="HOTEL"
                 onPaymentSuccess={handlePaymentSuccess}
                 onPaymentError={handlePaymentError}
@@ -510,7 +515,7 @@ const HotelBooking = () => {
                     </div>
                     <div className="flex justify-between pt-2 border-t">
                       <span className="text-gray-600">Total Paid:</span>
-                      <span className="font-bold text-lg">LKR {confirmedBooking.totalAmount?.toLocaleString()}</span>
+                      <span className="font-bold text-lg">USD ${confirmedBooking.totalAmount?.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>
@@ -581,7 +586,7 @@ const HotelBooking = () => {
                     <div className="border-t pt-3">
                       <div className="flex justify-between mb-2">
                         <span className="text-gray-600">Price per night:</span>
-                        <span className="font-semibold">LKR {room.pricePerNight?.toLocaleString()}</span>
+                        <span className="font-semibold">USD ${room.pricePerNight?.toLocaleString()}</span>
                       </div>
                       <div className="flex justify-between mb-2">
                         <span className="text-gray-600">Number of nights:</span>
@@ -589,7 +594,7 @@ const HotelBooking = () => {
                       </div>
                       <div className="flex justify-between text-lg font-bold border-t pt-2">
                         <span>Total:</span>
-                        <span className="text-blue-600">LKR {totalAmount.toLocaleString()}</span>
+                        <span className="text-blue-600">USD ${totalAmount.toLocaleString()}</span>
                       </div>
                     </div>
                   </>

@@ -51,6 +51,7 @@ import GuideBooking from '../pages/bookings/GuideBooking';
 import GuideBookingDetails from '../pages/bookings/GuideBookingDetails';
 import MyGuideBookingsGrouped from '../pages/bookings/MyGuideBookingsGrouped'; // New grouped view
 import HotelBooking from '../pages/bookings/HotelBooking';
+import HotelBookings from '../pages/HotelBookings'; // User's hotel bookings list
 import VehicleBooking from '../pages/bookings/VehicleBooking';
 import VehicleDeal from '../pages/bookings/VehicleDeal';
 import VehicleProtection from '../pages/bookings/VehicleProtection';
@@ -147,6 +148,7 @@ export default function AppRoutes() {
             <Route path='/bookings/guide' element={<GuideBooking />} />
             <Route path='/bookings/guide/:guideId/details' element={<GuideBookingDetails />} />
             <Route path='/my-bookings/guides' element={<MyGuideBookingsGrouped />} />
+            <Route path='/my-bookings/hotels' element={<HotelBookings />} />
             <Route path='/bookings/guides' element={<GuideBooking />} />
             <Route path='/bookings/vehicles' element={<VehicleBooking />} />
             <Route path='/bookings/vehicle/:id/deal' element={<VehicleDeal />} />
