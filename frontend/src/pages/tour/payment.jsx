@@ -2,28 +2,19 @@ import { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import Main from '../../components/Main';
 import PaymentProgress from './components/PaymentProgress';
-import PaymentMethodSelection from './components/PaymentMethodSelection';
-import CardDetails from './components/CardDetails';
-import BillingAddress from './components/BillingAddress';
 import SecurityFeatures from './components/SecurityFeatures';
+import StripePaymentComponent from '../../components/StripePaymentComponent';
 import { getTripById, updateTripStatus } from '../../api/tripService';
 import Spinner from '../../components/Spinner';
+import toast from 'react-hot-toast';
 
 export default function Payment() {
   const location = useLocation();
   const navigate = useNavigate();
   const [trip, setTrip] = useState(null);
   const [loading, setLoading] = useState(true);
-  const [processing, setProcessing] = useState(false);
   const [error, setError] = useState(null);
-  const [paymentMethod, setPaymentMethod] = useState('card');
-  const [paymentDetails, setPaymentDetails] = useState({
-    cardNumber: '',
-    cardName: '',
-    expiryDate: '',
-    cvv: '',
-    billingAddress: {}
-  });
+  const paymentMethod = 'stripe'; // Using Stripe for payments
 
   const tripId = location.state?.tripId;
 
@@ -51,39 +42,37 @@ export default function Payment() {
     fetchTripDetails();
   }, [tripId]);
 
-  const handlePayment = async () => {
-    // Validate payment details
-    if (paymentMethod === 'card') {
-      if (!paymentDetails.cardNumber || !paymentDetails.cardName || 
-          !paymentDetails.expiryDate || !paymentDetails.cvv) {
-        alert('Please fill in all card details');
-        return;
-      }
-    }
-
+  const handlePaymentSuccess = async (paymentIntent) => {
     try {
-      setProcessing(true);
-      
-      // Simulate payment processing
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      console.log('Payment successful:', paymentIntent);
       
       // Update trip status to 'paid'
       await updateTripStatus(tripId, 'paid');
+      
+      toast.success('Payment successful!');
       
       // Navigate to success page
       navigate('/tour/payment-success', { 
         state: { 
           trip,
-          paymentMethod,
-          paymentDate: new Date().toISOString()
+          paymentMethod: 'stripe',
+          paymentDate: new Date().toISOString(),
+          paymentIntentId: paymentIntent.id
         } 
       });
     } catch (err) {
-      console.error('Error processing payment:', err);
-      alert('Payment failed. Please try again.');
-    } finally {
-      setProcessing(false);
+      console.error('Error updating trip status:', err);
+      toast.error('Payment successful but failed to update trip status');
     }
+  };
+
+  const handlePaymentError = (error) => {
+    console.error('Payment error:', error);
+    toast.error(error.message || 'Payment failed. Please try again.');
+  };
+
+  const handleCancel = () => {
+    navigate('/trips');
   };
 
   if (loading) {
@@ -121,24 +110,28 @@ export default function Payment() {
         
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Left Column - Payment Details */}
-          <div className="lg:col-span-2 space-y-6 border-primary rounded-lg p-6">
+          <div className="lg:col-span-2 space-y-6">
             <PaymentProgress />
-            <PaymentMethodSelection 
-              selectedMethod={paymentMethod}
-              onMethodChange={setPaymentMethod}
-            />
-            {paymentMethod === 'card' && (
-              <>
-                <CardDetails 
-                  details={paymentDetails}
-                  onChange={setPaymentDetails}
+            
+            <div className="bg-surface-primary border-primary rounded-lg p-6">
+              <h3 className="text-lg font-semibold text-content-primary mb-4">Secure Payment</h3>
+              <p className="text-sm text-content-tertiary mb-6">
+                Complete your payment securely using Stripe. Your payment information is encrypted and secure.
+              </p>
+              
+              {paymentMethod === 'stripe' && (
+                <StripePaymentComponent
+                  amount={parseFloat(trip.totalFare || 0)}
+                  currency="USD"
+                  description={`Trip Payment - ${trip.tripCode}`}
+                  bookingId={trip.id}
+                  bookingType="TRIP"
+                  onPaymentSuccess={handlePaymentSuccess}
+                  onPaymentError={handlePaymentError}
+                  onCancel={handleCancel}
                 />
-                <BillingAddress 
-                  details={paymentDetails}
-                  onChange={setPaymentDetails}
-                />
-              </>
-            )}
+              )}
+            </div>
           </div>
           
           {/* Right Column - Order Summary */}
@@ -177,25 +170,6 @@ export default function Payment() {
                   </div>
                 </div>
               )}
-
-              <button 
-                onClick={handlePayment}
-                disabled={processing}
-                className={`w-full py-4 px-6 rounded-lg font-semibold transition-all flex items-center justify-center space-x-2 
-                  ${processing ? 'bg-gray-400 cursor-not-allowed' : 'bg-brand-primary hover:bg-brand-secondary text-white'}`}
-              >
-                {processing ? (
-                  <>
-                    <Spinner size="sm" />
-                    <span>Processing Payment...</span>
-                  </>
-                ) : (
-                  <>
-                    <span>✈️</span>
-                    <span>Pay Now</span>
-                  </>
-                )}
-              </button>
             </div>
             
             <SecurityFeatures />

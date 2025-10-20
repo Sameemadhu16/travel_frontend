@@ -190,6 +190,8 @@ const StripePaymentComponent = ({
         endpoint = `${apiBaseUrl}/api/hotel-bookings/create-payment-intent`;
       } else if (bookingType === 'VEHICLE') {
         endpoint = `${apiBaseUrl}/api/bookings/vehicles/create-payment-intent`;
+      } else if (bookingType === 'TRIP') {
+        endpoint = `${apiBaseUrl}/api/trips/create-payment-intent`;
       } else {
         endpoint = `${apiBaseUrl}/api/payments/create-payment-intent`;
       }

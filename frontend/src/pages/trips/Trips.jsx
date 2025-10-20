@@ -15,27 +15,64 @@ export default function Trips() {
     const [processingPayment, setProcessingPayment] = useState({});
     const [statusUpdated, setStatusUpdated] = useState(false);
     const [expandedTrips, setExpandedTrips] = useState({});
+    const [lastUpdate, setLastUpdate] = useState(new Date());
 
-    const fetchUserTrips = async () => {
+    const fetchUserTrips = async (showLoader = true) => {
         try {
-            setLoading(true);
+            if (showLoader) {
+                setLoading(true);
+            }
             const data = await getUserTripsWithGuideRequests(user.data.id);
-            setTrips(data);
+            
+            // Log the fetched data to see what we're getting
+            console.log('📊 Fetched trips data:', data);
+            if (data && data.length > 0) {
+                data.forEach(trip => {
+                    console.log(`Trip ${trip.id}: status="${trip.tripStatus}", guides:`, 
+                        trip.guideRequests?.map(gr => ({ id: gr.id, status: gr.status }))
+                    );
+                });
+            }
+            
+            setTrips([...data]); // Force new array reference
+            setLastUpdate(new Date());
             setError(null);
         } catch (err) {
             console.error('Error loading trips:', err);
-            setError('Failed to load your trips. Please try again later.');
+            if (showLoader) {
+                setError('Failed to load your trips. Please try again later.');
+            }
         } finally {
-            setLoading(false);
+            if (showLoader) {
+                setLoading(false);
+            }
         }
     };
 
+    // Initial fetch on mount
     useEffect(() => {
         if (user?.data?.id) {
             fetchUserTrips();
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [user]);
+
+    // Real-time polling - Check for updates every 5 seconds
+    useEffect(() => {
+        if (!user?.data?.id) return;
+
+        const pollInterval = setInterval(() => {
+            console.log('🔄 Checking for trip updates...');
+            fetchUserTrips(false); // Fetch without showing loader
+        }, 5000); // Poll every 5 seconds
+
+        // Cleanup interval on unmount
+        return () => {
+            console.log('🛑 Stopping trip updates polling');
+            clearInterval(pollInterval);
+        };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user?.data?.id]);
     
     const handlePayment = async (tripId) => {
         try {
@@ -121,6 +158,11 @@ export default function Trips() {
                 text: 'Pending',
                 className: 'bg-yellow-100 text-yellow-800 border-yellow-300'
             },
+            accepted: {
+                icon: <FaCheckCircle className="mr-1" />,
+                text: 'Accepted',
+                className: 'bg-green-100 text-green-800 border-green-300'
+            },
             approved: {
                 icon: <FaCheckCircle className="mr-1" />,
                 text: 'Approved',
@@ -143,7 +185,10 @@ export default function Trips() {
             }
         };
 
-        const config = statusConfig[status?.toLowerCase()] || statusConfig.pending;
+        const normalizedStatus = status?.toLowerCase()?.trim();
+        const config = statusConfig[normalizedStatus] || statusConfig.pending;
+        
+        console.log(`🎨 Status badge for "${status}" (normalized: "${normalizedStatus}"):`, config.text);
 
         return (
             <span className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ${config.className}`}>
@@ -223,8 +268,21 @@ export default function Trips() {
         <Main>
             <div className="max-w-7xl mx-auto py-8 px-4">
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold text-content-primary">My Trips</h1>
-                    <p className="text-content-secondary mt-2">View and manage your booked trips and guide requests</p>
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h1 className="text-3xl font-bold text-content-primary">My Trips</h1>
+                            <p className="text-content-secondary mt-2">View and manage your booked trips and guide requests</p>
+                        </div>
+                        <div className="flex items-center gap-2 text-sm text-content-tertiary">
+                            <div className="flex items-center gap-1">
+                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+                                <span>Live updates</span>
+                            </div>
+                            <span className="text-xs">
+                                Last updated: {lastUpdate.toLocaleTimeString()}
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
                 {trips.length === 0 ? (
