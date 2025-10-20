@@ -77,6 +77,17 @@ export default function Header() {
                     
                     {isAuthenticated ? (
                         <div className='flex gap-4 items-center'>
+                            {/* Messages Icon */}
+                            <Navigate
+                                path={'/messages'}
+                                className='relative p-2 hover:bg-surface-tertiary cursor-pointer rounded-[8px] transition-colors'
+                                title="Messages"
+                            >
+                                <svg className="w-6 h-6 text-content-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                </svg>
+                            </Navigate>
+                            
                             {/* Show Reserve dropdown for traveler role or if role is not set */}
                             {(!role || role === '' || role === 'traveler') && (
                                 <ReserveDropdown />
@@ -127,6 +138,11 @@ export default function Header() {
                                             <li>
                                                 <Link to="/settings/profile" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
                                                     Profile Settings
+                                                </Link>
+                                            </li>
+                                            <li>
+                                                <Link to="/messages" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
+                                                    Messages
                                                 </Link>
                                             </li>
                                             <li>

@@ -19,6 +19,7 @@ import ChangePassword from '../pages/partner/forgot_details/ChangePassword';
 import { FormProvider } from '../context/FormContext';
 import { initialAiTripData, initialTripFormData, loginPartnerAccountForm, registerPartnerAccountForm } from '../context/InitialValues';
 import ChatBot from '../pages/chatBot/ChatBot';
+import ChatPage from '../pages/chat/ChatPage';
 import TravelerRegister from '../pages/TravelerRegister';
 import ChooseProperty from '../pages/partner/register/ChooseProperty';
 import { useSelector } from 'react-redux';
@@ -228,6 +229,7 @@ export default function AppRoutes() {
                     {/* Protected routes for authenticated users */}
                     <Route path='/settings/profile' element={<ProfileSettings />} />
                     <Route path='/chat-bot' element={<ChatBot />} />
+                    <Route path='/messages' element={<ChatPage />} />
                     <Route path='/trips' element={<Trips />} />
                     <Route path='/hotel-registration' element={<HotelRegistration />} />
                     <Route path='/hotel-pending' element={<HotelPending />} />
