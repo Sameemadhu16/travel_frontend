@@ -804,7 +804,7 @@ const VehicleBooking = () => {
                                         <div className="flex-1 p-6">
                                             <div className="flex justify-between items-start mb-4">
                                                 <div>
-                                                    <h3 className="text-xl font-semibold text-blue-700">
+                                                    <h3 className="text-xl font-semibold text-orange-500">
                                                         {vehicle.name}
                                                     </h3>
                                                     <p className="text-sm text-gray-600">{vehicle.category}</p>
@@ -877,7 +877,7 @@ const VehicleBooking = () => {
                                             <div className="space-y-2 mt-4">
                                                 <button
                                                     onClick={() => handleBookVehicle(vehicle.id)}
-                                                    className="w-full bg-blue-600 hover:bg-blue-700 text-white py-3 px-4 rounded-lg font-semibold transition-colors"
+                                                    className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 px-4 rounded-lg font-semibold transition-colors"
                                                 >
                                                     View deal
                                                 </button>
