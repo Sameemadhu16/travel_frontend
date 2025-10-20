@@ -343,6 +343,71 @@ export default function HotelDashboard() {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [recentActivities] = useState(chainActivities);
 
+  // Chain-wide statistics
+  const chainStats = {
+    totalRooms: 1247,
+    occupiedRooms: 1089,
+    occupancyRate: 87.3,
+    outOfOrder: 12,
+    todayArrivals: 156,
+    todayDepartures: 142,
+    noShows: 3,
+    walkIns: 8,
+    dailyRevenue: 8750000,
+    monthlyRevenue: 262500000,
+    revenuePAR: 7020,
+    averageRating: 4.7,
+    totalReviews: 12847
+  };
+
+  // Properties data
+  const properties = [
+    {
+      name: 'Colombo Grand',
+      location: 'Colombo 03',
+      rooms: 450,
+      occupied: 398,
+      occupancyRate: 88.4,
+      dailyRevenue: 3200000,
+      rating: 4.8,
+      manager: 'Mr. Rajith Silva',
+      status: 'Operational'
+    },
+    {
+      name: 'Kandy Heritage',
+      location: 'Kandy',
+      rooms: 280,
+      occupied: 251,
+      occupancyRate: 89.6,
+      dailyRevenue: 2100000,
+      rating: 4.7,
+      manager: 'Mrs. Kamani Perera',
+      status: 'Operational'
+    },
+    {
+      name: 'Galle Fort Resort',
+      location: 'Galle',
+      rooms: 320,
+      occupied: 272,
+      occupancyRate: 85.0,
+      dailyRevenue: 2250000,
+      rating: 4.6,
+      manager: 'Mr. Nimal Fernando',
+      status: 'Operational'
+    },
+    {
+      name: 'Nuwara Eliya Retreat',
+      location: 'Nuwara Eliya',
+      rooms: 197,
+      occupied: 168,
+      occupancyRate: 85.3,
+      dailyRevenue: 1200000,
+      rating: 4.5,
+      manager: 'Dr. Sumith Rathnayake',
+      status: 'Operational'
+    }
+  ];
+
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
@@ -874,7 +939,7 @@ export default function HotelDashboard() {
                     View full schedule
                   </div>
                 </div>
-              )}
+              </div>
             </div>
           </div>
         </div>

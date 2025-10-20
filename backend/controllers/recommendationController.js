@@ -26,7 +26,7 @@ const recommendationController = {
             res.json(response);
 
         } catch (error) {
-            console.error('❌ Controller error:', error);
+            console.error('Controller error:', error);
             res.status(500).json({
                 success: false,
                 error: error.message || 'Internal server error',

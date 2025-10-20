@@ -201,8 +201,11 @@ export default function HotelSettings() {
     }
   };
 
-    fetchHotelData();
-  }, [auth, navigate]);
+  const [hotelInfo, setHotelInfo] = useState(branchSettings[selectedBranch]);
+
+  useEffect(() => {
+    setHotelInfo(branchSettings[selectedBranch]);
+  }, [selectedBranch]);
 
   const handleInfoChange = (field, value) => {
     setHotelInfo(prev => ({
