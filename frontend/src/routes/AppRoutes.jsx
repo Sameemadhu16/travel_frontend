@@ -127,7 +127,6 @@ import BookingsPage from '../pages/hotels/bookings/BookingsPage';
 import HotelReviews from '../pages/hotels/reviews/HotelReviews';
 import HotelReports from '../pages/hotels/reports/HotelReports';
 import HotelSettings from '../pages/hotels/settings/HotelSettings';
-import HotelCalendar from '../pages/hotels/calendar/HotelCalendar';
 import PaymentsPage from '../pages/hotels/payments/PaymentsPage';
 import BasicInfoStep from '../pages/AI-Trip-Create/BasicInfoStep';
 import PreferenceInfoStep from '../pages/AI-Trip-Create/PreferenceInfoStep';
@@ -135,6 +134,7 @@ import AIGenerationStep from '../pages/AI-Trip-Create/AIGenerationStep';
 import Trips from '../pages/trips/Trips';
 import GuideEarnings from '../pages/guide/GuideEarnings';
 import ProfileSettings from '../pages/settings/ProfileSettings';
+import ChatUser from '../pages/Chat-User/ChatUser';
 // import { Users } from 'lucide-react';
 
 export default function AppRoutes() {
@@ -149,6 +149,8 @@ export default function AppRoutes() {
             <Route path='/home' element={<Home />} />
             <Route path='/traveler-register' element={<TravelerRegister />} />
             <Route path="/destination/:id" element={<DestinationPage />} />
+            <Route path='user-chat' element={<ChatUser/>} />
+            <Route path='user-chat/:userId' element={<ChatUser/>} />
 
             {/* Independent Booking Pages */}
             <Route path='/bookings/guide' element={<GuideBooking />} />
@@ -276,17 +278,21 @@ export default function AppRoutes() {
                     <Route path='/hotel/rooms' element={<RoomTypes />} />
                     <Route path='/hotel/bookings/:hotelId' element={<BookingsPage />} />
                     <Route path='/hotel/bookings' element={<BookingsPage />} />
-                    <Route path='/hotel/calendar/:hotelId' element={<HotelCalendar />} />
-                    <Route path='/hotel/calendar' element={<HotelCalendar />} />
-                    <Route path='/hotel/payments/:hotelId' element={<PaymentsPage />} />
                     <Route path='/hotel/payments' element={<PaymentsPage />} />
                     <Route path='/hotel/reviews/:hotelId' element={<HotelReviews />} />
                     <Route path='/hotel/reviews' element={<HotelReviews />} />
                     <Route path='/hotel/reports/:hotelId' element={<HotelReports />} />
                     <Route path='/hotel/reports' element={<HotelReports />} />
-                    <Route path='/hotel/settings/:hotelId' element={<HotelSettings />} />
+                    <Route path='/hotel/analytics' element={<HotelReports />} />
                     <Route path='/hotel/settings' element={<HotelSettings />} />
                     <Route path='/hotel/branch/:id' element={<HotelDetails />} />
+                    
+                    {/* Hotel detail route - must come after specific hotel dashboard routes */}
+                    <Route path='/hotel/:id' element={
+                        <FormProvider initialValues={initialTripFormData.formData}>
+                            <Hotel />
+                        </FormProvider>
+                    } />
 
                     {/* Partner Dashboard routes */}
                     <Route path='/partner/dashboard' element={<Dashboard />} />

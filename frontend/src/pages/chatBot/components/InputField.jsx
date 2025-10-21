@@ -1,3 +1,4 @@
+import { useEffect, useRef } from 'react';
 import { FiSend } from 'react-icons/fi'
 
 export default function InputField({
@@ -6,10 +7,27 @@ export default function InputField({
     setInputMessage, 
     error,
 }) {
+    const inputRef = useRef(null);
+
+    // Focus input when message is set by quick actions
+    useEffect(() => {
+        if (inputMessage && inputRef.current) {
+            inputRef.current.focus();
+        }
+    }, [inputMessage]);
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handleSendMessage();
+        }
+    };
+
     return (
         <div className='border-t border-border-light p-3 sm:p-4 bg-background-muted'>
             <div className='flex items-center gap-2'>
                 <input
+                    ref={inputRef}
                     type='text'
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
@@ -17,7 +35,7 @@ export default function InputField({
                     className='flex-1 border border-gray-200 rounded-full px-3 sm:px-4 py-2 sm:py-3 
                         text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-brand-primary 
                         focus:border-transparent transition-all duration-200'
-                    onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
+                    onKeyDown={handleKeyDown}
                 />
                 <button
                     onClick={handleSendMessage}

@@ -1,9 +1,12 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
+import { HelpCircle } from 'lucide-react';
 import Main from '../../components/Main';
 import Title from '../../components/Title';
 import Message from './components/Message';
 import InputField from './components/InputField';
 import QuickActions from './components/QuickActions';
+import HelpModal from './components/HelpModal';
+import { getHelpResponse } from './utils/helpResponses';
 
 export default function ChatBot() {
     const messagesEndRef = useRef(null);
@@ -122,7 +125,18 @@ export default function ChatBot() {
                 {/* Chat Container */}
                 <div className='bg-white rounded-lg sm:rounded-xl shadow-md border border-gray-100 overflow-hidden'>
                     {/* Header */}
-                <div className='w-full flex flex-col items-center justify-center mt-4 sm:mt-6 mb-6 sm:mb-8 px-4'>
+                <div className='w-full flex flex-col items-center justify-center mt-4 sm:mt-6 mb-6 sm:mb-8 px-4 relative'>
+                    {/* Help Button */}
+                    <button
+                        onClick={() => setIsHelpModalOpen(true)}
+                        className='absolute top-0 right-4 p-2 sm:p-3 bg-brand-primary text-white rounded-full 
+                            hover:bg-brand-secondary transition-all duration-200 shadow-md hover:shadow-lg 
+                            active:scale-95 group'
+                        title='Help & Guide'
+                        aria-label='Open help guide'
+                    >
+                        <HelpCircle size={20} className='sm:w-6 sm:h-6 group-hover:rotate-12 transition-transform' />
+                    </button>
                     <div className='flex flex-col sm:flex-row gap-1 sm:gap-2 items-center justify-center text-center'>
                         <Title
                             title='Welcome to Travel.lk'
@@ -167,6 +181,12 @@ export default function ChatBot() {
                     </div>
                 </div>
             </div>
+
+            {/* Help Modal */}
+            <HelpModal 
+                isOpen={isHelpModalOpen} 
+                onClose={() => setIsHelpModalOpen(false)} 
+            />
         </Main>
     );
 }

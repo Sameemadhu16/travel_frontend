@@ -39,79 +39,17 @@ export default function Hotel() {
     const selectedNightInfo = getSelectedNightInfo();
     
     useEffect(() => {
-        const fetchHotelDetails = async () => {
-            try {
-                setLoading(true);
-                setError(null);
-                console.log(`🏨 Fetching hotel details for ID: ${id}`);
-                
-                const hotelData = await getHotelById(id);
-                console.log('✅ Hotel data fetched:', hotelData);
-                
-                // Map backend data to frontend format
-                const mappedHotel = {
-                    id: hotelData.id,
-                    name: hotelData.hotelName,
-                    location: hotelData.city,
-                    city: hotelData.city,
-                    district: hotelData.district,
-                    province: hotelData.province,
-                    street: hotelData.street,
-                    rating: 4.5, // Default rating
-                    pricePerNight: hotelData.rooms && hotelData.rooms.length > 0 
-                        ? Math.min(...hotelData.rooms.map(r => r.pricePerNight || 0))
-                        : 0,
-                    images: hotelData.images || [],
-                    amenities: hotelData.amenities || [],
-                    type: hotelData.type || 'Hotel',
-                    description: hotelData.description || '',
-                    isVerified: hotelData.isVerified || false,
-                };
-                
-                // Map rooms data
-                const mappedRooms = (hotelData.rooms || []).map(room => ({
-                    id: room.id,
-                    hotelId: hotelData.id,
-                    roomType: room.roomType,
-                    description: room.description,
-                    pricePerNight: room.pricePerNight,
-                    maxGuests: parseInt(room.maxGuests) || 2,
-                    bedType: room.bedTypes || 'Standard',
-                    amenities: room.amenities || [],
-                    images: room.images || [],
-                    isAvailable: room.availability !== false
-                }));
-                
-                console.log('📦 Mapped hotel:', mappedHotel);
-                console.log('🛏️ Mapped rooms:', mappedRooms);
-                
-                setHotel(mappedHotel);
-                setRooms(mappedRooms);
-            } catch (error) {
-                console.error('❌ Error fetching hotel details:', error);
-                setError('Failed to load hotel details. Please try again later.');
-            } finally {
-                setLoading(false);
-            }
-        };
-
-        if (id) {
-            fetchHotelDetails();
-        }
+        const matchHotel = hotelList.find((hotel) => hotel.id.toString() === id);
+        const matchRooms = roomList.filter((room) => room.hotelId.toString() === id);
+        setHotel(matchHotel || {});
+        setRooms(matchRooms || []);
     }, [id]);
 
     const breadcrumbItems = [
         { label: "Home", path: "/home" },
         { label: "Hotels", path: isTourSelectHotel ? "/tour/select-hotel" : "/hotels-search" },
-        { label: hotel.name || "Hotel", path: isTourSelectHotel ? `/tour/select-hotel/${id}` : `/hotel/${id}` },
+        { label: hotel?.name || "Hotel", path: isTourSelectHotel ? `/tour/select-hotel/${id}` : `/hotel/${id}` },
     ];
-
-    const handleContinue = () => {
-        if (!isTourSelectHotel) return;
-        
-        // Navigate back to hotel selection page so user can proceed to next night or continue
-        navigate('/tour/select-hotel');
-    };
 
     const roomsList = useMemo(() => {
         return rooms.map((room) => (
@@ -140,30 +78,12 @@ export default function Hotel() {
         ));
     }, [hotel.amenities]);
 
-    if (loading) {
+    // Show loading or return early if hotel data is not loaded yet
+    if (!hotel || Object.keys(hotel).length === 0) {
         return (
             <Main>
-                <div className="flex flex-col items-center justify-center min-h-[400px]">
-                    <Spinner />
-                    <p className="mt-4 text-gray-600">Loading hotel details...</p>
-                </div>
-            </Main>
-        );
-    }
-
-    if (error) {
-        return (
-            <Main>
-                <div className="flex flex-col items-center justify-center min-h-[400px]">
-                    <div className="text-center">
-                        <p className="text-red-600 mb-4">{error}</p>
-                        <button
-                            onClick={() => window.location.reload()}
-                            className="px-6 py-3 bg-brand-primary text-white rounded-lg font-semibold hover:bg-brand-primary-dark transition"
-                        >
-                            Retry
-                        </button>
-                    </div>
+                <div className="flex justify-center items-center h-64">
+                    <div className="text-lg text-gray-600">Loading hotel details...</div>
                 </div>
             </Main>
         );
@@ -225,60 +145,36 @@ export default function Hotel() {
                     </div>
                 </div>
             </div>
-            <div className='flex gap-2 mt-5'>
-                <div className='flex-1'>
-                    <Title
-                        title={hotel.name || ''}
-                    />
-                    <Title
-                        title={hotel.location || ''}
-                        color='text-brand-primary'
-                    />
-                    {selectedNightInfo && (
-                        <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-                            <Title
-                                title={`Selected for Night ${selectedNightInfo.nightNumber}`}
-                                size='text-[14px]'
-                                color='text-blue-900'
-                                font='font-[600]'
-                            />
-                            {selectedNightInfo.selectedRoom && (
-                                <div className="mt-1">
-                                    <Title
-                                        title={`Room: ${selectedNightInfo.selectedRoom.roomType}`}
-                                        size='text-[12px]'
-                                        color='text-blue-700'
-                                    />
-                                    <Title
-                                        title={`LKR ${selectedNightInfo.selectedRoom.pricePerNight} / night`}
-                                        size='text-[12px]'
-                                        color='text-blue-700'
-                                    />
-                                </div>
-                            )}
-                        </div>
-                    )}
-                </div>
-                
-                {isTourSelectHotel && (
-                    <div className='flex flex-col gap-2'>
-                        <div className="text-sm text-brand-primary bg-blue-50 px-3 py-2 rounded-lg">
-                            ✓ Hotel selected for tour accommodation. Select your preferred rooms below, then return to hotel selection to continue.
-                        </div>
-                        <div className='flex items-center gap-2 text-sm text-content-secondary'>
-                            <span>Starting from</span>
-                            <span className='text-lg font-bold text-brand-primary'>
-                                LKR {hotel.pricePerNight?.toLocaleString()} / night
-                            </span>
-                        </div>
-                        <div className='flex gap-2'>
-                            <button
-                                onClick={handleContinue}
-                                className="px-6 py-2 rounded-lg bg-brand-primary text-white font-semibold hover:bg-brand-primary-dark transition"
-                            >
-                                Back to Hotel Selection
-                            </button>
-                        </div>
+            <div className='mt-5'>
+                <Title
+                    title={hotel.name || ''}
+                />
+                <Title
+                    title={hotel.location || ''}
+                    color='text-brand-primary'
+                />
+                {selectedNightInfo && (
+                    <div className="mt-2 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+                        <Title
+                            title={`Selected for Night ${selectedNightInfo.nightNumber}`}
+                            size='text-[14px]'
+                            color='text-blue-900'
+                            font='font-[600]'
+                        />
+                        {selectedNightInfo.selectedRoom && (
+                            <div className="mt-1">
+                                <Title
+                                    title={`Room: ${selectedNightInfo.selectedRoom.roomType}`}
+                                    size='text-[12px]'
+                                    color='text-blue-700'
+                                />
+                                <Title
+                                    title={`LKR ${selectedNightInfo.selectedRoom.pricePerNight} / night`}
+                                    size='text-[12px]'
+                                    color='text-blue-700'
+                                />
+                            </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -286,7 +182,7 @@ export default function Hotel() {
                 { amenityList }
             </div>
             <div className='flex flex-wrap'>
-                <FormatText text={hotel.about}/>
+                <FormatText text={hotel?.about || ''}/>
             </div>
             <Border/>
             <div className='w-full mt-5'>
