@@ -9,24 +9,16 @@ import {
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-// ============================================
-// STRIPE CONFIGURATION
-// ============================================
-// Load Stripe with publishable key from environment variable
-// Set VITE_STRIPE_PUBLISHABLE_KEY in .env file
-// Get your keys from: https://dashboard.stripe.com/test/apikeys
+
 const stripePromise = loadStripe(import.meta.env.VITE_STRIPE_PUBLISHABLE_KEY);
 
-/**
- * Reusable Stripe Payment Component
- * Can be used for Hotel, Vehicle, Guide, and Trip bookings
- */
+
 const StripePaymentForm = ({
   amount,
   currency = 'LKR',
   description,
   bookingId,
-  bookingType, // 'HOTEL', 'VEHICLE', 'GUIDE', 'TRIP'
+  bookingType, 
   onPaymentSuccess,
   onPaymentError,
   onCancel
@@ -152,9 +144,7 @@ const StripePaymentForm = ({
   );
 };
 
-/**
- * Main Payment Component Wrapper
- */
+
 const StripePaymentComponent = ({
   amount,
   currency = 'USD', // Changed from LKR to USD for better Stripe compatibility
@@ -172,19 +162,18 @@ const StripePaymentComponent = ({
   const [paymentIntentCreated, setPaymentIntentCreated] = useState(false);
 
   useEffect(() => {
-    // Only create payment intent once
-    // Don't require bookingId anymore - payment intent can be created without it
+   
     if (!paymentIntentCreated) {
       createPaymentIntent();
     }
-  }, []); // Empty dependency array - only run once
+  }, []); 
 
   const createPaymentIntent = async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Determine endpoint based on booking type
+      
       let endpoint;
       if (bookingType === 'HOTEL') {
         endpoint = `${apiBaseUrl}/api/hotel-bookings/create-payment-intent`;

@@ -28,7 +28,25 @@ const MyGuideBookings = () => {
         try {
             setLoading(true);
             const data = await getMyGuideBookings();
-            setBookings(Array.isArray(data) ? data : []);
+            
+            // Transform guid_requests data to match expected booking structure
+            const transformedBookings = Array.isArray(data) ? data.map(req => ({
+                id: req.id,
+                status: req.status,
+                guide: req.guid,
+                startDate: req.startDate,
+                endDate: req.endDate,
+                numberOfDays: req.numberOfDays || 0,
+                numberOfPeople: req.numberOfPeople || 0,
+                locations: req.locations || 'Not specified',
+                totalPrice: req.totalPrice || 0,
+                specialRequests: req.trip?.specialRequests || '',
+                approvedAt: req.updatedAt,
+                trip: req.trip,
+                user: req.user
+            })) : [];
+            
+            setBookings(transformedBookings);
         } catch (error) {
             console.error('Error fetching bookings:', error);
             toast.error(error.message || 'Failed to load bookings');
@@ -67,8 +85,12 @@ const MyGuideBookings = () => {
     };
 
     const getStatusBadge = (status) => {
+        // Normalize status - handle both lowercase "accepted" and uppercase "APPROVED"
+        const normalizedStatus = status?.toUpperCase();
+        
         const statusConfig = {
             PENDING: { bg: 'bg-yellow-100', text: 'text-yellow-800', label: 'Pending Approval' },
+            ACCEPTED: { bg: 'bg-green-100', text: 'text-green-800', label: 'Accepted - Pay Now' },
             APPROVED: { bg: 'bg-green-100', text: 'text-green-800', label: 'Approved - Pay Now' },
             PAID: { bg: 'bg-blue-100', text: 'text-blue-800', label: 'Paid' },
             COMPLETED: { bg: 'bg-purple-100', text: 'text-purple-800', label: 'Completed' },
@@ -76,7 +98,7 @@ const MyGuideBookings = () => {
             REJECTED: { bg: 'bg-gray-100', text: 'text-gray-800', label: 'Rejected' }
         };
 
-        const config = statusConfig[status] || statusConfig.PENDING;
+        const config = statusConfig[normalizedStatus] || statusConfig.PENDING;
         return (
             <span className={`px-3 py-1 rounded-full text-xs font-semibold ${config.bg} ${config.text}`}>
                 {config.label}
@@ -85,7 +107,8 @@ const MyGuideBookings = () => {
     };
 
     const isPaymentDue = (booking) => {
-        if (booking.status !== 'APPROVED') return false;
+        const normalizedStatus = booking.status?.toUpperCase();
+        if (normalizedStatus !== 'APPROVED' && normalizedStatus !== 'ACCEPTED') return false;
         
         // Check if within 24 hours of approval
         if (booking.approvedAt) {
@@ -229,7 +252,7 @@ const MyGuideBookings = () => {
                                                     <p className="text-2xl font-bold text-brand-primary">
                                                         LKR {booking.totalPrice?.toLocaleString()}
                                                     </p>
-                                                    {booking.status === 'APPROVED' && paymentIsDue && (
+                                                    {(booking.status?.toUpperCase() === 'APPROVED' || booking.status?.toLowerCase() === 'accepted') && paymentIsDue && (
                                                         <p className="text-xs text-warning mt-1">
                                                             ⏰ Payment due within 24 hours
                                                         </p>
@@ -238,7 +261,7 @@ const MyGuideBookings = () => {
 
                                                 {/* Action Buttons */}
                                                 <div className="space-y-2">
-                                                    {booking.status === 'APPROVED' && paymentIsDue && (
+                                                    {(booking.status?.toUpperCase() === 'APPROVED' || booking.status?.toLowerCase() === 'accepted') && paymentIsDue && (
                                                         <button
                                                             onClick={() => handlePayment(booking.id)}
                                                             className="w-full bg-success text-white py-2 rounded-lg font-semibold hover:bg-green-600 transition"
@@ -247,7 +270,7 @@ const MyGuideBookings = () => {
                                                         </button>
                                                     )}
                                                     
-                                                    {booking.status === 'PENDING' && (
+                                                    {booking.status?.toUpperCase() === 'PENDING' && (
                                                         <button
                                                             onClick={() => handleCancelBooking(booking.id)}
                                                             className="w-full bg-danger text-white py-2 rounded-lg font-semibold hover:bg-red-600 transition"

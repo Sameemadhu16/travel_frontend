@@ -31,14 +31,14 @@ const ImageUploader = ({
         }
 
         if (multiple) {
-            if (files.length < 5) {
-                setError('*You should add 5 images to verify');
+            const totalImages = images.length + files.length;
+            
+            if (totalImages > 5) {
+                setError(`*You can upload a maximum of 5 images. You currently have ${images.length} image(s).`);
                 setUploading(false);
                 return;
-            } else if (files.length > 5) {
-                setError('*You can upload a maximum of 5');
-                setUploading(false);
-                return;
+            } else if (totalImages < 5) {
+                setError(`*You need ${5 - totalImages} more image(s) to reach the required 5 images.`);
             } else {
                 setError('');
             }
@@ -49,7 +49,7 @@ const ImageUploader = ({
         );
         setImages((prev) => [...prev, ...urls]);
         setUploading(false);
-    }, [multiple, setError, setImages]);
+    }, [multiple, setError, setImages, images.length]);
 
     const handleImageChange = (event) => {
         const files = Array.from(event.target.files);

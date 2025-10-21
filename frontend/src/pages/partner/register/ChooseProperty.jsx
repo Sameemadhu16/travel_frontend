@@ -33,7 +33,7 @@ export default function ChooseProperty() {
 
     const optionList = useMemo(() => {  
         return options.map((option) => (
-            <PropertyCard property={option}/>
+            <PropertyCard key={option.id} property={option}/>
         ))
     },[])
     return (

@@ -315,7 +315,7 @@ export default function RecommendedDestinations() {
         <div className="bg-gray-50">
             <section className="py-12 px-6 max-w-7xl mx-auto">
                 <div className="flex items-center justify-between mb-8">
-                    <h2 className="text-3xl font-semibold text-gray-800">Recommended Destinations</h2>
+                    <h2 className="text-3xl font-semibold text-gray-800">Highlights of Sri Lanka</h2>
                     <div className="flex gap-2">
                         <button
                             onClick={scrollLeft}

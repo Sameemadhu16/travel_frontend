@@ -100,28 +100,25 @@ const useGuideRequests = (guideId) => {
     try {
       setError(null);
 
-      const tripPayload = {
-        selectedGuide: {
-          id: guideId,
-        },
-        tripStatus: 'accepted',
-      };
-
-      await putRequest(`/api/trips/${tripId}`, tripPayload);
-
-      // Try multiple field name formats in case backend expects different casing
-      const requestPayload = {
-        status: 'accepted',
-        paymentStatus: 'PENDING',  // Try uppercase to match enum
-      };
-
-      console.log('Accepting request with payload:', requestPayload);
-      const response = await putRequest(`/api/guid-requests/${requestId}`, requestPayload);
+      // Use the new accept endpoint
+      console.log('Accepting request with ID:', requestId);
+      const response = await putRequest(`/api/guid-requests/${requestId}/accept`);
       console.log('Accept response:', response);
 
-      // Check if paymentStatus was saved
-      if (response.paymentStatus === null) {
-        console.warn('⚠️ Backend did not save paymentStatus! Backend issue - check backend entity/model.');
+      // Update trip if tripId is provided
+      if (tripId && guideId) {
+        try {
+          const tripPayload = {
+            selectedGuide: {
+              id: guideId,
+            },
+            tripStatus: 'accepted',
+          };
+          await putRequest(`/api/trips/${tripId}`, tripPayload);
+          console.log('Trip updated successfully');
+        } catch (tripError) {
+          console.warn('Failed to update trip, but request was accepted:', tripError);
+        }
       }
 
       setTourRequests((prev) => prev.filter((req) => req.requestId !== requestId));
@@ -138,11 +135,10 @@ const useGuideRequests = (guideId) => {
     try {
       setError(null);
 
-      const payload = {
-        status: 'rejected',
-      };
-
-      await putRequest(`/api/guid-requests/${requestId}`, payload);
+      // Use the new reject endpoint
+      console.log('Rejecting request with ID:', requestId);
+      const response = await putRequest(`/api/guid-requests/${requestId}/reject`);
+      console.log('Reject response:', response);
 
       setTourRequests((prev) => prev.filter((req) => req.requestId !== requestId));
 

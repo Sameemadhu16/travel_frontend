@@ -45,13 +45,37 @@ export default function PartnerLoginStep2() {
                         token: user.accessToken,
                         }),
                     );
-                   
                     // Navigate based on user role and partner type
                     if (userData.role === 'admin') {
                         showToastMessage('success', 'Welcome back Admin!');
                         navigateTo('/admin/dashboard');
+                    } else if (userData.role === 'GUIDE') {
+                        // User is a guide
+                        showToastMessage('success', 'Welcome back Guide!');
+                        navigateTo('/guide-dashboard');
+                    } else if (userData.role === 'HOTEL_OWNER') {
+                        // User is a hotel owner
+                        try {
+                            const hotelData = await getHotelByUserDocId(user.uid);
+                            if (hotelData && hotelData.id) {
+                                showToastMessage('success', 'Welcome back to your hotel dashboard!');
+                                navigateTo(`/hotel/dashboard/${hotelData.id}`);
+                            } else {
+                                showToastMessage('error', 'Hotel not found. Please contact support.');
+                                navigateTo('/home');
+                            }
+                        } catch (hotelError) {
+                            console.error('Error fetching hotel data:', hotelError);
+                            showToastMessage('error', 'Failed to load hotel dashboard. Please try again.');
+                            navigateTo('/home');
+                        }
+                    } else if (userData.role === 'VEHICLE_OWNER') {
+                        // User is a vehicle agency owner
+                        showToastMessage('success', 'Welcome back to your vehicle agency dashboard!');
+                        navigateTo('/partner/dashboard');
                     } else if (userData.role === 'partner') {
-                        // Check what type of partner (hotel, guide, or vehicle agency)
+                        // Legacy: Check what type of partner (hotel, guide, or vehicle agency)
+                        // This handles old data where role was just 'partner'
                         try {
                             // Try to fetch hotel data
                             const hotelData = await getHotelByUserDocId(user.uid);

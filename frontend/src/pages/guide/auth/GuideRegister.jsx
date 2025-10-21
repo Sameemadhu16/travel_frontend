@@ -1,4 +1,5 @@
 import { useCallback, useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import CustomSelector from "../../../components/CustomSelector";
 import ImageUploader from "../../../components/ImageUploader";
 import InputField from "../../../components/InputField";
@@ -68,6 +69,7 @@ const experienceYears = [
 ];
 
 export default function GuideRegister() {
+    const { user } = useSelector((state) => state.auth);
     const [sltaLicenseImages, setSltaLicenseImages] = useState([]);
     const [nicFrontImages, setNicFrontImages] = useState([]);
     const [nicBackImages, setNicBackImages] = useState([]);
@@ -119,6 +121,7 @@ export default function GuideRegister() {
             setLoading(true);
             const submissionData = {
                 ...formData,
+                userId: user?.data?.id, // Add user ID
                 sltaLicensePhoto: sltaLicenseImages,
                 nicPhotoFront: nicFrontImages,
                 nicPhotoBack: nicBackImages,
@@ -173,7 +176,7 @@ export default function GuideRegister() {
         } finally {
             setLoading(false);
         }
-    }, [formData, sltaLicenseImages, nicFrontImages, nicBackImages, sltaError, nicFrontError, nicBackError]);
+    }, [formData, sltaLicenseImages, nicFrontImages, nicBackImages, sltaError, nicFrontError, nicBackError, user]);
 
     const languageList = useMemo(() => {
         return languages.map((language) => {

@@ -16,6 +16,8 @@ export default function Header() {
     const isExpired = checkTokenExpiration(token);
     const dispatch = useDispatch();
     const [showProfileMenu, setShowProfileMenu] = useState(false);
+    const [hasHotel, setHasHotel] = useState(false);
+    const [hotelId, setHotelId] = useState(null);
     // Handle both login structure (user.data.profilePicture) and registration structure (user.profilePicture)
     const [profilePicture, setProfilePicture] = useState(user?.data?.profilePicture || user?.profilePicture || defaultAvatar);
     const menuRef = useRef(null);
@@ -27,7 +29,9 @@ export default function Header() {
         console.log('Header Debug - User:', user);
         console.log('Header Debug - Role:', role);
         console.log('Header Debug - User Data:', user?.data);
-    }, [user, role]);
+        console.log('Header Debug - Has Hotel:', hasHotel);
+        console.log('Header Debug - Hotel ID:', hotelId);
+    }, [user, role, hasHotel, hotelId]);
     
     // Check if user is authenticated (has valid token)
     const isAuthenticated = token && !isExpired;
@@ -40,6 +44,38 @@ export default function Header() {
             setProfilePicture(newProfilePic);
         }
     }, [user?.data?.profilePicture, user?.profilePicture]);
+    
+    // Check if user with role 'partner' has a hotel
+    useEffect(() => {
+        const checkUserHotel = async () => {
+            if (role === 'partner' && (user?.data?.docId || user?.uid)) {
+                try {
+                    const docId = user?.data?.docId || user?.uid;
+                    const response = await fetch(`http://localhost:5454/api/hotels/user/${docId}`);
+                    if (response.ok) {
+                        const hotelData = await response.json();
+                        if (hotelData && hotelData.id) {
+                            setHasHotel(true);
+                            setHotelId(hotelData.id);
+                            console.log('Partner has hotel with ID:', hotelData.id);
+                        } else {
+                            setHasHotel(false);
+                            setHotelId(null);
+                        }
+                    } else {
+                        setHasHotel(false);
+                        setHotelId(null);
+                    }
+                } catch (error) {
+                    console.log('No hotel found for this partner:', error);
+                    setHasHotel(false);
+                    setHotelId(null);
+                }
+            }
+        };
+        
+        checkUserHotel();
+    }, [role, user?.data?.docId, user?.uid]);
     
     // Close menu on outside click
     
@@ -170,6 +206,53 @@ export default function Header() {
                                                     Vehicle Bookings
                                                 </Link>
                                             </li>
+                                            {/* Show Guide Dashboard link if user role is GUIDE */}
+                                            {role === 'GUIDE' && (
+                                                <li>
+                                                    <Link to="/guide-dashboard" className="block px-5 py-3 text-sm text-brand-primary font-semibold hover:bg-brand-accent border-t border-gray-200">
+                                                        🎯 Guide Dashboard
+                                                    </Link>
+                                                </li>
+                                            )}
+                                            {/* Show Hotel Dashboard link if user role is HOTEL_OWNER */}
+                                            {role === 'HOTEL_OWNER' && (
+                                                <li>
+                                                    <button 
+                                                        onClick={async () => {
+                                                            try {
+                                                                const hotelData = await fetch(`http://localhost:5454/api/hotels/user/${user?.data?.docId || user?.uid}`).then(r => r.json());
+                                                                if (hotelData && hotelData.id) {
+                                                                    navigateTo(`/hotel/dashboard/${hotelData.id}`);
+                                                                }
+                                                            } catch (e) {
+                                                                console.error('Error fetching hotel:', e);
+                                                            }
+                                                        }}
+                                                        className="w-full text-left block px-5 py-3 text-sm text-brand-primary font-semibold hover:bg-brand-accent border-t border-gray-200"
+                                                    >
+                                                        🏨 Hotel Dashboard
+                                                    </button>
+                                                </li>
+                                            )}
+                                            {/* Show Vehicle Dashboard link if user role is VEHICLE_OWNER */}
+                                            {role === 'VEHICLE_OWNER' && (
+                                                <li>
+                                                    <Link to="/partner/dashboard" className="block px-5 py-3 text-sm text-brand-primary font-semibold hover:bg-brand-accent border-t border-gray-200">
+                                                        🚗 Vehicle Dashboard
+                                                    </Link>
+                                                </li>
+                                            )}
+                                            {/* Show Hotel Dashboard link if user role is 'partner' and has a hotel */}
+                                            {role === 'partner' && hasHotel && hotelId && (
+                                                <li>
+                                                    <button 
+                                                        onClick={() => navigateTo(`/hotel/dashboard/${hotelId}`)}
+                                                        className="w-full text-left block px-5 py-3 text-sm text-brand-primary font-semibold hover:bg-brand-accent border-t border-gray-200"
+                                                    >
+                                                        🏨 Hotel Dashboard
+                                                    </button>
+                                                </li>
+                                            )}
                                             {/* <li>
                                                 <Link to="/payments" className="block px-5 py-3 text-sm text-content-primary hover:bg-brand-accent">
                                                     Payments

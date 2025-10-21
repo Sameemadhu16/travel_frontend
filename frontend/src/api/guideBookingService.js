@@ -117,7 +117,8 @@ export const getMyGuideBookings = async () => {
             throw new Error('User ID not found. Please login again.');
         }
         
-        const bookings = await getRequest('/api/guide-bookings/my-bookings', { userId: parseInt(userId) });
+        // Fetch from guid_requests table which has the correct status
+        const bookings = await getRequest(`/api/guid-requests/user/${userId}`);
         return bookings;
     } catch (error) {
         console.error('Error fetching my guide bookings:', error);

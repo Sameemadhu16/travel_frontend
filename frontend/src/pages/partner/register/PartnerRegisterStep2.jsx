@@ -24,20 +24,35 @@ export default function PartnerRegisterStep2() {
 
     const handleSubmit = useCallback( async (e) => {
         e.preventDefault();
+        console.log('Form submitted with data:', formData);
+        
         try{
             setLoading(true);
-            const error = formValidator(formData,);
-            setErrors(error)
+            const error = formValidator(formData);
+            console.log('Validation errors:', error);
+            setErrors(error);
 
             if(error === null){
+                console.log('No validation errors, submitting to API...');
                 const res = await putRequest(`/api/users/${formData.id}`, formData);
-                if(res === 'OK'){
+                console.log('API response:', res);
+                
+                // Check if response is successful (status 200-299 or has data)
+                if(res) {
                     dispatch(setUserData(formData));
                     showToastMessage('success', 'You have successfully created your partner account.');
-                    navigateTo('/choose-property')
+                    console.log('Navigating to choose-property...');
+                    navigateTo('/choose-property');
+                } else {
+                    console.error('API response was empty or falsy:', res);
+                    showToastMessage('error', 'Failed to update user data.');
                 }
+            } else {
+                console.log('Form has validation errors, not submitting');
+                showToastMessage('error', 'Please fill in all required fields correctly.');
             }
         }catch(e){
+            console.error('Error during submission:', e);
             showToastMessage('error', e.message || 'Registration failed. Please try again.');
         }finally {
             setLoading(false);
@@ -47,7 +62,7 @@ export default function PartnerRegisterStep2() {
     return (
         <AnimatePresence>
             <motion.div
-                key={''}
+                key="partner-register-step-2"
                 initial={{ x: 50, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -50, opacity: 0 }}

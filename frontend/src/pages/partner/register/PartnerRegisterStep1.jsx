@@ -20,11 +20,11 @@ export default function PartnerRegisterStep1() {
     const {user} = useSelector((state) => state.auth);
 
     useEffect(() => {
-        // Clear form data from localStorage and reset context state
+        
         localStorage.removeItem('formData');
         setFormData(registerPartnerAccountForm.formData);
 
-        // Only set user data if user and user.data exist
+        
         if (user && user.data) {
             const email = user.data.email;
             const id = user.data.id;
@@ -42,7 +42,7 @@ export default function PartnerRegisterStep1() {
     return (
         <AnimatePresence>
             <motion.div
-                key={''}
+                key="partner-register-step-1"
                 initial={{ x: 100, opacity: 0 }}
                 animate={{ x: 0, opacity: 1 }}
                 exit={{ x: -100, opacity: 0 }}
